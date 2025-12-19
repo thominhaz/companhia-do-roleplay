@@ -1,4 +1,4 @@
-import { RACES } from '@/data/srd';
+import { RACES, getAttributeAbbr } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
 import { Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -41,19 +41,22 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
                   )}
                 </div>
                 <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                  {race.description}
+                  {race.size_description}
                 </p>
                 <div className="flex flex-wrap gap-2 mt-2">
-                  {Object.entries(race.abilityBonuses).map(([attr, bonus]) => (
+                  {Object.entries(race.ability_bonuses).map(([attr, bonus]) => (
                     <span
                       key={attr}
                       className="px-2 py-0.5 text-xs font-medium rounded-full bg-primary/20 text-primary"
                     >
-                      +{bonus} {attr.slice(0, 3).toUpperCase()}
+                      +{bonus} {getAttributeAbbr(attr)}
                     </span>
                   ))}
                   <span className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground">
                     {race.speed}m velocidade
+                  </span>
+                  <span className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground capitalize">
+                    {race.size === 'medium' ? 'Médio' : 'Pequeno'}
                   </span>
                 </div>
               </div>
@@ -90,12 +93,12 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
                       {subrace.description}
                     </p>
                     <div className="flex flex-wrap gap-2 mt-2">
-                      {Object.entries(subrace.abilityBonuses).map(([attr, bonus]) => (
+                      {Object.entries(subrace.ability_bonuses).map(([attr, bonus]) => (
                         <span
                           key={attr}
                           className="px-2 py-0.5 text-xs font-medium rounded-full bg-secondary/20 text-secondary"
                         >
-                          +{bonus} {attr.slice(0, 3).toUpperCase()}
+                          +{bonus} {getAttributeAbbr(attr)}
                         </span>
                       ))}
                     </div>
@@ -111,11 +114,14 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
       {selectedRace && (
         <div className="mt-6 p-4 rounded-xl bg-muted/30 border border-border">
           <h3 className="font-semibold mb-3">Traços de {selectedRace.name}</h3>
-          <ul className="space-y-2">
-            {selectedRace.traits.map((trait, i) => (
-              <li key={i} className="flex items-start gap-2 text-sm">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
-                <span className="text-muted-foreground">{trait}</span>
+          <ul className="space-y-3">
+            {selectedRace.traits.map((trait) => (
+              <li key={trait.id} className="text-sm">
+                <span className="font-medium text-foreground">{trait.name}:</span>{' '}
+                <span className="text-muted-foreground">
+                  {trait.description_markdown.slice(0, 150)}
+                  {trait.description_markdown.length > 150 && '...'}
+                </span>
               </li>
             ))}
           </ul>
