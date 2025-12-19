@@ -201,10 +201,16 @@ export function WeaponsArmorList({ onBack }: WeaponsArmorListProps) {
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-semibold text-foreground">{weapon.name}</h3>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span className="text-primary font-medium">{weapon.damage.dice}</span>
-                          <span>•</span>
-                          <span>{DAMAGE_TYPES[weapon.damage.type] || weapon.damage.type}</span>
-                          <span>•</span>
+                          {weapon.damage ? (
+                            <>
+                              <span className="text-primary font-medium">{weapon.damage.dice}</span>
+                              <span>•</span>
+                              <span>{DAMAGE_TYPES[weapon.damage.type] || weapon.damage.type}</span>
+                              <span>•</span>
+                            </>
+                          ) : (
+                            <span className="text-muted-foreground">Especial •</span>
+                          )}
                           <span>{formatCost(weapon.cost)}</span>
                         </div>
                       </div>
@@ -280,9 +286,11 @@ export function WeaponsArmorList({ onBack }: WeaponsArmorListProps) {
                   <div className="grid grid-cols-3 gap-3">
                     <div className="glass rounded-xl p-3 text-center">
                       <p className="text-xs text-muted-foreground">Dano</p>
-                      <p className="text-lg font-bold text-primary">{selectedWeapon.damage.dice}</p>
+                      <p className="text-lg font-bold text-primary">
+                        {selectedWeapon.damage?.dice || "—"}
+                      </p>
                       <p className="text-xs text-muted-foreground">
-                        {DAMAGE_TYPES[selectedWeapon.damage.type] || selectedWeapon.damage.type}
+                        {selectedWeapon.damage ? (DAMAGE_TYPES[selectedWeapon.damage.type] || selectedWeapon.damage.type) : "Especial"}
                       </p>
                     </div>
                     <div className="glass rounded-xl p-3 text-center">
