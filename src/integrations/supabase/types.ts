@@ -305,6 +305,14 @@ export type Database = {
     Functions: {
       can_create_character: { Args: { _user_id: string }; Returns: boolean }
       count_user_characters: { Args: { _user_id: string }; Returns: number }
+      is_campaign_master: {
+        Args: { _campaign_id: string; _user_id: string }
+        Returns: boolean
+      }
+      is_campaign_member: {
+        Args: { _campaign_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_premium: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
