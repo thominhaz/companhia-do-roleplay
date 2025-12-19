@@ -1,0 +1,373 @@
+{
+  "id": "barbarian",
+  "name": "Bárbaro",
+  "name_en": "Barbarian",
+  "hit_die": 12,
+  "primary_abilities": ["strength"],
+  "saving_throw_proficiencies": ["strength", "constitution"],
+  "proficiencies": {
+    "armor": ["light", "medium", "shields"],
+    "weapons": ["simple", "martial"],
+    "tools": [],
+    "skills": {
+      "choose": 2,
+      "from": ["animal_handling", "athletics", "intimidation", "nature", "perception", "survival"]
+    }
+  },
+  "equipment_markdown": "Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:\n\n- **(a)** um machado grande OU **(b)** qualquer arma marcial corpo a corpo\n- **(a)** duas machadinhas OU **(b)** qualquer arma simples\n- Um pacote de explorador e quatro azagaias",
+  "features": [
+    {
+      "id": "rage",
+      "name": "Fúria",
+      "level": 1,
+      "description_markdown": "Em batalha, você luta com ferocidade primitiva. No seu turno, você pode entrar em fúria com uma **ação bônus**.\n\nEnquanto em fúria, você ganha os seguintes benefícios se não estiver usando **armadura pesada**:\n\n- Você tem **vantagem** em testes de Força e testes de resistência de Força\n- Quando você faz um ataque corpo a corpo com arma usando Força, você ganha um **bônus no dano** que aumenta conforme você ganha níveis de bárbaro\n- Você tem **resistência** a dano de concussão, perfurante e cortante\n\n**Limitações:**\n- Se você puder conjurar magias, não pode conjurá-las ou se concentrar nelas enquanto em fúria\n- Sua fúria dura **1 minuto**\n- Termina cedo se você ficar **inconsciente** ou se seu turno terminar e você não tiver atacado uma criatura hostil desde seu último turno ou sofrido dano desde então\n- Você pode terminar sua fúria no seu turno com uma **ação bônus**\n\nDepois de ter entrado em fúria o número de vezes mostrado para seu nível na tabela do Bárbaro, você deve terminar um **descanso longo** antes de poder entrar em fúria novamente.",
+      "mechanical": {
+        "action_type": "bonus_action",
+        "duration_minutes": 1,
+        "advantages": ["strength_checks", "strength_saves"],
+        "damage_resistance": ["bludgeoning", "piercing", "slashing"],
+        "cannot_wear": "heavy_armor",
+        "cannot_cast_spells": true
+      }
+    },
+    {
+      "id": "unarmored_defense",
+      "name": "Defesa sem Armadura",
+      "level": 1,
+      "description_markdown": "Enquanto você não estiver usando armadura, sua Classe de Armadura é igual a **10 + seu modificador de Destreza + seu modificador de Constituição**.\n\nVocê pode usar um escudo e ainda ganhar este benefício.",
+      "mechanical": {
+        "ac_formula": "10 + dexterity_modifier + constitution_modifier",
+        "can_use_shield": true
+      }
+    },
+    {
+      "id": "reckless_attack",
+      "name": "Ataque Descuidado",
+      "level": 2,
+      "description_markdown": "A partir do 2º nível, você pode jogar de lado toda preocupação com defesa para atacar com desespero feroz.\n\nQuando você fizer seu primeiro ataque no seu turno, pode decidir atacar descuidadamente. Fazer isso lhe dá **vantagem** nas jogadas de ataque corpo a corpo com arma usando Força durante este turno, mas jogadas de ataque contra você têm **vantagem** até o seu próximo turno.",
+      "mechanical": {
+        "grants_advantage": "melee_weapon_attacks_with_strength",
+        "receive_advantage": "all_attacks_against_you_until_next_turn"
+      }
+    },
+    {
+      "id": "danger_sense",
+      "name": "Sentido de Perigo",
+      "level": 2,
+      "description_markdown": "No 2º nível, você ganha um senso sobrenatural de quando as coisas próximas não estão como deveriam, dando-lhe uma vantagem quando se esquiva de perigos.\n\nVocê tem **vantagem** em testes de resistência de Destreza contra efeitos que você possa **ver**, como armadilhas e magias.\n\nPara ganhar este benefício, você não pode estar **cego**, **surdo** ou **incapacitado**.",
+      "mechanical": {
+        "advantage_on": "dexterity_saves_against_visible_effects",
+        "requires": "not_blinded_deafened_or_incapacitated"
+      }
+    },
+    {
+      "id": "primal_path",
+      "name": "Caminho Primitivo",
+      "level": 3,
+      "description_markdown": "No 3º nível, você escolhe um caminho que molda a natureza da sua fúria, como o **Caminho do Furioso**.\n\nSua escolha concede características no 3º nível e novamente no 6º, 10º e 14º níveis."
+    },
+    {
+      "id": "ability_score_improvement",
+      "name": "Incremento de Atributo",
+      "level": 4,
+      "description_markdown": "Quando você atinge o 4º nível e novamente no 8º, 12º, 16º e 19º nível, você pode aumentar um valor de atributo à sua escolha em 2 ou pode aumentar dois valores de atributo à sua escolha em 1.\n\nComo sempre, você não pode aumentar um atributo acima de 20 usando essa característica.",
+      "mechanical": {
+        "improvements": [4, 8, 12, 16, 19]
+      }
+    },
+    {
+      "id": "extra_attack",
+      "name": "Ataque Extra",
+      "level": 5,
+      "description_markdown": "A partir do 5º nível, você pode atacar **duas vezes**, ao invés de uma, sempre que você realizar a ação de Ataque no seu turno.",
+      "mechanical": {
+        "attacks_per_action": 2
+      }
+    },
+    {
+      "id": "fast_movement",
+      "name": "Movimento Rápido",
+      "level": 5,
+      "description_markdown": "A partir do 5º nível, seu deslocamento aumenta em **3 metros** enquanto você não estiver usando armadura pesada.",
+      "mechanical": {
+        "speed_bonus": 3,
+        "requires": "not_wearing_heavy_armor"
+      }
+    },
+    {
+      "id": "feral_instinct",
+      "name": "Instinto Selvagem",
+      "level": 7,
+      "description_markdown": "No 7º nível, seus instintos estão tão afiados que você tem **vantagem** nas jogadas de iniciativa.\n\nAdicionalmente, se você estiver **surpreso** no início do combate e não estiver incapacitado, você pode agir normalmente no seu primeiro turno, mas apenas se você entrar em fúria antes de fazer qualquer outra coisa naquele turno.",
+      "mechanical": {
+        "advantage_on": "initiative",
+        "act_when_surprised": "if_rage_first"
+      }
+    },
+    {
+      "id": "brutal_critical_1",
+      "name": "Crítico Brutal",
+      "level": 9,
+      "description_markdown": "A partir do 9º nível, você pode rolar **um dado de dano de arma adicional** ao determinar o dano extra de um acerto crítico com um ataque corpo a corpo.\n\nIsso aumenta para **dois dados** adicionais no 13º nível e **três dados** adicionais no 17º nível.",
+      "mechanical": {
+        "extra_critical_damage_dice": 1
+      }
+    },
+    {
+      "id": "brutal_critical_2",
+      "name": "Crítico Brutal (2 dados)",
+      "level": 13,
+      "mechanical": {
+        "extra_critical_damage_dice": 2
+      }
+    },
+    {
+      "id": "brutal_critical_3",
+      "name": "Crítico Brutal (3 dados)",
+      "level": 17,
+      "mechanical": {
+        "extra_critical_damage_dice": 3
+      }
+    },
+    {
+      "id": "relentless_rage",
+      "name": "Fúria Implacável",
+      "level": 11,
+      "description_markdown": "A partir do 11º nível, sua fúria pode mantê-lo lutando apesar de ferimentos graves.\n\nSe você cair a **0 pontos de vida** enquanto estiver em fúria e não morrer instantaneamente, você pode fazer um teste de resistência de **Constituição CD 10**. Se você tiver sucesso, você cai para **1 ponto de vida**.\n\nCada vez que você usar esta característica após a primeira, a CD aumenta em **5**. Quando você terminar um descanso curto ou longo, a CD volta para 10.",
+      "mechanical": {
+        "save_dc_base": 10,
+        "save_dc_increase_per_use": 5,
+        "drop_to_1_hp_on_success": true,
+        "resets_on": "short_or_long_rest"
+      }
+    },
+    {
+      "id": "persistent_rage",
+      "name": "Fúria Persistente",
+      "level": 15,
+      "description_markdown": "A partir do 15º nível, sua fúria é tão feroz que ela termina cedo apenas se você cair **inconsciente** ou se você **escolher** terminá-la.",
+      "mechanical": {
+        "rage_only_ends": ["unconscious", "player_choice"]
+      }
+    },
+    {
+      "id": "indomitable_might",
+      "name": "Poder Indomável",
+      "level": 18,
+      "description_markdown": "A partir do 18º nível, se o total de um teste de **Força** for menor que seu valor de Força, você pode usar esse valor no lugar do total.",
+      "mechanical": {
+        "minimum_strength_check": "strength_score"
+      }
+    },
+    {
+      "id": "primal_champion",
+      "name": "Campeão Primitivo",
+      "level": 20,
+      "description_markdown": "No 20º nível, você incorpora o poder das terras selvagens. Seus valores de **Força** e **Constituição** aumentam em **4**.\n\nSeu máximo para esses valores agora é **24**.",
+      "mechanical": {
+        "ability_increase": {
+          "strength": 4,
+          "constitution": 4
+        },
+        "new_maximum": 24
+      }
+    }
+  ],
+  "levels": [
+    {
+      "level": 1,
+      "proficiency_bonus": 2,
+      "features": ["rage", "unarmored_defense"],
+      "rages": 2,
+      "rage_damage": 2
+    },
+    {
+      "level": 2,
+      "proficiency_bonus": 2,
+      "features": ["reckless_attack", "danger_sense"],
+      "rages": 2,
+      "rage_damage": 2
+    },
+    {
+      "level": 3,
+      "proficiency_bonus": 2,
+      "features": ["primal_path"],
+      "rages": 3,
+      "rage_damage": 2
+    },
+    {
+      "level": 4,
+      "proficiency_bonus": 2,
+      "features": ["ability_score_improvement"],
+      "rages": 3,
+      "rage_damage": 2
+    },
+    {
+      "level": 5,
+      "proficiency_bonus": 3,
+      "features": ["extra_attack", "fast_movement"],
+      "rages": 3,
+      "rage_damage": 2
+    },
+    {
+      "level": 6,
+      "proficiency_bonus": 3,
+      "features": ["primal_path_feature"],
+      "rages": 4,
+      "rage_damage": 2
+    },
+    {
+      "level": 7,
+      "proficiency_bonus": 3,
+      "features": ["feral_instinct"],
+      "rages": 4,
+      "rage_damage": 2
+    },
+    {
+      "level": 8,
+      "proficiency_bonus": 3,
+      "features": ["ability_score_improvement"],
+      "rages": 4,
+      "rage_damage": 2
+    },
+    {
+      "level": 9,
+      "proficiency_bonus": 4,
+      "features": ["brutal_critical_1"],
+      "rages": 4,
+      "rage_damage": 3
+    },
+    {
+      "level": 10,
+      "proficiency_bonus": 4,
+      "features": ["primal_path_feature"],
+      "rages": 4,
+      "rage_damage": 3
+    },
+    {
+      "level": 11,
+      "proficiency_bonus": 4,
+      "features": ["relentless_rage"],
+      "rages": 4,
+      "rage_damage": 3
+    },
+    {
+      "level": 12,
+      "proficiency_bonus": 4,
+      "features": ["ability_score_improvement"],
+      "rages": 5,
+      "rage_damage": 3
+    },
+    {
+      "level": 13,
+      "proficiency_bonus": 5,
+      "features": ["brutal_critical_2"],
+      "rages": 5,
+      "rage_damage": 3
+    },
+    {
+      "level": 14,
+      "proficiency_bonus": 5,
+      "features": ["primal_path_feature"],
+      "rages": 5,
+      "rage_damage": 3
+    },
+    {
+      "level": 15,
+      "proficiency_bonus": 5,
+      "features": ["persistent_rage"],
+      "rages": 5,
+      "rage_damage": 3
+    },
+    {
+      "level": 16,
+      "proficiency_bonus": 5,
+      "features": ["ability_score_improvement"],
+      "rages": 5,
+      "rage_damage": 4
+    },
+    {
+      "level": 17,
+      "proficiency_bonus": 6,
+      "features": ["brutal_critical_3"],
+      "rages": 6,
+      "rage_damage": 4
+    },
+    {
+      "level": 18,
+      "proficiency_bonus": 6,
+      "features": ["indomitable_might"],
+      "rages": 6,
+      "rage_damage": 4
+    },
+    {
+      "level": 19,
+      "proficiency_bonus": 6,
+      "features": ["ability_score_improvement"],
+      "rages": 6,
+      "rage_damage": 4
+    },
+    {
+      "level": 20,
+      "proficiency_bonus": 6,
+      "features": ["primal_champion"],
+      "rages": "unlimited",
+      "rage_damage": 4
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "berserker",
+      "name": "Caminho do Furioso",
+      "name_en": "Path of the Berserker",
+      "description": "Para alguns bárbaros, a fúria é um meio para um fim - esse fim sendo violência. O Caminho do Furioso é um caminho de fúria desenfreada, escorregadio de sangue. Conforme você entra na fúria do furioso, você se delicia no caos da batalha, sem se importar com sua própria saúde ou bem-estar.",
+      "features": [
+        {
+          "id": "frenzy",
+          "name": "Frenesi",
+          "level": 3,
+          "description_markdown": "A partir de quando você escolhe este caminho no 3º nível, você pode entrar em frenesi quando entra em fúria.\n\nSe fizer isso, pela duração da sua fúria você pode fazer um único **ataque corpo a corpo com arma** como uma **ação bônus** em cada um dos seus turnos após este.\n\nQuando sua fúria termina, você sofre **um nível de exaustão**.",
+          "mechanical": {
+            "bonus_action_attack": true,
+            "cost": "one_level_exhaustion"
+          }
+        },
+        {
+          "id": "mindless_rage",
+          "name": "Fúria Inconsciente",
+          "level": 6,
+          "description_markdown": "A partir do 6º nível, você não pode ser **enfeitiçado** ou **amedrontado** enquanto estiver em fúria.\n\nSe você estiver enfeitiçado ou amedrontado quando entrar em sua fúria, o efeito é suspenso pela duração da fúria.",
+          "mechanical": {
+            "immunity_while_raging": ["charmed", "frightened"]
+          }
+        },
+        {
+          "id": "intimidating_presence",
+          "name": "Presença Intimidadora",
+          "level": 10,
+          "description_markdown": "A partir do 10º nível, você pode usar sua ação para assustar alguém com sua presença ameaçadora.\n\nQuando você fizer isso, escolha uma criatura que você possa ver a até **9 metros** de você. Se a criatura puder ver ou ouvir você, ela deve ter sucesso num teste de resistência de **Sabedoria** (CD = **8 + bônus de proficiência + modificador de Carisma**) ou ficar amedrontada de você até o final do seu próximo turno.\n\nNos turnos subsequentes, você pode usar sua ação para estender a duração deste efeito na criatura amedrontada até o final do seu próximo turno. Este efeito termina se a criatura terminar seu turno fora da linha de visão ou a mais de **18 metros** de você.\n\nSe a criatura tiver sucesso no teste de resistência, você não pode usar esta característica naquela criatura novamente por **24 horas**.",
+          "mechanical": {
+            "action_type": "action",
+            "range": 9,
+            "save": "wisdom",
+            "save_dc": "8 + proficiency_bonus + charisma_modifier",
+            "effect": "frightened",
+            "duration_extendable": true,
+            "cooldown_on_success": "24_hours"
+          }
+        },
+        {
+          "id": "retaliation",
+          "name": "Retaliação",
+          "level": 14,
+          "description_markdown": "A partir do 14º nível, quando você sofrer dano de uma criatura que esteja a até **1,5 m** de você, você pode usar sua **reação** para fazer um ataque corpo a corpo com arma contra aquela criatura.",
+          "mechanical": {
+            "reaction": true,
+            "trigger": "take_damage_from_creature_within_1.5m",
+            "effect": "melee_weapon_attack"
+          }
+        }
+      ]
+    }
+  ]
+}

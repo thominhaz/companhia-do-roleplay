@@ -1,0 +1,188 @@
+{
+  "id": "elf",
+  "name": "Elfo",
+  "name_en": "Elf",
+  "size": "medium",
+  "speed": 9,
+  "ability_bonuses": {
+    "dexterity": 2
+  },
+  "age_description": "Embora os elfos atinjam a maturidade física aproximadamente na mesma idade que os humanos, a compreensão élfica de idade adulta vai além do crescimento físico para abranger experiência de mundo. Um elfo normalmente reivindica a idade adulta e um nome adulto por volta dos 100 anos e pode viver até 750 anos.",
+  "alignment_description": "Elfos amam liberdade, variedade e autoexpressão, então eles se inclinam fortemente para os aspectos mais gentis do caos. Eles valorizam e protegem a liberdade dos outros, assim como a sua própria, e são mais frequentemente bons do que não.",
+  "size_description": "Elfos variam de menos de 1,5 m a mais de 1,8 m de altura e têm constituição esguia. Seu tamanho é Médio.",
+  "languages": ["Comum", "Élfico"],
+  "traits": [
+    {
+      "id": "darkvision",
+      "name": "Visão no Escuro",
+      "description_markdown": "Acostumado a florestas crepusculares e ao céu noturno, você tem visão superior em condições escuras e de penumbra. Você pode enxergar na penumbra a até **18 metros** como se fosse luz plena, e na escuridão como se fosse penumbra.\n\nVocê não pode discernir cores na escuridão, apenas tons de cinza.",
+      "mechanical": {
+        "darkvision_range": 18
+      }
+    },
+    {
+      "id": "keen_senses",
+      "name": "Sentidos Aguçados",
+      "description_markdown": "Você tem proficiência na perícia **Percepção**.",
+      "mechanical": {
+        "skill_proficiencies": ["perception"]
+      }
+    },
+    {
+      "id": "fey_ancestry",
+      "name": "Ancestralidade Feérica",
+      "description_markdown": "Você tem **vantagem** em testes de resistência contra ser enfeitiçado, e magia não pode colocá-lo para dormir.",
+      "mechanical": {
+        "saving_throw_advantage": ["charmed"],
+        "immunity": ["magical_sleep"]
+      }
+    },
+    {
+      "id": "trance",
+      "name": "Transe",
+      "description_markdown": "Elfos não precisam dormir. Em vez disso, eles meditam profundamente, permanecendo semiconscientes, por **4 horas** por dia. (A palavra comum para tal meditação é \"transe\".)\n\nEnquanto medita, você pode sonhar de certa forma; tais sonhos são na verdade exercícios mentais que se tornaram reflexivos através de anos de prática.\n\nDepois de descansar dessa forma, você ganha o mesmo benefício que um humano ganha de **8 horas** de sono.",
+      "mechanical": {
+        "trance_duration_hours": 4,
+        "replaces_sleep": true
+      }
+    }
+  ],
+  "subraces": [
+    {
+      "id": "high_elf",
+      "name": "Alto Elfo",
+      "name_en": "High Elf",
+      "description": "Como um alto elfo, você tem uma mente aguçada e domínio de pelo menos o básico da magia. Em muitos mundos de fantasia, existem dois tipos de altos elfos. Um tipo é altivo e recluso, acreditando ser superior aos não-elfos e até mesmo a outros elfos. O outro tipo é mais comum e amigável, e frequentemente encontrado entre humanos e outras raças.",
+      "ability_bonuses": {
+        "intelligence": 1
+      },
+      "traits": [
+        {
+          "id": "elf_weapon_training",
+          "name": "Treinamento Élfico com Armas",
+          "description_markdown": "Você tem proficiência com **espada longa**, **espada curta**, **arco curto** e **arco longo**.",
+          "mechanical": {
+            "weapon_proficiencies": ["longsword", "shortsword", "shortbow", "longbow"]
+          }
+        },
+        {
+          "id": "cantrip",
+          "name": "Truque",
+          "description_markdown": "Você conhece um truque de sua escolha da lista de magias de **mago**. **Inteligência** é seu atributo de conjuração para ele.",
+          "mechanical": {
+            "cantrip_choice": {
+              "count": 1,
+              "from_class": "wizard"
+            },
+            "spellcasting_ability": "intelligence"
+          }
+        },
+        {
+          "id": "extra_language",
+          "name": "Idioma Extra",
+          "description_markdown": "Você pode falar, ler e escrever um idioma extra de sua escolha.",
+          "mechanical": {
+            "extra_languages": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "wood_elf",
+      "name": "Elfo da Floresta",
+      "name_en": "Wood Elf",
+      "description": "Como um elfo da floresta, você tem sentidos aguçados e intuição profunda, e seus pés ágeis o levam rapidamente através de suas florestas natais.",
+      "ability_bonuses": {
+        "wisdom": 1
+      },
+      "traits": [
+        {
+          "id": "elf_weapon_training",
+          "name": "Treinamento Élfico com Armas",
+          "description_markdown": "Você tem proficiência com **espada longa**, **espada curta**, **arco curto** e **arco longo**.",
+          "mechanical": {
+            "weapon_proficiencies": ["longsword", "shortsword", "shortbow", "longbow"]
+          }
+        },
+        {
+          "id": "fleet_of_foot",
+          "name": "Pés Velozes",
+          "description_markdown": "Seu deslocamento base de caminhada aumenta para **10,5 metros**.",
+          "mechanical": {
+            "speed_bonus": 1.5
+          }
+        },
+        {
+          "id": "mask_of_the_wild",
+          "name": "Máscara da Natureza",
+          "description_markdown": "Você pode tentar se esconder mesmo quando estiver apenas levemente obscurecido por folhagem, chuva forte, neve caindo, névoa e outros fenômenos naturais.",
+          "mechanical": {
+            "special_hide_condition": "lightly_obscured_by_nature"
+          }
+        }
+      ]
+    },
+    {
+      "id": "dark_elf",
+      "name": "Elfo Negro (Drow)",
+      "name_en": "Dark Elf (Drow)",
+      "description": "Descendentes de uma sub-raça élfica anterior de pele escura, os drow foram banidos da superfície do mundo por seguirem a deusa Lolth pelo caminho do mal e da corrupção.",
+      "ability_bonuses": {
+        "charisma": 1
+      },
+      "traits": [
+        {
+          "id": "superior_darkvision",
+          "name": "Visão no Escuro Superior",
+          "description_markdown": "Sua visão no escuro tem alcance de **36 metros**.",
+          "mechanical": {
+            "darkvision_range": 36
+          }
+        },
+        {
+          "id": "sunlight_sensitivity",
+          "name": "Sensibilidade à Luz Solar",
+          "description_markdown": "Você tem **desvantagem** em jogadas de ataque e testes de Sabedoria (Percepção) que dependam de visão quando você, o alvo do seu ataque, ou o que quer que você esteja tentando perceber estiver sob luz solar direta.",
+          "mechanical": {
+            "disadvantage_in_sunlight": ["attack_rolls", "perception_checks"]
+          }
+        },
+        {
+          "id": "drow_magic",
+          "name": "Magia Drow",
+          "description_markdown": "Você conhece o truque **globos de luz**. Quando alcançar o 3º nível, você pode conjurar a magia **fogo das fadas** uma vez com este traço e recupera a habilidade de fazê-lo quando terminar um descanso longo. Quando alcançar o 5º nível, você pode conjurar a magia **escuridão** uma vez com este traço e recupera a habilidade de fazê-lo quando terminar um descanso longo.\n\n**Carisma** é seu atributo de conjuração para essas magias.",
+          "mechanical": {
+            "innate_spellcasting": {
+              "ability": "charisma",
+              "spells": [
+                {
+                  "name": "dancing_lights",
+                  "level_available": 1,
+                  "frequency": "at_will"
+                },
+                {
+                  "name": "faerie_fire",
+                  "level_available": 3,
+                  "frequency": "once_per_long_rest"
+                },
+                {
+                  "name": "darkness",
+                  "level_available": 5,
+                  "frequency": "once_per_long_rest"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "id": "drow_weapon_training",
+          "name": "Treinamento Drow com Armas",
+          "description_markdown": "Você tem proficiência com **rapieiras**, **espadas curtas** e **bestas de mão**.",
+          "mechanical": {
+            "weapon_proficiencies": ["rapier", "shortsword", "hand_crossbow"]
+          }
+        }
+      ]
+    }
+  ]
+}

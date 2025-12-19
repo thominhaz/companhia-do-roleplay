@@ -1,0 +1,30 @@
+{
+  "id": "human",
+  "name": "Humano",
+  "name_en": "Human",
+  "size": "medium",
+  "speed": 9,
+  "ability_bonuses": {
+    "strength": 1,
+    "dexterity": 1,
+    "constitution": 1,
+    "intelligence": 1,
+    "wisdom": 1,
+    "charisma": 1
+  },
+  "age_description": "Humanos atingem a idade adulta no final da adolescência e vivem menos de um século.",
+  "alignment_description": "Humanos não tendem a nenhum alinhamento em particular. O melhor e o pior são encontrados entre eles.",
+  "size_description": "Humanos variam amplamente em altura e constituição, de pouco mais de 1,5 m a bem mais de 1,8 m de altura. Independentemente de sua posição nessa faixa, seu tamanho é Médio.",
+  "languages": ["Comum"],
+  "traits": [
+    {
+      "id": "extra_language",
+      "name": "Idioma Extra",
+      "description_markdown": "Você pode falar, ler e escrever **Comum** e um idioma extra de sua escolha.\n\nHumanos normalmente aprendem os idiomas de outros povos com quem lidam, incluindo dialetos obscuros. Eles gostam de salpicar seu discurso com palavras emprestadas de outras línguas: maldições órquicas, expressões musicais élficas, frases militares anãs e assim por diante.",
+      "mechanical": {
+        "extra_languages": 1
+      }
+    }
+  ],
+  "subraces": []
+}

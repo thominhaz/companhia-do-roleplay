@@ -1,0 +1,62 @@
+{
+  "id": "tiefling",
+  "name": "Tiefling",
+  "name_en": "Tiefling",
+  "size": "medium",
+  "speed": 9,
+  "ability_bonuses": {
+    "intelligence": 1,
+    "charisma": 2
+  },
+  "age_description": "Tieflings amadurecem na mesma velocidade que humanos mas vivem alguns anos a mais.",
+  "alignment_description": "Tieflings podem não ter uma tendência inata para o mal, mas muitos deles acabam lá. Maus ou não, uma natureza independente inclina muitos tieflings para um alinhamento caótico.",
+  "size_description": "Tieflings têm aproximadamente o mesmo tamanho e constituição que humanos. Seu tamanho é Médio.",
+  "languages": ["Comum", "Infernal"],
+  "traits": [
+    {
+      "id": "darkvision",
+      "name": "Visão no Escuro",
+      "description_markdown": "Graças à sua herança infernal, você tem visão superior em condições escuras e de penumbra. Você pode enxergar na penumbra a até **18 metros** como se fosse luz plena, e na escuridão como se fosse penumbra.\n\nVocê não pode discernir cores na escuridão, apenas tons de cinza.",
+      "mechanical": {
+        "darkvision_range": 18
+      }
+    },
+    {
+      "id": "hellish_resistance",
+      "name": "Resistência Infernal",
+      "description_markdown": "Você tem **resistência** a dano de fogo.",
+      "mechanical": {
+        "damage_resistance": ["fire"]
+      }
+    },
+    {
+      "id": "infernal_legacy",
+      "name": "Legado Infernal",
+      "description_markdown": "Você conhece o truque **taumaturgia**.\n\nQuando alcançar o **3º nível**, você pode conjurar a magia **repreensão infernal** como uma magia de 2º nível uma vez com este traço e recupera a habilidade de fazê-lo quando terminar um **descanso longo**.\n\nQuando alcançar o **5º nível**, você pode conjurar a magia **escuridão** uma vez com este traço e recupera a habilidade de fazê-lo quando terminar um **descanso longo**.\n\n**Carisma** é seu atributo de conjuração para essas magias.",
+      "mechanical": {
+        "innate_spellcasting": {
+          "ability": "charisma",
+          "spells": [
+            {
+              "name": "thaumaturgy",
+              "level_available": 1,
+              "frequency": "at_will"
+            },
+            {
+              "name": "hellish_rebuke",
+              "level_available": 3,
+              "spell_level": 2,
+              "frequency": "once_per_long_rest"
+            },
+            {
+              "name": "darkness",
+              "level_available": 5,
+              "frequency": "once_per_long_rest"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "subraces": []
+}

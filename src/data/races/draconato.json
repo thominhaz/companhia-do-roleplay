@@ -1,0 +1,143 @@
+{
+  "id": "dragonborn",
+  "name": "Draconato",
+  "name_en": "Dragonborn",
+  "size": "medium",
+  "speed": 9,
+  "ability_bonuses": {
+    "strength": 2,
+    "charisma": 1
+  },
+  "age_description": "Jovens draconatos crescem rapidamente. Eles andam horas após eclodirem, atingem o tamanho e desenvolvimento de uma criança humana de 10 anos aos 3 anos, e alcançam a idade adulta aos 15. Eles vivem cerca de 80 anos.",
+  "alignment_description": "Draconatos tendem a extremos, fazendo uma escolha consciente por um lado ou outro na guerra cósmica entre o bem e o mal. A maioria dos draconatos é boa, mas aqueles que se aliam ao mal podem ser vilões terríveis.",
+  "size_description": "Draconatos são mais altos e pesados que humanos, ficando bem acima de 1,8 m de altura e pesando em média quase 113 kg. Seu tamanho é Médio.",
+  "languages": ["Comum", "Dracônico"],
+  "traits": [
+    {
+      "id": "draconic_ancestry",
+      "name": "Ancestralidade Dracônica",
+      "description_markdown": "Você tem ancestralidade dracônica. Escolha um tipo de dragão da tabela de **Ancestralidade Dracônica**. Sua arma de sopro e resistência a dano são determinados pelo tipo de dragão, conforme mostrado na tabela.\n\n| Dragão | Tipo de Dano | Arma de Sopro |\n|--------|--------------|---------------|\n| Negro | Ácido | Linha de 1,5 x 9 m (teste de DES) |\n| Azul | Eletricidade | Linha de 1,5 x 9 m (teste de DES) |\n| Bronze | Eletricidade | Linha de 1,5 x 9 m (teste de DES) |\n| Cobre | Ácido | Linha de 1,5 x 9 m (teste de DES) |\n| Latão | Fogo | Linha de 1,5 x 9 m (teste de DES) |\n| Ouro | Fogo | Cone de 4,5 m (teste de DES) |\n| Prata | Frio | Cone de 4,5 m (teste de CON) |\n| Verde | Veneno | Cone de 4,5 m (teste de CON) |\n| Vermelho | Fogo | Cone de 4,5 m (teste de DES) |\n| Branco | Frio | Cone de 4,5 m (teste de CON) |",
+      "mechanical": {
+        "ancestry_options": [
+          {
+            "dragon": "black",
+            "damage_type": "acid",
+            "breath_weapon": {
+              "shape": "line",
+              "dimensions": "1.5m x 9m",
+              "save": "dexterity"
+            }
+          },
+          {
+            "dragon": "blue",
+            "damage_type": "lightning",
+            "breath_weapon": {
+              "shape": "line",
+              "dimensions": "1.5m x 9m",
+              "save": "dexterity"
+            }
+          },
+          {
+            "dragon": "brass",
+            "damage_type": "fire",
+            "breath_weapon": {
+              "shape": "line",
+              "dimensions": "1.5m x 9m",
+              "save": "dexterity"
+            }
+          },
+          {
+            "dragon": "bronze",
+            "damage_type": "lightning",
+            "breath_weapon": {
+              "shape": "line",
+              "dimensions": "1.5m x 9m",
+              "save": "dexterity"
+            }
+          },
+          {
+            "dragon": "copper",
+            "damage_type": "acid",
+            "breath_weapon": {
+              "shape": "line",
+              "dimensions": "1.5m x 9m",
+              "save": "dexterity"
+            }
+          },
+          {
+            "dragon": "gold",
+            "damage_type": "fire",
+            "breath_weapon": {
+              "shape": "cone",
+              "dimensions": "4.5m",
+              "save": "dexterity"
+            }
+          },
+          {
+            "dragon": "green",
+            "damage_type": "poison",
+            "breath_weapon": {
+              "shape": "cone",
+              "dimensions": "4.5m",
+              "save": "constitution"
+            }
+          },
+          {
+            "dragon": "red",
+            "damage_type": "fire",
+            "breath_weapon": {
+              "shape": "cone",
+              "dimensions": "4.5m",
+              "save": "dexterity"
+            }
+          },
+          {
+            "dragon": "silver",
+            "damage_type": "cold",
+            "breath_weapon": {
+              "shape": "cone",
+              "dimensions": "4.5m",
+              "save": "constitution"
+            }
+          },
+          {
+            "dragon": "white",
+            "damage_type": "cold",
+            "breath_weapon": {
+              "shape": "cone",
+              "dimensions": "4.5m",
+              "save": "constitution"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "breath_weapon",
+      "name": "Arma de Sopro",
+      "description_markdown": "Você pode usar sua ação para exalar energia destrutiva. Sua ancestralidade dracônica determina o tamanho, forma e tipo de dano da exalação.\n\nQuando você usa sua arma de sopro, cada criatura na área da exalação deve fazer um **teste de resistência**, o tipo do qual é determinado por sua ancestralidade dracônica.\n\nA **CD** para este teste de resistência é igual a **8 + seu modificador de Constituição + seu bônus de proficiência**.\n\nUma criatura sofre **2d6** de dano em uma falha, e metade do dano em um sucesso.\n\nO dano aumenta para:\n- **3d6** no 6º nível\n- **4d6** no 11º nível  \n- **5d6** no 16º nível\n\nDepois de usar sua arma de sopro, você não pode usá-la novamente até completar um **descanso curto** ou **longo**.",
+      "mechanical": {
+        "action_type": "action",
+        "damage": {
+          "base_dice": "2d6",
+          "scaling": {
+            "6": "3d6",
+            "11": "4d6",
+            "16": "5d6"
+          }
+        },
+        "save_dc_formula": "8 + constitution_modifier + proficiency_bonus",
+        "recharge": "short_or_long_rest"
+      }
+    },
+    {
+      "id": "damage_resistance",
+      "name": "Resistência a Dano",
+      "description_markdown": "Você tem **resistência** ao tipo de dano associado à sua ancestralidade dracônica.",
+      "mechanical": {
+        "damage_resistance": "determined_by_ancestry"
+      }
+    }
+  ],
+  "subraces": []
+}

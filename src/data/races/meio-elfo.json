@@ -1,0 +1,56 @@
+{
+  "id": "half_elf",
+  "name": "Meio-Elfo",
+  "name_en": "Half-Elf",
+  "size": "medium",
+  "speed": 9,
+  "ability_bonuses": {
+    "charisma": 2
+  },
+  "ability_bonuses_choice": {
+    "count": 2,
+    "options": ["strength", "dexterity", "constitution", "intelligence", "wisdom"]
+  },
+  "age_description": "Meio-elfos amadurecem na mesma velocidade que humanos e atingem a idade adulta por volta dos 20 anos. Eles vivem muito mais tempo que humanos, no entanto, frequentemente ultrapassando 180 anos.",
+  "alignment_description": "Meio-elfos compartilham a inclinação caótica de sua herança élfica. Eles valorizam tanto a liberdade pessoal quanto a expressão criativa, não demonstrando amor por líderes nem desejo por seguidores. Eles se irritam com regras, ressentem as demandas dos outros e às vezes se mostram pouco confiáveis, ou pelo menos imprevisíveis.",
+  "size_description": "Meio-elfos têm aproximadamente o mesmo tamanho que humanos, variando de 1,5 m a 1,8 m de altura. Seu tamanho é Médio.",
+  "languages": ["Comum", "Élfico"],
+  "traits": [
+    {
+      "id": "darkvision",
+      "name": "Visão no Escuro",
+      "description_markdown": "Graças ao seu sangue élfico, você tem visão superior em condições escuras e de penumbra. Você pode enxergar na penumbra a até **18 metros** como se fosse luz plena, e na escuridão como se fosse penumbra.\n\nVocê não pode discernir cores na escuridão, apenas tons de cinza.",
+      "mechanical": {
+        "darkvision_range": 18
+      }
+    },
+    {
+      "id": "fey_ancestry",
+      "name": "Ancestralidade Feérica",
+      "description_markdown": "Você tem **vantagem** em testes de resistência contra ser enfeitiçado, e magia não pode colocá-lo para dormir.",
+      "mechanical": {
+        "saving_throw_advantage": ["charmed"],
+        "immunity": ["magical_sleep"]
+      }
+    },
+    {
+      "id": "skill_versatility",
+      "name": "Versatilidade em Perícias",
+      "description_markdown": "Você ganha proficiência em **duas perícias** de sua escolha.",
+      "mechanical": {
+        "skill_proficiencies_choice": {
+          "count": 2
+        }
+      }
+    },
+    {
+      "id": "extra_language",
+      "name": "Idioma Extra",
+      "description_markdown": "Você pode falar, ler e escrever **Comum**, **Élfico** e um idioma extra de sua escolha.",
+      "mechanical": {
+        "extra_languages": 1
+      }
+    }
+  ],
+  "subraces": []
+}
