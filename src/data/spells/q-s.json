@@ -1,0 +1,1566 @@
+{
+  "magias": [
+    {
+      "id": "produce_flame",
+      "name": "Produzir Chama",
+      "name_en": "Produce Flame",
+      "level": 0,
+      "school": "conjuration",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "self",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "10 minutos",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Uma chama tremeluzente aparece em sua mão. A chama permanece lá pela duração e não prejudica nem você nem seu equipamento. A chama emite **luz plena** em um raio de **3 metros** e **penumbra** por mais **3 metros**. A magia termina se você a dispensar com uma ação ou se conjurá-la novamente.\n\nVocê também pode atacar com a chama, embora fazer isso termine a magia. Quando você conjura esta magia, ou como uma ação em um turno posterior, você pode arremessar a chama em uma criatura a até **9 metros** de você. Faça um **ataque de magia à distância**. Em um acerto, o alvo recebe **1d8 de dano de fogo**.",
+      "mechanical": {
+        "damage_dice": "1d8",
+        "damage_type": "fire",
+        "attack_type": "ranged_spell_attack",
+        "light_bright": 3,
+        "light_dim": 3,
+        "cantrip_scaling": {
+          "5": "2d8",
+          "11": "3d8",
+          "17": "4d8"
+        }
+      }
+    },
+    {
+      "id": "project_image",
+      "name": "Projetar Imagem",
+      "name_en": "Project Image",
+      "level": 7,
+      "school": "illusion",
+      "casting_time": "1 ação",
+      "range": 804672,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma pequena réplica sua feita de materiais valendo pelo menos 5 po",
+        "material_cost": 5
+      },
+      "duration": "Concentração, até 1 dia",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Você cria uma cópia ilusória de si mesmo que dura pela duração. A cópia pode aparecer em qualquer local dentro do alcance que você já tenha visto antes, independentemente dos obstáculos intervenientes. A ilusão parece e soa como você, mas é intangível. Se a ilusão sofrer qualquer dano, ela desaparece e a magia termina.\n\nVocê pode usar sua ação para mover esta ilusão até o dobro de seu deslocamento, e fazê-la gesticular, falar e se comportar de qualquer maneira que você escolher. Ela imita suas maneirismos perfeitamente.\n\nVocê pode ver através de seus olhos e ouvir através de seus ouvidos como se estivesse no espaço dela. Em seu turno, com uma ação bônus, você pode alternar entre usar os sentidos dela e usar os seus, ou voltar novamente. Enquanto você está usando os sentidos dela, você está **cego** e **surdo** em relação ao seu próprio entorno.\n\nInteração física com a imagem revela que ela é uma ilusão, porque as coisas podem passar através dela. Uma criatura que usar sua ação para examinar a imagem pode determinar que ela é uma ilusão com um teste bem-sucedido de **Inteligência (Investigação)** contra sua CD de resistência de magia. Se uma criatura discernir a ilusão pelo que ela é, a criatura pode ver através da imagem, e qualquer ruído que ela faça soa oco para a criatura.",
+      "mechanical": {
+        "max_range_miles": 500,
+        "illusion_type": "visual_and_auditory",
+        "movement_multiplier": 2,
+        "requires_investigation_check": true,
+        "destroyed_on_damage": true
+      }
+    },
+    {
+      "id": "protection_from_energy",
+      "name": "Proteção contra Energia",
+      "name_en": "Protection from Energy",
+      "level": 3,
+      "school": "abjuration",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentração, até 1 hora",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Pela duração, a criatura voluntária que você tocar tem **resistência** a um tipo de dano à sua escolha: **ácido**, **frio**, **fogo**, **elétrico** ou **trovão**.",
+      "mechanical": {
+        "grants_resistance": true,
+        "damage_types": ["acid", "cold", "fire", "lightning", "thunder"]
+      }
+    },
+    {
+      "id": "protection_from_evil_and_good",
+      "name": "Proteção contra Bem e Mal",
+      "name_en": "Protection from Evil and Good",
+      "level": 1,
+      "school": "abjuration",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "água benta ou prata e ferro em pó, que a magia consome"
+      },
+      "duration": "Concentração, até 10 minutos",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Até a magia terminar, uma criatura voluntária que você tocar é protegida contra certos tipos de criaturas: **aberrações**, **celestiais**, **elementais**, **fadas**, **demônios** e **mortos-vivos**.\n\nA proteção concede diversos benefícios. Criaturas desses tipos têm **desvantagem** em jogadas de ataque contra o alvo. O alvo também não pode ser **enfeitiçado**, **amedrontado** ou **possuído** por eles. Se o alvo já estiver enfeitiçado, amedrontado ou possuído por tal criatura, o alvo tem **vantagem** em qualquer nova jogada de resistência contra o efeito relevante.",
+      "mechanical": {
+        "protected_creature_types": ["aberration", "celestial", "elemental", "fey", "fiend", "undead"],
+        "grants_advantage_vs_charm": true,
+        "grants_advantage_vs_fear": true,
+        "grants_advantage_vs_possession": true,
+        "attackers_have_disadvantage": true
+      }
+    },
+    {
+      "id": "protection_from_poison",
+      "name": "Proteção contra Veneno",
+      "name_en": "Protection from Poison",
+      "level": 2,
+      "school": "abjuration",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "1 hora",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você toca uma criatura. Se ela estiver **envenenada**, você neutraliza o veneno. Se mais de um veneno aflige o alvo, você neutraliza um veneno que você saiba estar presente, ou você neutraliza um aleatoriamente.\n\nPela duração, o alvo tem **vantagem** em jogadas de resistência contra ser envenenado, e ele tem **resistência** a **dano de veneno**.",
+      "mechanical": {
+        "neutralizes_poison": true,
+        "grants_advantage_vs_poison": true,
+        "grants_poison_resistance": true
+      }
+    },
+    {
+      "id": "purify_food_and_drink",
+      "name": "Purificar Alimento e Água",
+      "name_en": "Purify Food and Drink",
+      "level": 1,
+      "school": "transmutation",
+      "casting_time": "1 ação",
+      "range": 3,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": true,
+      "description_markdown": "Toda comida e bebida não mágica dentro de uma esfera de **1,5 metro** de raio centrada em um ponto à sua escolha dentro do alcance é purificada e tornada livre de veneno e doença.",
+      "mechanical": {
+        "area_type": "sphere",
+        "area_size": 1.5,
+        "removes_poison": true,
+        "removes_disease": true,
+        "affects_nonmagical_only": true
+      }
+    },
+    {
+      "id": "raise_dead",
+      "name": "Reviver os Mortos",
+      "name_en": "Raise Dead",
+      "level": 5,
+      "school": "necromancy",
+      "casting_time": "1 hora",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um diamante valendo pelo menos 500 po, que a magia consome",
+        "material_cost": 500
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você retorna uma criatura morta que você toque à vida, contanto que ela tenha morrido há não mais de **10 dias**. Se a alma da criatura estiver disposta e livre para se juntar ao corpo, a criatura retorna à vida com **1 ponto de vida**.\n\nEsta magia também neutraliza quaisquer venenos e cura doenças não mágicas que afligiam a criatura no momento em que morreu. Esta magia não remove, no entanto, doenças mágicas, maldições ou efeitos similares; se estes não forem primeiro removidos antes de conjurar a magia, eles entram em efeito quando a criatura retornar à vida. A magia não pode retornar uma criatura morta-viva à vida.\n\nEsta magia fecha todas as feridas mortais, mas não restaura partes do corpo ausentes. Se a criatura estiver sem partes do corpo ou órgãos integrais para sua sobrevivência—sua cabeça, por exemplo—a magia automaticamente falha.\n\nVoltar da morte é uma provação. O alvo recebe uma penalidade de **-4** em todas as jogadas de ataque, jogadas de resistência e testes de atributo. Toda vez que o alvo terminar um descanso longo, a penalidade é reduzida em 1 até desaparecer.",
+      "mechanical": {
+        "max_death_duration_days": 10,
+        "restores_hp": 1,
+        "neutralizes_poison": true,
+        "cures_nonmagical_disease": true,
+        "requires_complete_body": false,
+        "requires_vital_organs": true,
+        "death_penalty": -4,
+        "penalty_reduction_per_rest": 1
+      }
+    },
+    {
+      "id": "ray_of_enfeeblement",
+      "name": "Raio de Enfraquecimento",
+      "name_en": "Ray of Enfeeblement",
+      "level": 2,
+      "school": "necromancy",
+      "casting_time": "1 ação",
+      "range": 18,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentração, até 1 minuto",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Um raio negro de energia enervante salta de seu dedo em direção a uma criatura dentro do alcance. Faça um **ataque de magia à distância** contra o alvo. Em um acerto, o alvo causa apenas **metade do dano** com ataques com armas que usam Força até a magia terminar.\n\nNo final de cada um dos turnos do alvo, ele pode fazer uma jogada de resistência de **Constituição** contra a magia. Em um sucesso, a magia termina.",
+      "mechanical": {
+        "attack_type": "ranged_spell_attack",
+        "halves_strength_damage": true,
+        "save_type": "constitution",
+        "save_timing": "end_of_turn"
+      }
+    },
+    {
+      "id": "ray_of_frost",
+      "name": "Raio de Gelo",
+      "name_en": "Ray of Frost",
+      "level": 0,
+      "school": "evocation",
+      "casting_time": "1 ação",
+      "range": 18,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Um raio gélido de luz branco-azulada dispara em direção a uma criatura dentro do alcance. Faça um **ataque de magia à distância** contra o alvo. Em um acerto, ele recebe **1d8 de dano de frio**, e seu deslocamento é reduzido em **3 metros** até o início do seu próximo turno.",
+      "mechanical": {
+        "damage_dice": "1d8",
+        "damage_type": "cold",
+        "attack_type": "ranged_spell_attack",
+        "speed_reduction": 3,
+        "cantrip_scaling": {
+          "5": "2d8",
+          "11": "3d8",
+          "17": "4d8"
+        }
+      }
+    },
+    {
+      "id": "regenerate",
+      "name": "Regenerar",
+      "name_en": "Regenerate",
+      "level": 7,
+      "school": "transmutation",
+      "casting_time": "1 minuto",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma roda de oração e água benta"
+      },
+      "duration": "1 hora",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você toca uma criatura e estimula sua capacidade natural de cura. O alvo recupera **4d8 + 15 pontos de vida**. Pela duração da magia, o alvo recupera **1 ponto de vida** no início de cada um de seus turnos (**10 pontos de vida** por minuto).\n\nAs partes do corpo decepadas do alvo (dedos, pernas, caldas, e assim por diante), se houver, são restauradas após **2 minutos**. Se você tiver a parte decepada e segurá-la no toco, a magia instantaneamente faz o membro se unir ao toco.",
+      "mechanical": {
+        "initial_healing": "4d8+15",
+        "hp_per_turn": 1,
+        "hp_per_minute": 10,
+        "restores_limbs": true,
+        "limb_restoration_time_minutes": 2
+      }
+    },
+    {
+      "id": "reincarnate",
+      "name": "Reencarnar",
+      "name_en": "Reincarnate",
+      "level": 5,
+      "school": "transmutation",
+      "casting_time": "1 hora",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "óleos e unguentos raros valendo pelo menos 1.000 po, que a magia consome",
+        "material_cost": 1000
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você toca um humanoide morto ou um pedaço de um humanoide morto. Contanto que a criatura tenha morrido há não mais de **10 dias**, a magia forma um novo corpo adulto para ela e então chama a alma para entrar nesse corpo. Se a alma do alvo não estiver livre ou disposta a fazê-lo, a magia falha.\n\nA magia molda um novo corpo para a criatura habitar, o que provavelmente faz a **raça da criatura mudar**. O Mestre joga um d100 e consulta a tabela a seguir para determinar qual forma a criatura assume quando restaurada à vida, ou o Mestre escolhe uma forma:\n\n| d100 | Raça |\n|------|------|\n| 01-04 | Draconato |\n| 05-13 | Anão da Colina |\n| 14-21 | Anão da Montanha |\n| 22-25 | Elfo Negro |\n| 26-34 | Alto Elfo |\n| 35-42 | Elfo da Floresta |\n| 43-46 | Gnomo da Floresta |\n| 47-52 | Gnomo da Rocha |\n| 53-56 | Meio-Elfo |\n| 57-60 | Meio-Orc |\n| 61-68 | Halfling Pés-Leves |\n| 69-76 | Halfling Robusto |\n| 77-96 | Humano |\n| 97-00 | Tiefling |\n\nA criatura reencarnada recorda sua vida anterior e experiências. Ela retém as capacidades que tinha em sua forma original, exceto que troca sua raça original pela nova e muda seus traços raciais de acordo.",
+      "mechanical": {
+        "max_death_duration_days": 10,
+        "changes_race": true,
+        "requires_humanoid": true,
+        "retains_memories": true,
+        "retains_class_abilities": true
+      }
+    },
+    {
+      "id": "remove_curse",
+      "name": "Remover Maldição",
+      "name_en": "Remove Curse",
+      "level": 3,
+      "school": "abjuration",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Ao seu toque, todas as maldições afligindo uma criatura ou objeto terminam. Se o objeto for um **item mágico amaldiçoado**, sua maldição permanece, mas a magia quebra a **sintonização** de seu dono com o objeto, para que ele possa ser removido ou descartado.",
+      "mechanical": {
+        "removes_all_curses": true,
+        "breaks_attunement": true,
+        "cursed_item_remains_cursed": true
+      }
+    },
+    {
+      "id": "resilient_sphere",
+      "name": "Esfera Resiliente",
+      "name_en": "Resilient Sphere",
+      "level": 4,
+      "school": "evocation",
+      "casting_time": "1 ação",
+      "range": 9,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma peça hemisférica de cristal claro e uma peça hemisférica correspondente de goma arábica"
+      },
+      "duration": "Concentração, até 1 minuto",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Uma esfera de força cintilante envolve uma criatura ou objeto de tamanho **Grande** ou menor dentro do alcance. Uma criatura involuntária deve fazer uma jogada de resistência de **Destreza**. Em uma falha, a criatura é envolvida pela duração.\n\nNada—nem objetos físicos, energia ou outros efeitos de magia—pode passar pela barreira, para dentro ou para fora, embora uma criatura na esfera possa respirar lá. A esfera é **imune a todo dano**, e uma criatura ou objeto dentro não pode ser danificado por ataques ou efeitos originando de fora, nem uma criatura dentro da esfera pode danificar nada fora dela.\n\nA esfera é **sem peso** e apenas grande o suficiente para conter a criatura ou objeto dentro. Uma criatura envolvida pode usar sua ação para empurrar contra as paredes da esfera e assim rolar a esfera a até metade do deslocamento da criatura. Similarmente, o globo pode ser pego e movido por outras criaturas.\n\nUma magia **desintegrar** mirando o globo o destrói sem prejudicar nada dentro dele.",
+      "mechanical": {
+        "max_creature_size": "Large",
+        "save_type": "dexterity",
+        "sphere_is_immune": true,
+        "blocks_all_effects": true,
+        "weightless": true,
+        "move_speed_factor": 0.5,
+        "destroyed_by_disintegrate": true
+      }
+    },
+    {
+      "id": "resistance",
+      "name": "Resistência",
+      "name_en": "Resistance",
+      "level": 0,
+      "school": "abjuration",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma capa em miniatura"
+      },
+      "duration": "Concentração, até 1 minuto",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Você toca uma criatura voluntária. Uma vez antes da magia terminar, o alvo pode rolar um **d4** e adicionar o número rolado a **uma jogada de resistência** à sua escolha. Ela pode rolar o dado antes ou depois de fazer a jogada de resistência. A magia então termina.",
+      "mechanical": {
+        "bonus_dice": "1d4",
+        "applies_to": "one_saving_throw",
+        "single_use": true
+      }
+    },
+    {
+      "id": "resurrection",
+      "name": "Ressurreição",
+      "name_en": "Resurrection",
+      "level": 7,
+      "school": "necromancy",
+      "casting_time": "1 hora",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um diamante valendo pelo menos 1.000 po, que a magia consome",
+        "material_cost": 1000
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você toca uma criatura morta que tenha morrido há não mais de **um século**, que não tenha morrido de velhice, e que não seja morto-vivo. Se sua alma estiver livre e disposta, o alvo retorna à vida com todos os seus pontos de vida.\n\nEsta magia neutraliza quaisquer venenos e cura doenças normais afligindo a criatura quando morreu. Ela não remove, no entanto, doenças mágicas, maldições e coisas do tipo; se tais efeitos não forem removidos antes de conjurar a magia, eles afligem o alvo em seu retorno à vida.\n\nEsta magia fecha todas as feridas mortais e restaura quaisquer partes do corpo ausentes.\n\nVoltar da morte é uma provação. O alvo recebe uma penalidade de **-4** em todas as jogadas de ataque, jogadas de resistência e testes de atributo. Toda vez que o alvo terminar um descanso longo, a penalidade é reduzida em 1 até desaparecer.\n\nConjurar esta magia para restaurar vida a uma criatura que tenha morrido há **um ano ou mais** o taxa grandemente. Até você terminar um descanso longo, você não pode conjurar magias novamente, e você tem **desvantagem** em todas as jogadas de ataque, testes de atributo e jogadas de resistência.",
+      "mechanical": {
+        "max_death_duration_days": 36500,
+        "cannot_die_of_old_age": true,
+        "restores_full_hp": true,
+        "neutralizes_poison": true,
+        "cures_normal_disease": true,
+        "restores_body_parts": true,
+        "death_penalty": -4,
+        "penalty_reduction_per_rest": 1,
+        "year_plus_exhaustion": true
+      }
+    },
+    {
+      "id": "reverse_gravity",
+      "name": "Reverter Gravidade",
+      "name_en": "Reverse Gravity",
+      "level": 7,
+      "school": "transmutation",
+      "casting_time": "1 ação",
+      "range": 30,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma pedra ímã e limalhas de ferro"
+      },
+      "duration": "Concentração, até 1 minuto",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Esta magia reverte a gravidade em um cilindro de **15 metros de raio** e **30 metros de altura** centrado em um ponto dentro do alcance. Todas as criaturas e objetos que não estejam de alguma forma ancorados ao solo na área caem para cima e alcançam o topo da área quando você conjura esta magia. Uma criatura pode fazer uma jogada de resistência de **Destreza** para se agarrar a um objeto fixo que possa alcançar, evitando assim a queda.\n\nSe algum objeto sólido (como um teto) for encontrado nesta queda, objetos e criaturas em queda o atingem assim como fariam durante uma queda normal para baixo. Se um objeto ou criatura alcançar o topo da área sem atingir nada, ele permanece lá, oscilando levemente, pela duração.\n\nNo final da duração, objetos e criaturas afetados caem de volta para baixo.",
+      "mechanical": {
+        "area_type": "cylinder",
+        "area_radius": 15,
+        "area_height": 30,
+        "save_type": "dexterity",
+        "reverse_fall_damage": true,
+        "fall_back_at_end": true
+      }
+    },
+    {
+      "id": "revivify",
+      "name": "Revivificar",
+      "name_en": "Revivify",
+      "level": 3,
+      "school": "necromancy",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "diamantes valendo 300 po, que a magia consome",
+        "material_cost": 300
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você toca uma criatura que tenha morrido dentro do **último minuto**. Essa criatura retorna à vida com **1 ponto de vida**. Esta magia não pode retornar à vida uma criatura que tenha morrido de velhice, nem pode restaurar quaisquer partes do corpo ausentes.",
+      "mechanical": {
+        "max_death_duration_rounds": 10,
+        "restores_hp": 1,
+        "cannot_restore_old_age_death": true,
+        "cannot_restore_body_parts": true
+      }
+    },
+    {
+      "id": "rope_trick",
+      "name": "Truque da Corda",
+      "name_en": "Rope Trick",
+      "level": 2,
+      "school": "transmutation",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "extrato de milho em pó e um laço torcido de pergaminho"
+      },
+      "duration": "1 hora",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você toca um comprimento de corda de até **18 metros** de comprimento. Uma extremidade da corda então se ergue no ar até que toda a corda fique perpendicular ao chão. Na extremidade superior da corda, uma entrada invisível se abre para um **espaço extradimensional** que dura até a magia terminar.\n\nO espaço extradimensional pode ser alcançado subindo ao topo da corda. O espaço pode conter até **oito criaturas Médias** ou menores. A corda pode ser puxada para dentro do espaço, fazendo a corda desaparecer da vista fora do espaço.\n\nAtaques e magias não podem cruzar a entrada para dentro ou fora do espaço extradimensional, mas aqueles dentro podem ver para fora dele como se através de uma **janela de 90 por 150 centímetros** centrada na corda.\n\nQualquer coisa dentro do espaço extradimensional cai quando a magia termina.",
+      "mechanical": {
+        "rope_max_length": 18,
+        "max_creatures": 8,
+        "max_creature_size": "Medium",
+        "extradimensional": true,
+        "blocks_attacks": true,
+        "blocks_spells": true,
+        "window_size_meters": "0.9x1.5"
+      }
+    },
+    {
+      "id": "sacred_flame",
+      "name": "Chama Sagrada",
+      "name_en": "Sacred Flame",
+      "level": 0,
+      "school": "evocation",
+      "casting_time": "1 ação",
+      "range": 18,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Radiância parecida com chamas desce sobre uma criatura que você possa ver dentro do alcance. O alvo deve ser bem-sucedido em uma jogada de resistência de **Destreza** ou receber **1d8 de dano radiante**. O alvo não ganha benefício de **cobertura** para esta jogada de resistência.",
+      "mechanical": {
+        "damage_dice": "1d8",
+        "damage_type": "radiant",
+        "save_type": "dexterity",
+        "ignores_cover": true,
+        "cantrip_scaling": {
+          "5": "2d8",
+          "11": "3d8",
+          "17": "4d8"
+        }
+      }
+    },
+    {
+      "id": "sanctuary",
+      "name": "Santuário",
+      "name_en": "Sanctuary",
+      "level": 1,
+      "school": "abjuration",
+      "casting_time": "1 ação bônus",
+      "range": 9,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um pequeno espelho de prata"
+      },
+      "duration": "1 minuto",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você protege uma criatura dentro do alcance contra ataque. Até a magia terminar, qualquer criatura que mirar a criatura protegida com um ataque ou uma magia prejudicial deve primeiro fazer uma jogada de resistência de **Sabedoria**. Em uma falha, a criatura deve escolher um novo alvo ou perder o ataque ou magia. Esta magia não protege a criatura protegida de **efeitos de área**, como a explosão de uma **bola de fogo**.\n\nSe a criatura protegida fizer um ataque ou conjurar uma magia que afete uma criatura inimiga, esta magia termina.",
+      "mechanical": {
+        "save_type": "wisdom",
+        "ends_on_attack": true,
+        "does_not_protect_from_area": true
+      }
+    },
+    {
+      "id": "scorching_ray",
+      "name": "Raio Ardente",
+      "name_en": "Scorching Ray",
+      "level": 2,
+      "school": "evocation",
+      "casting_time": "1 ação",
+      "range": 36,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você cria três raios de fogo e os arremessa em alvos dentro do alcance. Você pode arremessá-los em um alvo ou vários.\n\nFaça um **ataque de magia à distância** para cada raio. Em um acerto, o alvo recebe **2d6 de dano de fogo**.",
+      "mechanical": {
+        "attack_type": "ranged_spell_attack",
+        "damage_dice": "2d6",
+        "damage_type": "fire",
+        "base_rays": 3,
+        "upcast_formula": "+1 raio por nível acima do 2º"
+      }
+    },
+    {
+      "id": "scrying",
+      "name": "Vidência",
+      "name_en": "Scrying",
+      "level": 5,
+      "school": "divination",
+      "casting_time": "10 minutos",
+      "range": 0,
+      "range_type": "self",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um foco valendo pelo menos 1.000 po, como uma bola de cristal, um espelho de prata, ou uma fonte cheia de água benta",
+        "material_cost": 1000
+      },
+      "duration": "Concentração, até 10 minutos",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Você pode ver e ouvir uma criatura particular que você escolher que esteja no mesmo plano de existência que você. O alvo deve fazer uma jogada de resistência de **Sabedoria**, que é modificada por quão bem você conhece o alvo e o tipo de conexão física que você tem com ele. Se um alvo souber que você está conjurando esta magia, ele pode falhar voluntariamente na jogada de resistência se quiser ser observado.\n\n**Conhecimento / Modificador de Resistência:**\n- Conhecimento de segunda mão (você ouviu falar do alvo): **+5**\n- Em primeira mão (você conheceu o alvo): **+0**\n- Familiar (você conhece bem o alvo): **-5**\n\n**Conexão / Modificador de Resistência:**\n- Semelhança ou imagem: **-2**\n- Posse ou vestimenta: **-4**\n- Parte do corpo, mecha de cabelo, pedaço de unha, ou similar: **-10**\n\nEm uma resistência bem-sucedida, o alvo não é afetado, e você não pode usar esta magia contra ele novamente por **24 horas**.\n\nEm uma falha, a magia cria um **sensor invisível** dentro de **3 metros** do alvo. Você pode ver e ouvir através do sensor como se estivesse lá. O sensor se move com o alvo, permanecendo dentro de 3 metros dele pela duração. Uma criatura que possa ver objetos invisíveis vê o sensor como uma **orbe luminosa** aproximadamente do tamanho de seu punho.\n\nEm vez de mirar uma criatura, você pode escolher um local que você tenha visto antes como alvo desta magia. Quando você faz isso, o sensor aparece naquele local e não se move.",
+      "mechanical": {
+        "save_type": "wisdom",
+        "sensor_range": 3,
+        "knowledge_modifiers": {
+          "secondhand": 5,
+          "firsthand": 0,
+          "familiar": -5
+        },
+        "connection_modifiers": {
+          "likeness": -2,
+          "possession": -4,
+          "body_part": -10
+        },
+        "immunity_duration_hours": 24,
+        "can_target_location": true
+      }
+    },
+    {
+      "id": "secret_chest",
+      "name": "Baú Secreto",
+      "name_en": "Secret Chest",
+      "level": 4,
+      "school": "conjuration",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um baú requintado, 90 por 60 por 60 centímetros, construído de materiais raros valendo pelo menos 5.000 po, e uma réplica Minúscula feita dos mesmos materiais valendo pelo menos 50 po",
+        "material_cost": 5050
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você esconde um baú, e todo seu conteúdo, no **Plano Etéreo**. Você deve tocar o baú e a réplica em miniatura que serve como componente material para a magia. O baú pode conter até **0,34 metros cúbicos** de material não-vivo (90 x 60 x 60 centímetros).\n\nEnquanto o baú permanece no Plano Etéreo, você pode usar uma ação e tocar a réplica para chamar o baú. Ele aparece em um espaço desocupado no chão dentro de **1,5 metro** de você. Você pode enviar o baú de volta ao Plano Etéreo usando uma ação e tocando tanto o baú quanto a réplica.\n\nApós **60 dias**, há uma chance **cumulativa de 5% por dia** de que o efeito da magia termine. Este efeito termina se você conjurar esta magia novamente, se a réplica menor do baú for destruída, ou se você escolher terminar a magia como uma ação. Se a magia terminar e o baú maior estiver no Plano Etéreo, ele é **irrecuperavelmente perdido**.",
+      "mechanical": {
+        "chest_volume_cubic_meters": 0.34,
+        "recall_range": 1.5,
+        "base_duration_days": 60,
+        "decay_chance_per_day": 0.05,
+        "sent_to_ethereal": true
+      }
+    },
+    {
+      "id": "see_invisibility",
+      "name": "Ver Invisibilidade",
+      "name_en": "See Invisibility",
+      "level": 2,
+      "school": "divination",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "self",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma pitada de talco e uma pequena aspersão de prata em pó"
+      },
+      "duration": "1 hora",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Pela duração, você vê criaturas e objetos **invisíveis** como se fossem visíveis, e você pode ver no **Plano Etéreo**. Criaturas e objetos etéreos aparecem fantasmagóricos e translúcidos.",
+      "mechanical": {
+        "see_invisible": true,
+        "see_ethereal": true
+      }
+    },
+    {
+      "id": "seeming",
+      "name": "Aparência",
+      "name_en": "Seeming",
+      "level": 5,
+      "school": "illusion",
+      "casting_time": "1 ação",
+      "range": 9,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "8 horas",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Esta magia permite que você mude a aparência de qualquer número de criaturas que você possa ver dentro do alcance. Você dá a cada alvo que você escolher uma nova aparência ilusória. Um alvo involuntário pode fazer uma jogada de resistência de **Carisma**, e se for bem-sucedido, não é afetado por esta magia.\n\nA magia disfarça aparência física assim como roupas, armadura, armas e equipamento. Você pode fazer cada criatura parecer **30 centímetros mais baixa ou mais alta** e parecer magra, gorda ou intermediária. Você não pode mudar o tipo de corpo de um alvo, então você deve escolher uma forma que tenha o mesmo arranjo básico de membros. Caso contrário, a extensão da ilusão depende de você. A magia dura pela duração, a menos que você use sua ação para dispensá-la mais cedo.\n\nAs mudanças criadas por esta magia falham em resistir à **inspeção física**. Por exemplo, se você usar esta magia para adicionar um chapéu ao traje de uma criatura, objetos passam através do chapéu, e qualquer um que o toque não sentiria nada ou sentiria a cabeça e cabelo da criatura. Se você usar esta magia para parecer mais magro do que é, a mão de alguém que estender para tocá-lo esbarraria em você enquanto ainda estivesse aparentemente no ar.\n\nUma criatura pode usar sua ação para inspecionar um alvo e fazer um teste de **Inteligência (Investigação)** contra sua CD de resistência de magia. Se for bem-sucedida, ela fica ciente de que o alvo está disfarçado.",
+      "mechanical": {
+        "affects_multiple": true,
+        "save_type": "charisma",
+        "height_change_max": 0.3,
+        "fails_physical_inspection": true,
+        "requires_investigation_check": true
+      }
+    },
+    {
+      "id": "sending",
+      "name": "Envio",
+      "name_en": "Sending",
+      "level": 3,
+      "school": "evocation",
+      "casting_time": "1 ação",
+      "range": null,
+      "range_type": "unlimited",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um pequeno pedaço de fio de cobre fino"
+      },
+      "duration": "1 rodada",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você envia uma mensagem curta de **vinte e cinco palavras ou menos** para uma criatura com a qual você é familiar. A criatura ouve a mensagem em sua mente, reconhece você como o remetente se ela o conhecer, e pode responder de maneira semelhante imediatamente. A magia permite que criaturas com valores de **Inteligência de pelo menos 1** entendam o significado de sua mensagem.\n\nVocê pode enviar a mensagem através de qualquer distância e até para **outros planos de existência**, mas se o alvo estiver em um plano diferente do seu, há uma chance de **5%** de que a mensagem não chegue.",
+      "mechanical": {
+        "max_words": 25,
+        "min_intelligence": 1,
+        "cross_planar": true,
+        "cross_planar_failure_chance": 0.05,
+        "allows_reply": true
+      }
+    },
+    {
+      "id": "sequester",
+      "name": "Sequestrar",
+      "name_en": "Sequester",
+      "level": 7,
+      "school": "transmutation",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um pó composto de pó de diamante, esmeralda, rubi e safira valendo pelo menos 5.000 po, que a magia consome",
+        "material_cost": 5000
+      },
+      "duration": "Até ser dissipada",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Por meio desta magia, uma criatura voluntária ou um objeto pode ser escondido, seguro contra detecção pela duração. Quando você conjura a magia e toca o alvo, ele se torna **invisível** e não pode ser alvo de **magias de adivinhação** ou percebido através de sensores de vidência criados por magias de adivinhação.\n\nSe o alvo for uma criatura, ela cai em um estado de **animação suspensa**. O tempo cessa de fluir para ela, e ela não envelhece.\n\nVocê pode definir uma condição para a magia terminar mais cedo. A condição pode ser qualquer coisa que você escolher, mas ela deve ocorrer ou ser visível dentro de **1,6 km** do alvo. Exemplos incluem \"após 1.000 anos\" ou \"quando o tarrasque despertar\". Esta magia também termina se o alvo receber qualquer dano.",
+      "mechanical": {
+        "makes_invisible": true,
+        "blocks_divination": true,
+        "suspended_animation": true,
+        "stops_aging": true,
+        "condition_range_km": 1.6,
+        "ends_on_damage": true
+      }
+    },
+    {
+      "id": "shapechange",
+      "name": "Metamorfose Suprema",
+      "name_en": "Shapechange",
+      "level": 9,
+      "school": "transmutation",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "self",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma tiara de jade valendo pelo menos 1.500 po, que você deve colocar em sua cabeça antes de conjurar a magia",
+        "material_cost": 1500
+      },
+      "duration": "Concentração, até 1 hora",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Você assume a forma de uma criatura diferente pela duração. A nova forma pode ser de qualquer criatura com um **nível de desafio igual ao seu nível ou menor**. A criatura não pode ser um constructo ou morto-vivo, e você deve ter visto o tipo de criatura pelo menos uma vez. Você se transforma em um exemplo médio daquela criatura, uma sem quaisquer níveis de classe ou a característica Conjuração.\n\nSuas estatísticas de jogo são substituídas pelas estatísticas da criatura escolhida, embora você retenha seu **alinhamento** e valores de **Inteligência, Sabedoria e Carisma**. Você também retém todas as suas **proficiências** de perícia e jogada de resistência, além de ganhar as da criatura. Se a criatura tiver a mesma proficiência que você e o bônus listado em suas estatísticas for maior que o seu, use o bônus da criatura no lugar do seu. Você não pode usar quaisquer ações lendárias ou ações de covil da nova forma.\n\nVocê assume os pontos de vida e Dados de Vida da nova forma. Quando você reverte à sua forma normal, você retorna ao número de pontos de vida que tinha antes de se transformar. Se você reverter como resultado de cair a 0 pontos de vida, qualquer dano excedente é transferido para sua forma normal. Contanto que o dano excedente não reduza sua forma normal a 0 pontos de vida, você não é nocauteado.\n\nVocê retém o benefício de quaisquer características de sua classe, raça ou outra fonte e pode usá-las, contanto que sua nova forma seja fisicamente capaz de fazê-lo. Você não pode usar quaisquer sentidos especiais que tenha (por exemplo, visão no escuro) a menos que sua nova forma também tenha esse sentido. Você só pode falar se a criatura puder normalmente falar.\n\nQuando você se transforma, você escolhe se seu equipamento cai no chão, se funde à nova forma, ou é vestido por ela. Equipamento vestido funciona normalmente. O Mestre determina se é prático para a nova forma vestir uma peça de equipamento, baseado na forma e tamanho da criatura. Seu equipamento não muda de forma ou tamanho para combinar com a nova forma, e qualquer equipamento que a nova forma não possa vestir deve cair no chão ou se fundir à sua nova forma. Equipamento que se funde não tem efeito naquele estado.\n\nDurante a duração desta magia, você pode usar sua ação para assumir uma forma diferente seguindo as mesmas restrições e regras da forma original, com uma exceção: se sua nova forma tiver mais pontos de vida que sua forma atual, seus pontos de vida permanecem em seu valor atual.",
+      "mechanical": {
+        "max_cr": "equal_to_level",
+        "retains_mental_stats": true,
+        "retains_proficiencies": true,
+        "no_legendary_actions": false,
+        "uses_new_hp": true,
+        "overflow_damage_transfers": true,
+        "can_change_forms": true,
+        "equipment_options": ["drop", "merge", "wear"]
+      }
+    },
+    {
+      "id": "shatter",
+      "name": "Estilhaçar",
+      "name_en": "Shatter",
+      "level": 2,
+      "school": "evocation",
+      "casting_time": "1 ação",
+      "range": 18,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um pedaço de mica"
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Um súbito e alto estrondo, dolorosamente intenso, erupciona de um ponto à sua escolha dentro do alcance. Cada criatura em uma esfera de **3 metros de raio** centrada naquele ponto deve fazer uma jogada de resistência de **Constituição**. Uma criatura recebe **3d8 de dano trovejante** em uma falha, ou metade do dano em um sucesso. Uma criatura feita de material **inorgânico** como pedra, cristal ou metal tem **desvantagem** nesta jogada de resistência.\n\nUm objeto não mágico que não esteja sendo vestido ou carregado também recebe o dano se estiver na área da magia.",
+      "mechanical": {
+        "area_type": "sphere",
+        "area_radius": 3,
+        "damage_dice": "3d8",
+        "damage_type": "thunder",
+        "save_type": "constitution",
+        "inorganic_disadvantage": true,
+        "damages_objects": true,
+        "upcast_formula": "+1d8 por nível acima do 2º"
+      }
+    },
+    {
+      "id": "shield",
+      "name": "Escudo",
+      "name_en": "Shield",
+      "level": 1,
+      "school": "abjuration",
+      "casting_time": "1 reação, que você toma quando você é atingido por um ataque ou alvo da magia mísseis mágicos",
+      "range": 0,
+      "range_type": "self",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "1 rodada",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Uma barreira invisível de força mágica aparece e o protege. Até o início do seu próximo turno, você tem um **bônus de +5 na CA**, incluindo contra o ataque desencadeante, e você não recebe dano de **mísseis mágicos**.",
+      "mechanical": {
+        "ac_bonus": 5,
+        "blocks_magic_missile": true,
+        "trigger": "hit_by_attack_or_magic_missile"
+      }
+    },
+    {
+      "id": "shield_of_faith",
+      "name": "Escudo da Fé",
+      "name_en": "Shield of Faith",
+      "level": 1,
+      "school": "abjuration",
+      "casting_time": "1 ação bônus",
+      "range": 18,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um pequeno pergaminho com um pouco de texto sagrado escrito nele"
+      },
+      "duration": "Concentração, até 10 minutos",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Um campo cintilante aparece e envolve uma criatura à sua escolha dentro do alcance, concedendo a ela um **bônus de +2 na CA** pela duração.",
+      "mechanical": {
+        "ac_bonus": 2
+      }
+    },
+    {
+      "id": "shillelagh",
+      "name": "Shillelagh",
+      "name_en": "Shillelagh",
+      "level": 0,
+      "school": "transmutation",
+      "casting_time": "1 ação bônus",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "visco, uma folha de trevo, e um porrete ou bordão"
+      },
+      "duration": "1 minuto",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "A madeira de um porrete ou bordão que você está segurando é imbuída com o poder da natureza. Pela duração, você pode usar seu **atributo de conjuração** em vez de Força para as jogadas de ataque e dano de ataques corpo a corpo usando aquela arma, e o **dado de dano** da arma se torna um **d8**. A arma também se torna **mágica**, se já não for. A magia termina se você a conjurar novamente ou se você soltar a arma.",
+      "mechanical": {
+        "use_spellcasting_ability": true,
+        "damage_die": "d8",
+        "makes_magical": true,
+        "weapon_types": ["club", "quarterstaff"]
+      }
+    },
+    {
+      "id": "shocking_grasp",
+      "name": "Toque Chocante",
+      "name_en": "Shocking Grasp",
+      "level": 0,
+      "school": "evocation",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Relâmpago salta de sua mão para entregar um choque a uma criatura que você tentar tocar. Faça um **ataque de magia corpo a corpo** contra o alvo. Você tem **vantagem** na jogada de ataque se o alvo estiver vestindo armadura feita de metal. Em um acerto, o alvo recebe **1d8 de dano elétrico**, e ele não pode fazer **reações** até o início do seu próximo turno.",
+      "mechanical": {
+        "damage_dice": "1d8",
+        "damage_type": "lightning",
+        "attack_type": "melee_spell_attack",
+        "advantage_vs_metal_armor": true,
+        "prevents_reactions": true,
+        "cantrip_scaling": {
+          "5": "2d8",
+          "11": "3d8",
+          "17": "4d8"
+        }
+      }
+    },
+    {
+      "id": "silence",
+      "name": "Silêncio",
+      "name_en": "Silence",
+      "level": 2,
+      "school": "illusion",
+      "casting_time": "1 ação",
+      "range": 36,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentração, até 10 minutos",
+      "concentration": true,
+      "ritual": true,
+      "description_markdown": "Pela duração, nenhum som pode ser criado dentro ou passar através de uma esfera de **6 metros de raio** centrada em um ponto que você escolher dentro do alcance. Qualquer criatura ou objeto inteiramente dentro da esfera é **imune a dano trovejante**, e criaturas ficam **surdas** enquanto inteiramente dentro dela. Conjurar uma magia que inclui um **componente verbal** é impossível lá.",
+      "mechanical": {
+        "area_type": "sphere",
+        "area_radius": 6,
+        "blocks_sound": true,
+        "grants_thunder_immunity": true,
+        "deafens": true,
+        "prevents_verbal_components": true
+      }
+    },
+    {
+      "id": "silent_image",
+      "name": "Imagem Silenciosa",
+      "name_en": "Silent Image",
+      "level": 1,
+      "school": "illusion",
+      "casting_time": "1 ação",
+      "range": 18,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um pedaço de lã de carneiro"
+      },
+      "duration": "Concentração, até 10 minutos",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Você cria a imagem de um objeto, uma criatura, ou algum outro fenômeno visível que não seja maior que um **cubo de 4,5 metros**. A imagem aparece em um ponto dentro do alcance e dura pela duração. A imagem é **puramente visual**; ela não é acompanhada por som, cheiro ou outros efeitos sensoriais.\n\nVocê pode usar sua ação para fazer a imagem se mover para qualquer ponto dentro do alcance. Conforme a imagem muda de local, você pode alterar sua aparência para que seus movimentos pareçam naturais para a imagem. Por exemplo, se você criar uma imagem de uma criatura e movê-la, você pode alterar a imagem para que pareça estar andando.\n\nInteração física com a imagem revela que ela é uma ilusão, porque as coisas podem passar através dela. Uma criatura que usar sua ação para examinar a imagem pode determinar que ela é uma ilusão com um teste bem-sucedido de **Inteligência (Investigação)** contra sua CD de resistência de magia. Se uma criatura discernir a ilusão pelo que ela é, a criatura pode ver através da imagem.",
+      "mechanical": {
+        "max_size_cube": 4.5,
+        "visual_only": true,
+        "can_move": true,
+        "requires_investigation_check": true,
+        "physical_interaction_reveals": true
+      }
+    },
+    {
+      "id": "simulacrum",
+      "name": "Simulacro",
+      "name_en": "Simulacrum",
+      "level": 7,
+      "school": "illusion",
+      "casting_time": "12 horas",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "neve ou gelo em quantidades suficientes para fazer uma cópia em tamanho real da criatura duplicada; algum cabelo, aparas de unha, ou outra peça do corpo da criatura colocada dentro da neve ou gelo; e rubi em pó valendo 1.500 po, aspergido sobre a duplicata e consumido pela magia",
+        "material_cost": 1500
+      },
+      "duration": "Até ser dissipada",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você molda uma duplicata ilusória de uma besta ou humanoide que esteja dentro do alcance por todo o tempo de conjuração da magia. A duplicata é uma criatura, parcialmente real e formada de gelo ou neve, e ela pode agir e ser afetada como uma criatura normal. Ela parece ser a mesma que o original, mas ela tem **metade do máximo de pontos de vida** da criatura e é formada sem qualquer equipamento. Caso contrário, a ilusão usa todas as estatísticas da criatura que duplica.\n\nO simulacro é **amigável** a você e criaturas que você designar. Ele obedece seus comandos falados, movendo e agindo de acordo com seus desejos e agindo em seu turno no combate. O simulacro carece da habilidade de aprender ou se tornar mais poderoso, então ele nunca aumenta seu nível ou outras habilidades, nem pode recuperar espaços de magia gastos.\n\nSe o simulacro for danificado, você pode repará-lo em um laboratório alquímico, usando ervas e minerais raros valendo **100 po por ponto de vida** que ele recupera. O simulacro dura até cair a 0 pontos de vida, ponto em que ele reverte a neve e derrete instantaneamente.\n\nSe você conjurar esta magia novamente, quaisquer duplicatas atualmente ativas que você criou com esta magia são instantaneamente destruídas.",
+      "mechanical": {
+        "hp_fraction": 0.5,
+        "created_without_equipment": true,
+        "friendly": true,
+        "obeys_commands": true,
+        "cannot_level_up": true,
+        "cannot_regain_spell_slots": true,
+        "repair_cost_per_hp": 100,
+        "only_one_active": true
+      }
+    },
+    {
+      "id": "sleep",
+      "name": "Sono",
+      "name_en": "Sleep",
+      "level": 1,
+      "school": "enchantment",
+      "casting_time": "1 ação",
+      "range": 27,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma pitada de areia fina, pétalas de rosa, ou um grilo"
+      },
+      "duration": "1 minuto",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Esta magia envia criaturas em um sono mágico. Role **5d8**; o total é quantos pontos de vida de criaturas esta magia pode afetar. Criaturas dentro de **6 metros** de um ponto que você escolher dentro do alcance são afetadas em **ordem crescente** de seus pontos de vida atuais (ignorando criaturas inconscientes).\n\nComeçando com a criatura que tem os menores pontos de vida atuais, cada criatura afetada por esta magia cai **inconsciente** até a magia terminar, o adormecido receber dano, ou alguém usar uma ação para sacudir ou dar um tapa no adormecido para acordá-lo. Subtraia os pontos de vida de cada criatura do total antes de passar para a criatura com os próximos menores pontos de vida. Os pontos de vida de uma criatura devem ser iguais ou menores que o total restante para que aquela criatura seja afetada.\n\n**Mortos-vivos** e criaturas **imunes** a serem **enfeitiçadas** não são afetados por esta magia.",
+      "mechanical": {
+        "hp_pool_dice": "5d8",
+        "area_radius": 6,
+        "targets_by_ascending_hp": true,
+        "ignores_unconscious": true,
+        "immune_undead": true,
+        "immune_charm_immune": true,
+        "upcast_formula": "+2d8 por nível acima do 1º"
+      }
+    },
+    {
+      "id": "sleet_storm",
+      "name": "Tempestade de Granizo",
+      "name_en": "Sleet Storm",
+      "level": 3,
+      "school": "conjuration",
+      "casting_time": "1 ação",
+      "range": 45,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma pitada de poeira e algumas gotas de água"
+      },
+      "duration": "Concentração, até 1 minuto",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Até a magia terminar, chuva congelante e granizo caem em um cilindro de **6 metros de altura** com um **raio de 12 metros** centrado em um ponto que você escolher dentro do alcance. A área é **fortemente obscurecida**, e chamas expostas na área são apagadas.\n\nO chão na área é coberto com gelo escorregadio, tornando-o **terreno difícil**. Quando uma criatura entra na área da magia pela primeira vez em um turno ou começa seu turno lá, ela deve fazer uma jogada de resistência de **Destreza**. Em uma falha, ela cai **caída**.\n\nSe uma criatura estiver se **concentrando** na área da magia, a criatura deve fazer uma jogada de resistência de **Constituição** bem-sucedida contra sua CD de resistência de magia ou perder a concentração.",
+      "mechanical": {
+        "area_type": "cylinder",
+        "area_radius": 12,
+        "area_height": 6,
+        "heavily_obscured": true,
+        "difficult_terrain": true,
+        "save_type": "dexterity",
+        "prone_on_fail": true,
+        "breaks_concentration": true,
+        "extinguishes_flames": true
+      }
+    },
+    {
+      "id": "slow",
+      "name": "Lentidão",
+      "name_en": "Slow",
+      "level": 3,
+      "school": "transmutation",
+      "casting_time": "1 ação",
+      "range": 36,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma gota de melaço"
+      },
+      "duration": "Concentração, até 1 minuto",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Você altera o tempo ao redor de até **seis criaturas** à sua escolha em um cubo de **12 metros** dentro do alcance. Cada alvo deve ser bem-sucedido em uma jogada de resistência de **Sabedoria** ou ser afetado por esta magia pela duração.\n\nO **deslocamento** de um alvo afetado é reduzido pela metade, ele sofre uma penalidade de **-2 na CA** e jogadas de resistência de Destreza, e ele não pode usar reações. Em seu turno, ele pode usar uma ação **ou** uma ação bônus, não ambas. Independentemente das habilidades ou itens mágicos da criatura, ela não pode fazer mais de um ataque corpo a corpo ou à distância durante seu turno.\n\nSe a criatura tentar conjurar uma magia com tempo de conjuração de 1 ação, role um d20. Com um resultado de 11 ou mais, a magia não tem efeito até o próximo turno da criatura, e a criatura deve usar sua ação naquele turno para completar a magia. Se não puder, a magia é desperdiçada.\n\nUma criatura afetada por esta magia faz outra jogada de resistência de Sabedoria no final de cada um de seus turnos. Em um sucesso, o efeito termina para ela.",
+      "mechanical": {
+        "max_targets": 6,
+        "area_type": "cube",
+        "area_size": 12,
+        "save_type": "wisdom",
+        "speed_halved": true,
+        "ac_penalty": -2,
+        "dex_save_penalty": -2,
+        "no_reactions": true,
+        "action_or_bonus": true,
+        "max_one_attack": true,
+        "spell_delay_chance": 0.5
+      }
+    },
+    {
+      "id": "spare_the_dying",
+      "name": "Poupar os Moribundos",
+      "name_en": "Spare the Dying",
+      "level": 0,
+      "school": "necromancy",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você toca uma criatura viva que tenha **0 pontos de vida**. A criatura se torna **estável**. Esta magia não tem efeito em mortos-vivos ou constructos.",
+      "mechanical": {
+        "stabilizes_creature": true,
+        "requires_zero_hp": true,
+        "no_effect_undead": true,
+        "no_effect_construct": true
+      }
+    },
+    {
+      "id": "speak_with_animals",
+      "name": "Falar com Animais",
+      "name_en": "Speak with Animals",
+      "level": 1,
+      "school": "divination",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "self",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "10 minutos",
+      "concentration": false,
+      "ritual": true,
+      "description_markdown": "Você ganha a habilidade de compreender e se comunicar verbalmente com **bestas** pela duração. O conhecimento e consciência de muitas bestas é limitado por sua inteligência, mas no mínimo, bestas podem dar a você informações sobre locais próximos e monstros, incluindo qualquer coisa que possam perceber ou tenham percebido no **último dia**. Você pode ser capaz de persuadir uma besta a realizar um pequeno favor para você, a critério do Mestre.",
+      "mechanical": {
+        "communicates_with_beasts": true,
+        "information_range_days": 1,
+        "may_persuade_favor": true
+      }
+    },
+    {
+      "id": "speak_with_plants",
+      "name": "Falar com Plantas",
+      "name_en": "Speak with Plants",
+      "level": 3,
+      "school": "transmutation",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "self",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "10 minutos",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você imbui plantas dentro de **9 metros** de você com senciência e animação limitadas, dando a elas a habilidade de se comunicar com você e seguir seus comandos simples. Você pode questionar plantas sobre eventos na área da magia no **último dia**, ganhando informações sobre criaturas que passaram, clima e outras circunstâncias.\n\nVocê também pode transformar **terreno difícil** causado por crescimento de plantas (como moitas e vegetação rasteira) em **terreno normal** que dura pela duração. Ou você pode transformar terreno normal onde plantas estão presentes em terreno difícil que dura pela duração, fazendo vinhas e galhos dificultarem perseguidores, por exemplo.\n\nPlantas podem ser capazes de realizar outras tarefas em seu nome, a critério do Mestre. A magia não permite que plantas se desenraízem e se movam, mas elas podem mover livremente galhos, gavinhas e caules.\n\nSe uma criatura planta estiver na área, você pode se comunicar com ela como se compartilhassem uma língua comum, mas você não ganha habilidade mágica para influenciá-la.\n\nEsta magia pode fazer as plantas criadas pela magia **emaranhamento** liberarem uma criatura restrita.",
+      "mechanical": {
+        "radius": 9,
+        "information_range_days": 1,
+        "can_alter_terrain": true,
+        "can_communicate_plant_creatures": true,
+        "releases_entangle": true
+      }
+    },
+    {
+      "id": "spider_climb",
+      "name": "Escalar como Aranha",
+      "name_en": "Spider Climb",
+      "level": 2,
+      "school": "transmutation",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma gota de betume e uma aranha"
+      },
+      "duration": "Concentração, até 1 hora",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Até a magia terminar, uma criatura voluntária que você tocar ganha a habilidade de se mover para cima, para baixo e através de superfícies verticais e de cabeça para baixo ao longo de tetos, deixando suas mãos livres. O alvo também ganha um **deslocamento de escalada** igual ao seu deslocamento de caminhada.",
+      "mechanical": {
+        "grants_climb_speed": true,
+        "climb_speed_equals_walk": true,
+        "hands_free": true,
+        "can_walk_on_ceiling": true
+      }
+    },
+    {
+      "id": "spike_growth",
+      "name": "Crescimento de Espinhos",
+      "name_en": "Spike Growth",
+      "level": 2,
+      "school": "transmutation",
+      "casting_time": "1 ação",
+      "range": 45,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "sete espinhos afiados ou sete pequenos galhos, cada um apontado"
+      },
+      "duration": "Concentração, até 10 minutos",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "O chão em um raio de **6 metros** centrado em um ponto dentro do alcance se contorce e brota espinhos e farpas duras. A área se torna **terreno difícil** pela duração. Quando uma criatura se move para dentro ou dentro da área, ela recebe **2d4 de dano perfurante** para cada **1,5 metro** que viaja.\n\nA transformação do chão é camuflada para parecer natural. Qualquer criatura que não possa ver a área no momento em que a magia é conjurada deve fazer um teste de **Sabedoria (Percepção)** contra sua CD de resistência de magia para reconhecer o terreno como perigoso antes de entrar nele.",
+      "mechanical": {
+        "area_type": "sphere",
+        "area_radius": 6,
+        "difficult_terrain": true,
+        "damage_per_5_feet": "2d4",
+        "damage_type": "piercing",
+        "camouflaged": true,
+        "requires_perception_check": true
+      }
+    },
+    {
+      "id": "spirit_guardians",
+      "name": "Guardiões Espirituais",
+      "name_en": "Spirit Guardians",
+      "level": 3,
+      "school": "conjuration",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "self",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um símbolo sagrado"
+      },
+      "duration": "Concentração, até 10 minutos",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Você invoca espíritos para protegê-lo. Eles voam ao seu redor a uma distância de **4,5 metros** pela duração. Se você for bom ou neutro, sua forma espectral aparece **angelical** ou **feérica** (sua escolha). Se você for mal, eles aparecem **demoníacos**.\n\nQuando você conjura esta magia, você pode designar qualquer número de criaturas que possa ver para não serem afetadas por ela. O deslocamento de uma criatura afetada é **reduzido pela metade** na área, e quando a criatura entra na área pela primeira vez em um turno ou começa seu turno lá, ela deve fazer uma jogada de resistência de **Sabedoria**. Em uma falha, a criatura recebe **3d8 de dano radiante** (se você for bom ou neutro) ou **3d8 de dano necrótico** (se você for mal). Em um sucesso, a criatura recebe metade do dano.",
+      "mechanical": {
+        "radius": 4.5,
+        "halves_speed": true,
+        "damage_dice": "3d8",
+        "damage_type_good_neutral": "radiant",
+        "damage_type_evil": "necrotic",
+        "save_type": "wisdom",
+        "can_designate_unaffected": true,
+        "upcast_formula": "+1d8 por nível acima do 3º"
+      }
+    },
+    {
+      "id": "spiritual_weapon",
+      "name": "Arma Espiritual",
+      "name_en": "Spiritual Weapon",
+      "level": 2,
+      "school": "evocation",
+      "casting_time": "1 ação bônus",
+      "range": 18,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "1 minuto",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você cria uma arma espectral flutuante dentro do alcance que dura pela duração ou até você conjurar esta magia novamente. Quando você conjura a magia, você pode fazer um **ataque de magia corpo a corpo** contra uma criatura dentro de **1,5 metro** da arma. Em um acerto, o alvo recebe **dano de força** igual a **1d8 + seu modificador de atributo de conjuração**.\n\nComo uma **ação bônus** em seu turno, você pode mover a arma até **6 metros** e repetir o ataque contra uma criatura dentro de 1,5 metro dela.\n\nA arma pode assumir qualquer forma que você escolher. Clérigos de divindades que são associadas com uma arma particular (como São Cuthbert é conhecido por sua maça e Thor por seu martelo) fazem o efeito desta magia se assemelhar àquela arma.",
+      "mechanical": {
+        "damage_dice": "1d8",
+        "damage_type": "force",
+        "adds_spellcasting_modifier": true,
+        "attack_type": "melee_spell_attack",
+        "attack_range": 1.5,
+        "move_distance": 6,
+        "bonus_action_attack": true,
+        "upcast_formula": "+1d8 a cada dois níveis acima do 2º"
+      }
+    },
+    {
+      "id": "stinking_cloud",
+      "name": "Nuvem Fétida",
+      "name_en": "Stinking Cloud",
+      "level": 3,
+      "school": "conjuration",
+      "casting_time": "1 ação",
+      "range": 27,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "um ovo podre ou várias folhas de repolho fedorento"
+      },
+      "duration": "Concentração, até 1 minuto",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Você cria uma esfera de **6 metros de raio** de gás amarelo e nauseante centrada em um ponto dentro do alcance. A nuvem se espalha por cantos, e sua área é **fortemente obscurecida**. A nuvem paira no ar pela duração.\n\nCada criatura que esteja completamente dentro da nuvem no início de seu turno deve fazer uma jogada de resistência de **Constituição** contra veneno. Em uma falha, a criatura gasta sua **ação** naquele turno se contorcendo e cambaleando. Criaturas que não precisam respirar ou são imunes a veneno automaticamente têm sucesso nesta jogada de resistência.\n\nUm vento **moderado** (pelo menos 16 km/h) dispersa a nuvem após **4 rodadas**. Um vento **forte** (pelo menos 32 km/h) dispersa após **1 rodada**.",
+      "mechanical": {
+        "area_type": "sphere",
+        "area_radius": 6,
+        "heavily_obscured": true,
+        "save_type": "constitution",
+        "loses_action_on_fail": true,
+        "immune_no_breath": true,
+        "immune_poison": true,
+        "moderate_wind_disperses_rounds": 4,
+        "strong_wind_disperses_rounds": 1
+      }
+    },
+    {
+      "id": "stone_shape",
+      "name": "Moldar Pedra",
+      "name_en": "Stone Shape",
+      "level": 4,
+      "school": "transmutation",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "argila macia, que deve ser trabalhada aproximadamente na forma desejada do objeto de pedra"
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você toca um objeto de pedra de tamanho **Médio** ou menor ou uma seção de pedra de não mais de **1,5 metro** em qualquer dimensão e o forma em qualquer formato que sirva ao seu propósito. Então, por exemplo, você poderia moldar uma pedra grande em uma arma, ídolo ou cofre, ou fazer uma pequena passagem através de uma parede, contanto que a parede tenha menos de 1,5 metro de espessura. Você também poderia moldar uma porta de pedra ou sua moldura para selar a porta fechada. O objeto que você criar pode ter até **duas dobradiças** e um **trinco**, mas detalhes mecânicos mais finos não são possíveis.",
+      "mechanical": {
+        "max_object_size": "Medium",
+        "max_stone_dimension": 1.5,
+        "can_create_hinges": 2,
+        "can_create_latch": true,
+        "no_fine_mechanics": true
+      }
+    },
+    {
+      "id": "stoneskin",
+      "name": "Pele de Pedra",
+      "name_en": "Stoneskin",
+      "level": 4,
+      "school": "abjuration",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "pó de diamante valendo 100 po, que a magia consome",
+        "material_cost": 100
+      },
+      "duration": "Concentração, até 1 hora",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Esta magia transforma a carne de uma criatura voluntária que você tocar tão dura quanto pedra. Até a magia terminar, o alvo tem **resistência** a dano **contundente, perfurante e cortante não mágico**.",
+      "mechanical": {
+        "grants_resistance": true,
+        "resistance_types": ["bludgeoning", "piercing", "slashing"],
+        "only_nonmagical": true
+      }
+    },
+    {
+      "id": "storm_of_vengeance",
+      "name": "Tempestade da Vingança",
+      "name_en": "Storm of Vengeance",
+      "level": 9,
+      "school": "conjuration",
+      "casting_time": "1 ação",
+      "range": null,
+      "range_type": "sight",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": false
+      },
+      "duration": "Concentração, até 1 minuto",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Uma nuvem de tempestade agitada se forma, centrada em um ponto que você possa ver e se espalhando por um raio de **108 metros**. Relâmpagos piscam na área, trovões retumbam e ventos fortes rugem. Cada criatura sob a nuvem (não mais de **1.500 metros** abaixo da nuvem) quando ela aparece deve fazer uma jogada de resistência de **Constituição**. Em uma falha, uma criatura recebe **2d6 de dano trovejante** e fica **surda** por **5 minutos**.\n\nCada rodada que você mantiver concentração nesta magia, a tempestade produz efeitos adicionais em seu turno:\n\n**Rodada 2.** Chuva ácida cai da nuvem. Cada criatura e objeto sob a nuvem recebe **1d6 de dano ácido**.\n\n**Rodada 3.** Você invoca **seis raios** da nuvem para atingir seis criaturas ou objetos à sua escolha abaixo da nuvem. Uma determinada criatura ou objeto não pode ser atingido por mais de um raio. Uma criatura atingida deve fazer uma jogada de resistência de **Destreza**. A criatura recebe **10d6 de dano elétrico** em uma falha, ou metade do dano em um sucesso.\n\n**Rodada 4.** Pedras de granizo caem da nuvem. Cada criatura sob a nuvem recebe **2d6 de dano de concussão**.\n\n**Rodadas 5-10.** Rajadas e chuva congelante açoitam a área sob a nuvem. A área se torna **terreno difícil** e é **fortemente obscurecida**. Cada criatura lá recebe **1d6 de dano de frio**. Ataques com armas à distância na área são impossíveis. O vento e a chuva contam como uma **distração severa** para propósitos de manter concentração em magias. Finalmente, rajadas de vento forte (variando de 32 a 80 km/h) automaticamente dispersam névoa, neblina e fenômenos similares na área, sejam mundanos ou mágicos.",
+      "mechanical": {
+        "radius": 108,
+        "max_height": 1500,
+        "round_1_damage": "2d6",
+        "round_1_damage_type": "thunder",
+        "round_1_deafens": true,
+        "round_2_damage": "1d6",
+        "round_2_damage_type": "acid",
+        "round_3_lightning_bolts": 6,
+        "round_3_damage": "10d6",
+        "round_3_damage_type": "lightning",
+        "round_3_save_type": "dexterity",
+        "round_4_damage": "2d6",
+        "round_4_damage_type": "bludgeoning",
+        "round_5_10_damage": "1d6",
+        "round_5_10_damage_type": "cold",
+        "round_5_10_difficult_terrain": true,
+        "round_5_10_heavily_obscured": true,
+        "round_5_10_breaks_concentration": true,
+        "round_5_10_no_ranged_attacks": true
+      }
+    },
+    {
+      "id": "suggestion",
+      "name": "Sugestão",
+      "name_en": "Suggestion",
+      "level": 2,
+      "school": "enchantment",
+      "casting_time": "1 ação",
+      "range": 9,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": false,
+        "material": true,
+        "material_description": "uma língua de cobra e ou um pedaço de favo de mel ou uma gota de óleo doce"
+      },
+      "duration": "Concentração, até 8 horas",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Você sugere um curso de atividade (limitado a uma sentença ou duas) e magicamente influencia uma criatura que você possa ver dentro do alcance que possa ouvi-lo e entendê-lo. Criaturas que não podem ser **enfeitiçadas** são imunes a este efeito. A sugestão deve ser formulada de forma a fazer o curso de ação parecer **razoável**. Pedir à criatura para esfaquear a si mesma, se jogar em uma lança, se imolar, ou fazer algum outro ato obviamente prejudicial termina a magia.\n\nO alvo deve fazer uma jogada de resistência de **Sabedoria**. Em uma falha, ele persegue o curso de ação que você descreveu da melhor maneira possível. O curso de ação sugerido pode continuar pela duração inteira. Se a atividade sugerida puder ser completada em um tempo menor, a magia termina quando o sujeito termina o que foi pedido para fazer.\n\nVocê também pode especificar condições que dispararão uma atividade especial durante a duração. Por exemplo, você pode sugerir que um cavaleiro dê seu cavalo de guerra ao primeiro mendigo que encontrar. Se a condição não for atendida antes da magia expirar, a atividade não é realizada.\n\nSe você ou qualquer de seus companheiros causar dano ao alvo, a magia termina.",
+      "mechanical": {
+        "save_type": "wisdom",
+        "max_sentence_length": 2,
+        "must_sound_reasonable": true,
+        "can_set_conditions": true,
+        "ends_on_damage": true,
+        "immune_charm_immune": true
+      }
+    },
+    {
+      "id": "sunbeam",
+      "name": "Raio Solar",
+      "name_en": "Sunbeam",
+      "level": 6,
+      "school": "evocation",
+      "casting_time": "1 ação",
+      "range": 0,
+      "range_type": "self",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "uma lupa"
+      },
+      "duration": "Concentração, até 1 minuto",
+      "concentration": true,
+      "ritual": false,
+      "description_markdown": "Um raio de luz brilhante lampeja de sua mão em uma linha de **1,5 metro de largura** e **18 metros de comprimento**. Cada criatura na linha deve fazer uma jogada de resistência de **Constituição**. Em uma falha, uma criatura recebe **6d8 de dano radiante** e fica **cega** até seu próximo turno. Em um sucesso, ela recebe metade do dano e não é cegada por esta magia. **Mortos-vivos** e **limos** têm **desvantagem** nesta jogada de resistência.\n\nVocê pode criar uma nova linha de radiância como sua ação em qualquer turno até a magia terminar.\n\nPela duração, um ponto de radiância brilhante brilha em sua mão. Ele emite **luz plena** em um raio de **9 metros** e **penumbra** por mais **9 metros**. Esta luz é **luz solar**.",
+      "mechanical": {
+        "area_type": "line",
+        "line_width": 1.5,
+        "line_length": 18,
+        "damage_dice": "6d8",
+        "damage_type": "radiant",
+        "save_type": "constitution",
+        "blinds_on_fail": true,
+        "undead_ooze_disadvantage": true,
+        "repeatable_action": true,
+        "light_bright": 9,
+        "light_dim": 9,
+        "is_sunlight": true
+      }
+    },
+    {
+      "id": "sunburst",
+      "name": "Explosão Solar",
+      "name_en": "Sunburst",
+      "level": 8,
+      "school": "evocation",
+      "casting_time": "1 ação",
+      "range": 45,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "fogo e um pedaço de pedra do sol"
+      },
+      "duration": "Instantânea",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Luz solar brilhante lampeja em um raio de **18 metros** centrado em um ponto que você escolher dentro do alcance. Cada criatura naquela luz deve fazer uma jogada de resistência de **Constituição**. Em uma falha, uma criatura recebe **12d6 de dano radiante** e fica **cega** por **1 minuto**. Em um sucesso, ela recebe metade do dano e não é cegada por esta magia. **Mortos-vivos** e **limos** têm **desvantagem** nesta jogada de resistência.\n\nUma criatura cegada por esta magia faz outra jogada de resistência de Constituição no final de cada um de seus turnos. Em um sucesso, ela não está mais cega.\n\nEsta magia dissipa qualquer escuridão em sua área que foi criada por uma magia.",
+      "mechanical": {
+        "area_type": "sphere",
+        "area_radius": 18,
+        "damage_dice": "12d6",
+        "damage_type": "radiant",
+        "save_type": "constitution",
+        "blinds_on_fail": true,
+        "blind_duration_minutes": 1,
+        "undead_ooze_disadvantage": true,
+        "save_each_turn_to_end_blind": true,
+        "dispels_magical_darkness": true
+      }
+    },
+    {
+      "id": "symbol",
+      "name": "Símbolo",
+      "name_en": "Symbol",
+      "level": 7,
+      "school": "abjuration",
+      "casting_time": "1 minuto",
+      "range": 0,
+      "range_type": "touch",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "mercúrio, fósforo e pó de diamante e opala com um valor total de pelo menos 1.000 po, que a magia consome",
+        "material_cost": 1000
+      },
+      "duration": "Até ser dissipada ou disparada",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Quando você conjura esta magia, você inscreve um glifo prejudicial em uma superfície (como uma seção de piso, uma parede ou uma mesa) ou dentro de um objeto que possa ser fechado para ocultar o glifo (como um livro, um pergaminho ou um baú de tesouro). Se você escolher uma superfície, o glifo pode cobrir uma área da superfície não maior que **3 metros de diâmetro**. Se você escolher um objeto, aquele objeto deve permanecer em seu lugar; se o objeto for movido mais de **3 metros** de onde você conjurou esta magia, o glifo é quebrado e a magia termina sem ser disparada.\n\nO glifo é **quase invisível**, requerendo um teste de **Inteligência (Investigação)** contra sua CD de resistência de magia para encontrá-lo.\n\nVocê decide o que dispara o glifo quando conjura a magia. Para glifos inscritos em uma superfície, os disparadores mais típicos incluem tocar ou pisar no glifo, remover outro objeto cobrindo-o, aproximar-se dentro de uma certa distância dele, ou manipular o objeto que o contém. Para glifos inscritos dentro de um objeto, os disparadores mais comuns são abrir o objeto, aproximar-se dentro de uma certa distância dele, ou ver ou ler o glifo.\n\nVocê pode refinar ainda mais o disparador para que a magia seja ativada apenas sob certas circunstâncias ou de acordo com características físicas de uma criatura (como altura ou peso), ou tipo físico (por exemplo, a proteção poderia ser definida para afetar bruxas ou metamorfos). Você também pode especificar criaturas que não disparam o glifo, como aquelas que dizem uma certa senha.\n\nQuando você inscreve o glifo, escolha uma das opções abaixo para seu efeito. Uma vez disparado, o glifo brilha, preenchendo uma esfera de **18 metros de raio** com **penumbra** por **10 minutos**, após o qual a magia termina. Cada criatura na esfera quando o glifo ativa é alvo de seu efeito, assim como uma criatura que entra na esfera pela primeira vez em um turno ou termina seu turno lá.\n\n**Morte.** Cada alvo deve fazer uma jogada de resistência de **Constituição**, recebendo **10d10 de dano necrótico** em uma falha, ou metade do dano em um sucesso.\n\n**Discórdia.** Cada alvo deve fazer uma jogada de resistência de Constituição. Em uma falha, um alvo briga e discute com outras criaturas por **1 minuto**. Durante este tempo, é incapaz de comunicação significativa e tem **desvantagem** em jogadas de ataque e testes de atributo.\n\n**Medo.** Cada alvo deve fazer uma jogada de resistência de **Sabedoria** e fica **amedrontado** por 1 minuto em uma falha. Enquanto amedrontado, o alvo solta o que estiver segurando e deve se mover pelo menos **9 metros** para longe do glifo em cada um de seus turnos, se puder.\n\n**Desesperança.** Cada alvo deve fazer uma jogada de resistência de **Carisma**. Em uma falha, o alvo é dominado por desespero por 1 minuto. Durante este tempo, não pode atacar ou mirar qualquer criatura com habilidades prejudiciais, magias ou outros efeitos mágicos.\n\n**Insanidade.** Cada alvo deve fazer uma jogada de resistência de **Inteligência**. Em uma falha, o alvo é levado à insanidade por 1 minuto. Uma criatura insana não pode realizar ações, não pode entender o que outras criaturas dizem, não pode ler, e fala apenas em galimatias. O Mestre controla seu movimento, que é errático.\n\n**Dor.** Cada alvo deve fazer uma jogada de resistência de Constituição e fica **incapacitado** com dor excruciante por 1 minuto em uma falha.\n\n**Sono.** Cada alvo deve fazer uma jogada de resistência de Sabedoria e cai **inconsciente** por **10 minutos** em uma falha. Uma criatura acorda se receber dano ou se alguém usar uma ação para sacudi-la ou esbofeteá-la para acordá-la.\n\n**Atordoamento.** Cada alvo deve fazer uma jogada de resistência de Sabedoria e fica **atordoado** por 1 minuto em uma falha.",
+      "mechanical": {
+        "max_surface_diameter": 3,
+        "max_movement_distance": 3,
+        "requires_investigation_check": true,
+        "trigger_radius": 18,
+        "dim_light_duration_minutes": 10,
+        "effect_options": {
+          "death": {"save": "constitution", "damage": "10d10", "damage_type": "necrotic"},
+          "discord": {"save": "constitution", "duration_minutes": 1, "disadvantage_attacks_checks": true},
+          "fear": {"save": "wisdom", "duration_minutes": 1, "must_move_away": 9},
+          "hopelessness": {"save": "charisma", "duration_minutes": 1, "cannot_attack": true},
+          "insanity": {"save": "intelligence", "duration_minutes": 1, "cannot_act": true},
+          "pain": {"save": "constitution", "duration_minutes": 1, "incapacitated": true},
+          "sleep": {"save": "wisdom", "duration_minutes": 10, "unconscious": true},
+          "stunning": {"save": "wisdom", "duration_minutes": 1, "stunned": true}
+        }
+      }
+    },
+    {
+      "id": "speak_with_dead",
+      "name": "Falar com os Mortos",
+      "name_en": "Speak with Dead",
+      "level": 3,
+      "school": "necromancy",
+      "casting_time": "1 ação",
+      "range": 3,
+      "range_type": "ranged",
+      "components": {
+        "verbal": true,
+        "somatic": true,
+        "material": true,
+        "material_description": "incenso queimando"
+      },
+      "duration": "10 minutos",
+      "concentration": false,
+      "ritual": false,
+      "description_markdown": "Você concede a aparência de vida e inteligência a um cadáver à sua escolha dentro do alcance, permitindo que ele responda às perguntas que você fizer. O cadáver ainda deve ter uma boca e não pode ser morto-vivo. A magia falha se o cadáver foi alvo desta magia nos **últimos 10 dias**.\n\nAté a magia terminar, você pode fazer ao cadáver até **cinco perguntas**. O cadáver sabe apenas o que sabia em vida, incluindo as línguas que conhecia. As respostas geralmente são breves, enigmáticas ou repetitivas, e o cadáver não está sob nenhuma compulsão de oferecer uma resposta verdadeira se você for hostil a ele ou ele o reconhecer como um inimigo.\n\nEsta magia não retorna a alma da criatura ao seu corpo, apenas seu espírito animador. Assim, o cadáver não pode aprender novas informações, não compreende nada que tenha acontecido desde que morreu, e não pode especular sobre eventos futuros.",
+      "mechanical": {
+        "max_questions": 5,
+        "requires_mouth": true,
+        "cannot_target_undead": true,
+        "cooldown_days": 10,
+        "no_new_information": true,
+        "may_lie_if_hostile": true
+      }
+    }
+  ]
+}
