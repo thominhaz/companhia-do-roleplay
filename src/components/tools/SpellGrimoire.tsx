@@ -1,11 +1,12 @@
 import { useState, useMemo, useEffect } from "react";
-import { ArrowLeft, Search, Sparkles, Filter, X, Clock, Target, BookOpen } from "lucide-react";
+import { ArrowLeft, Search, Sparkles, Clock, Target, BookOpen, Focus, Scroll } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 interface Spell {
   id: string;
   name: string;
@@ -114,19 +115,6 @@ export function SpellGrimoire() {
     });
   }, [search, selectedLevel, selectedSchool, showConcentration, showRitual, allSpells]);
 
-  const activeFiltersCount = [
-    selectedLevel !== null,
-    selectedSchool !== null,
-    showConcentration !== null,
-    showRitual !== null,
-  ].filter(Boolean).length;
-
-  const clearFilters = () => {
-    setSelectedLevel(null);
-    setSelectedSchool(null);
-    setShowConcentration(null);
-    setShowRitual(null);
-  };
 
   const formatRange = (range: number, rangeType: string) => {
     if (rangeType === "self") return "Pessoal";
@@ -162,147 +150,84 @@ export function SpellGrimoire() {
           </div>
         </div>
 
-        {/* Search & Filter */}
-        <div className="px-4 pb-3 flex gap-2">
-          <div className="relative flex-1">
+        {/* Search */}
+        <div className="px-4 pb-3">
+          <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
+            <Input
               type="text"
               placeholder="Buscar magia..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-10 pl-9 pr-4 bg-muted rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+              className="pl-9"
             />
           </div>
-
-          <Sheet>
-            <SheetTrigger asChild>
-              <button className="h-10 px-3 bg-muted rounded-xl flex items-center gap-2 relative">
-                <Filter className="w-4 h-4" />
-                {activeFiltersCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-primary text-primary-foreground text-xs rounded-full flex items-center justify-center">
-                    {activeFiltersCount}
-                  </span>
-                )}
-              </button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="bg-dark border-border">
-              <SheetHeader>
-                <SheetTitle className="flex items-center justify-between">
-                  Filtros
-                  {activeFiltersCount > 0 && (
-                    <button onClick={clearFilters} className="text-sm text-primary">
-                      Limpar
-                    </button>
-                  )}
-                </SheetTitle>
-              </SheetHeader>
-
-              <div className="py-4 space-y-4">
-                {/* Level Filter */}
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Nível</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {LEVELS.map((level) => (
-                      <button
-                        key={level.value}
-                        onClick={() => setSelectedLevel(selectedLevel === level.value ? null : level.value)}
-                        className={cn(
-                          "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                          selectedLevel === level.value
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground hover:text-foreground"
-                        )}
-                      >
-                        {level.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* School Filter */}
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Escola</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {Object.entries(SCHOOLS).map(([key, school]) => (
-                      <button
-                        key={key}
-                        onClick={() => setSelectedSchool(selectedSchool === key ? null : key)}
-                        className={cn(
-                          "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                          selectedSchool === key
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted text-muted-foreground hover:text-foreground"
-                        )}
-                      >
-                        {school.name}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Tags Filter */}
-                <div>
-                  <h3 className="text-sm font-medium mb-2">Tags</h3>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => setShowConcentration(showConcentration === true ? null : true)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                        showConcentration === true
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      Concentração
-                    </button>
-                    <button
-                      onClick={() => setShowRitual(showRitual === true ? null : true)}
-                      className={cn(
-                        "px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                        showRitual === true
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted text-muted-foreground hover:text-foreground"
-                      )}
-                    >
-                      Ritual
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
         </div>
 
-        {/* Active Filters */}
-        {activeFiltersCount > 0 && (
-          <div className="px-4 pb-3 flex gap-2 overflow-x-auto">
-            {selectedLevel !== null && (
-              <Badge variant="secondary" className="gap-1 shrink-0">
-                {LEVELS.find((l) => l.value === selectedLevel)?.label}
-                <X className="w-3 h-3 cursor-pointer" onClick={() => setSelectedLevel(null)} />
-              </Badge>
-            )}
-            {selectedSchool && (
-              <Badge variant="secondary" className="gap-1 shrink-0">
-                {SCHOOLS[selectedSchool]?.name}
-                <X className="w-3 h-3 cursor-pointer" onClick={() => setSelectedSchool(null)} />
-              </Badge>
-            )}
-            {showConcentration && (
-              <Badge variant="secondary" className="gap-1 shrink-0">
-                Concentração
-                <X className="w-3 h-3 cursor-pointer" onClick={() => setShowConcentration(null)} />
-              </Badge>
-            )}
-            {showRitual && (
-              <Badge variant="secondary" className="gap-1 shrink-0">
-                Ritual
-                <X className="w-3 h-3 cursor-pointer" onClick={() => setShowRitual(null)} />
-              </Badge>
-            )}
+        {/* Level Filter */}
+        <div className="px-4 pb-3">
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-2">
+              <Button
+                variant={selectedLevel === null ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedLevel(null)}
+              >
+                Todos
+              </Button>
+              {LEVELS.map((level) => (
+                <Button
+                  key={level.value}
+                  variant={selectedLevel === level.value ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedLevel(selectedLevel === level.value ? null : level.value)}
+                >
+                  {level.label}
+                </Button>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* School Filter */}
+        <div className="px-4 pb-3">
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-2">
+              {Object.entries(SCHOOLS).map(([key, school]) => (
+                <Button
+                  key={key}
+                  variant={selectedSchool === key ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedSchool(selectedSchool === key ? null : key)}
+                >
+                  {school.name}
+                </Button>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Tags Filter */}
+        <div className="px-4 pb-3">
+          <div className="flex gap-2">
+            <Button
+              variant={showConcentration === true ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowConcentration(showConcentration === true ? null : true)}
+            >
+              <Focus className="w-4 h-4 mr-1" />
+              Concentração
+            </Button>
+            <Button
+              variant={showRitual === true ? "default" : "outline"}
+              size="sm"
+              onClick={() => setShowRitual(showRitual === true ? null : true)}
+            >
+              <Scroll className="w-4 h-4 mr-1" />
+              Ritual
+            </Button>
           </div>
-        )}
+        </div>
       </header>
 
       {/* Results */}
