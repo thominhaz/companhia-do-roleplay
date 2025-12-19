@@ -1,145 +1,274 @@
-import { Plus, Search, Filter, Cloud, Smartphone, ChevronRight } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { useState } from "react";
+import { 
+  Plus, 
+  MoreVertical, 
+  Calendar, 
+  Shield, 
+  Heart,
+  Wand2,
+  Target,
+  Flame,
+  Sparkles
+} from "lucide-react";
 
-const mockCharacters = [
+type FilterTab = "all" | "active" | "archived";
+
+interface Character {
+  id: string;
+  name: string;
+  race: string;
+  class: string;
+  level: number;
+  currentHp: number;
+  maxHp: number;
+  armorClass: number;
+  isActive: boolean;
+  lastActivity: string;
+  gradient: string;
+  bgColor: string;
+  textColor: string;
+  borderColor: string;
+  icon: typeof Shield;
+}
+
+const mockCharacters: Character[] = [
   {
     id: "1",
-    name: "Thorin Escudo-de-Ferro",
-    class: "Guerreiro",
+    name: "Thorin Escudo de Ferro",
     race: "Anão",
-    level: 5,
-    currentHp: 38,
-    maxHp: 45,
-    isLocal: false,
+    class: "Guerreiro",
+    level: 7,
+    currentHp: 68,
+    maxHp: 85,
+    armorClass: 18,
+    isActive: true,
+    lastActivity: "Última sessão: há 2 dias",
+    gradient: "from-purple-900 to-purple-700",
+    bgColor: "bg-purple-500",
+    textColor: "text-purple-200",
+    borderColor: "border-purple-600",
+    icon: Shield,
   },
   {
     id: "2",
-    name: "Elara Ventoalto",
-    class: "Maga",
+    name: "Elara Luz da Lua",
     race: "Elfa",
-    level: 3,
-    currentHp: 15,
-    maxHp: 18,
-    isLocal: true,
+    class: "Maga",
+    level: 5,
+    currentHp: 42,
+    maxHp: 42,
+    armorClass: 14,
+    isActive: true,
+    lastActivity: "Última sessão: há 5 dias",
+    gradient: "from-blue-900 to-blue-700",
+    bgColor: "bg-blue-500",
+    textColor: "text-blue-200",
+    borderColor: "border-blue-600",
+    icon: Wand2,
   },
   {
     id: "3",
-    name: "Kael Sombra Silenciosa",
-    class: "Ladino",
-    race: "Meio-Elfo",
-    level: 4,
-    currentHp: 28,
-    maxHp: 28,
-    isLocal: false,
+    name: "Kael Sombra Noturna",
+    race: "Humano",
+    class: "Paladino",
+    level: 3,
+    currentHp: 45,
+    maxHp: 45,
+    armorClass: 16,
+    isActive: false,
+    lastActivity: "Arquivado há 2 meses",
+    gradient: "from-green-600 to-green-800",
+    bgColor: "bg-green-600",
+    textColor: "text-gray-400",
+    borderColor: "border-gray-800",
+    icon: Target,
   },
   {
     id: "4",
-    name: "Lyra Coração-Dourado",
-    class: "Clériga",
-    race: "Humana",
+    name: "Zara Chama Ardente",
+    race: "Tiefling",
+    class: "Feiticeira",
+    level: 8,
+    currentHp: 58,
+    maxHp: 58,
+    armorClass: 13,
+    isActive: false,
+    lastActivity: "Arquivado há 4 meses",
+    gradient: "from-red-600 to-red-800",
+    bgColor: "bg-red-600",
+    textColor: "text-gray-400",
+    borderColor: "border-gray-800",
+    icon: Flame,
+  },
+  {
+    id: "5",
+    name: "Finn Pés Ligeiros",
+    race: "Halfling",
+    class: "Ladino",
     level: 4,
-    currentHp: 30,
+    currentHp: 32,
     maxHp: 32,
-    isLocal: true,
+    armorClass: 15,
+    isActive: false,
+    lastActivity: "Arquivado há 6 meses",
+    gradient: "from-amber-600 to-amber-800",
+    bgColor: "bg-amber-600",
+    textColor: "text-gray-400",
+    borderColor: "border-gray-800",
+    icon: Sparkles,
   },
 ];
 
 export function CharactersScreen() {
+  const [activeTab, setActiveTab] = useState<FilterTab>("all");
+
+  const activeCharacters = mockCharacters.filter((c) => c.isActive);
+  const archivedCharacters = mockCharacters.filter((c) => !c.isActive);
+
+  const tabs = [
+    { id: "all" as FilterTab, label: `Todos (${mockCharacters.length})` },
+    { id: "active" as FilterTab, label: `Ativos (${activeCharacters.length})` },
+    { id: "archived" as FilterTab, label: `Arquivados (${archivedCharacters.length})` },
+  ];
+
   return (
     <div className="min-h-screen bg-darker pb-24">
       {/* Header */}
-      <header className="sticky top-0 z-40 glass border-b border-border/50">
-        <div className="px-4 py-3">
-          <h1 className="text-xl font-bold text-foreground">Personagens</h1>
-          <p className="text-xs text-muted-foreground">
-            {mockCharacters.length} personagens
-          </p>
-        </div>
-
-        {/* Search & Filter */}
-        <div className="px-4 pb-3 flex gap-2">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Buscar personagem..."
-              className="w-full h-10 pl-9 pr-4 bg-muted rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-            />
-          </div>
-          <button className="h-10 px-3 bg-muted rounded-xl flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors">
-            <Filter className="w-4 h-4" />
+      <header className="px-5 pt-6 pb-4 bg-gradient-to-b from-dark to-darker sticky top-0 z-50">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-2xl font-bold">Personagens</h1>
+          <button className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-purple-700 flex items-center justify-center shadow-lg">
+            <Plus className="w-5 h-5" />
           </button>
+        </div>
+        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                activeTab === tab.id
+                  ? "bg-primary text-white"
+                  : "bg-dark text-gray-400"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
       </header>
 
-      {/* Character List */}
-      <main className="px-4 py-4 max-w-lg mx-auto">
-        <div className="space-y-3">
-          {mockCharacters.map((character, index) => {
-            const hpPercentage = (character.currentHp / character.maxHp) * 100;
-            const getHpColor = () => {
-              if (hpPercentage > 50) return "bg-green-500";
-              if (hpPercentage > 25) return "bg-yellow-500";
-              return "bg-red-500";
-            };
+      {/* Active Characters Section */}
+      {(activeTab === "all" || activeTab === "active") && activeCharacters.length > 0 && (
+        <section className="px-5 mt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-gray-400">PERSONAGENS ATIVOS</h2>
+            <span className="text-xs text-gray-500">{activeCharacters.length} personagens</span>
+          </div>
 
-            return (
-              <button
-                key={character.id}
-                className={cn(
-                  "w-full glass rounded-2xl p-4 flex gap-4 items-center",
-                  "hover:border-primary/50 transition-all text-left animate-fade-in"
-                )}
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                {/* Avatar */}
-                <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-primary/30 to-secondary/30 flex items-center justify-center flex-shrink-0">
-                  <span className="text-xl font-bold text-foreground">
-                    {character.name[0]}
-                  </span>
-                </div>
-
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-semibold text-foreground truncate">
-                      {character.name}
-                    </h3>
-                    {character.isLocal ? (
-                      <Smartphone className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                    ) : (
-                      <Cloud className="w-3 h-3 text-primary flex-shrink-0" />
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {character.race} • {character.class} • Nv.{character.level}
-                  </p>
-
-                  {/* HP Bar */}
-                  <div className="mt-2 flex items-center gap-2">
-                    <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
-                      <div
-                        className={cn("h-full rounded-full transition-all", getHpColor())}
-                        style={{ width: `${hpPercentage}%` }}
-                      />
+          {activeCharacters.map((character) => (
+            <div
+              key={character.id}
+              className={`bg-gradient-to-br ${character.gradient} rounded-2xl p-5 mb-4 relative overflow-hidden`}
+            >
+              {/* Decorative circles */}
+              <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -mr-16 -mt-16" />
+              <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-5 rounded-full -ml-12 -mb-12" />
+              
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex items-start justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className={`w-14 h-14 rounded-xl ${character.bgColor} flex items-center justify-center`}>
+                      <character.icon className="w-6 h-6" />
                     </div>
-                    <span className="text-[10px] text-muted-foreground">
-                      {character.currentHp}/{character.maxHp}
-                    </span>
+                    <div>
+                      <h3 className="text-lg font-bold">{character.name}</h3>
+                      <p className={`text-sm ${character.textColor}`}>
+                        {character.race} {character.class}
+                      </p>
+                    </div>
+                  </div>
+                  <button className="w-8 h-8 rounded-lg bg-black bg-opacity-20 flex items-center justify-center">
+                    <MoreVertical className={`w-4 h-4 ${character.textColor}`} />
+                  </button>
+                </div>
+
+                {/* Stats Grid */}
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  <div className="bg-black bg-opacity-20 rounded-lg p-2.5">
+                    <p className={`text-xs ${character.textColor} mb-0.5`}>Nível</p>
+                    <p className="text-xl font-bold">{character.level}</p>
+                  </div>
+                  <div className="bg-black bg-opacity-20 rounded-lg p-2.5">
+                    <p className={`text-xs ${character.textColor} mb-0.5`}>HP</p>
+                    <p className="text-xl font-bold">{character.currentHp}/{character.maxHp}</p>
+                  </div>
+                  <div className="bg-black bg-opacity-20 rounded-lg p-2.5">
+                    <p className={`text-xs ${character.textColor} mb-0.5`}>CA</p>
+                    <p className="text-xl font-bold">{character.armorClass}</p>
                   </div>
                 </div>
 
-                <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
-              </button>
-            );
-          })}
-        </div>
-      </main>
+                {/* Footer */}
+                <div className={`flex items-center justify-between pt-3 border-t ${character.borderColor} border-opacity-40`}>
+                  <div className="flex items-center gap-2">
+                    <Calendar className={`w-4 h-4 ${character.textColor}`} />
+                    <span className={`text-xs ${character.textColor}`}>{character.lastActivity}</span>
+                  </div>
+                  <button className="px-3 py-1.5 bg-white text-purple-900 rounded-lg text-xs font-semibold">
+                    Jogar
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
 
-      {/* FAB - Create New */}
-      <button className="fixed right-4 bottom-24 w-14 h-14 bg-gradient-primary rounded-full flex items-center justify-center shadow-neon hover:scale-110 active:scale-95 transition-transform z-50">
-        <Plus className="w-6 h-6 text-foreground" />
-      </button>
+      {/* Archived Characters Section */}
+      {(activeTab === "all" || activeTab === "archived") && archivedCharacters.length > 0 && (
+        <section className="px-5 mt-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-sm font-semibold text-gray-400">ARQUIVADOS</h2>
+            <span className="text-xs text-gray-500">{archivedCharacters.length} personagens</span>
+          </div>
+
+          {archivedCharacters.map((character) => (
+            <div
+              key={character.id}
+              className="bg-dark rounded-xl p-4 mb-3 border border-gray-800"
+            >
+              <div className="flex items-center gap-3">
+                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${character.gradient} flex items-center justify-center`}>
+                  <character.icon className="w-5 h-5" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-sm mb-0.5">{character.name}</h3>
+                  <p className="text-xs text-gray-400">
+                    {character.race} {character.class} • Nv {character.level}
+                  </p>
+                </div>
+                <button className="w-8 h-8 rounded-lg bg-darker flex items-center justify-center">
+                  <MoreVertical className="w-4 h-4 text-gray-400" />
+                </button>
+              </div>
+              <div className="flex items-center gap-4 mt-3 pt-3 border-t border-gray-800">
+                <div className="flex items-center gap-1.5">
+                  <Heart className="w-3 h-3 text-gray-500" />
+                  <span className="text-xs text-gray-500">{character.currentHp}/{character.maxHp}</span>
+                </div>
+                <div className="flex items-center gap-1.5">
+                  <Shield className="w-3 h-3 text-gray-500" />
+                  <span className="text-xs text-gray-500">CA {character.armorClass}</span>
+                </div>
+                <div className="flex-1" />
+                <span className="text-xs text-gray-500">{character.lastActivity}</span>
+              </div>
+            </div>
+          ))}
+        </section>
+      )}
     </div>
   );
 }
