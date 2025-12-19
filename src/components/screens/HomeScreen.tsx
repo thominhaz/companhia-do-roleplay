@@ -137,11 +137,14 @@ export function HomeScreen() {
       {/* Header */}
       <header className="px-5 pt-6 pb-4 bg-gradient-to-b from-dark to-darker">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-muted-foreground text-sm">Bem-vindo de volta</p>
-            <h1 className="text-2xl font-bold mt-1">
-              Olá, {displayName} {user ? "🖐️" : ""}
-            </h1>
+          <div className="flex items-center gap-3">
+            <img src="/logo.png" alt="Go20" className="w-10 h-10" />
+            <div>
+              <p className="text-muted-foreground text-sm">Bem-vindo de volta</p>
+              <h1 className="text-xl font-bold">
+                Olá, {displayName} {user ? "🖐️" : ""}
+              </h1>
+            </div>
           </div>
           <div className="flex items-center gap-3">
             {!user && (
