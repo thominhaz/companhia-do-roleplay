@@ -9,6 +9,7 @@ import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, getModifier, calculateHP, Attr
 import { RaceStep } from './steps/RaceStep';
 import { ClassStep } from './steps/ClassStep';
 import { AttributesStep } from './steps/AttributesStep';
+import { SkillsStep } from './steps/SkillsStep';
 import { EquipmentStep } from './steps/EquipmentStep';
 import { BackgroundStep } from './steps/BackgroundStep';
 import { ReviewStep } from './steps/ReviewStep';
@@ -29,6 +30,7 @@ export type WizardData = {
   primaryWeapon: string;
   secondaryWeapon: string;
   armor: string;
+  selectedSkills: string[];
 };
 
 const initialData: WizardData = {
@@ -54,12 +56,14 @@ const initialData: WizardData = {
   primaryWeapon: '',
   secondaryWeapon: '',
   armor: '',
+  selectedSkills: [],
 };
 
 const STEPS = [
   { id: 'race', title: 'Raça', description: 'Escolha sua raça' },
   { id: 'class', title: 'Classe', description: 'Escolha sua classe' },
   { id: 'attributes', title: 'Atributos', description: 'Distribua seus pontos' },
+  { id: 'skills', title: 'Perícias', description: 'Escolha suas perícias' },
   { id: 'equipment', title: 'Equipamento', description: 'Escolha seu equipamento' },
   { id: 'background', title: 'História', description: 'Defina seu background' },
   { id: 'review', title: 'Revisão', description: 'Confirme seu personagem' },
@@ -78,13 +82,17 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
   const createCharacter = useCreateCharacter();
 
   const canProceed = () => {
+    const selectedClass = CLASSES.find(c => c.id === data.class);
+    const requiredSkills = selectedClass?.proficiencies?.skills?.choose || 2;
+    
     switch (step) {
       case 0: return !!data.race;
       case 1: return !!data.class;
       case 2: return true;
-      case 3: return !!data.equipmentPack;
-      case 4: return !!data.name && !!data.background && !!data.alignment;
-      case 5: return true;
+      case 3: return data.selectedSkills.length === requiredSkills;
+      case 4: return !!data.equipmentPack;
+      case 5: return !!data.name && !!data.background && !!data.alignment;
+      case 6: return true;
       default: return false;
     }
   };
@@ -145,7 +153,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       proficiency_bonus: 2,
       attributes: finalAttributes,
       saving_throws: {},
-      skills: {},
+      skills: data.selectedSkills.reduce((acc, skillId) => ({ ...acc, [skillId]: true }), {}),
       hit_dice: { total: 1, current: 1, diceType: `d${selectedClass.hit_die}` },
       death_saves: { successes: 0, failures: 0 },
       equipment: [
@@ -187,10 +195,12 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       case 2:
         return <AttributesStep data={data} updateData={updateData} />;
       case 3:
-        return <EquipmentStep data={data} updateData={updateData} />;
+        return <SkillsStep data={data} updateData={updateData} />;
       case 4:
-        return <BackgroundStep data={data} updateData={updateData} />;
+        return <EquipmentStep data={data} updateData={updateData} />;
       case 5:
+        return <BackgroundStep data={data} updateData={updateData} />;
+      case 6:
         return <ReviewStep data={data} />;
       default:
         return null;

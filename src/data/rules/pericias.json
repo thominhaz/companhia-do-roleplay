@@ -1,0 +1,112 @@
+{
+  "skills": [
+    {
+      "name": "Atletismo",
+      "original_name": "Athletics",
+      "ability": "Força",
+      "description": "Esta perícia cobre situações difíceis que você encontra ao escalar, pular ou nadar. Exemplos incluem tentar escalar um penhasco íngreme ou escorregadio, evitar perigos ao escalar uma parede, agarrar-se a uma superfície enquanto algo tenta derrubá-lo, tentar pular uma distância incomumente longa ou realizar uma manobra no meio de um salto. Também se aplica ao esforço para nadar ou manter-se à tona em correntes traiçoeiras, ondas agitadas por tempestades ou áreas com algas espessas, ou quando outra criatura tenta empurrá-lo ou puxá-lo para baixo d'água."
+    },
+    {
+      "name": "Acrobacia",
+      "original_name": "Acrobatics",
+      "ability": "Destreza",
+      "description": "Cobre sua tentativa de se manter de pé em situações complicadas, como tentar correr sobre uma camada de gelo, equilibrar-se em uma corda bamba ou ficar de pé no convés de um navio balançando. O Mestre também pode pedir um teste de Acrobacia para ver se você consegue realizar manobras acrobáticas, incluindo mergulhos, rolamentos, cambalhotas e saltos mortais."
+    },
+    {
+      "name": "Prestidigitação",
+      "original_name": "Sleight of Hand",
+      "ability": "Destreza",
+      "description": "Usada sempre que você tenta um ato de ilusionismo manual ou truque com as mãos, como plantar algo em outra pessoa ou esconder um objeto em seu próprio corpo. Pode ser usada para determinar se você consegue furtar uma bolsa de moedas de outra pessoa ou tirar algo do bolso de alguém sem ser notado."
+    },
+    {
+      "name": "Furtividade",
+      "original_name": "Stealth",
+      "ability": "Destreza",
+      "description": "Realize um teste desta perícia quando tentar se esconder de inimigos, passar despercebido por guardas, escapar sem ser notado ou aproximar-se sorrateiramente de alguém sem ser visto ou ouvido."
+    },
+    {
+      "name": "Arcanismo",
+      "original_name": "Arcana",
+      "ability": "Inteligência",
+      "description": "Mede sua capacidade de recordar conhecimentos sobre magias, itens mágicos, símbolos eldritch, tradições mágicas, os planos de existência e os habitantes desses planos."
+    },
+    {
+      "name": "História",
+      "original_name": "History",
+      "ability": "Inteligência",
+      "description": "Mede sua capacidade de recordar conhecimentos sobre eventos históricos, pessoas lendárias, reinos antigos, disputas passadas, guerras recentes e civilizações perdidas."
+    },
+    {
+      "name": "Investigação",
+      "original_name": "Investigation",
+      "ability": "Inteligência",
+      "description": "Usada quando você procura por pistas e faz deduções baseadas nelas. Você pode deduzir a localização de um objeto oculto, discernir pela aparência de um ferimento qual tipo de arma o causou, ou determinar o ponto mais fraco em um túnel que poderia causar seu desabamento. Pesquisar pergaminhos antigos em busca de um fragmento oculto de conhecimento também pode exigir um teste de Investigação."
+    },
+    {
+      "name": "Natureza",
+      "original_name": "Nature",
+      "ability": "Inteligência",
+      "description": "Mede sua capacidade de recordar conhecimentos sobre terrenos, plantas e animais, o clima e os ciclos naturais."
+    },
+    {
+      "name": "Religião",
+      "original_name": "Religion",
+      "ability": "Inteligência",
+      "description": "Mede sua capacidade de recordar conhecimentos sobre divindades, ritos e orações, hierarquias religiosas, símbolos sagrados e as práticas de cultos secretos."
+    },
+    {
+      "name": "Adestrar Animais",
+      "original_name": "Animal Handling",
+      "ability": "Sabedoria",
+      "description": "Usada quando há dúvida se você consegue acalmar um animal domesticado, impedir que uma montaria se assuste ou intuir as intenções de um animal. Também é usada para controlar sua montaria quando você tenta uma manobra arriscada."
+    },
+    {
+      "name": "Intuição",
+      "original_name": "Insight",
+      "ability": "Sabedoria",
+      "description": "Decide se você consegue determinar as verdadeiras intenções de uma criatura, como ao tentar detectar uma mentira ou prever o próximo movimento de alguém. Isso envolve obter pistas a partir da linguagem corporal, hábitos de fala e mudanças nos maneirismos."
+    },
+    {
+      "name": "Medicina",
+      "original_name": "Medicine",
+      "ability": "Sabedoria",
+      "description": "Permite que você tente estabilizar um companheiro que está morrendo ou diagnosticar uma doença."
+    },
+    {
+      "name": "Percepção",
+      "original_name": "Perception",
+      "ability": "Sabedoria",
+      "description": "Permite que você veja, ouça ou detecte a presença de algo. Mede sua consciência geral do ambiente e a agudeza de seus sentidos. Por exemplo, você pode tentar ouvir uma conversa através de uma porta fechada, escutar sob uma janela aberta ou ouvir monstros se movendo furtivamente na floresta. Ou você pode tentar avistar coisas que estão obscurecidas ou são fáceis de perder, sejam orcs em emboscada na estrada, bandidos escondidos nas sombras de um beco ou a luz de velas sob uma porta secreta fechada."
+    },
+    {
+      "name": "Sobrevivência",
+      "original_name": "Survival",
+      "ability": "Sabedoria",
+      "description": "O Mestre pode pedir um teste desta perícia para seguir rastros, caçar animais selvagens, guiar seu grupo através de terras congeladas, identificar sinais de que ursos-coruja vivem nas proximidades, prever o tempo ou evitar areia movediça e outros perigos naturais."
+    },
+    {
+      "name": "Enganação",
+      "original_name": "Deception",
+      "ability": "Carisma",
+      "description": "Determina se você consegue esconder a verdade de forma convincente, seja verbalmente ou através de suas ações. Esta enganação pode abranger tudo, desde induzir outros ao erro através de ambiguidade até contar mentiras descaradas. Situações típicas incluem tentar ludibriar um guarda, trapacear um comerciante, ganhar dinheiro jogando, passar-se por outra pessoa com um disfarce, dissipar as suspeitas de alguém com falsas garantias ou manter uma expressão séria enquanto conta uma mentira óbvia."
+    },
+    {
+      "name": "Intimidação",
+      "original_name": "Intimidation",
+      "ability": "Carisma",
+      "description": "Usada quando você tenta influenciar alguém através de ameaças diretas, ações hostis e violência física. Exemplos incluem tentar extrair informações de um prisioneiro, convencer bandidos de rua a recuar de um confronto ou usar o gargalo de uma garrafa quebrada para convencer um vizir zombeteiro a reconsiderar uma decisão."
+    },
+    {
+      "name": "Atuação",
+      "original_name": "Performance",
+      "ability": "Carisma",
+      "description": "Determina quão bem você consegue deleitar uma audiência com música, dança, atuação, contação de histórias ou alguma outra forma de entretenimento."
+    },
+    {
+      "name": "Persuasão",
+      "original_name": "Persuasion",
+      "ability": "Carisma",
+      "description": "Usada quando você tenta influenciar alguém ou um grupo de pessoas com tato, graças sociais ou boa índole. Tipicamente, você usa persuasão quando age de boa fé, para promover amizades, fazer pedidos cordiais ou exibir etiqueta apropriada. Exemplos incluem convencer um camareiro a deixar seu grupo ver o rei, negociar a paz entre tribos em guerra ou inspirar uma multidão de cidadãos."
+    }
+  ]
+}
