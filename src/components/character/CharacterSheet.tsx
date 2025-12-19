@@ -13,12 +13,19 @@ import {
   Sparkles,
   ChevronRight,
   Edit3,
-  MoreVertical
+  MoreVertical,
+  TrendingUp,
+  FileText
 } from "lucide-react";
 import { useCharacter } from "@/hooks/useCharacters";
 import { getModifier, getModifierString, getAttributeAbbr, getAttributeName } from "@/data/srd";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { LevelUpSheet } from "./LevelUpSheet";
+import { EditStatsSheet } from "./EditStatsSheet";
+import { SpellsManagementSheet } from "./SpellsManagementSheet";
+import { NotesSheet } from "./NotesSheet";
 
 const classGradients: Record<string, string> = {
   'Guerreiro': 'from-purple-900 to-purple-700',
@@ -63,6 +70,10 @@ export function CharacterSheet() {
   const navigate = useNavigate();
   const { data: character, isLoading } = useCharacter(id || '');
   const [activeTab, setActiveTab] = useState('stats');
+  const [showLevelUp, setShowLevelUp] = useState(false);
+  const [showEditStats, setShowEditStats] = useState(false);
+  const [showSpells, setShowSpells] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
 
   if (isLoading) {
     return (
@@ -109,12 +120,35 @@ export function CharacterSheet() {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div className="flex gap-2">
-              <button className="w-10 h-10 rounded-full bg-background/20 flex items-center justify-center">
+              <button 
+                onClick={() => setShowEditStats(true)}
+                className="w-10 h-10 rounded-full bg-background/20 flex items-center justify-center"
+              >
                 <Edit3 className="w-5 h-5" />
               </button>
-              <button className="w-10 h-10 rounded-full bg-background/20 flex items-center justify-center">
-                <MoreVertical className="w-5 h-5" />
-              </button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="w-10 h-10 rounded-full bg-background/20 flex items-center justify-center">
+                    <MoreVertical className="w-5 h-5" />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="bg-dark">
+                  <DropdownMenuItem onClick={() => setShowLevelUp(true)}>
+                    <TrendingUp className="w-4 h-4 mr-2" />
+                    Subir de Nível
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => setShowNotes(true)}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Notas e Anotações
+                  </DropdownMenuItem>
+                  {character.spellcasting && (
+                    <DropdownMenuItem onClick={() => setShowSpells(true)}>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Gerenciar Magias
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
 
@@ -478,6 +512,28 @@ export function CharacterSheet() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* Sheets */}
+      <LevelUpSheet 
+        character={character} 
+        open={showLevelUp} 
+        onOpenChange={setShowLevelUp} 
+      />
+      <EditStatsSheet 
+        character={character} 
+        open={showEditStats} 
+        onOpenChange={setShowEditStats} 
+      />
+      <SpellsManagementSheet 
+        character={character} 
+        open={showSpells} 
+        onOpenChange={setShowSpells} 
+      />
+      <NotesSheet 
+        character={character} 
+        open={showNotes} 
+        onOpenChange={setShowNotes} 
+      />
     </div>
   );
 }
