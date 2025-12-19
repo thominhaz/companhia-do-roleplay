@@ -62,17 +62,23 @@ export function MagicItemsCompendium({ onBack }: MagicItemsCompendiumProps) {
   const [selectedItem, setSelectedItem] = useState<MagicItem | null>(null);
 
   const allItems: MagicItem[] = useMemo(() => {
+    const getItems = (data: any): MagicItem[] => {
+      if (Array.isArray(data)) return data;
+      if (data?.itens_magicos) return data.itens_magicos;
+      return [];
+    };
+
     const items: MagicItem[] = [
-      ...(magicItemsA as any).itens_magicos,
-      ...(magicItemsB as any).itens_magicos,
-      ...(magicItemsC as any).itens_magicos,
-      ...(magicItemsD as any).itens_magicos,
-      ...(magicItemsE as any).itens_magicos,
-      ...(magicItemsFH as any).itens_magicos,
-      ...(magicItemsIL as any).itens_magicos,
-      ...(magicItemsMP as any).itens_magicos,
-      ...(magicItemsQZ as any).itens_magicos,
-      ...(magicItemsQZ2 as any).itens_magicos,
+      ...getItems(magicItemsA),
+      ...getItems(magicItemsB),
+      ...getItems(magicItemsC),
+      ...getItems(magicItemsD),
+      ...getItems(magicItemsE),
+      ...getItems(magicItemsFH),
+      ...getItems(magicItemsIL),
+      ...getItems(magicItemsMP),
+      ...getItems(magicItemsQZ),
+      ...getItems(magicItemsQZ2),
     ];
     return items.sort((a, b) => a.name.localeCompare(b.name, "pt-BR"));
   }, []);
