@@ -207,11 +207,42 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border/50 px-4 py-3">
         <div className="flex items-center justify-between">
-          <button onClick={onClose} className="p-2 -ml-2">
-            <X className="w-5 h-5" />
-          </button>
+          {step > 0 ? (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleBack}
+              className="p-2 -ml-2"
+            >
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+          ) : (
+            <button onClick={onClose} className="p-2 -ml-2">
+              <X className="w-5 h-5" />
+            </button>
+          )}
           <h1 className="text-lg font-semibold">Novo Personagem</h1>
-          <div className="w-9" />
+          {step < STEPS.length - 1 ? (
+            <Button
+              onClick={handleNext}
+              disabled={!canProceed()}
+              size="sm"
+              className="bg-gradient-primary px-4"
+            >
+              Próximo
+              <ArrowRight className="w-4 h-4 ml-1" />
+            </Button>
+          ) : (
+            <Button
+              onClick={handleCreate}
+              disabled={createCharacter.isPending}
+              size="sm"
+              className="bg-gradient-primary px-4"
+            >
+              <Check className="w-4 h-4 mr-1" />
+              {createCharacter.isPending ? 'Criando...' : 'Criar'}
+            </Button>
+          )}
         </div>
         
         {/* Progress */}
@@ -236,45 +267,9 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       </header>
 
       {/* Content */}
-      <main className="flex-1 overflow-y-auto pb-24">
+      <main className="flex-1 overflow-y-auto pb-8">
         {renderStep()}
       </main>
-
-      {/* Footer */}
-      <footer className="fixed bottom-0 left-0 right-0 glass border-t border-border/50 p-4">
-        <div className="flex gap-3 max-w-lg mx-auto">
-          {step > 0 && (
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              className="flex-1"
-            >
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar
-            </Button>
-          )}
-          
-          {step < STEPS.length - 1 ? (
-            <Button
-              onClick={handleNext}
-              disabled={!canProceed()}
-              className="flex-1 bg-gradient-primary"
-            >
-              Próximo
-              <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          ) : (
-            <Button
-              onClick={handleCreate}
-              disabled={createCharacter.isPending}
-              className="flex-1 bg-gradient-primary"
-            >
-              <Check className="w-4 h-4 mr-2" />
-              {createCharacter.isPending ? 'Criando...' : 'Criar Personagem'}
-            </Button>
-          )}
-        </div>
-      </footer>
     </div>
   );
 }
