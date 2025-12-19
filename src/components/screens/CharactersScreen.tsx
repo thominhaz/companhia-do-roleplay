@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { 
   Plus, 
   MoreVertical, 
@@ -54,6 +54,7 @@ const classGradients: Record<string, string> = {
 
 export function CharactersScreen() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
   const [showWizard, setShowWizard] = useState(false);
   const { user } = useAuth();
@@ -166,7 +167,8 @@ export function CharactersScreen() {
               return (
                 <div
                   key={character.id}
-                  className={`bg-gradient-to-br ${gradient} rounded-2xl p-5 relative overflow-hidden`}
+                  onClick={() => navigate(`/character/${character.id}`)}
+                  className={`bg-gradient-to-br ${gradient} rounded-2xl p-5 relative overflow-hidden cursor-pointer active:scale-[0.98] transition-transform`}
                 >
                   <div className="absolute top-0 right-0 w-40 h-40 bg-foreground opacity-5 rounded-full -mr-16 -mt-16" />
                   
@@ -183,7 +185,10 @@ export function CharactersScreen() {
                           </p>
                         </div>
                       </div>
-                      <button className="w-8 h-8 rounded-lg bg-background/20 flex items-center justify-center">
+                      <button 
+                        onClick={(e) => e.stopPropagation()}
+                        className="w-8 h-8 rounded-lg bg-background/20 flex items-center justify-center"
+                      >
                         <MoreVertical className="w-4 h-4 opacity-80" />
                       </button>
                     </div>
@@ -210,7 +215,13 @@ export function CharactersScreen() {
                           Atualizado {formatDistanceToNow(new Date(character.updated_at), { locale: ptBR, addSuffix: true })}
                         </span>
                       </div>
-                      <button className="px-3 py-1.5 bg-foreground text-background rounded-lg text-xs font-semibold">
+                      <button 
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/character/${character.id}`);
+                        }}
+                        className="px-3 py-1.5 bg-foreground text-background rounded-lg text-xs font-semibold"
+                      >
                         Jogar
                       </button>
                     </div>

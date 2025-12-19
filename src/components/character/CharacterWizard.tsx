@@ -9,6 +9,7 @@ import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, getModifier, calculateHP, Attr
 import { RaceStep } from './steps/RaceStep';
 import { ClassStep } from './steps/ClassStep';
 import { AttributesStep } from './steps/AttributesStep';
+import { EquipmentStep } from './steps/EquipmentStep';
 import { BackgroundStep } from './steps/BackgroundStep';
 import { ReviewStep } from './steps/ReviewStep';
 
@@ -24,6 +25,10 @@ export type WizardData = {
   ideals: string;
   bonds: string;
   flaws: string;
+  equipmentPack: string;
+  primaryWeapon: string;
+  secondaryWeapon: string;
+  armor: string;
 };
 
 const initialData: WizardData = {
@@ -45,12 +50,17 @@ const initialData: WizardData = {
   ideals: '',
   bonds: '',
   flaws: '',
+  equipmentPack: '',
+  primaryWeapon: '',
+  secondaryWeapon: '',
+  armor: '',
 };
 
 const STEPS = [
   { id: 'race', title: 'Raça', description: 'Escolha sua raça' },
   { id: 'class', title: 'Classe', description: 'Escolha sua classe' },
   { id: 'attributes', title: 'Atributos', description: 'Distribua seus pontos' },
+  { id: 'equipment', title: 'Equipamento', description: 'Escolha seu equipamento' },
   { id: 'background', title: 'História', description: 'Defina seu background' },
   { id: 'review', title: 'Revisão', description: 'Confirme seu personagem' },
 ];
@@ -71,9 +81,10 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     switch (step) {
       case 0: return !!data.race;
       case 1: return !!data.class;
-      case 2: return true; // Attributes always valid with defaults
-      case 3: return !!data.name && !!data.background && !!data.alignment;
-      case 4: return true;
+      case 2: return true;
+      case 3: return !!data.equipmentPack;
+      case 4: return !!data.name && !!data.background && !!data.alignment;
+      case 5: return true;
       default: return false;
     }
   };
@@ -137,9 +148,13 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       skills: {},
       hit_dice: { total: 1, current: 1, diceType: `d${selectedClass.hit_die}` },
       death_saves: { successes: 0, failures: 0 },
-      equipment: [],
+      equipment: [
+        ...(data.primaryWeapon ? [{ id: 'primary', name: data.primaryWeapon, type: 'weapon' as const, equipped: true }] : []),
+        ...(data.secondaryWeapon ? [{ id: 'secondary', name: data.secondaryWeapon, type: 'weapon' as const, equipped: true }] : []),
+        ...(data.armor ? [{ id: 'armor', name: data.armor, type: 'armor' as const, equipped: true }] : []),
+      ],
       inventory: [],
-      currency: { copper: 0, silver: 0, electrum: 0, gold: 0, platinum: 0 },
+      currency: { copper: 0, silver: 0, electrum: 0, gold: 10, platinum: 0 },
       spellcasting: null,
       spells: [],
       background: BACKGROUNDS.find(b => b.id === data.background)?.name || data.background,
@@ -172,8 +187,10 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       case 2:
         return <AttributesStep data={data} updateData={updateData} />;
       case 3:
-        return <BackgroundStep data={data} updateData={updateData} />;
+        return <EquipmentStep data={data} updateData={updateData} />;
       case 4:
+        return <BackgroundStep data={data} updateData={updateData} />;
+      case 5:
         return <ReviewStep data={data} />;
       default:
         return null;
