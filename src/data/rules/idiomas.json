@@ -1,0 +1,193 @@
+{
+  "languages": {
+    "name": "Idiomas",
+    "name_en": "Languages",
+    "description_markdown": "Sua raça indica os idiomas que seu personagem pode falar por padrão, e seu antecedente pode lhe dar acesso a um ou mais idiomas adicionais de sua escolha. Anote esses idiomas em sua ficha de personagem.\n\nEscolha seus idiomas da tabela de Idiomas Padrão, ou escolha um que seja comum em sua campanha. Com a permissão do seu Mestre, você pode escolher um idioma da tabela de Idiomas Exóticos ou um idioma secreto, como cant dos ladrões ou a língua dos druidas.\n\nAlguns desses idiomas são na verdade famílias de idiomas com muitos dialetos. Por exemplo, o idioma Primordial inclui os dialetos Auran, Aquan, Ignan e Terran, um para cada um dos quatro planos elementais. Criaturas que falam dialetos diferentes do mesmo idioma podem se comunicar umas com as outras.",
+    "standard_languages": {
+      "name": "Idiomas Padrão",
+      "name_en": "Standard Languages",
+      "languages": [
+        {
+          "id": "common",
+          "name": "Comum",
+          "name_en": "Common",
+          "typical_speakers": "Humanos",
+          "typical_speakers_en": "Humans",
+          "script": "Comum",
+          "script_en": "Common"
+        },
+        {
+          "id": "dwarvish",
+          "name": "Anão",
+          "name_en": "Dwarvish",
+          "typical_speakers": "Anões",
+          "typical_speakers_en": "Dwarves",
+          "script": "Anão",
+          "script_en": "Dwarvish"
+        },
+        {
+          "id": "elvish",
+          "name": "Élfico",
+          "name_en": "Elvish",
+          "typical_speakers": "Elfos",
+          "typical_speakers_en": "Elves",
+          "script": "Élfico",
+          "script_en": "Elvish"
+        },
+        {
+          "id": "giant",
+          "name": "Gigante",
+          "name_en": "Giant",
+          "typical_speakers": "Ogros, gigantes",
+          "typical_speakers_en": "Ogres, giants",
+          "script": "Anão",
+          "script_en": "Dwarvish"
+        },
+        {
+          "id": "gnomish",
+          "name": "Gnômico",
+          "name_en": "Gnomish",
+          "typical_speakers": "Gnomos",
+          "typical_speakers_en": "Gnomes",
+          "script": "Anão",
+          "script_en": "Dwarvish"
+        },
+        {
+          "id": "goblin",
+          "name": "Goblin",
+          "name_en": "Goblin",
+          "typical_speakers": "Goblinoides",
+          "typical_speakers_en": "Goblinoids",
+          "script": "Anão",
+          "script_en": "Dwarvish"
+        },
+        {
+          "id": "halfling",
+          "name": "Halfling",
+          "name_en": "Halfling",
+          "typical_speakers": "Halflings",
+          "typical_speakers_en": "Halflings",
+          "script": "Comum",
+          "script_en": "Common"
+        },
+        {
+          "id": "orc",
+          "name": "Orc",
+          "name_en": "Orc",
+          "typical_speakers": "Orcs",
+          "typical_speakers_en": "Orcs",
+          "script": "Anão",
+          "script_en": "Dwarvish"
+        }
+      ]
+    },
+    "exotic_languages": {
+      "name": "Idiomas Exóticos",
+      "name_en": "Exotic Languages",
+      "languages": [
+        {
+          "id": "abyssal",
+          "name": "Abissal",
+          "name_en": "Abyssal",
+          "typical_speakers": "Demônios",
+          "typical_speakers_en": "Demons",
+          "script": "Infernal",
+          "script_en": "Infernal"
+        },
+        {
+          "id": "celestial",
+          "name": "Celestial",
+          "name_en": "Celestial",
+          "typical_speakers": "Celestiais",
+          "typical_speakers_en": "Celestials",
+          "script": "Celestial",
+          "script_en": "Celestial"
+        },
+        {
+          "id": "draconic",
+          "name": "Dracônico",
+          "name_en": "Draconic",
+          "typical_speakers": "Dragões, draconatos",
+          "typical_speakers_en": "Dragons, dragonborn",
+          "script": "Dracônico",
+          "script_en": "Draconic"
+        },
+        {
+          "id": "deep_speech",
+          "name": "Dialeto Obscuro",
+          "name_en": "Deep Speech",
+          "typical_speakers": "Aboleths, ocultadores",
+          "typical_speakers_en": "Aboleths, cloakers",
+          "script": "—",
+          "script_en": "—"
+        },
+        {
+          "id": "infernal",
+          "name": "Infernal",
+          "name_en": "Infernal",
+          "typical_speakers": "Diabos",
+          "typical_speakers_en": "Devils",
+          "script": "Infernal",
+          "script_en": "Infernal"
+        },
+        {
+          "id": "primordial",
+          "name": "Primordial",
+          "name_en": "Primordial",
+          "typical_speakers": "Elementais",
+          "typical_speakers_en": "Elementals",
+          "script": "Anão",
+          "script_en": "Dwarvish",
+          "dialects": [
+            {
+              "id": "auran",
+              "name": "Auran",
+              "name_en": "Auran",
+              "element": "ar",
+              "element_en": "air"
+            },
+            {
+              "id": "aquan",
+              "name": "Aquan",
+              "name_en": "Aquan",
+              "element": "água",
+              "element_en": "water"
+            },
+            {
+              "id": "ignan",
+              "name": "Ignan",
+              "name_en": "Ignan",
+              "element": "fogo",
+              "element_en": "fire"
+            },
+            {
+              "id": "terran",
+              "name": "Terran",
+              "name_en": "Terran",
+              "element": "terra",
+              "element_en": "earth"
+            }
+          ]
+        },
+        {
+          "id": "sylvan",
+          "name": "Silvestre",
+          "name_en": "Sylvan",
+          "typical_speakers": "Criaturas feéricas",
+          "typical_speakers_en": "Fey creatures",
+          "script": "Élfico",
+          "script_en": "Elvish"
+        },
+        {
+          "id": "undercommon",
+          "name": "Subcomum",
+          "name_en": "Undercommon",
+          "typical_speakers": "Comerciantes do subterrâneo",
+          "typical_speakers_en": "Underworld traders",
+          "script": "Élfico",
+          "script_en": "Elvish"
+        }
+      ]
+    }
+  }
+}

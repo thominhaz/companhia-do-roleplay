@@ -1,0 +1,90 @@
+{
+  "services": {
+    "name": "Serviços",
+    "name_en": "Services",
+    "description_markdown": "Aventureiros podem pagar personagens não-jogadores para ajudá-los ou agir em seu nome em uma variedade de circunstâncias. A maioria desses contratados tem habilidades bastante comuns, enquanto outros são mestres de um ofício ou arte, e alguns são especialistas com habilidades de aventura especializadas.\n\nAlguns dos tipos mais básicos de contratados aparecem na tabela de Serviços. Outros contratados comuns incluem qualquer uma da ampla variedade de pessoas que habitam uma cidade ou vila típica, quando os aventureiros os pagam para realizar uma tarefa específica. Por exemplo, um mago pode pagar um carpinteiro para construir um baú elaborado (e sua réplica em miniatura) para uso na magia baú secreto. Um guerreiro pode encomendar a um ferreiro forjar uma espada especial. Um bardo pode pagar um alfaiate para fazer roupas requintadas para uma apresentação próxima diante do duque.\n\nOutros contratados fornecem serviços mais especializados ou perigosos. Soldados mercenários pagos para ajudar os aventureiros a enfrentar um exército de hobgoblins são contratados, assim como sábios contratados para pesquisar conhecimento antigo ou esotérico. Se um aventureiro de alto nível estabelece uma fortaleza de algum tipo, ele ou ela pode contratar uma equipe inteira de servos e agentes para administrar o lugar, desde um castelão ou mordomo até trabalhadores braçais para manter os estábulos limpos. Esses contratados geralmente desfrutam de um contrato de longo prazo que inclui um lugar para morar dentro da fortaleza como parte da compensação oferecida.",
+    "basic_services": {
+      "name": "Serviços Básicos",
+      "name_en": "Basic Services",
+      "items": [
+        {
+          "id": "coach_between_towns",
+          "name": "Carruagem entre cidades",
+          "name_en": "Coach cab, Between towns",
+          "cost_description": "3 pc por milha (1,6 km)",
+          "cost_per_mile_cp": 3
+        },
+        {
+          "id": "coach_within_city",
+          "name": "Carruagem dentro da cidade",
+          "name_en": "Coach cab, Within a city",
+          "cost_description": "1 pc",
+          "cost_cp": 1
+        },
+        {
+          "id": "messenger",
+          "name": "Mensageiro",
+          "name_en": "Messenger",
+          "cost_description": "2 pc por milha (1,6 km)",
+          "cost_per_mile_cp": 2
+        },
+        {
+          "id": "road_toll",
+          "name": "Pedágio de estrada ou portão",
+          "name_en": "Road or gate toll",
+          "cost_description": "1 pc",
+          "cost_cp": 1
+        },
+        {
+          "id": "ship_passage",
+          "name": "Passagem de navio",
+          "name_en": "Ship's passage",
+          "cost_description": "1 pp por milha (1,6 km)",
+          "cost_per_mile_sp": 1
+        }
+      ]
+    },
+    "hirelings": {
+      "name": "Contratados",
+      "name_en": "Hirelings",
+      "description_markdown": "Contratados qualificados incluem qualquer pessoa contratada para realizar um serviço que envolva uma proficiência (incluindo arma, ferramenta ou perícia): um mercenário, artesão, escriba e assim por diante. O pagamento mostrado é um mínimo; alguns contratados especializados exigem mais pagamento. Contratados não treinados são contratados para trabalho braçal que não requer nenhuma habilidade particular e podem incluir trabalhadores, carregadores, empregadas domésticas e trabalhadores similares.",
+      "types": [
+        {
+          "id": "skilled",
+          "name": "Contratado Qualificado",
+          "name_en": "Skilled Hireling",
+          "cost_description": "2 po por dia",
+          "cost_per_day_gp": 2,
+          "description": "Inclui qualquer pessoa contratada para realizar um serviço que envolva uma proficiência (arma, ferramenta ou perícia): mercenário, artesão, escriba, etc. O pagamento mostrado é um mínimo; alguns especialistas exigem mais."
+        },
+        {
+          "id": "untrained",
+          "name": "Contratado Não Treinado",
+          "name_en": "Untrained Hireling",
+          "cost_description": "2 pp por dia",
+          "cost_per_day_sp": 2,
+          "description": "Contratado para trabalho braçal que não requer nenhuma habilidade particular: trabalhadores, carregadores, empregadas domésticas e similares."
+        }
+      ]
+    },
+    "spellcasting_services": {
+      "name": "Serviços de Conjuração",
+      "name_en": "Spellcasting Services",
+      "description_markdown": "Pessoas que são capazes de conjurar magias não se enquadram na categoria de contratados comuns. Pode ser possível encontrar alguém disposto a conjurar uma magia em troca de moedas ou favores, mas é raramente fácil e não existem taxas de pagamento estabelecidas. Como regra, quanto maior o nível da magia desejada, mais difícil é encontrar alguém que possa conjurá-la e mais custa.\n\nContratar alguém para conjurar uma magia relativamente comum de 1º ou 2º nível, como curar ferimentos ou identificar, é fácil o suficiente em uma cidade ou vila, e pode custar de 10 a 50 peças de ouro (mais o custo de quaisquer componentes materiais caros). Encontrar alguém capaz e disposto a conjurar uma magia de nível superior pode envolver viajar para uma cidade grande, talvez uma com uma universidade ou templo proeminente. Uma vez encontrado, o conjurador pode pedir por um serviço em vez de pagamento—o tipo de serviço que apenas aventureiros podem fornecer, como recuperar um item raro de um local perigoso ou atravessar um ermo infestado de monstros para entregar algo importante a um assentamento distante.",
+      "guidelines": {
+        "level_1_2_spells": {
+          "level_range": "1-2",
+          "availability": "Fácil de encontrar em cidades e vilas",
+          "typical_cost_range_gp": "10-50",
+          "additional_costs": "Mais o custo de componentes materiais caros"
+        },
+        "higher_level_spells": {
+          "level_range": "3+",
+          "availability": "Requer viajar para cidade grande, universidade ou templo proeminente",
+          "typical_cost": "Variável ou serviço em vez de pagamento",
+          "service_type": "Recuperar item raro, entregar algo importante, etc."
+        }
+      }
+    }
+  }
+}

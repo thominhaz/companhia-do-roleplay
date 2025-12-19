@@ -1,0 +1,22 @@
+{
+  "inspiration": {
+    "name": "Inspiração",
+    "name_en": "Inspiration",
+    "description_markdown": "Inspiração é uma regra que o Mestre pode usar para recompensá-lo por interpretar seu personagem de uma forma fiel aos seus traços de personalidade, ideal, vínculo e falha. Usando inspiração, você pode se basear em seu traço de personalidade de compaixão pelos oprimidos para lhe dar uma vantagem ao negociar com o Príncipe Mendigo. Ou a inspiração pode permitir que você invoque seu vínculo com a defesa de sua vila natal para ultrapassar o efeito de uma magia que foi lançada sobre você.",
+    "gaining_inspiration": {
+      "name": "Ganhando Inspiração",
+      "name_en": "Gaining Inspiration",
+      "description_markdown": "Seu Mestre pode escolher dar-lhe inspiração por uma variedade de razões. Tipicamente, Mestres a concedem quando você interpreta seus traços de personalidade, cede às desvantagens apresentadas por uma falha ou vínculo, e de outra forma retrata seu personagem de uma forma convincente. Seu Mestre dirá como você pode ganhar inspiração no jogo.\n\nVocê ou tem inspiração ou não tem—você não pode acumular múltiplas \"inspirações\" para uso posterior."
+    },
+    "using_inspiration": {
+      "name": "Usando Inspiração",
+      "name_en": "Using Inspiration",
+      "description_markdown": "Se você tem inspiração, você pode gastá-la quando fizer uma jogada de ataque, teste de resistência ou teste de atributo. Gastar sua inspiração lhe dá vantagem naquela jogada.\n\nAdicionalmente, se você tem inspiração, você pode recompensar outro jogador por boa interpretação, pensamento inteligente ou simplesmente fazer algo empolgante no jogo. Quando outro personagem jogador faz algo que realmente contribui para a história de uma forma divertida e interessante, você pode desistir de sua inspiração para dar àquele personagem inspiração."
+    },
+    "mechanics": {
+      "stackable": false,
+      "grants_advantage": true,
+      "transferable": true
+    }
+  }
+}
