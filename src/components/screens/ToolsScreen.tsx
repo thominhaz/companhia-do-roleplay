@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
   Dice6, 
@@ -8,9 +9,16 @@ import {
   Heart,
   Search,
   ChevronRight,
-  Zap
+  Zap,
+  Gem
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { DiceRoller } from "@/components/tools/DiceRoller";
+import { MagicItemsCompendium } from "@/components/tools/MagicItemsCompendium";
+import { ConditionsReference } from "@/components/tools/ConditionsReference";
+import { WeaponsArmorList } from "@/components/tools/WeaponsArmorList";
+
+type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | null;
 
 const tools = [
   {
@@ -20,6 +28,7 @@ const tools = [
     icon: Dice6,
     color: "from-primary to-primary/70",
     featured: true,
+    toolKey: "dice" as ActiveTool,
   },
   {
     id: "spells",
@@ -31,28 +40,31 @@ const tools = [
     path: "/grimoire",
   },
   {
+    id: "magic-items",
+    name: "Itens Mágicos",
+    description: "Compêndio de itens mágicos",
+    icon: Gem,
+    color: "from-purple-500 to-purple-500/70",
+    featured: true,
+    toolKey: "magic-items" as ActiveTool,
+  },
+  {
     id: "conditions",
     name: "Condições",
     description: "Referência rápida de condições",
     icon: Zap,
     color: "from-neon-blue to-neon-blue/70",
     featured: false,
+    toolKey: "conditions" as ActiveTool,
   },
   {
-    id: "weapons",
-    name: "Armas",
-    description: "Lista de armas e propriedades",
+    id: "weapons-armor",
+    name: "Armas & Armaduras",
+    description: "Lista de armas e armaduras",
     icon: Swords,
     color: "from-gold to-gold/70",
     featured: false,
-  },
-  {
-    id: "armor",
-    name: "Armaduras",
-    description: "Tipos de armadura e escudos",
-    icon: Shield,
-    color: "from-emerald-500 to-emerald-500/70",
-    featured: false,
+    toolKey: "weapons-armor" as ActiveTool,
   },
   {
     id: "rules",
@@ -74,14 +86,31 @@ const tools = [
 
 export function ToolsScreen() {
   const navigate = useNavigate();
+  const [activeTool, setActiveTool] = useState<ActiveTool>(null);
   const featuredTools = tools.filter((t) => t.featured);
   const otherTools = tools.filter((t) => !t.featured);
 
   const handleToolClick = (tool: typeof tools[0]) => {
     if (tool.path) {
       navigate(tool.path);
+    } else if (tool.toolKey) {
+      setActiveTool(tool.toolKey);
     }
   };
+
+  // Render active tool
+  if (activeTool === "dice") {
+    return <DiceRoller onBack={() => setActiveTool(null)} />;
+  }
+  if (activeTool === "magic-items") {
+    return <MagicItemsCompendium onBack={() => setActiveTool(null)} />;
+  }
+  if (activeTool === "conditions") {
+    return <ConditionsReference onBack={() => setActiveTool(null)} />;
+  }
+  if (activeTool === "weapons-armor") {
+    return <WeaponsArmorList onBack={() => setActiveTool(null)} />;
+  }
 
   return (
     <div className="min-h-screen bg-darker pb-24">
@@ -152,6 +181,7 @@ export function ToolsScreen() {
               return (
                 <button
                   key={tool.id}
+                  onClick={() => handleToolClick(tool)}
                   className={cn(
                     "w-full glass rounded-xl p-3 flex items-center gap-3",
                     "hover:border-primary/50 transition-all text-left animate-fade-in"
