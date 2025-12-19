@@ -8,8 +8,12 @@ import {
   Wand2,
   Target,
   Flame,
-  Sparkles
+  Sparkles,
+  Lock
 } from "lucide-react";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 type FilterTab = "all" | "active" | "archived";
 
@@ -121,6 +125,21 @@ const mockCharacters: Character[] = [
 
 export function CharactersScreen() {
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
+  const { user } = useAuth();
+  const { data: subscription } = useSubscription();
+  const canCreateCharacter = subscription?.canCreateCharacter ?? false;
+
+  const handleCreateCharacter = () => {
+    if (!user) {
+      toast.error("Faça login para criar personagens");
+      return;
+    }
+    if (!canCreateCharacter) {
+      toast.error("Limite de personagens atingido. Faça upgrade para Premium!");
+      return;
+    }
+    console.log("Create character");
+  };
 
   const activeCharacters = mockCharacters.filter((c) => c.isActive);
   const archivedCharacters = mockCharacters.filter((c) => !c.isActive);
@@ -136,9 +155,23 @@ export function CharactersScreen() {
       {/* Header */}
       <header className="px-5 pt-6 pb-4 bg-gradient-to-b from-dark to-darker sticky top-0 z-50">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Personagens</h1>
-          <button className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-purple-700 flex items-center justify-center shadow-lg">
-            <Plus className="w-5 h-5" />
+          <div>
+            <h1 className="text-2xl font-bold">Personagens</h1>
+            {user && subscription && !subscription.limits.maxCharacters && (
+              <p className="text-xs text-muted-foreground mt-1">
+                {subscription.characterCount}/{subscription.limits.maxCharacters === 'unlimited' ? '∞' : subscription.limits.maxCharacters} personagens
+              </p>
+            )}
+          </div>
+          <button 
+            onClick={handleCreateCharacter}
+            className={`w-11 h-11 rounded-full flex items-center justify-center shadow-lg ${
+              canCreateCharacter 
+                ? "bg-gradient-to-br from-primary to-purple-700" 
+                : "bg-muted"
+            }`}
+          >
+            {canCreateCharacter ? <Plus className="w-5 h-5" /> : <Lock className="w-5 h-5 text-muted-foreground" />}
           </button>
         </div>
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">

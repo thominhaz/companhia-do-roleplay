@@ -1,6 +1,9 @@
 import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Hash, Signal, Brain, Wand2, Eye, Skull, Check, Lock } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
 
 type FilterType = 'all' | 'mastering' | 'playing';
 
@@ -324,11 +327,17 @@ function PlayerCampaignCard({ campaign }: { campaign: PlayerCampaign }) {
 export function CampaignsScreen() {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
-  const isPremium = true;
+  const { user } = useAuth();
+  const { data: subscription } = useSubscription();
+  const isPremium = subscription?.status === 'premium';
 
   const totalCampaigns = mockMasterCampaigns.length + mockPlayerCampaigns.length;
 
   const handleCreateCampaign = () => {
+    if (!user) {
+      toast.error("Faça login para criar campanhas");
+      return;
+    }
     if (!isPremium) {
       setShowPremiumModal(true);
       return;
