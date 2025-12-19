@@ -1,0 +1,142 @@
+{
+  "currency": {
+    "name": "Moedas",
+    "name_en": "Currency",
+    "description_markdown": "Moedas comuns vêm em várias denominações diferentes baseadas no valor relativo do metal do qual são feitas. As três moedas mais comuns são a peça de ouro (po), a peça de prata (pp) e a peça de cobre (pc).\n\nCom uma peça de ouro, um personagem pode comprar um saco de dormir, 15 metros de corda boa, ou uma cabra. Um artesão habilidoso (mas não excepcional) pode ganhar uma peça de ouro por dia. A peça de ouro é a unidade padrão de medida de riqueza, mesmo que a moeda em si não seja comumente usada. Quando mercadores discutem negócios que envolvem bens ou serviços que valem centenas ou milhares de peças de ouro, as transações geralmente não envolvem a troca de moedas individuais. Em vez disso, a peça de ouro é uma medida padrão de valor, e a troca real é em barras de ouro, cartas de crédito ou bens valiosos.\n\nUma peça de ouro vale dez peças de prata, a moeda mais comum entre os plebeus. Uma peça de prata compra o trabalho de um trabalhador por meio dia, um frasco de óleo de lamparina, ou uma noite de descanso em uma pousada pobre.\n\nUma peça de prata vale dez peças de cobre, que são comuns entre trabalhadores e mendigos. Uma única peça de cobre compra uma vela, uma tocha ou um pedaço de giz.\n\nAlém disso, moedas incomuns feitas de outros metais preciosos às vezes aparecem em tesouros. A peça de electrum (pe) e a peça de platina (pl) originam-se de impérios caídos e reinos perdidos, e às vezes despertam suspeita e ceticismo quando usadas em transações. Uma peça de electrum vale cinco peças de prata, e uma peça de platina vale dez peças de ouro.\n\nUma moeda padrão pesa cerca de um terço de uma onça (aproximadamente 9 gramas), então cinquenta moedas pesam 0,45 kg (1 libra).",
+    "denominations": [
+      {
+        "id": "copper",
+        "name": "Cobre",
+        "name_en": "Copper",
+        "abbreviation": "pc",
+        "abbreviation_en": "cp",
+        "value_in_copper": 1,
+        "weight_per_50_coins_kg": 0.45,
+        "weight_per_50_coins_lb": 1
+      },
+      {
+        "id": "silver",
+        "name": "Prata",
+        "name_en": "Silver",
+        "abbreviation": "pp",
+        "abbreviation_en": "sp",
+        "value_in_copper": 10,
+        "weight_per_50_coins_kg": 0.45,
+        "weight_per_50_coins_lb": 1
+      },
+      {
+        "id": "electrum",
+        "name": "Electrum",
+        "name_en": "Electrum",
+        "abbreviation": "pe",
+        "abbreviation_en": "ep",
+        "value_in_copper": 50,
+        "weight_per_50_coins_kg": 0.45,
+        "weight_per_50_coins_lb": 1,
+        "note": "Origina-se de impérios caídos e reinos perdidos"
+      },
+      {
+        "id": "gold",
+        "name": "Ouro",
+        "name_en": "Gold",
+        "abbreviation": "po",
+        "abbreviation_en": "gp",
+        "value_in_copper": 100,
+        "weight_per_50_coins_kg": 0.45,
+        "weight_per_50_coins_lb": 1
+      },
+      {
+        "id": "platinum",
+        "name": "Platina",
+        "name_en": "Platinum",
+        "abbreviation": "pl",
+        "abbreviation_en": "pp",
+        "value_in_copper": 1000,
+        "weight_per_50_coins_kg": 0.45,
+        "weight_per_50_coins_lb": 1,
+        "note": "Origina-se de impérios caídos e reinos perdidos"
+      }
+    ],
+    "exchange_rates": {
+      "name": "Taxas de Câmbio Padrão",
+      "name_en": "Standard Exchange Rates",
+      "table": [
+        {
+          "coin": "pc",
+          "coin_pt": "Cobre (pc)",
+          "to_cp": "1",
+          "to_sp": "1/10",
+          "to_ep": "1/50",
+          "to_gp": "1/100",
+          "to_pp": "1/1.000"
+        },
+        {
+          "coin": "pp",
+          "coin_pt": "Prata (pp)",
+          "to_cp": "10",
+          "to_sp": "1",
+          "to_ep": "1/5",
+          "to_gp": "1/10",
+          "to_pp": "1/100"
+        },
+        {
+          "coin": "pe",
+          "coin_pt": "Electrum (pe)",
+          "to_cp": "50",
+          "to_sp": "5",
+          "to_ep": "1",
+          "to_gp": "1/2",
+          "to_pp": "1/20"
+        },
+        {
+          "coin": "po",
+          "coin_pt": "Ouro (po)",
+          "to_cp": "100",
+          "to_sp": "10",
+          "to_ep": "2",
+          "to_gp": "1",
+          "to_pp": "1/10"
+        },
+        {
+          "coin": "pl",
+          "coin_pt": "Platina (pl)",
+          "to_cp": "1.000",
+          "to_sp": "100",
+          "to_ep": "20",
+          "to_gp": "10",
+          "to_pp": "1"
+        }
+      ]
+    },
+    "selling_treasure": {
+      "name": "Vendendo Tesouro",
+      "name_en": "Selling Treasure",
+      "description_markdown": "Oportunidades abundam para encontrar tesouro, equipamento, armas, armaduras e mais nas masmorras que você explora. Normalmente, você pode vender seus tesouros e bugigangas quando retornar a uma cidade ou outro assentamento, desde que possa encontrar compradores e mercadores interessados em seu espólio.",
+      "rules": {
+        "arms_armor_equipment": {
+          "name": "Armas, Armaduras e Outros Equipamentos",
+          "name_en": "Arms, Armor, and Other Equipment",
+          "description": "Como regra geral, armas, armaduras e outros equipamentos não danificados alcançam metade de seu custo quando vendidos em um mercado. Armas e armaduras usadas por monstros raramente estão em condição boa o suficiente para vender.",
+          "sell_value_percentage": 50
+        },
+        "magic_items": {
+          "name": "Itens Mágicos",
+          "name_en": "Magic Items",
+          "description": "Vender itens mágicos é problemático. Encontrar alguém para comprar uma poção ou um pergaminho não é muito difícil, mas outros itens estão fora do alcance de todos, exceto os nobres mais ricos. Da mesma forma, além de alguns itens mágicos comuns, você normalmente não encontrará itens mágicos ou magias para comprar. O valor da magia está muito além do ouro simples e deve sempre ser tratado como tal."
+        },
+        "gems_jewelry_art": {
+          "name": "Gemas, Joias e Objetos de Arte",
+          "name_en": "Gems, Jewelry, and Art Objects",
+          "description": "Estes itens mantêm seu valor total no mercado, e você pode trocá-los por moedas ou usá-los como moeda para outras transações. Para tesouros excepcionalmente valiosos, o Mestre pode exigir que você encontre um comprador em uma cidade grande ou comunidade maior primeiro.",
+          "sell_value_percentage": 100
+        },
+        "trade_goods": {
+          "name": "Mercadorias",
+          "name_en": "Trade Goods",
+          "description": "Nas terras fronteiriças, muitas pessoas conduzem transações através de escambo. Como gemas e objetos de arte, mercadorias—barras de ferro, sacos de sal, gado, e assim por diante—mantêm seu valor total no mercado e podem ser usadas como moeda.",
+          "sell_value_percentage": 100
+        }
+      }
+    }
+  }
+}

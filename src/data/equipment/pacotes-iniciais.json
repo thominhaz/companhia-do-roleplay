@@ -1,0 +1,138 @@
+{
+  "equipment_packs": {
+    "name": "Pacotes de Equipamento",
+    "name_en": "Equipment Packs",
+    "description_markdown": "O equipamento inicial que você obtém de sua classe inclui uma coleção de equipamento de aventura útil, reunido em um pacote. O conteúdo desses pacotes está listado aqui. Se você está comprando seu equipamento inicial, você pode comprar um pacote pelo preço mostrado, que pode ser mais barato do que comprar os itens individualmente.",
+    "packs": [
+      {
+        "id": "burglars_pack",
+        "name": "Pacote de Ladrão",
+        "name_en": "Burglar's Pack",
+        "cost_gp": 16,
+        "description": "Inclui uma mochila, um saco de 1.000 esferas de metal, 3 metros de barbante, um sino, 5 velas, um pé de cabra, um martelo, 10 pitons, uma lanterna com cobertura, 2 frascos de óleo, 5 dias de rações, uma caixa de fogo e um cantil. O pacote também tem 15 metros de corda de cânhamo amarrada ao lado dele.",
+        "items": [
+          {"item": "backpack", "item_pt": "mochila", "quantity": 1},
+          {"item": "ball_bearings", "item_pt": "esferas de metal", "quantity": 1000},
+          {"item": "string", "item_pt": "barbante", "quantity": 1, "unit": "3 metros"},
+          {"item": "bell", "item_pt": "sino", "quantity": 1},
+          {"item": "candle", "item_pt": "vela", "quantity": 5},
+          {"item": "crowbar", "item_pt": "pé de cabra", "quantity": 1},
+          {"item": "hammer", "item_pt": "martelo", "quantity": 1},
+          {"item": "piton", "item_pt": "piton", "quantity": 10},
+          {"item": "lantern_hooded", "item_pt": "lanterna com cobertura", "quantity": 1},
+          {"item": "oil_flask", "item_pt": "frasco de óleo", "quantity": 2},
+          {"item": "rations", "item_pt": "rações", "quantity": 5, "unit": "dias"},
+          {"item": "tinderbox", "item_pt": "caixa de fogo", "quantity": 1},
+          {"item": "waterskin", "item_pt": "cantil", "quantity": 1},
+          {"item": "rope_hempen", "item_pt": "corda de cânhamo", "quantity": 1, "unit": "15 metros", "note": "amarrada ao lado"}
+        ]
+      },
+      {
+        "id": "diplomats_pack",
+        "name": "Pacote de Diplomata",
+        "name_en": "Diplomat's Pack",
+        "cost_gp": 39,
+        "description": "Inclui um baú, 2 estojos para mapas e pergaminhos, um conjunto de roupas finas, uma garrafa de tinta, uma caneta de tinta, uma lamparina, 2 frascos de óleo, 5 folhas de papel, um frasco de perfume, lacre de cera e sabão.",
+        "items": [
+          {"item": "chest", "item_pt": "baú", "quantity": 1},
+          {"item": "case_map_or_scroll", "item_pt": "estojo para mapas e pergaminhos", "quantity": 2},
+          {"item": "clothes_fine", "item_pt": "roupas finas", "quantity": 1, "unit": "conjunto"},
+          {"item": "ink_bottle", "item_pt": "garrafa de tinta", "quantity": 1},
+          {"item": "ink_pen", "item_pt": "caneta de tinta", "quantity": 1},
+          {"item": "lamp", "item_pt": "lamparina", "quantity": 1},
+          {"item": "oil_flask", "item_pt": "frasco de óleo", "quantity": 2},
+          {"item": "paper", "item_pt": "papel", "quantity": 5, "unit": "folhas"},
+          {"item": "perfume", "item_pt": "perfume", "quantity": 1, "unit": "frasco"},
+          {"item": "sealing_wax", "item_pt": "lacre de cera", "quantity": 1},
+          {"item": "soap", "item_pt": "sabão", "quantity": 1}
+        ]
+      },
+      {
+        "id": "dungeoneers_pack",
+        "name": "Pacote de Explorador de Masmorras",
+        "name_en": "Dungeoneer's Pack",
+        "cost_gp": 12,
+        "description": "Inclui uma mochila, um pé de cabra, um martelo, 10 pitons, 10 tochas, uma caixa de fogo, 10 dias de rações e um cantil. O pacote também tem 15 metros de corda de cânhamo amarrada ao lado dele.",
+        "items": [
+          {"item": "backpack", "item_pt": "mochila", "quantity": 1},
+          {"item": "crowbar", "item_pt": "pé de cabra", "quantity": 1},
+          {"item": "hammer", "item_pt": "martelo", "quantity": 1},
+          {"item": "piton", "item_pt": "piton", "quantity": 10},
+          {"item": "torch", "item_pt": "tocha", "quantity": 10},
+          {"item": "tinderbox", "item_pt": "caixa de fogo", "quantity": 1},
+          {"item": "rations", "item_pt": "rações", "quantity": 10, "unit": "dias"},
+          {"item": "waterskin", "item_pt": "cantil", "quantity": 1},
+          {"item": "rope_hempen", "item_pt": "corda de cânhamo", "quantity": 1, "unit": "15 metros", "note": "amarrada ao lado"}
+        ]
+      },
+      {
+        "id": "entertainers_pack",
+        "name": "Pacote de Artista",
+        "name_en": "Entertainer's Pack",
+        "cost_gp": 40,
+        "description": "Inclui uma mochila, um saco de dormir, 2 fantasias, 5 velas, 5 dias de rações, um cantil e um kit de disfarce.",
+        "items": [
+          {"item": "backpack", "item_pt": "mochila", "quantity": 1},
+          {"item": "bedroll", "item_pt": "saco de dormir", "quantity": 1},
+          {"item": "costume", "item_pt": "fantasia", "quantity": 2},
+          {"item": "candle", "item_pt": "vela", "quantity": 5},
+          {"item": "rations", "item_pt": "rações", "quantity": 5, "unit": "dias"},
+          {"item": "waterskin", "item_pt": "cantil", "quantity": 1},
+          {"item": "disguise_kit", "item_pt": "kit de disfarce", "quantity": 1}
+        ]
+      },
+      {
+        "id": "explorers_pack",
+        "name": "Pacote de Explorador",
+        "name_en": "Explorer's Pack",
+        "cost_gp": 10,
+        "description": "Inclui uma mochila, um saco de dormir, um kit de cozinha, uma caixa de fogo, 10 tochas, 10 dias de rações e um cantil. O pacote também tem 15 metros de corda de cânhamo amarrada ao lado dele.",
+        "items": [
+          {"item": "backpack", "item_pt": "mochila", "quantity": 1},
+          {"item": "bedroll", "item_pt": "saco de dormir", "quantity": 1},
+          {"item": "mess_kit", "item_pt": "kit de cozinha", "quantity": 1},
+          {"item": "tinderbox", "item_pt": "caixa de fogo", "quantity": 1},
+          {"item": "torch", "item_pt": "tocha", "quantity": 10},
+          {"item": "rations", "item_pt": "rações", "quantity": 10, "unit": "dias"},
+          {"item": "waterskin", "item_pt": "cantil", "quantity": 1},
+          {"item": "rope_hempen", "item_pt": "corda de cânhamo", "quantity": 1, "unit": "15 metros", "note": "amarrada ao lado"}
+        ]
+      },
+      {
+        "id": "priests_pack",
+        "name": "Pacote de Sacerdote",
+        "name_en": "Priest's Pack",
+        "cost_gp": 19,
+        "description": "Inclui uma mochila, um cobertor, 10 velas, uma caixa de fogo, uma caixa de esmolas, 2 blocos de incenso, um incensário, vestimentas, 2 dias de rações e um cantil.",
+        "items": [
+          {"item": "backpack", "item_pt": "mochila", "quantity": 1},
+          {"item": "blanket", "item_pt": "cobertor", "quantity": 1},
+          {"item": "candle", "item_pt": "vela", "quantity": 10},
+          {"item": "tinderbox", "item_pt": "caixa de fogo", "quantity": 1},
+          {"item": "alms_box", "item_pt": "caixa de esmolas", "quantity": 1},
+          {"item": "incense", "item_pt": "incenso", "quantity": 2, "unit": "blocos"},
+          {"item": "censer", "item_pt": "incensário", "quantity": 1},
+          {"item": "vestments", "item_pt": "vestimentas", "quantity": 1},
+          {"item": "rations", "item_pt": "rações", "quantity": 2, "unit": "dias"},
+          {"item": "waterskin", "item_pt": "cantil", "quantity": 1}
+        ]
+      },
+      {
+        "id": "scholars_pack",
+        "name": "Pacote de Erudito",
+        "name_en": "Scholar's Pack",
+        "cost_gp": 40,
+        "description": "Inclui uma mochila, um livro de conhecimento, uma garrafa de tinta, uma caneta de tinta, 10 folhas de pergaminho, um pequeno saco de areia e uma pequena faca.",
+        "items": [
+          {"item": "backpack", "item_pt": "mochila", "quantity": 1},
+          {"item": "book_of_lore", "item_pt": "livro de conhecimento", "quantity": 1},
+          {"item": "ink_bottle", "item_pt": "garrafa de tinta", "quantity": 1},
+          {"item": "ink_pen", "item_pt": "caneta de tinta", "quantity": 1},
+          {"item": "parchment", "item_pt": "pergaminho", "quantity": 10, "unit": "folhas"},
+          {"item": "sand_bag", "item_pt": "saco de areia", "quantity": 1, "note": "pequeno"},
+          {"item": "knife", "item_pt": "faca", "quantity": 1, "note": "pequena"}
+        ]
+      }
+    ]
+  }
+}

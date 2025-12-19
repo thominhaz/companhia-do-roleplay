@@ -1,0 +1,314 @@
+{
+  "tools": {
+    "name": "Ferramentas",
+    "name_en": "Tools",
+    "description_markdown": "Uma ferramenta ajuda você a fazer algo que você não conseguiria fazer de outra forma, como fabricar ou reparar um item, falsificar um documento ou arrombar uma fechadura. Sua raça, classe, antecedente ou talentos concedem proficiência com certas ferramentas. Proficiência com uma ferramenta permite que você adicione seu bônus de proficiência a qualquer teste de atributo que você faça usando aquela ferramenta. O uso de ferramentas não está vinculado a um único atributo, já que proficiência com uma ferramenta representa conhecimento mais amplo de seu uso. Por exemplo, o Mestre pode pedir que você faça um teste de Destreza para entalhar um detalhe fino com suas ferramentas de entalhador, ou um teste de Força para fazer algo com madeira particularmente dura.",
+    "artisan_tools": {
+      "name": "Ferramentas de Artesão",
+      "name_en": "Artisan's Tools",
+      "description_markdown": "Estas ferramentas especiais incluem os itens necessários para exercer um ofício ou comércio. A tabela mostra exemplos dos tipos mais comuns de ferramentas, cada uma fornecendo itens relacionados a um único ofício. Proficiência com um conjunto de ferramentas de artesão permite que você adicione seu bônus de proficiência a quaisquer testes de atributo que você faça usando as ferramentas em seu ofício. Cada tipo de ferramenta de artesão requer uma proficiência separada.",
+      "tools": [
+        {
+          "id": "alchemists_supplies",
+          "name": "Suprimentos de Alquimista",
+          "name_en": "Alchemist's Supplies",
+          "cost_gp": 50,
+          "weight_lb": 8,
+          "weight_kg": 3.6
+        },
+        {
+          "id": "brewers_supplies",
+          "name": "Suprimentos de Cervejeiro",
+          "name_en": "Brewer's Supplies",
+          "cost_gp": 20,
+          "weight_lb": 9,
+          "weight_kg": 4.1
+        },
+        {
+          "id": "calligraphers_supplies",
+          "name": "Suprimentos de Calígrafo",
+          "name_en": "Calligrapher's Supplies",
+          "cost_gp": 10,
+          "weight_lb": 5,
+          "weight_kg": 2.3
+        },
+        {
+          "id": "carpenters_tools",
+          "name": "Ferramentas de Carpinteiro",
+          "name_en": "Carpenter's Tools",
+          "cost_gp": 8,
+          "weight_lb": 6,
+          "weight_kg": 2.7
+        },
+        {
+          "id": "cartographers_tools",
+          "name": "Ferramentas de Cartógrafo",
+          "name_en": "Cartographer's Tools",
+          "cost_gp": 15,
+          "weight_lb": 6,
+          "weight_kg": 2.7
+        },
+        {
+          "id": "cobblers_tools",
+          "name": "Ferramentas de Sapateiro",
+          "name_en": "Cobbler's Tools",
+          "cost_gp": 5,
+          "weight_lb": 5,
+          "weight_kg": 2.3
+        },
+        {
+          "id": "cooks_utensils",
+          "name": "Utensílios de Cozinheiro",
+          "name_en": "Cook's Utensils",
+          "cost_gp": 1,
+          "weight_lb": 8,
+          "weight_kg": 3.6
+        },
+        {
+          "id": "glassblowers_tools",
+          "name": "Ferramentas de Soprador de Vidro",
+          "name_en": "Glassblower's Tools",
+          "cost_gp": 30,
+          "weight_lb": 5,
+          "weight_kg": 2.3
+        },
+        {
+          "id": "jewelers_tools",
+          "name": "Ferramentas de Joalheiro",
+          "name_en": "Jeweler's Tools",
+          "cost_gp": 25,
+          "weight_lb": 2,
+          "weight_kg": 0.9
+        },
+        {
+          "id": "leatherworkers_tools",
+          "name": "Ferramentas de Coureiro",
+          "name_en": "Leatherworker's Tools",
+          "cost_gp": 5,
+          "weight_lb": 5,
+          "weight_kg": 2.3
+        },
+        {
+          "id": "masons_tools",
+          "name": "Ferramentas de Pedreiro",
+          "name_en": "Mason's Tools",
+          "cost_gp": 10,
+          "weight_lb": 8,
+          "weight_kg": 3.6
+        },
+        {
+          "id": "painters_supplies",
+          "name": "Suprimentos de Pintor",
+          "name_en": "Painter's Supplies",
+          "cost_gp": 10,
+          "weight_lb": 5,
+          "weight_kg": 2.3
+        },
+        {
+          "id": "potters_tools",
+          "name": "Ferramentas de Oleiro",
+          "name_en": "Potter's Tools",
+          "cost_gp": 10,
+          "weight_lb": 3,
+          "weight_kg": 1.4
+        },
+        {
+          "id": "smiths_tools",
+          "name": "Ferramentas de Ferreiro",
+          "name_en": "Smith's Tools",
+          "cost_gp": 20,
+          "weight_lb": 8,
+          "weight_kg": 3.6
+        },
+        {
+          "id": "tinkers_tools",
+          "name": "Ferramentas de Funileiro",
+          "name_en": "Tinker's Tools",
+          "cost_gp": 50,
+          "weight_lb": 10,
+          "weight_kg": 4.5
+        },
+        {
+          "id": "weavers_tools",
+          "name": "Ferramentas de Tecelão",
+          "name_en": "Weaver's Tools",
+          "cost_gp": 1,
+          "weight_lb": 5,
+          "weight_kg": 2.3
+        },
+        {
+          "id": "woodcarvers_tools",
+          "name": "Ferramentas de Entalhador",
+          "name_en": "Woodcarver's Tools",
+          "cost_gp": 1,
+          "weight_lb": 5,
+          "weight_kg": 2.3
+        }
+      ]
+    },
+    "disguise_kit": {
+      "id": "disguise_kit",
+      "name": "Kit de Disfarce",
+      "name_en": "Disguise Kit",
+      "cost_gp": 25,
+      "weight_lb": 3,
+      "weight_kg": 1.4,
+      "description_markdown": "Esta bolsa de cosméticos, tintura de cabelo e pequenos adereços permite que você crie disfarces que mudam sua aparência física. Proficiência com este kit permite que você adicione seu bônus de proficiência a quaisquer testes de atributo que você faça para criar um disfarce visual."
+    },
+    "forgery_kit": {
+      "id": "forgery_kit",
+      "name": "Kit de Falsificação",
+      "name_en": "Forgery Kit",
+      "cost_gp": 15,
+      "weight_lb": 5,
+      "weight_kg": 2.3,
+      "description_markdown": "Esta pequena caixa contém uma variedade de papéis e pergaminhos, canetas e tintas, selos e lacre de cera, folhas de ouro e prata, e outros suprimentos necessários para criar falsificações convincentes de documentos físicos. Proficiência com este kit permite que você adicione seu bônus de proficiência a quaisquer testes de atributo que você faça para criar uma falsificação física de um documento."
+    },
+    "gaming_sets": {
+      "name": "Conjuntos de Jogo",
+      "name_en": "Gaming Sets",
+      "description_markdown": "Este item engloba uma ampla gama de peças de jogo, incluindo dados e baralhos de cartas (para jogos como Três Dragões Ante). Alguns exemplos comuns aparecem na tabela de Ferramentas, mas existem outros tipos de conjuntos de jogo. Se você é proficiente com um conjunto de jogo, você pode adicionar seu bônus de proficiência a testes de atributo que você faça para jogar um jogo com esse conjunto. Cada tipo de conjunto de jogo requer uma proficiência separada.",
+      "sets": [
+        {
+          "id": "dice_set",
+          "name": "Conjunto de Dados",
+          "name_en": "Dice Set",
+          "cost_gp": 0.1,
+          "weight_lb": 0,
+          "weight_kg": 0
+        },
+        {
+          "id": "playing_card_set",
+          "name": "Conjunto de Cartas de Jogo",
+          "name_en": "Playing Card Set",
+          "cost_gp": 0.5,
+          "weight_lb": 0,
+          "weight_kg": 0
+        }
+      ]
+    },
+    "herbalism_kit": {
+      "id": "herbalism_kit",
+      "name": "Kit de Herbalismo",
+      "name_en": "Herbalism Kit",
+      "cost_gp": 5,
+      "weight_lb": 3,
+      "weight_kg": 1.4,
+      "description_markdown": "Este kit contém uma variedade de instrumentos como tesouras, almofariz e pilão, e bolsas e frascos usados por herbalistas para criar remédios e poções. Proficiência com este kit permite que você adicione seu bônus de proficiência a quaisquer testes de atributo que você faça para identificar ou aplicar ervas. Além disso, proficiência com este kit é necessária para criar antitoxina e poções de cura."
+    },
+    "musical_instruments": {
+      "name": "Instrumentos Musicais",
+      "name_en": "Musical Instruments",
+      "description_markdown": "Vários dos tipos mais comuns de instrumentos musicais são mostrados na tabela como exemplos. Se você tem proficiência com um determinado instrumento musical, você pode adicionar seu bônus de proficiência a quaisquer testes de atributo que você faça para tocar música com o instrumento. Um bardo pode usar um instrumento musical como foco de conjuração. Cada tipo de instrumento musical requer uma proficiência separada.",
+      "instruments": [
+        {
+          "id": "bagpipes",
+          "name": "Gaita de Foles",
+          "name_en": "Bagpipes",
+          "cost_gp": 30,
+          "weight_lb": 6,
+          "weight_kg": 2.7
+        },
+        {
+          "id": "drum",
+          "name": "Tambor",
+          "name_en": "Drum",
+          "cost_gp": 6,
+          "weight_lb": 3,
+          "weight_kg": 1.4
+        },
+        {
+          "id": "dulcimer",
+          "name": "Saltério",
+          "name_en": "Dulcimer",
+          "cost_gp": 25,
+          "weight_lb": 10,
+          "weight_kg": 4.5
+        },
+        {
+          "id": "flute",
+          "name": "Flauta",
+          "name_en": "Flute",
+          "cost_gp": 2,
+          "weight_lb": 1,
+          "weight_kg": 0.45
+        },
+        {
+          "id": "lute",
+          "name": "Alaúde",
+          "name_en": "Lute",
+          "cost_gp": 35,
+          "weight_lb": 2,
+          "weight_kg": 0.9
+        },
+        {
+          "id": "lyre",
+          "name": "Lira",
+          "name_en": "Lyre",
+          "cost_gp": 30,
+          "weight_lb": 2,
+          "weight_kg": 0.9
+        },
+        {
+          "id": "horn",
+          "name": "Trompa",
+          "name_en": "Horn",
+          "cost_gp": 3,
+          "weight_lb": 2,
+          "weight_kg": 0.9
+        },
+        {
+          "id": "pan_flute",
+          "name": "Flauta de Pã",
+          "name_en": "Pan Flute",
+          "cost_gp": 12,
+          "weight_lb": 2,
+          "weight_kg": 0.9
+        },
+        {
+          "id": "shawm",
+          "name": "Charamela",
+          "name_en": "Shawm",
+          "cost_gp": 2,
+          "weight_lb": 1,
+          "weight_kg": 0.45
+        },
+        {
+          "id": "viol",
+          "name": "Viola",
+          "name_en": "Viol",
+          "cost_gp": 30,
+          "weight_lb": 1,
+          "weight_kg": 0.45
+        }
+      ]
+    },
+    "navigators_tools": {
+      "id": "navigators_tools",
+      "name": "Ferramentas de Navegador",
+      "name_en": "Navigator's Tools",
+      "cost_gp": 25,
+      "weight_lb": 2,
+      "weight_kg": 0.9,
+      "description_markdown": "Este conjunto de instrumentos é usado para navegação no mar. Proficiência com ferramentas de navegador permite que você trace o curso de um navio e siga cartas de navegação. Além disso, essas ferramentas permitem que você adicione seu bônus de proficiência a qualquer teste de atributo que você faça para evitar se perder no mar."
+    },
+    "poisoners_kit": {
+      "id": "poisoners_kit",
+      "name": "Kit de Envenenador",
+      "name_en": "Poisoner's Kit",
+      "cost_gp": 50,
+      "weight_lb": 2,
+      "weight_kg": 0.9,
+      "description_markdown": "Um kit de envenenador inclui os frascos, produtos químicos e outros equipamentos necessários para a criação de venenos. Proficiência com este kit permite que você adicione seu bônus de proficiência a quaisquer testes de atributo que você faça para fabricar ou usar venenos."
+    },
+    "thieves_tools": {
+      "id": "thieves_tools",
+      "name": "Ferramentas de Ladrão",
+      "name_en": "Thieves' Tools",
+      "cost_gp": 25,
+      "weight_lb": 1,
+      "weight_kg": 0.45,
+      "description_markdown": "Este conjunto de ferramentas inclui uma pequena lima, um conjunto de gazuas, um pequeno espelho montado em um cabo de metal, um conjunto de tesouras de lâminas estreitas e um par de alicates. Proficiência com estas ferramentas permite que você adicione seu bônus de proficiência a quaisquer testes de atributo que você faça para desarmar armadilhas ou abrir fechaduras."
+    }
+  }
+}

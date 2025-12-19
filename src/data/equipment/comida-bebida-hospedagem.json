@@ -1,0 +1,166 @@
+{
+  "food_drink_lodging": {
+    "name": "Comida, Bebida e Hospedagem",
+    "name_en": "Food, Drink, and Lodging",
+    "description_markdown": "A tabela de Comida, Bebida e Hospedagem fornece preços para itens alimentares individuais e hospedagem de uma única noite. Esses preços estão incluídos em suas despesas totais de estilo de vida.",
+    "drinks": {
+      "name": "Bebidas",
+      "name_en": "Drinks",
+      "items": [
+        {
+          "id": "ale_gallon",
+          "name": "Cerveja (galão / 3,8 litros)",
+          "name_en": "Ale (Gallon)",
+          "cost_gp": 0.2,
+          "cost_sp": 2
+        },
+        {
+          "id": "ale_mug",
+          "name": "Cerveja (caneca)",
+          "name_en": "Ale (Mug)",
+          "cost_gp": 0.04,
+          "cost_cp": 4
+        },
+        {
+          "id": "wine_common",
+          "name": "Vinho Comum (jarro)",
+          "name_en": "Wine, Common (pitcher)",
+          "cost_gp": 0.2,
+          "cost_sp": 2
+        },
+        {
+          "id": "wine_fine",
+          "name": "Vinho Fino (garrafa)",
+          "name_en": "Wine, Fine (bottle)",
+          "cost_gp": 10
+        }
+      ]
+    },
+    "food": {
+      "name": "Comida",
+      "name_en": "Food",
+      "items": [
+        {
+          "id": "banquet",
+          "name": "Banquete (por pessoa)",
+          "name_en": "Banquet (per person)",
+          "cost_gp": 10
+        },
+        {
+          "id": "bread",
+          "name": "Pão (naco)",
+          "name_en": "Bread (loaf)",
+          "cost_gp": 0.02,
+          "cost_cp": 2
+        },
+        {
+          "id": "cheese",
+          "name": "Queijo (pedaço)",
+          "name_en": "Cheese (hunk)",
+          "cost_gp": 0.1,
+          "cost_sp": 1
+        },
+        {
+          "id": "meat",
+          "name": "Carne (pedaço)",
+          "name_en": "Meat (chunk)",
+          "cost_gp": 0.3,
+          "cost_sp": 3
+        }
+      ]
+    },
+    "meals": {
+      "name": "Refeições (por dia)",
+      "name_en": "Meals (per day)",
+      "items": [
+        {
+          "id": "squalid",
+          "name": "Sórdida",
+          "name_en": "Squalid",
+          "cost_gp": 0.03,
+          "cost_cp": 3
+        },
+        {
+          "id": "poor",
+          "name": "Pobre",
+          "name_en": "Poor",
+          "cost_gp": 0.06,
+          "cost_cp": 6
+        },
+        {
+          "id": "modest",
+          "name": "Modesta",
+          "name_en": "Modest",
+          "cost_gp": 0.3,
+          "cost_sp": 3
+        },
+        {
+          "id": "comfortable",
+          "name": "Confortável",
+          "name_en": "Comfortable",
+          "cost_gp": 0.5,
+          "cost_sp": 5
+        },
+        {
+          "id": "wealthy",
+          "name": "Rica",
+          "name_en": "Wealthy",
+          "cost_gp": 0.8,
+          "cost_sp": 8
+        },
+        {
+          "id": "aristocratic",
+          "name": "Aristocrática",
+          "name_en": "Aristocratic",
+          "cost_gp": 2
+        }
+      ]
+    },
+    "lodging": {
+      "name": "Hospedagem em Estalagem (por dia)",
+      "name_en": "Inn Stay (per day)",
+      "items": [
+        {
+          "id": "squalid",
+          "name": "Sórdida",
+          "name_en": "Squalid",
+          "cost_gp": 0.07,
+          "cost_cp": 7
+        },
+        {
+          "id": "poor",
+          "name": "Pobre",
+          "name_en": "Poor",
+          "cost_gp": 0.1,
+          "cost_sp": 1
+        },
+        {
+          "id": "modest",
+          "name": "Modesta",
+          "name_en": "Modest",
+          "cost_gp": 0.5,
+          "cost_sp": 5
+        },
+        {
+          "id": "comfortable",
+          "name": "Confortável",
+          "name_en": "Comfortable",
+          "cost_gp": 0.8,
+          "cost_sp": 8
+        },
+        {
+          "id": "wealthy",
+          "name": "Rica",
+          "name_en": "Wealthy",
+          "cost_gp": 2
+        },
+        {
+          "id": "aristocratic",
+          "name": "Aristocrática",
+          "name_en": "Aristocratic",
+          "cost_gp": 4
+        }
+      ]
+    }
+  }
+}

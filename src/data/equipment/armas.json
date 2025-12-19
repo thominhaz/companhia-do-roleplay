@@ -1,0 +1,720 @@
+{
+  "weapon_categories": {
+    "simple": {
+      "name": "Armas Simples",
+      "name_en": "Simple Weapons",
+      "description": "A maioria das pessoas pode usar armas simples com proficiência. Essas armas incluem clavas, maças e outras armas frequentemente encontradas nas mãos de plebeus."
+    },
+    "martial": {
+      "name": "Armas Marciais",
+      "name_en": "Martial Weapons",
+      "description": "Armas marciais, incluindo espadas, machados e armas de haste, requerem treinamento mais especializado para usar efetivamente. A maioria dos guerreiros usa armas marciais porque essas armas colocam seu estilo de luta e treinamento para melhor uso."
+    }
+  },
+  "items": [
+    {
+      "id": "club",
+      "name": "Clava",
+      "name_en": "Club",
+      "category": "simple_melee",
+      "cost": {
+        "value": 1,
+        "currency": "sp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d4",
+        "type": "bludgeoning"
+      },
+      "properties": ["light"],
+      "description_markdown": "Uma clava é basicamente um pedaço grosso de madeira, às vezes com pontas ou saliências."
+    },
+    {
+      "id": "dagger",
+      "name": "Adaga",
+      "name_en": "Dagger",
+      "category": "simple_melee",
+      "cost": {
+        "value": 2,
+        "currency": "gp"
+      },
+      "weight": 0.5,
+      "damage": {
+        "dice": "1d4",
+        "type": "piercing"
+      },
+      "properties": ["finesse", "light", "thrown"],
+      "thrown": {
+        "range_normal": 6,
+        "range_max": 18
+      },
+      "description_markdown": "Uma adaga é uma lâmina curta e pontiaguda, útil tanto para ataques corpo a corpo quanto à distância."
+    },
+    {
+      "id": "greatclub",
+      "name": "Grande Clava",
+      "name_en": "Greatclub",
+      "category": "simple_melee",
+      "cost": {
+        "value": 2,
+        "currency": "sp"
+      },
+      "weight": 5,
+      "damage": {
+        "dice": "1d8",
+        "type": "bludgeoning"
+      },
+      "properties": ["two_handed"],
+      "description_markdown": "Uma grande clava é um tronco grande ou galho grosso usado como arma primitiva."
+    },
+    {
+      "id": "handaxe",
+      "name": "Machadinha",
+      "name_en": "Handaxe",
+      "category": "simple_melee",
+      "cost": {
+        "value": 5,
+        "currency": "gp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d6",
+        "type": "slashing"
+      },
+      "properties": ["light", "thrown"],
+      "thrown": {
+        "range_normal": 6,
+        "range_max": 18
+      },
+      "description_markdown": "Uma pequena e leve versão do machado de batalha, útil para arremesso."
+    },
+    {
+      "id": "javelin",
+      "name": "Azagaia",
+      "name_en": "Javelin",
+      "category": "simple_melee",
+      "cost": {
+        "value": 5,
+        "currency": "sp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "properties": ["thrown"],
+      "thrown": {
+        "range_normal": 9,
+        "range_max": 36
+      },
+      "description_markdown": "Uma azagaia é uma lança leve feita para arremesso."
+    },
+    {
+      "id": "light_hammer",
+      "name": "Martelo Leve",
+      "name_en": "Light Hammer",
+      "category": "simple_melee",
+      "cost": {
+        "value": 2,
+        "currency": "gp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d4",
+        "type": "bludgeoning"
+      },
+      "properties": ["light", "thrown"],
+      "thrown": {
+        "range_normal": 6,
+        "range_max": 18
+      },
+      "description_markdown": "Um martelo pequeno que pode ser usado em combate ou como ferramenta."
+    },
+    {
+      "id": "mace",
+      "name": "Maça",
+      "name_en": "Mace",
+      "category": "simple_melee",
+      "cost": {
+        "value": 5,
+        "currency": "gp"
+      },
+      "weight": 2,
+      "damage": {
+        "dice": "1d6",
+        "type": "bludgeoning"
+      },
+      "properties": [],
+      "description_markdown": "Uma maça é uma arma simples com uma cabeça pesada em uma das pontas de um cabo, usada para golpear."
+    },
+    {
+      "id": "quarterstaff",
+      "name": "Bordão",
+      "name_en": "Quarterstaff",
+      "category": "simple_melee",
+      "cost": {
+        "value": 2,
+        "currency": "sp"
+      },
+      "weight": 2,
+      "damage": {
+        "dice": "1d6",
+        "type": "bludgeoning"
+      },
+      "properties": ["versatile"],
+      "versatile": {
+        "dice": "1d8"
+      },
+      "description_markdown": "Um bordão é um cajado de madeira simples, geralmente usado como apoio para caminhadas mas efetivo como arma."
+    },
+    {
+      "id": "sickle",
+      "name": "Foice",
+      "name_en": "Sickle",
+      "category": "simple_melee",
+      "cost": {
+        "value": 1,
+        "currency": "gp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d4",
+        "type": "slashing"
+      },
+      "properties": ["light"],
+      "description_markdown": "Uma foice é uma ferramenta agrícola com uma lâmina curva e afiada."
+    },
+    {
+      "id": "spear",
+      "name": "Lança",
+      "name_en": "Spear",
+      "category": "simple_melee",
+      "cost": {
+        "value": 1,
+        "currency": "gp"
+      },
+      "weight": 1.5,
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "properties": ["thrown", "versatile"],
+      "thrown": {
+        "range_normal": 6,
+        "range_max": 18
+      },
+      "versatile": {
+        "dice": "1d8"
+      },
+      "description_markdown": "Uma lança é uma arma de haste simples com uma ponta afiada."
+    },
+    {
+      "id": "light_crossbow",
+      "name": "Besta Leve",
+      "name_en": "Light Crossbow",
+      "category": "simple_ranged",
+      "cost": {
+        "value": 25,
+        "currency": "gp"
+      },
+      "weight": 2.5,
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "properties": ["ammunition", "loading", "two_handed"],
+      "range": {
+        "normal": 24,
+        "max": 96
+      },
+      "description_markdown": "Uma besta leve é uma arma de projéteis mecânica, requerendo recarga após cada disparo."
+    },
+    {
+      "id": "dart",
+      "name": "Dardo",
+      "name_en": "Dart",
+      "category": "simple_ranged",
+      "cost": {
+        "value": 5,
+        "currency": "cp"
+      },
+      "weight": 0.125,
+      "damage": {
+        "dice": "1d4",
+        "type": "piercing"
+      },
+      "properties": ["finesse", "thrown"],
+      "thrown": {
+        "range_normal": 6,
+        "range_max": 18
+      },
+      "description_markdown": "Um pequeno projétil pontiagudo feito para arremesso."
+    },
+    {
+      "id": "shortbow",
+      "name": "Arco Curto",
+      "name_en": "Shortbow",
+      "category": "simple_ranged",
+      "cost": {
+        "value": 25,
+        "currency": "gp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "properties": ["ammunition", "two_handed"],
+      "range": {
+        "normal": 24,
+        "max": 96
+      },
+      "description_markdown": "Um arco menor e mais manobrável que o arco longo."
+    },
+    {
+      "id": "sling",
+      "name": "Funda",
+      "name_en": "Sling",
+      "category": "simple_ranged",
+      "cost": {
+        "value": 1,
+        "currency": "sp"
+      },
+      "weight": 0,
+      "damage": {
+        "dice": "1d4",
+        "type": "bludgeoning"
+      },
+      "properties": ["ammunition"],
+      "range": {
+        "normal": 9,
+        "max": 36
+      },
+      "description_markdown": "Uma tira de couro ou tecido usada para arremessar pedras ou projéteis de chumbo."
+    },
+    {
+      "id": "battleaxe",
+      "name": "Machado de Batalha",
+      "name_en": "Battleaxe",
+      "category": "martial_melee",
+      "cost": {
+        "value": 10,
+        "currency": "gp"
+      },
+      "weight": 2,
+      "damage": {
+        "dice": "1d8",
+        "type": "slashing"
+      },
+      "properties": ["versatile"],
+      "versatile": {
+        "dice": "1d10"
+      },
+      "description_markdown": "Um machado de guerra com uma lâmina larga e pesada."
+    },
+    {
+      "id": "flail",
+      "name": "Mangual",
+      "name_en": "Flail",
+      "category": "martial_melee",
+      "cost": {
+        "value": 10,
+        "currency": "gp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d8",
+        "type": "bludgeoning"
+      },
+      "properties": [],
+      "description_markdown": "Uma arma com uma cabeça de metal pesada presa a um cabo por uma corrente ou tira de couro."
+    },
+    {
+      "id": "glaive",
+      "name": "Glaive",
+      "name_en": "Glaive",
+      "category": "martial_melee",
+      "cost": {
+        "value": 20,
+        "currency": "gp"
+      },
+      "weight": 3,
+      "damage": {
+        "dice": "1d10",
+        "type": "slashing"
+      },
+      "properties": ["heavy", "reach", "two_handed"],
+      "description_markdown": "Uma arma de haste com uma lâmina de espada montada no final de uma longa haste."
+    },
+    {
+      "id": "greataxe",
+      "name": "Machado Grande",
+      "name_en": "Greataxe",
+      "category": "martial_melee",
+      "cost": {
+        "value": 30,
+        "currency": "gp"
+      },
+      "weight": 3.5,
+      "damage": {
+        "dice": "1d12",
+        "type": "slashing"
+      },
+      "properties": ["heavy", "two_handed"],
+      "description_markdown": "Um machado grande e pesado que requer duas mãos para ser manejado efetivamente."
+    },
+    {
+      "id": "greatsword",
+      "name": "Espada Grande",
+      "name_en": "Greatsword",
+      "category": "martial_melee",
+      "cost": {
+        "value": 50,
+        "currency": "gp"
+      },
+      "weight": 3,
+      "damage": {
+        "dice": "2d6",
+        "type": "slashing"
+      },
+      "properties": ["heavy", "two_handed"],
+      "description_markdown": "Uma espada longa e pesada com lâmina dupla, requerendo duas mãos."
+    },
+    {
+      "id": "halberd",
+      "name": "Alabarda",
+      "name_en": "Halberd",
+      "category": "martial_melee",
+      "cost": {
+        "value": 20,
+        "currency": "gp"
+      },
+      "weight": 3,
+      "damage": {
+        "dice": "1d10",
+        "type": "slashing"
+      },
+      "properties": ["heavy", "reach", "two_handed"],
+      "description_markdown": "Uma arma de haste combinando uma lâmina de machado com uma ponta de lança e um gancho."
+    },
+    {
+      "id": "lance",
+      "name": "Lança de Montaria",
+      "name_en": "Lance",
+      "category": "martial_melee",
+      "cost": {
+        "value": 10,
+        "currency": "gp"
+      },
+      "weight": 3,
+      "damage": {
+        "dice": "1d12",
+        "type": "piercing"
+      },
+      "properties": ["reach", "special"],
+      "description_markdown": "Uma lança longa e pesada projetada para uso montado.\n\n**Especial:** Você tem **desvantagem** ao usar uma lança para atacar um alvo a menos de **1,5 m** de você. Também requer **duas mãos** quando você não está montado."
+    },
+    {
+      "id": "longsword",
+      "name": "Espada Longa",
+      "name_en": "Longsword",
+      "category": "martial_melee",
+      "cost": {
+        "value": 15,
+        "currency": "gp"
+      },
+      "weight": 1.5,
+      "damage": {
+        "dice": "1d8",
+        "type": "slashing"
+      },
+      "properties": ["versatile"],
+      "versatile": {
+        "dice": "1d10"
+      },
+      "description_markdown": "Uma espada clássica com lâmina reta de aproximadamente 90 cm de comprimento."
+    },
+    {
+      "id": "maul",
+      "name": "Marreta",
+      "name_en": "Maul",
+      "category": "martial_melee",
+      "cost": {
+        "value": 10,
+        "currency": "gp"
+      },
+      "weight": 5,
+      "damage": {
+        "dice": "2d6",
+        "type": "bludgeoning"
+      },
+      "properties": ["heavy", "two_handed"],
+      "description_markdown": "Um grande martelo de duas mãos usado para esmagar armaduras e ossos."
+    },
+    {
+      "id": "morningstar",
+      "name": "Maça Estrela",
+      "name_en": "Morningstar",
+      "category": "martial_melee",
+      "cost": {
+        "value": 15,
+        "currency": "gp"
+      },
+      "weight": 2,
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "properties": [],
+      "description_markdown": "Uma maça com uma cabeça coberta de pontas afiadas."
+    },
+    {
+      "id": "pike",
+      "name": "Pique",
+      "name_en": "Pike",
+      "category": "martial_melee",
+      "cost": {
+        "value": 5,
+        "currency": "gp"
+      },
+      "weight": 9,
+      "damage": {
+        "dice": "1d10",
+        "type": "piercing"
+      },
+      "properties": ["heavy", "reach", "two_handed"],
+      "description_markdown": "Uma lança muito longa usada por formações de infantaria."
+    },
+    {
+      "id": "rapier",
+      "name": "Rapieira",
+      "name_en": "Rapier",
+      "category": "martial_melee",
+      "cost": {
+        "value": 25,
+        "currency": "gp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "properties": ["finesse"],
+      "description_markdown": "Uma espada fina e elegante projetada para estocadas precisas."
+    },
+    {
+      "id": "scimitar",
+      "name": "Cimitarra",
+      "name_en": "Scimitar",
+      "category": "martial_melee",
+      "cost": {
+        "value": 25,
+        "currency": "gp"
+      },
+      "weight": 1.5,
+      "damage": {
+        "dice": "1d6",
+        "type": "slashing"
+      },
+      "properties": ["finesse", "light"],
+      "description_markdown": "Uma espada curva de lâmina única, rápida e eficaz."
+    },
+    {
+      "id": "shortsword",
+      "name": "Espada Curta",
+      "name_en": "Shortsword",
+      "category": "martial_melee",
+      "cost": {
+        "value": 10,
+        "currency": "gp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "properties": ["finesse", "light"],
+      "description_markdown": "Uma espada mais curta que a espada longa, ideal para combate em espaços apertados."
+    },
+    {
+      "id": "trident",
+      "name": "Tridente",
+      "name_en": "Trident",
+      "category": "martial_melee",
+      "cost": {
+        "value": 5,
+        "currency": "gp"
+      },
+      "weight": 2,
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "properties": ["thrown", "versatile"],
+      "thrown": {
+        "range_normal": 6,
+        "range_max": 18
+      },
+      "versatile": {
+        "dice": "1d8"
+      },
+      "description_markdown": "Uma lança de três pontas frequentemente associada com divindades marinhas."
+    },
+    {
+      "id": "war_pick",
+      "name": "Picareta de Guerra",
+      "name_en": "War Pick",
+      "category": "martial_melee",
+      "cost": {
+        "value": 5,
+        "currency": "gp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "properties": [],
+      "description_markdown": "Uma arma com uma ponta afiada e pesada projetada para perfurar armaduras."
+    },
+    {
+      "id": "warhammer",
+      "name": "Martelo de Guerra",
+      "name_en": "Warhammer",
+      "category": "martial_melee",
+      "cost": {
+        "value": 15,
+        "currency": "gp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d8",
+        "type": "bludgeoning"
+      },
+      "properties": ["versatile"],
+      "versatile": {
+        "dice": "1d10"
+      },
+      "description_markdown": "Um martelo de guerra equilibrado para combate."
+    },
+    {
+      "id": "whip",
+      "name": "Chicote",
+      "name_en": "Whip",
+      "category": "martial_melee",
+      "cost": {
+        "value": 2,
+        "currency": "gp"
+      },
+      "weight": 1.5,
+      "damage": {
+        "dice": "1d4",
+        "type": "slashing"
+      },
+      "properties": ["finesse", "reach"],
+      "description_markdown": "Uma tira longa de couro trançado ou corda usada como arma."
+    },
+    {
+      "id": "blowgun",
+      "name": "Zarabatana",
+      "name_en": "Blowgun",
+      "category": "martial_ranged",
+      "cost": {
+        "value": 10,
+        "currency": "gp"
+      },
+      "weight": 0.5,
+      "damage": {
+        "dice": "1",
+        "type": "piercing"
+      },
+      "properties": ["ammunition", "loading"],
+      "range": {
+        "normal": 7.5,
+        "max": 30
+      },
+      "description_markdown": "Um tubo através do qual você sopra pequenos dardos, frequentemente envenenados."
+    },
+    {
+      "id": "hand_crossbow",
+      "name": "Besta de Mão",
+      "name_en": "Hand Crossbow",
+      "category": "martial_ranged",
+      "cost": {
+        "value": 75,
+        "currency": "gp"
+      },
+      "weight": 1.5,
+      "damage": {
+        "dice": "1d6",
+        "type": "piercing"
+      },
+      "properties": ["ammunition", "light", "loading"],
+      "range": {
+        "normal": 9,
+        "max": 36
+      },
+      "description_markdown": "Uma besta pequena que pode ser segurada e disparada com uma mão."
+    },
+    {
+      "id": "heavy_crossbow",
+      "name": "Besta Pesada",
+      "name_en": "Heavy Crossbow",
+      "category": "martial_ranged",
+      "cost": {
+        "value": 50,
+        "currency": "gp"
+      },
+      "weight": 9,
+      "damage": {
+        "dice": "1d10",
+        "type": "piercing"
+      },
+      "properties": ["ammunition", "heavy", "loading", "two_handed"],
+      "range": {
+        "normal": 30,
+        "max": 120
+      },
+      "description_markdown": "Uma besta grande e poderosa que dispara virotes pesados."
+    },
+    {
+      "id": "longbow",
+      "name": "Arco Longo",
+      "name_en": "Longbow",
+      "category": "martial_ranged",
+      "cost": {
+        "value": 50,
+        "currency": "gp"
+      },
+      "weight": 1,
+      "damage": {
+        "dice": "1d8",
+        "type": "piercing"
+      },
+      "properties": ["ammunition", "heavy", "two_handed"],
+      "range": {
+        "normal": 45,
+        "max": 180
+      },
+      "description_markdown": "Um arco grande e poderoso com longo alcance."
+    },
+    {
+      "id": "net",
+      "name": "Rede",
+      "name_en": "Net",
+      "category": "martial_ranged",
+      "cost": {
+        "value": 1,
+        "currency": "gp"
+      },
+      "weight": 1.5,
+      "damage": null,
+      "properties": ["special", "thrown"],
+      "thrown": {
+        "range_normal": 1.5,
+        "range_max": 4.5
+      },
+      "description_markdown": "Uma criatura **Grande** ou menor atingida por uma rede fica **impedida** até ser libertada.\n\n**Especial:** Uma rede não tem efeito em criaturas sem forma ou criaturas **Enormes** ou maiores. Uma criatura pode usar sua ação para fazer um teste de **Força CD 10**, libertando a si mesma ou outra criatura ao alcance em um sucesso.\n\nCausar **5 de dano cortante** à rede (CA 10) também liberta a criatura sem machucá-la, terminando o efeito e destruindo a rede.\n\nQuando você usa uma ação, ação bônus ou reação para atacar com uma rede, você pode fazer apenas **um ataque** independentemente do número de ataques que normalmente pode fazer."
+    }
+  ]
+}
