@@ -1,0 +1,236 @@
+{
+  "multiclassing": {
+    "name": "Multiclasse",
+    "name_en": "Multiclassing",
+    "description_markdown": "Multiclasse permite que você ganhe níveis em múltiplas classes. Fazer isso permite que você misture as habilidades dessas classes para realizar um conceito de personagem que pode não ser refletido em uma das opções de classe padrão.\n\nCom esta regra, você tem a opção de ganhar um nível em uma nova classe sempre que avançar de nível, em vez de ganhar um nível em sua classe atual. Seus níveis em todas as suas classes são somados para determinar o nível do seu personagem. Por exemplo, se você tem três níveis em mago e dois em guerreiro, você é um personagem de 5º nível.\n\nConforme você avança de nível, você pode permanecer principalmente um membro de sua classe original com apenas alguns níveis em outra classe, ou pode mudar de curso completamente, nunca olhando para trás para a classe que deixou. Você pode até começar a progredir em uma terceira ou quarta classe. Comparado a um personagem de classe única do mesmo nível, você sacrificará algum foco em troca de versatilidade.",
+    "prerequisites": {
+      "name": "Pré-requisitos",
+      "name_en": "Prerequisites",
+      "description_markdown": "Para se qualificar para uma nova classe, você deve atender aos pré-requisitos de valor de atributo tanto para sua classe atual quanto para sua nova classe, conforme mostrado na tabela de Pré-requisitos de Multiclasse. Por exemplo, um bárbaro que decide multiclasse na classe druida deve ter valores de Força e Sabedoria de 13 ou mais.\n\nSem o treinamento completo que um personagem iniciante recebe, você deve ser um estudante rápido em sua nova classe, tendo uma aptidão natural que é refletida por valores de atributo acima da média.",
+      "requirements": [
+        {
+          "class": "barbarian",
+          "class_pt": "Bárbaro",
+          "ability_score_minimum": {
+            "strength": 13
+          }
+        },
+        {
+          "class": "bard",
+          "class_pt": "Bardo",
+          "ability_score_minimum": {
+            "charisma": 13
+          }
+        },
+        {
+          "class": "cleric",
+          "class_pt": "Clérigo",
+          "ability_score_minimum": {
+            "wisdom": 13
+          }
+        },
+        {
+          "class": "druid",
+          "class_pt": "Druida",
+          "ability_score_minimum": {
+            "wisdom": 13
+          }
+        },
+        {
+          "class": "fighter",
+          "class_pt": "Guerreiro",
+          "ability_score_minimum": {
+            "strength_or_dexterity": 13
+          }
+        },
+        {
+          "class": "monk",
+          "class_pt": "Monge",
+          "ability_score_minimum": {
+            "dexterity": 13,
+            "wisdom": 13
+          }
+        },
+        {
+          "class": "paladin",
+          "class_pt": "Paladino",
+          "ability_score_minimum": {
+            "strength": 13,
+            "charisma": 13
+          }
+        },
+        {
+          "class": "ranger",
+          "class_pt": "Patrulheiro",
+          "ability_score_minimum": {
+            "dexterity": 13,
+            "wisdom": 13
+          }
+        },
+        {
+          "class": "rogue",
+          "class_pt": "Ladino",
+          "ability_score_minimum": {
+            "dexterity": 13
+          }
+        },
+        {
+          "class": "sorcerer",
+          "class_pt": "Feiticeiro",
+          "ability_score_minimum": {
+            "charisma": 13
+          }
+        },
+        {
+          "class": "warlock",
+          "class_pt": "Bruxo",
+          "ability_score_minimum": {
+            "charisma": 13
+          }
+        },
+        {
+          "class": "wizard",
+          "class_pt": "Mago",
+          "ability_score_minimum": {
+            "intelligence": 13
+          }
+        }
+      ]
+    },
+    "experience_points": {
+      "name": "Pontos de Experiência",
+      "name_en": "Experience Points",
+      "description_markdown": "O custo em pontos de experiência para ganhar um nível é sempre baseado no seu nível total de personagem, conforme mostrado na tabela de Avanço de Personagem, não no seu nível em uma classe específica. Então, se você é um clérigo 6/guerreiro 1, você deve ganhar XP suficiente para alcançar o 8º nível antes de poder pegar seu segundo nível como guerreiro ou seu sétimo nível como clérigo."
+    },
+    "hit_points_and_hit_dice": {
+      "name": "Pontos de Vida e Dados de Vida",
+      "name_en": "Hit Points and Hit Dice",
+      "description_markdown": "Você ganha os pontos de vida de sua nova classe conforme descrito para níveis após o 1º. Você ganha os pontos de vida de 1º nível de uma classe apenas quando você é um personagem de 1º nível.\n\nVocê soma os Dados de Vida concedidos por todas as suas classes para formar seu conjunto de Dados de Vida. Se os Dados de Vida são do mesmo tipo de dado, você pode simplesmente agrupá-los. Por exemplo, tanto o guerreiro quanto o paladino têm um d10, então se você é um paladino 5/guerreiro 5, você tem dez d10 de Dados de Vida. Se suas classes dão Dados de Vida de tipos diferentes, mantenha o controle deles separadamente. Se você é um paladino 5/clérigo 5, por exemplo, você tem cinco d10 de Dados de Vida e cinco d8 de Dados de Vida."
+    },
+    "proficiency_bonus": {
+      "name": "Bônus de Proficiência",
+      "name_en": "Proficiency Bonus",
+      "description_markdown": "Seu bônus de proficiência é sempre baseado no seu nível total de personagem, conforme mostrado na tabela de Avanço de Personagem, não no seu nível em uma classe específica. Por exemplo, se você é um guerreiro 3/ladino 2, você tem o bônus de proficiência de um personagem de 5º nível, que é +3."
+    },
+    "proficiencies": {
+      "name": "Proficiências",
+      "name_en": "Proficiencies",
+      "description_markdown": "Quando você ganha seu primeiro nível em uma classe diferente de sua classe inicial, você ganha apenas algumas das proficiências iniciais da nova classe, conforme mostrado na tabela de Proficiências de Multiclasse.",
+      "proficiencies_gained": [
+        {
+          "class": "barbarian",
+          "class_pt": "Bárbaro",
+          "proficiencies": "Escudos, armas simples, armas marciais"
+        },
+        {
+          "class": "bard",
+          "class_pt": "Bardo",
+          "proficiencies": "Armadura leve, uma perícia à sua escolha, um instrumento musical à sua escolha"
+        },
+        {
+          "class": "cleric",
+          "class_pt": "Clérigo",
+          "proficiencies": "Armadura leve, armadura média, escudos"
+        },
+        {
+          "class": "druid",
+          "class_pt": "Druida",
+          "proficiencies": "Armadura leve, armadura média, escudos (druidas não usarão armadura ou escudos feitos de metal)"
+        },
+        {
+          "class": "fighter",
+          "class_pt": "Guerreiro",
+          "proficiencies": "Armadura leve, armadura média, escudos, armas simples, armas marciais"
+        },
+        {
+          "class": "monk",
+          "class_pt": "Monge",
+          "proficiencies": "Armas simples, espadas curtas"
+        },
+        {
+          "class": "paladin",
+          "class_pt": "Paladino",
+          "proficiencies": "Armadura leve, armadura média, escudos, armas simples, armas marciais"
+        },
+        {
+          "class": "ranger",
+          "class_pt": "Patrulheiro",
+          "proficiencies": "Armadura leve, armadura média, escudos, armas simples, armas marciais, uma perícia da lista de perícias da classe"
+        },
+        {
+          "class": "rogue",
+          "class_pt": "Ladino",
+          "proficiencies": "Armadura leve, uma perícia da lista de perícias da classe, ferramentas de ladrão"
+        },
+        {
+          "class": "sorcerer",
+          "class_pt": "Feiticeiro",
+          "proficiencies": "—"
+        },
+        {
+          "class": "warlock",
+          "class_pt": "Bruxo",
+          "proficiencies": "Armadura leve, armas simples"
+        },
+        {
+          "class": "wizard",
+          "class_pt": "Mago",
+          "proficiencies": "—"
+        }
+      ]
+    },
+    "class_features": {
+      "name": "Características de Classe",
+      "name_en": "Class Features",
+      "description_markdown": "Quando você ganha um novo nível em uma classe, você obtém suas características para aquele nível. Você não recebe, no entanto, o equipamento inicial da classe, e algumas características têm regras adicionais quando você está em multiclasse: Canalizar Divindade, Ataque Extra, Defesa sem Armadura e Conjuração.",
+      "special_rules": {
+        "channel_divinity": {
+          "name": "Canalizar Divindade",
+          "name_en": "Channel Divinity",
+          "description_markdown": "Se você já tem a característica Canalizar Divindade e ganha um nível em uma classe que também concede a característica, você ganha os efeitos de Canalizar Divindade concedidos por aquela classe, mas obter a característica novamente não lhe dá um uso adicional dela. Você ganha usos adicionais apenas quando alcança um nível de classe que explicitamente os concede a você. Por exemplo, se você é um clérigo 6/paladino 4, você pode usar Canalizar Divindade duas vezes entre descansos porque você tem nível alto o suficiente na classe clérigo para ter mais usos. Sempre que você usa a característica, você pode escolher qualquer um dos efeitos de Canalizar Divindade disponíveis para você de suas duas classes."
+        },
+        "extra_attack": {
+          "name": "Ataque Extra",
+          "name_en": "Extra Attack",
+          "description_markdown": "Se você ganha a característica de classe Ataque Extra de mais de uma classe, as características não se somam. Você não pode fazer mais de dois ataques com esta característica, a menos que ela diga que você pode (como a versão do guerreiro de Ataque Extra faz). Da mesma forma, a invocação mística do bruxo Lâmina Sedenta não lhe dá ataques adicionais se você também tem Ataque Extra."
+        },
+        "unarmored_defense": {
+          "name": "Defesa sem Armadura",
+          "name_en": "Unarmored Defense",
+          "description_markdown": "Se você já tem a característica Defesa sem Armadura, você não pode ganhá-la novamente de outra classe."
+        },
+        "spellcasting": {
+          "name": "Conjuração",
+          "name_en": "Spellcasting",
+          "description_markdown": "Sua capacidade de conjuração depende parcialmente de seus níveis combinados em todas as suas classes de conjuração e parcialmente de seus níveis individuais nessas classes. Uma vez que você tem a característica Conjuração de mais de uma classe, use as regras abaixo. Se você multiclasse mas tem a característica Conjuração de apenas uma classe, você segue as regras conforme descrito naquela classe.\n\n**Magias Conhecidas e Preparadas.** Você determina quais magias você conhece e pode preparar para cada classe individualmente, como se você fosse um membro de classe única daquela classe. Se você é um patrulheiro 4/mago 3, por exemplo, você conhece três magias de patrulheiro de 1º nível baseadas em seus níveis na classe patrulheiro. Como um mago de 3º nível, você conhece três truques de mago, e seu grimório contém dez magias de mago, duas das quais (as duas que você ganhou quando alcançou o 3º nível como mago) podem ser magias de 2º nível. Se sua Inteligência é 16, você pode preparar seis magias de mago de seu grimório.\n\nCada magia que você conhece e prepara está associada a uma de suas classes, e você usa a habilidade de conjuração daquela classe quando você conjura a magia. Da mesma forma, um foco de conjuração, como um símbolo sagrado, pode ser usado apenas para as magias da classe associada a esse foco.\n\n**Espaços de Magia.** Você determina seus espaços de magia disponíveis somando todos os seus níveis nas classes bardo, clérigo, druida, feiticeiro e mago, e metade de seus níveis (arredondados para baixo) nas classes paladino e patrulheiro. Use este total para determinar seus espaços de magia consultando a tabela de Conjurador Multiclasse.\n\nSe você tem mais de uma classe de conjuração, esta tabela pode lhe dar espaços de magia de um nível que é maior do que as magias que você conhece ou pode preparar. Você pode usar esses espaços, mas apenas para conjurar suas magias de nível inferior. Se uma magia de nível inferior que você conjura, como mãos flamejantes, tem um efeito aumentado quando conjurada usando um espaço de nível superior, você pode usar o efeito aumentado, mesmo que você não tenha magias daquele nível superior.\n\nPor exemplo, se você é o patrulheiro 4/mago 3 mencionado acima, você conta como um personagem de 5º nível ao determinar seus espaços de magia: você tem quatro espaços de 1º nível, três espaços de 2º nível e dois espaços de 3º nível. No entanto, você não conhece nenhuma magia de 3º nível, nem conhece nenhuma magia de patrulheiro de 2º nível. Você pode usar os espaços de magia desses níveis para conjurar as magias que você conhece—e potencialmente aumentar seus efeitos.\n\n**Magia de Pacto.** Se você tem tanto a característica de classe Conjuração quanto a característica de classe Magia de Pacto da classe bruxo, você pode usar os espaços de magia que você ganha da característica Magia de Pacto para conjurar magias que você conhece ou preparou de classes com a característica Conjuração, e você pode usar os espaços de magia que você ganha da característica Conjuração para conjurar magias de bruxo que você conhece.",
+          "spell_slots_table": {
+            "name": "Conjurador Multiclasse: Espaços de Magia por Nível de Magia",
+            "name_en": "Multiclass Spellcaster: Spell Slots per Spell Level",
+            "levels": [
+              {"level": 1, "1st": 2, "2nd": 0, "3rd": 0, "4th": 0, "5th": 0, "6th": 0, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 2, "1st": 3, "2nd": 0, "3rd": 0, "4th": 0, "5th": 0, "6th": 0, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 3, "1st": 4, "2nd": 2, "3rd": 0, "4th": 0, "5th": 0, "6th": 0, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 4, "1st": 4, "2nd": 3, "3rd": 0, "4th": 0, "5th": 0, "6th": 0, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 5, "1st": 4, "2nd": 3, "3rd": 2, "4th": 0, "5th": 0, "6th": 0, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 6, "1st": 4, "2nd": 3, "3rd": 3, "4th": 0, "5th": 0, "6th": 0, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 7, "1st": 4, "2nd": 3, "3rd": 3, "4th": 1, "5th": 0, "6th": 0, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 8, "1st": 4, "2nd": 3, "3rd": 3, "4th": 2, "5th": 0, "6th": 0, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 9, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 1, "6th": 0, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 10, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 0, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 11, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 12, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 0, "8th": 0, "9th": 0},
+              {"level": 13, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 0, "9th": 0},
+              {"level": 14, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 0, "9th": 0},
+              {"level": 15, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1, "9th": 0},
+              {"level": 16, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1, "9th": 0},
+              {"level": 17, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 2, "6th": 1, "7th": 1, "8th": 1, "9th": 1},
+              {"level": 18, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 1, "7th": 1, "8th": 1, "9th": 1},
+              {"level": 19, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 2, "7th": 1, "8th": 1, "9th": 1},
+              {"level": 20, "1st": 4, "2nd": 3, "3rd": 3, "4th": 3, "5th": 3, "6th": 2, "7th": 2, "8th": 1, "9th": 1}
+            ]
+          }
+        }
+      }
+    }
+  }
+}

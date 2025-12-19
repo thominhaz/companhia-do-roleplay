@@ -1,0 +1,104 @@
+{
+  "alignment": {
+    "name": "Alinhamento",
+    "name_en": "Alignment",
+    "description_markdown": "Uma criatura típica no mundo do jogo tem um alinhamento, que descreve amplamente suas atitudes morais e pessoais. O alinhamento é uma combinação de dois fatores: um identifica moralidade (bom, mau ou neutro), e o outro descreve atitudes em relação à sociedade e ordem (leal, caótico ou neutro). Assim, nove alinhamentos distintos definem as possíveis combinações.\n\nEstes breves resumos dos nove alinhamentos descrevem o comportamento típico de uma criatura com aquele alinhamento. Indivíduos podem variar significativamente desse comportamento típico, e poucas pessoas são perfeitamente e consistentemente fiéis aos preceitos de seu alinhamento.",
+    "alignments": [
+      {
+        "id": "lawful_good",
+        "name": "Leal e Bom",
+        "name_en": "Lawful Good",
+        "abbreviation": "LB",
+        "abbreviation_en": "LG",
+        "description_markdown": "Criaturas leais e boas podem ser contadas para fazer a coisa certa como esperado pela sociedade. Dragões de ouro, paladinos e a maioria dos anões são leais e bons.",
+        "moral_axis": "good",
+        "order_axis": "lawful"
+      },
+      {
+        "id": "neutral_good",
+        "name": "Neutro e Bom",
+        "name_en": "Neutral Good",
+        "abbreviation": "NB",
+        "abbreviation_en": "NG",
+        "description_markdown": "Pessoas neutras e boas fazem o melhor que podem para ajudar os outros de acordo com suas necessidades. Muitos celestiais, alguns gigantes das nuvens e a maioria dos gnomos são neutros e bons.",
+        "moral_axis": "good",
+        "order_axis": "neutral"
+      },
+      {
+        "id": "chaotic_good",
+        "name": "Caótico e Bom",
+        "name_en": "Chaotic Good",
+        "abbreviation": "CB",
+        "abbreviation_en": "CG",
+        "description_markdown": "Criaturas caóticas e boas agem conforme sua consciência dirige, com pouca consideração pelo que os outros esperam. Dragões de cobre, muitos elfos e unicórnios são caóticos e bons.",
+        "moral_axis": "good",
+        "order_axis": "chaotic"
+      },
+      {
+        "id": "lawful_neutral",
+        "name": "Leal e Neutro",
+        "name_en": "Lawful Neutral",
+        "abbreviation": "LN",
+        "abbreviation_en": "LN",
+        "description_markdown": "Indivíduos leais e neutros agem de acordo com a lei, tradição ou códigos pessoais. Muitos monges e alguns magos são leais e neutros.",
+        "moral_axis": "neutral",
+        "order_axis": "lawful"
+      },
+      {
+        "id": "neutral",
+        "name": "Neutro",
+        "name_en": "Neutral",
+        "abbreviation": "N",
+        "abbreviation_en": "N",
+        "description_markdown": "Neutro é o alinhamento daqueles que preferem se afastar de questões morais e não tomar lados, fazendo o que parece melhor no momento. Homens-lagarto, a maioria dos druidas e muitos humanos são neutros.",
+        "moral_axis": "neutral",
+        "order_axis": "neutral"
+      },
+      {
+        "id": "chaotic_neutral",
+        "name": "Caótico e Neutro",
+        "name_en": "Chaotic Neutral",
+        "abbreviation": "CN",
+        "abbreviation_en": "CN",
+        "description_markdown": "Criaturas caóticas e neutras seguem seus caprichos, mantendo sua liberdade pessoal acima de tudo. Muitos bárbaros e ladinos, e alguns bardos, são caóticos e neutros.",
+        "moral_axis": "neutral",
+        "order_axis": "chaotic"
+      },
+      {
+        "id": "lawful_evil",
+        "name": "Leal e Mau",
+        "name_en": "Lawful Evil",
+        "abbreviation": "LM",
+        "abbreviation_en": "LE",
+        "description_markdown": "Criaturas leais e más metodicamente tomam o que querem, dentro dos limites de um código de tradição, lealdade ou ordem. Diabos, dragões azuis e hobgoblins são leais e maus.",
+        "moral_axis": "evil",
+        "order_axis": "lawful"
+      },
+      {
+        "id": "neutral_evil",
+        "name": "Neutro e Mau",
+        "name_en": "Neutral Evil",
+        "abbreviation": "NM",
+        "abbreviation_en": "NE",
+        "description_markdown": "Neutro e mau é o alinhamento daqueles que fazem o que podem se safar, sem compaixão ou escrúpulos. Muitos drow, alguns gigantes das nuvens e goblins são neutros e maus.",
+        "moral_axis": "evil",
+        "order_axis": "neutral"
+      },
+      {
+        "id": "chaotic_evil",
+        "name": "Caótico e Mau",
+        "name_en": "Chaotic Evil",
+        "abbreviation": "CM",
+        "abbreviation_en": "CE",
+        "description_markdown": "Criaturas caóticas e más agem com violência arbitrária, impulsionadas por sua ganância, ódio ou sede de sangue. Demônios, dragões vermelhos e orcs são caóticos e maus.",
+        "moral_axis": "evil",
+        "order_axis": "chaotic"
+      }
+    ],
+    "alignment_in_the_multiverse": {
+      "name": "Alinhamento no Multiverso",
+      "name_en": "Alignment in the Multiverse",
+      "description_markdown": "Para muitas criaturas pensantes, o alinhamento é uma escolha moral. Humanos, anões, elfos e outras raças humanoides podem escolher se seguem os caminhos do bem ou do mal, lei ou caos. Segundo o mito, os deuses de alinhamento bom que criaram essas raças lhes deram livre arbítrio para escolher seus caminhos morais, sabendo que o bem sem livre arbítrio é escravidão.\n\nAs divindades malignas que criaram outras raças, no entanto, fizeram essas raças para servi-las. Essas raças têm fortes tendências inatas que correspondem à natureza de seus deuses. A maioria dos orcs compartilha a natureza violenta e selvagem dos deuses orcs, e assim são inclinados ao mal. Mesmo que um orc escolha um alinhamento bom, ele luta contra suas tendências inatas por toda a sua vida. (Mesmo meio-orcs sentem a atração persistente da influência do deus orc.)\n\nO alinhamento é uma parte essencial da natureza de celestiais e diabos. Um diabo não escolhe ser leal e mau, e não tende a ser leal e mau, mas sim é leal e mau em sua essência. Se ele de alguma forma deixasse de ser leal e mau, ele deixaria de ser um diabo.\n\nA maioria das criaturas que não têm capacidade para pensamento racional não tem alinhamentos—elas são desalinhadas. Tal criatura é incapaz de fazer uma escolha moral ou ética e age de acordo com sua natureza bestial. Tubarões são predadores selvagens, por exemplo, mas eles não são maus; eles não têm alinhamento."
+    }
+  }
+}
