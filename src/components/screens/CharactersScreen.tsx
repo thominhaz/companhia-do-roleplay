@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { 
   Plus, 
   MoreVertical, 
@@ -52,11 +53,20 @@ const classGradients: Record<string, string> = {
 };
 
 export function CharactersScreen() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
   const [showWizard, setShowWizard] = useState(false);
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
   const { data: characters, isLoading } = useCharacters();
+
+  // Open wizard if ?create=true in URL
+  useEffect(() => {
+    if (searchParams.get('create') === 'true' && user && subscription?.canCreateCharacter) {
+      setShowWizard(true);
+      setSearchParams({});
+    }
+  }, [searchParams, user, subscription?.canCreateCharacter, setSearchParams]);
 
   const canCreateCharacter = subscription?.canCreateCharacter ?? false;
 
