@@ -1,4 +1,4 @@
-import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Wand2, Skull, Check, Lock, Loader2 } from "lucide-react";
+import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Wand2, Skull, Check, Lock, Loader2, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -7,6 +7,10 @@ import { useMasterCampaigns, usePlayerCampaigns, CampaignDB } from "@/hooks/useC
 import { toast } from "sonner";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { Button } from "@/components/ui/button";
+import { CreateCampaignSheet } from "@/components/campaign/CreateCampaignSheet";
+import { CampaignDetailSheet } from "@/components/campaign/CampaignDetailSheet";
+import { JoinCampaignSheet } from "@/components/campaign/JoinCampaignSheet";
 
 type FilterType = 'all' | 'mastering' | 'playing';
 
@@ -77,10 +81,16 @@ function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
   );
 }
 
-function MasterCampaignCard({ campaign, playerCount, nextSession }: { 
+function MasterCampaignCard({ 
+  campaign, 
+  playerCount, 
+  nextSession,
+  onClick 
+}: { 
   campaign: CampaignDB; 
   playerCount: number;
   nextSession?: string | null;
+  onClick: () => void;
 }) {
   const isActive = !!nextSession;
   const gradient = isActive ? "emerald" : "orange";
@@ -130,7 +140,10 @@ function MasterCampaignCard({ campaign, playerCount, nextSession }: {
   };
 
   return (
-    <div className={cn("bg-gradient-to-br rounded-2xl p-5 relative overflow-hidden", gradientClasses[gradient])}>
+    <div 
+      className={cn("bg-gradient-to-br rounded-2xl p-5 relative overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform", gradientClasses[gradient])}
+      onClick={onClick}
+    >
       <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -mr-16 -mt-16" />
       <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-5 rounded-full -ml-12 -mb-12" />
       
@@ -150,7 +163,10 @@ function MasterCampaignCard({ campaign, playerCount, nextSession }: {
               </p>
             </div>
           </div>
-          <button className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center">
+          <button 
+            className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center"
+            onClick={(e) => e.stopPropagation()}
+          >
             <MoreVertical className={cn("w-4 h-4", textColorClasses[gradient])} />
           </button>
         </div>
@@ -167,13 +183,22 @@ function MasterCampaignCard({ campaign, playerCount, nextSession }: {
         </div>
 
         <div className="flex gap-2 mb-4">
-          <button className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}>
+          <button 
+            className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}
+            onClick={(e) => e.stopPropagation()}
+          >
             <MessageCircle className="w-3 h-3 inline mr-2" />Chat
           </button>
-          <button className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}>
+          <button 
+            className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}
+            onClick={(e) => e.stopPropagation()}
+          >
             <StickyNote className="w-3 h-3 inline mr-2" />Notas
           </button>
-          <button className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}>
+          <button 
+            className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}
+            onClick={(e) => e.stopPropagation()}
+          >
             <Calendar className="w-3 h-3 inline mr-2" />Agenda
           </button>
         </div>
@@ -197,7 +222,7 @@ function MasterCampaignCard({ campaign, playerCount, nextSession }: {
   );
 }
 
-function PlayerCampaignCard({ campaign, masterName }: { campaign: CampaignDB; masterName?: string }) {
+function PlayerCampaignCard({ campaign, masterName, onClick }: { campaign: CampaignDB; masterName?: string; onClick: () => void }) {
   const colors = {
     iconBg: "from-blue-600 to-blue-800",
     buttonBg: "bg-blue-600/20",
@@ -206,7 +231,10 @@ function PlayerCampaignCard({ campaign, masterName }: { campaign: CampaignDB; ma
   };
 
   return (
-    <div className="bg-dark rounded-xl p-4 border border-border">
+    <div 
+      className="bg-dark rounded-xl p-4 border border-border cursor-pointer hover:border-primary/50 transition-colors"
+      onClick={onClick}
+    >
       <div className="flex items-center gap-3 mb-3">
         <div className={cn("w-12 h-12 rounded-lg bg-gradient-to-br flex items-center justify-center", colors.iconBg)}>
           <Wand2 className="w-5 h-5 text-white" />
@@ -218,16 +246,25 @@ function PlayerCampaignCard({ campaign, masterName }: { campaign: CampaignDB; ma
           </div>
           <p className="text-xs text-muted-foreground">Mestre: {masterName || "Desconhecido"} • D&D 5e</p>
         </div>
-        <button className="w-8 h-8 rounded-lg bg-darker flex items-center justify-center">
+        <button 
+          className="w-8 h-8 rounded-lg bg-darker flex items-center justify-center"
+          onClick={(e) => e.stopPropagation()}
+        >
           <MoreVertical className="w-4 h-4 text-muted-foreground" />
         </button>
       </div>
       
       <div className="flex gap-2 mb-3">
-        <button className={cn("flex-1 py-2 rounded-lg text-xs font-medium", colors.buttonBg, colors.buttonText)}>
+        <button 
+          className={cn("flex-1 py-2 rounded-lg text-xs font-medium", colors.buttonBg, colors.buttonText)}
+          onClick={(e) => e.stopPropagation()}
+        >
           <MessageCircle className="w-3 h-3 inline mr-2" />Chat
         </button>
-        <button className={cn("flex-1 py-2 rounded-lg text-xs font-medium", colors.buttonBg, colors.buttonText)}>
+        <button 
+          className={cn("flex-1 py-2 rounded-lg text-xs font-medium", colors.buttonBg, colors.buttonText)}
+          onClick={(e) => e.stopPropagation()}
+        >
           <StickyNote className="w-3 h-3 inline mr-2" />Notas
         </button>
       </div>
@@ -246,7 +283,13 @@ function PlayerCampaignCard({ campaign, masterName }: { campaign: CampaignDB; ma
 
 export function CampaignsScreen() {
   const [showPremiumModal, setShowPremiumModal] = useState(false);
+  const [showCreateSheet, setShowCreateSheet] = useState(false);
+  const [showJoinSheet, setShowJoinSheet] = useState(false);
+  const [selectedCampaign, setSelectedCampaign] = useState<CampaignDB | null>(null);
+  const [showDetailSheet, setShowDetailSheet] = useState(false);
+  const [selectedIsMaster, setSelectedIsMaster] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
   const isPremium = subscription?.status === 'premium';
@@ -270,7 +313,13 @@ export function CampaignsScreen() {
       setShowPremiumModal(true);
       return;
     }
-    console.log("Create campaign");
+    setShowCreateSheet(true);
+  };
+
+  const handleOpenCampaign = (campaign: CampaignDB, isMaster: boolean) => {
+    setSelectedCampaign(campaign);
+    setSelectedIsMaster(isMaster);
+    setShowDetailSheet(true);
   };
 
   const filteredMasterCampaigns = activeFilter === 'playing' ? [] : masterCampaigns;
@@ -289,12 +338,23 @@ export function CampaignsScreen() {
               </div>
             )}
           </div>
-          <button 
-            onClick={handleCreateCampaign}
-            className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-purple-700 flex items-center justify-center shadow-lg"
-          >
-            <Plus className="w-5 h-5 text-foreground" />
-          </button>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowJoinSheet(true)}
+              className="gap-1"
+            >
+              <LogIn className="w-4 h-4" />
+              Entrar
+            </Button>
+            <button 
+              onClick={handleCreateCampaign}
+              className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-purple-700 flex items-center justify-center shadow-lg"
+            >
+              <Plus className="w-5 h-5 text-foreground" />
+            </button>
+          </div>
         </div>
         
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
@@ -339,14 +399,22 @@ export function CampaignsScreen() {
           </div>
           <h3 className="text-lg font-semibold text-foreground mb-2">Nenhuma campanha</h3>
           <p className="text-sm text-muted-foreground mb-6">
-            {isPremium ? "Crie sua primeira campanha!" : "Assine o Premium para criar campanhas ou entre em uma mesa existente."}
+            {isPremium ? "Crie sua primeira campanha ou entre em uma existente!" : "Assine o Premium para criar campanhas ou entre em uma mesa existente."}
           </p>
-          <button
-            onClick={handleCreateCampaign}
-            className="px-6 py-3 bg-gradient-to-r from-primary to-purple-700 rounded-xl text-sm font-semibold text-foreground"
-          >
-            {isPremium ? "Criar Campanha" : "Ver Planos"}
-          </button>
+          <div className="flex gap-3 justify-center">
+            <Button
+              variant="outline"
+              onClick={() => setShowJoinSheet(true)}
+            >
+              <LogIn className="w-4 h-4 mr-2" />
+              Entrar em Campanha
+            </Button>
+            <Button
+              onClick={handleCreateCampaign}
+            >
+              {isPremium ? "Criar Campanha" : "Ver Planos"}
+            </Button>
+          </div>
         </div>
       ) : (
         <>
@@ -365,6 +433,7 @@ export function CampaignsScreen() {
                     campaign={campaign}
                     playerCount={campaign.campaign_players?.[0]?.count || 0}
                     nextSession={campaign.sessions?.[0]?.scheduled_at}
+                    onClick={() => handleOpenCampaign(campaign, true)}
                   />
                 ))}
               </div>
@@ -381,7 +450,11 @@ export function CampaignsScreen() {
               
               <div className="space-y-3">
                 {filteredPlayerCampaigns.map((campaign) => (
-                  <PlayerCampaignCard key={campaign.id} campaign={campaign} />
+                  <PlayerCampaignCard 
+                    key={campaign.id} 
+                    campaign={campaign}
+                    onClick={() => handleOpenCampaign(campaign, false)}
+                  />
                 ))}
               </div>
             </section>
@@ -389,10 +462,27 @@ export function CampaignsScreen() {
         </>
       )}
 
-      {/* Premium Modal */}
+      {/* Modals & Sheets */}
       <PremiumModal
         isOpen={showPremiumModal}
         onClose={() => setShowPremiumModal(false)}
+      />
+
+      <CreateCampaignSheet
+        open={showCreateSheet}
+        onOpenChange={setShowCreateSheet}
+      />
+
+      <JoinCampaignSheet
+        open={showJoinSheet}
+        onOpenChange={setShowJoinSheet}
+      />
+
+      <CampaignDetailSheet
+        campaign={selectedCampaign}
+        open={showDetailSheet}
+        onOpenChange={setShowDetailSheet}
+        isMaster={selectedIsMaster}
       />
     </div>
   );
