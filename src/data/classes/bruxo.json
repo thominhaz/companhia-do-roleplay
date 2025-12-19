@@ -1,0 +1,70 @@
+{
+  "id": "warlock",
+  "name": "Bruxo",
+  "name_en": "Warlock",
+  "hit_die": 8,
+  "primary_abilities": ["charisma"],
+  "saving_throw_proficiencies": ["wisdom", "charisma"],
+  "proficiencies": {
+    "armor": ["light"],
+    "weapons": ["simple"],
+    "tools": [],
+    "skills": {"choose": 2, "from": ["arcana", "deception", "history", "intimidation", "investigation", "nature", "religion"]}
+  },
+  "equipment_markdown": "Você começa com:\n- **(a)** uma besta leve e 20 virotes OU **(b)** qualquer arma simples\n- **(a)** uma bolsa de componentes OU **(b)** um foco arcano\n- **(a)** um pacote de estudioso OU **(b)** um pacote de aventureiro\n- Armadura de couro, qualquer arma simples e duas adagas",
+  "levels": [
+    {"level": 1, "proficiency_bonus": 2, "features": ["otherworldly_patron", "pact_magic"], "cantrips_known": 2, "spells_known": 2, "spell_slots": 1, "slot_level": 1, "invocations_known": 0},
+    {"level": 2, "proficiency_bonus": 2, "features": ["eldritch_invocations"], "cantrips_known": 2, "spells_known": 3, "spell_slots": 2, "slot_level": 1, "invocations_known": 2},
+    {"level": 3, "proficiency_bonus": 2, "features": ["pact_boon"], "cantrips_known": 2, "spells_known": 4, "spell_slots": 2, "slot_level": 2, "invocations_known": 2},
+    {"level": 4, "proficiency_bonus": 2, "features": ["ability_score_improvement"], "cantrips_known": 3, "spells_known": 5, "spell_slots": 2, "slot_level": 2, "invocations_known": 2},
+    {"level": 5, "proficiency_bonus": 3, "features": [], "cantrips_known": 3, "spells_known": 6, "spell_slots": 2, "slot_level": 3, "invocations_known": 3},
+    {"level": 6, "proficiency_bonus": 3, "features": ["otherworldly_patron_feature"], "cantrips_known": 3, "spells_known": 7, "spell_slots": 2, "slot_level": 3, "invocations_known": 3},
+    {"level": 7, "proficiency_bonus": 3, "features": [], "cantrips_known": 3, "spells_known": 8, "spell_slots": 2, "slot_level": 4, "invocations_known": 4},
+    {"level": 8, "proficiency_bonus": 3, "features": ["ability_score_improvement"], "cantrips_known": 3, "spells_known": 9, "spell_slots": 2, "slot_level": 4, "invocations_known": 4},
+    {"level": 9, "proficiency_bonus": 4, "features": [], "cantrips_known": 3, "spells_known": 10, "spell_slots": 2, "slot_level": 5, "invocations_known": 5},
+    {"level": 10, "proficiency_bonus": 4, "features": ["otherworldly_patron_feature"], "cantrips_known": 4, "spells_known": 10, "spell_slots": 2, "slot_level": 5, "invocations_known": 5},
+    {"level": 11, "proficiency_bonus": 4, "features": ["mystic_arcanum_6"], "cantrips_known": 4, "spells_known": 11, "spell_slots": 3, "slot_level": 5, "invocations_known": 5},
+    {"level": 12, "proficiency_bonus": 4, "features": ["ability_score_improvement"], "cantrips_known": 4, "spells_known": 11, "spell_slots": 3, "slot_level": 5, "invocations_known": 6},
+    {"level": 13, "proficiency_bonus": 5, "features": ["mystic_arcanum_7"], "cantrips_known": 4, "spells_known": 12, "spell_slots": 3, "slot_level": 5, "invocations_known": 6},
+    {"level": 14, "proficiency_bonus": 5, "features": ["otherworldly_patron_feature"], "cantrips_known": 4, "spells_known": 12, "spell_slots": 3, "slot_level": 5, "invocations_known": 6},
+    {"level": 15, "proficiency_bonus": 5, "features": ["mystic_arcanum_8"], "cantrips_known": 4, "spells_known": 13, "spell_slots": 3, "slot_level": 5, "invocations_known": 7},
+    {"level": 16, "proficiency_bonus": 5, "features": ["ability_score_improvement"], "cantrips_known": 4, "spells_known": 13, "spell_slots": 3, "slot_level": 5, "invocations_known": 7},
+    {"level": 17, "proficiency_bonus": 6, "features": ["mystic_arcanum_9"], "cantrips_known": 4, "spells_known": 14, "spell_slots": 4, "slot_level": 5, "invocations_known": 7},
+    {"level": 18, "proficiency_bonus": 6, "features": [], "cantrips_known": 4, "spells_known": 14, "spell_slots": 4, "slot_level": 5, "invocations_known": 8},
+    {"level": 19, "proficiency_bonus": 6, "features": ["ability_score_improvement"], "cantrips_known": 4, "spells_known": 15, "spell_slots": 4, "slot_level": 5, "invocations_known": 8},
+    {"level": 20, "proficiency_bonus": 6, "features": ["eldritch_master"], "cantrips_known": 4, "spells_known": 15, "spell_slots": 4, "slot_level": 5, "invocations_known": 8}
+  ],
+  "features": [
+    {"id": "otherworldly_patron", "name": "Patrono Sobrenatural", "level": 1, "description_markdown": "No 1º nível, você fez um pacto com um ser sobrenatural de sua escolha: o **Arquifada**, o **Corruptor** ou o **Grande Antigo**, cada um dos quais é detalhado no final da descrição da classe. Sua escolha concede características no 1º nível e novamente no 6º, 10º e 14º níveis."},
+    {"id": "pact_magic", "name": "Magia de Pacto", "level": 1, "description_markdown": "Sua pesquisa arcana e a magia concedida a você pelo seu patrono deram a você facilidade com magias.\n\n### Truques\nVocê conhece **dois truques** à sua escolha da lista de magias de bruxo. Você aprende truques de bruxo adicionais à sua escolha em níveis mais altos.\n\n### Espaços de Magia\nA tabela do Bruxo mostra quantos espaços de magia você possui. A tabela também mostra qual é o nível desses espaços; **todos os seus espaços de magia são do mesmo nível**. Para conjurar uma de suas magias de bruxo de 1º nível ou superior, você deve gastar um espaço de magia. Você recupera todos os espaços de magia gastos quando termina um **descanso curto** ou **longo**.\n\nPor exemplo, quando você é de 5º nível, você tem dois espaços de magia de 3º nível. Para conjurar a magia de 1º nível *onda trovejante*, você deve gastar um desses espaços, e você a conjura como uma magia de 3º nível.\n\n### Magias Conhecidas\nNo 1º nível, você conhece **duas magias de 1º nível** à sua escolha da lista de magias de bruxo. Quando você ganha um nível nesta classe, você pode escolher uma das magias de bruxo que conhece e substituí-la por outra magia da lista de magias de bruxo.\n\nCarisma é sua habilidade de conjuração.", "mechanical": {"spellcasting_ability": "charisma", "spell_save_dc": "8 + proficiency_bonus + charisma_modifier", "spell_attack_bonus": "proficiency_bonus + charisma_modifier", "spells_known": true, "can_replace_spell_on_level": true, "pact_magic": true, "recharge": "short_or_long_rest"}},
+    {"id": "eldritch_invocations", "name": "Invocações Místicas", "level": 2, "description_markdown": "No 2º nível, você ganha **duas invocações místicas** à sua escolha. Quando você ganha certos níveis de bruxo, você ganha invocações místicas adicionais à sua escolha, conforme mostrado na coluna Invocações Conhecidas da tabela do Bruxo.\n\nAdicionalmente, quando você ganha um nível nesta classe, você pode escolher uma das invocações que você conhece e substituí-la por outra invocação que você poderia aprender naquele nível.\n\nExemplos: **Visão do Diabo**, **Explosão Agonizante**, **Lança Místicaà Vontade**, **Armadura das Sombras**, **Fala da Besta**, **Olhar Repreensor**.", "mechanical": {"invocations_known": [2, 3, 4, 5, 6, 7, 8], "can_replace_on_level": true}},
+    {"id": "pact_boon", "name": "Dádiva do Pacto", "level": 3, "description_markdown": "No 3º nível, seu patrono sobrenatural concede uma dádiva a você por seu serviço leal. Você ganha uma das seguintes características à sua escolha.\n\n**Pacto da Corrente:** Você aprende a magia *encontrar familiar* e pode conjurá-la como um ritual. A magia não conta contra seu número de magias conhecidas. Quando você conjura a magia, você pode escolher uma das formas normais para seu familiar ou uma das seguintes formas especiais: **diabrete**, **pseudodragão**, **quasit** ou **sprite**.\n\n**Pacto da Lâmina:** Você pode usar sua ação para criar uma arma de pacto em sua mão vazia. Você pode escolher a forma que essa arma corpo a corpo assume cada vez que você a cria. Você é proficiente com ela enquanto a empunha. Essa arma conta como mágica para o propósito de superar resistência e imunidade a ataques e dano não mágicos.\n\n**Pacto do Tomo:** Seu patrono dá a você um grimório chamado de Livro das Sombras. Quando você ganha essa característica, escolha **três truques** de qualquer lista de magias de classe. Enquanto o livro estiver com você, você pode conjurar esses truques à vontade.", "mechanical": {"choice": ["pact_of_the_chain", "pact_of_the_blade", "pact_of_the_tome"]}},
+    {"id": "ability_score_improvement", "name": "Incremento de Atributo", "level": 4, "mechanical": {"improvements": [4, 8, 12, 16, 19]}},
+    {"id": "mystic_arcanum_6", "name": "Arcano Místico (6º nível)", "level": 11, "description_markdown": "No 11º nível, seu patrono concede a você um segredo mágico chamado arcano. Escolha uma magia de **6º nível** da lista de magias de bruxo como este arcano.\n\nVocê pode conjurar sua magia de arcano uma vez sem gastar um espaço de magia. Você deve terminar um **descanso longo** antes de poder fazê-lo novamente.", "mechanical": {"spell_level": 6, "uses": 1, "recharge": "long_rest"}},
+    {"id": "mystic_arcanum_7", "name": "Arcano Místico (7º nível)", "level": 13, "description_markdown": "No 13º nível, você ganha uma magia de **7º nível** como arcano místico.", "mechanical": {"spell_level": 7, "uses": 1, "recharge": "long_rest"}},
+    {"id": "mystic_arcanum_8", "name": "Arcano Místico (8º nível)", "level": 15, "description_markdown": "No 15º nível, você ganha uma magia de **8º nível** como arcano místico.", "mechanical": {"spell_level": 8, "uses": 1, "recharge": "long_rest"}},
+    {"id": "mystic_arcanum_9", "name": "Arcano Místico (9º nível)", "level": 17, "description_markdown": "No 17º nível, você ganha uma magia de **9º nível** como arcano místico.", "mechanical": {"spell_level": 9, "uses": 1, "recharge": "long_rest"}},
+    {"id": "eldritch_master", "name": "Mestre Místico", "level": 20, "description_markdown": "No 20º nível, você pode usar sua ação para recuperar todos os seus espaços de magia de Magia de Pacto gastos. Uma vez que você recupere espaços de magia com essa característica, você deve terminar um **descanso longo** antes de poder fazê-lo novamente.", "mechanical": {"action_type": "action", "regain_all_slots": true, "recharge": "long_rest"}}
+  ],
+  "subclasses": [
+    {
+      "id": "the_fiend",
+      "name": "O Corruptor",
+      "name_en": "The Fiend",
+      "description": "Você fez um pacto com um corruptor dos planos inferiores de existência, um ser cujos objetivos são malignos, mesmo que você se esforce contra esses objetivos. Tais seres desejam a corrupção ou destruição de todas as coisas, em última análise, incluindo você. Corruptores poderosos o suficiente para forjar um pacto incluem senhores demoníacos, arquidiabos, poços de corrupção e ultrolotes.",
+      "expanded_spell_list": [
+        {"level": 1, "spells": ["burning_hands", "command"]},
+        {"level": 2, "spells": ["blindness_deafness", "scorching_ray"]},
+        {"level": 3, "spells": ["fireball", "stinking_cloud"]},
+        {"level": 4, "spells": ["fire_shield", "wall_of_fire"]},
+        {"level": 5, "spells": ["flame_strike", "hallow"]}
+      ],
+      "features": [
+        {"id": "dark_ones_blessing", "name": "Bênção do Obscuro", "level": 1, "description_markdown": "A partir do 1º nível, quando você reduzir uma criatura hostil a 0 pontos de vida, você ganha **pontos de vida temporários** iguais ao seu **modificador de Carisma + seu nível de bruxo** (mínimo de 1).", "mechanical": {"temp_hp": "charisma_modifier + warlock_level (min 1)"}},
+        {"id": "dark_ones_own_luck", "name": "Sorte Própria do Obscuro", "level": 6, "description_markdown": "A partir do 6º nível, você pode clamar ao seu patrono para alterar o destino a seu favor. Quando você fizer um teste de habilidade ou teste de resistência, você pode usar essa característica para adicionar **1d10** à sua rolagem. Você pode fazê-lo depois de ver a rolagem inicial, mas antes que quaisquer dos efeitos da rolagem ocorram.\n\nUma vez que você use essa característica, você não pode usá-la novamente até terminar um **descanso curto** ou **longo**.", "mechanical": {"bonus": "1d10", "uses": 1, "recharge": "short_or_long_rest"}},
+        {"id": "fiendish_resilience", "name": "Resiliência Corrupta", "level": 10, "description_markdown": "A partir do 10º nível, você pode escolher um tipo de dano quando você terminar um **descanso curto** ou **longo**. Você ganha **resistência** a aquele tipo de dano até você escolher um diferente com essa característica. Dano de armas mágicas ou armas prateadas ignora essa resistência.", "mechanical": {"resistance_type": "choose_on_rest", "ignores_magical_silver": true}},
+        {"id": "hurl_through_hell", "name": "Arremessar pelos Infernos", "level": 14, "description_markdown": "A partir do 14º nível, quando você acertar uma criatura com um ataque, você pode usar essa característica para instantaneamente transportar o alvo através dos planos inferiores. A criatura desaparece e corre através de uma paisagem de pesadelo.\n\nNo final do seu próximo turno, o alvo retorna ao espaço que ele previamente ocupava, ou ao espaço desocupado mais próximo. Se o alvo não for um corruptor, ele sofre **10d10 de dano psíquico** conforme ele se recupera dessa experiência horrível.\n\nUma vez que você use essa característica, você não pode usá-la novamente até terminar um **descanso longo**.", "mechanical": {"damage": "10d10", "damage_type": "psychic", "not_against_fiends": true, "recharge": "long_rest"}}
+      ]
+    }
+  ]
+}

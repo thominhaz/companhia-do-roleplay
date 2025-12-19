@@ -1,0 +1,190 @@
+{
+  "id": "paladin",
+  "name": "Paladino",
+  "name_en": "Paladin",
+  "hit_die": 10,
+  "primary_abilities": ["strength", "charisma"],
+  "saving_throw_proficiencies": ["wisdom", "charisma"],
+  "proficiencies": {
+    "armor": ["light", "medium", "heavy", "shields"],
+    "weapons": ["simple", "martial"],
+    "tools": [],
+    "skills": {
+      "choose": 2,
+      "from": ["athletics", "insight", "intimidation", "medicine", "persuasion", "religion"]
+    }
+  },
+  "equipment_markdown": "Você começa com o seguinte equipamento:\n- **(a)** uma arma marcial e um escudo OU **(b)** duas armas marciais\n- **(a)** cinco azagaias OU **(b)** qualquer arma corpo a corpo simples\n- **(a)** um pacote de sacerdote OU **(b)** um pacote de explorador\n- Cota de malha e um símbolo sagrado",
+  "starting_equipment": {
+    "choices": [
+      {"choose": 1, "from": [["martial_weapon", "shield"], ["martial_weapon", "martial_weapon"]]},
+      {"choose": 1, "from": [["javelin:5"], ["simple_melee_weapon"]]},
+      {"choose": 1, "from": [["priests_pack"], ["explorers_pack"]]}
+    ],
+    "granted": ["chain_mail", "holy_symbol"]
+  },
+  "levels": [
+    {"level": 1, "proficiency_bonus": 2, "features": ["divine_sense", "lay_on_hands"], "spell_slots": [0, 0, 0, 0, 0]},
+    {"level": 2, "proficiency_bonus": 2, "features": ["fighting_style", "spellcasting", "divine_smite"], "spell_slots": [2, 0, 0, 0, 0]},
+    {"level": 3, "proficiency_bonus": 2, "features": ["divine_health", "sacred_oath"], "spell_slots": [3, 0, 0, 0, 0]},
+    {"level": 4, "proficiency_bonus": 2, "features": ["ability_score_improvement"], "spell_slots": [3, 0, 0, 0, 0]},
+    {"level": 5, "proficiency_bonus": 3, "features": ["extra_attack"], "spell_slots": [4, 2, 0, 0, 0]},
+    {"level": 6, "proficiency_bonus": 3, "features": ["aura_of_protection"], "spell_slots": [4, 2, 0, 0, 0]},
+    {"level": 7, "proficiency_bonus": 3, "features": ["sacred_oath_feature"], "spell_slots": [4, 3, 0, 0, 0]},
+    {"level": 8, "proficiency_bonus": 3, "features": ["ability_score_improvement"], "spell_slots": [4, 3, 0, 0, 0]},
+    {"level": 9, "proficiency_bonus": 4, "features": [], "spell_slots": [4, 3, 2, 0, 0]},
+    {"level": 10, "proficiency_bonus": 4, "features": ["aura_of_courage"], "spell_slots": [4, 3, 2, 0, 0]},
+    {"level": 11, "proficiency_bonus": 4, "features": ["improved_divine_smite"], "spell_slots": [4, 3, 3, 0, 0]},
+    {"level": 12, "proficiency_bonus": 4, "features": ["ability_score_improvement"], "spell_slots": [4, 3, 3, 0, 0]},
+    {"level": 13, "proficiency_bonus": 5, "features": [], "spell_slots": [4, 3, 3, 1, 0]},
+    {"level": 14, "proficiency_bonus": 5, "features": ["cleansing_touch"], "spell_slots": [4, 3, 3, 1, 0]},
+    {"level": 15, "proficiency_bonus": 5, "features": ["sacred_oath_feature"], "spell_slots": [4, 3, 3, 2, 0]},
+    {"level": 16, "proficiency_bonus": 5, "features": ["ability_score_improvement"], "spell_slots": [4, 3, 3, 2, 0]},
+    {"level": 17, "proficiency_bonus": 6, "features": [], "spell_slots": [4, 3, 3, 3, 1]},
+    {"level": 18, "proficiency_bonus": 6, "features": ["aura_improvements"], "spell_slots": [4, 3, 3, 3, 1]},
+    {"level": 19, "proficiency_bonus": 6, "features": ["ability_score_improvement"], "spell_slots": [4, 3, 3, 3, 2]},
+    {"level": 20, "proficiency_bonus": 6, "features": ["sacred_oath_feature"], "spell_slots": [4, 3, 3, 3, 2]}
+  ],
+  "features": [
+    {
+      "id": "divine_sense",
+      "name": "Sentido Divino",
+      "level": 1,
+      "description_markdown": "A presença do mal poderoso registra em seus sentidos como um odor nocivo, e o bem poderoso soa como música celestial em seus ouvidos. Como uma ação, você pode abrir sua consciência para detectar tais forças. Até o final do seu próximo turno, você conhece a localização de qualquer celestial, corruptor ou morto-vivo dentro de **18 m** de você que não esteja atrás de cobertura total.\n\nVocê pode usar essa característica **1 + modificador de Carisma** vezes. Quando terminar um descanso longo, você recupera todos os usos gastos.",
+      "mechanical": {"action_type": "action", "range": 18, "duration": "end_of_next_turn", "detects": ["celestial", "fiend", "undead"], "uses": "1 + charisma_modifier", "recharge": "long_rest"}
+    },
+    {
+      "id": "lay_on_hands",
+      "name": "Imposição de Mãos",
+      "level": 1,
+      "description_markdown": "Seu toque abençoado pode curar ferimentos. Você tem uma reserva de poder curativo que se repõe quando você faz um descanso longo. Com essa reserva, você pode restaurar um número total de pontos de vida igual a **seu nível de paladino × 5**.\n\nComo uma ação, você pode tocar uma criatura e extrair poder da reserva para restaurar pontos de vida à criatura. Alternativamente, você pode gastar **5 pontos de vida** da sua reserva de cura para curar o alvo de uma doença ou neutralizar um veneno que o afeta.",
+      "mechanical": {"action_type": "action", "healing_pool": "paladin_level × 5", "cure_disease_cost": 5, "recharge": "long_rest"}
+    },
+    {
+      "id": "fighting_style",
+      "name": "Estilo de Luta",
+      "level": 2,
+      "description_markdown": "No 2º nível, você adota um estilo de luta como sua especialidade.",
+      "mechanical": {"styles": ["defense", "dueling", "great_weapon_fighting", "protection"]}
+    },
+    {
+      "id": "spellcasting",
+      "name": "Conjuração",
+      "level": 2,
+      "description_markdown": "No 2º nível, você aprendeu a canalizar magia divina através de meditação e oração para conjurar magias como um clérigo.\n\nVocê prepara magias de paladino igual a **modificador de Carisma + metade do nível de paladino (arredondado para baixo)**, mínimo de uma.",
+      "mechanical": {"spellcasting_ability": "charisma", "spell_save_dc": "8 + proficiency_bonus + charisma_modifier", "spell_attack_bonus": "proficiency_bonus + charisma_modifier", "prepared_spells": "charisma_modifier + (paladin_level / 2) round down"}
+    },
+    {
+      "id": "divine_smite",
+      "name": "Castigo Divino",
+      "level": 2,
+      "description_markdown": "A partir do 2º nível, quando você acertar uma criatura com um ataque com arma corpo a corpo, você pode gastar um espaço de magia para causar dano radiante ao alvo, além do dano da arma. O dano extra é **2d8** para um espaço de magia de 1º nível, mais **1d8** para cada nível de magia acima do 1º, até um máximo de **5d8**. O dano aumenta em **1d8** se o alvo for um morto-vivo ou corruptor.",
+      "mechanical": {"base_damage": "2d8", "per_level": "1d8", "max_damage": "5d8", "vs_undead_fiend": "+1d8"}
+    },
+    {
+      "id": "divine_health",
+      "name": "Saúde Divina",
+      "level": 3,
+      "description_markdown": "No 3º nível, a magia divina fluindo através de você torna você **imune a doenças**.",
+      "mechanical": {"immune_disease": true}
+    },
+    {
+      "id": "sacred_oath",
+      "name": "Juramento Sagrado",
+      "level": 3,
+      "description_markdown": "Quando você atinge o 3º nível, você faz o juramento que vincula você como um paladino para sempre. Sua escolha concede características no 3º nível e novamente no 7º, 15º e 20º níveis."
+    },
+    {
+      "id": "ability_score_improvement",
+      "name": "Incremento de Atributo",
+      "level": 4,
+      "mechanical": {"improvements": [4, 8, 12, 16, 19]}
+    },
+    {
+      "id": "extra_attack",
+      "name": "Ataque Extra",
+      "level": 5,
+      "mechanical": {"attacks": 2}
+    },
+    {
+      "id": "aura_of_protection",
+      "name": "Aura de Proteção",
+      "level": 6,
+      "description_markdown": "A partir do 6º nível, sempre que você ou uma criatura amigável dentro de **3 m** de você precisar fazer um teste de resistência, a criatura ganha um bônus no teste de resistência igual ao seu **modificador de Carisma** (com um bônus mínimo de +1). Você deve estar consciente para conceder esse bônus.\n\nNo 18º nível, o alcance dessa aura aumenta para **9 m**.",
+      "mechanical": {"range": 3, "range_18": 9, "bonus": "charisma_modifier (min 1)"}
+    },
+    {
+      "id": "aura_of_courage",
+      "name": "Aura de Coragem",
+      "level": 10,
+      "description_markdown": "A partir do 10º nível, você e criaturas amigáveis dentro de **3 m** de você não podem ficar **amedrontadas** enquanto você estiver consciente. No 18º nível, o alcance aumenta para **9 m**.",
+      "mechanical": {"range": 3, "range_18": 9, "immune_frightened": true}
+    },
+    {
+      "id": "improved_divine_smite",
+      "name": "Castigo Divino Aprimorado",
+      "level": 11,
+      "description_markdown": "No 11º nível, você está tão imbuído de poder divino que todos os seus ataques com arma corpo a corpo carregam poder divino. Sempre que você acertar uma criatura com uma arma corpo a corpo, a criatura sofre **1d8 de dano radiante** extra.",
+      "mechanical": {"extra_damage": "1d8", "damage_type": "radiant"}
+    },
+    {
+      "id": "cleansing_touch",
+      "name": "Toque Purificador",
+      "level": 14,
+      "description_markdown": "A partir do 14º nível, você pode usar sua ação para encerrar uma magia em você mesmo ou em uma criatura voluntária que você tocar.\n\nVocê pode usar essa característica **modificador de Carisma** vezes (mínimo de uma vez). Você recupera os usos gastos quando termina um descanso longo.",
+      "mechanical": {"action_type": "action", "uses": "charisma_modifier (min 1)", "recharge": "long_rest"}
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "oath_of_devotion",
+      "name": "Juramento de Devoção",
+      "name_en": "Oath of Devotion",
+      "description": "O Juramento de Devoção vincula um paladino aos mais elevados ideais de justiça, virtude e ordem. Às vezes chamados de cavaleiros, cavaleiros brancos ou guerreiros sagrados, esses paladinos atendem ao ideal do cavaleiro de armadura brilhante, agindo com honra na busca da justiça e do bem maior.",
+      "oath_spells": [
+        {"level": 3, "spells": ["protection_from_evil_and_good", "sanctuary"]},
+        {"level": 5, "spells": ["lesser_restoration", "zone_of_truth"]},
+        {"level": 9, "spells": ["beacon_of_hope", "dispel_magic"]},
+        {"level": 13, "spells": ["freedom_of_movement", "guardian_of_faith"]},
+        {"level": 17, "spells": ["commune", "flame_strike"]}
+      ],
+      "features": [
+        {
+          "id": "channel_divinity_sacred_weapon",
+          "name": "Canalizar Divindade: Arma Sagrada",
+          "level": 3,
+          "description_markdown": "Como uma ação, você pode imbuir uma arma que você está segurando com energia positiva, usando sua Canalizar Divindade. Por **1 minuto**, você adiciona seu **modificador de Carisma** às jogadas de ataque feitas com aquela arma (com um bônus mínimo de +1). A arma também emite luz brilhante em um raio de **6 m** e luz fraca a 6 m além disso.",
+          "mechanical": {"action_type": "action", "duration": "1 minute", "attack_bonus": "charisma_modifier (min 1)", "bright_light": 6, "dim_light": 6}
+        },
+        {
+          "id": "channel_divinity_turn_the_unholy",
+          "name": "Canalizar Divindade: Expulsar o Profano",
+          "level": 3,
+          "description_markdown": "Como uma ação, você apresenta seu símbolo sagrado e fala uma oração censurando corruptores e mortos-vivos. Cada corruptor ou morto-vivo que possa ver ou ouvir você dentro de **9 m** deve fazer um teste de resistência de Sabedoria. Se falhar, é expulso por **1 minuto** ou até sofrer dano.",
+          "mechanical": {"action_type": "action", "range": 9, "save": "wisdom", "duration": "1 minute", "affects": ["fiend", "undead"]}
+        },
+        {
+          "id": "aura_of_devotion",
+          "name": "Aura de Devoção",
+          "level": 7,
+          "description_markdown": "A partir do 7º nível, você e criaturas amigáveis dentro de **3 m** de você não podem ser **enfeitiçadas** enquanto você estiver consciente. No 18º nível, o alcance aumenta para **9 m**.",
+          "mechanical": {"range": 3, "range_18": 9, "immune_charmed": true}
+        },
+        {
+          "id": "purity_of_spirit",
+          "name": "Pureza de Espírito",
+          "level": 15,
+          "description_markdown": "A partir do 15º nível, você está sempre sob os efeitos de uma magia *proteção contra o bem e mal*.",
+          "mechanical": {"always_protected": true}
+        },
+        {
+          "id": "holy_nimbus",
+          "name": "Nimbo Sagrado",
+          "level": 20,
+          "description_markdown": "No 20º nível, como uma ação, você pode emanar uma aura de luz solar. Por **1 minuto**, luz brilhante brilha de você em um raio de **9 m**. Sempre que uma criatura inimiga começar seu turno na luz brilhante, ela sofre **10 de dano radiante**.\n\nVocê pode usar essa característica uma vez. Recupera o uso ao terminar um descanso longo.",
+          "mechanical": {"action_type": "action", "duration": "1 minute", "radius": 9, "damage": 10, "damage_type": "radiant", "recharge": "long_rest"}
+        }
+      ]
+    }
+  ]
+}
