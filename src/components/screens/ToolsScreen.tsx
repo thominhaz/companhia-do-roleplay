@@ -17,8 +17,10 @@ import { DiceRoller } from "@/components/tools/DiceRoller";
 import { MagicItemsCompendium } from "@/components/tools/MagicItemsCompendium";
 import { ConditionsReference } from "@/components/tools/ConditionsReference";
 import { WeaponsArmorList } from "@/components/tools/WeaponsArmorList";
+import { BasicRules } from "@/components/tools/BasicRules";
+import { HealingRest } from "@/components/tools/HealingRest";
 
-type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | null;
+type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | null;
 
 const tools = [
   {
@@ -73,6 +75,7 @@ const tools = [
     icon: BookOpen,
     color: "from-orange-500 to-orange-500/70",
     featured: false,
+    toolKey: "rules" as ActiveTool,
   },
   {
     id: "healing",
@@ -81,6 +84,7 @@ const tools = [
     icon: Heart,
     color: "from-red-500 to-red-500/70",
     featured: false,
+    toolKey: "healing" as ActiveTool,
   },
 ];
 
@@ -110,6 +114,12 @@ export function ToolsScreen() {
   }
   if (activeTool === "weapons-armor") {
     return <WeaponsArmorList onBack={() => setActiveTool(null)} />;
+  }
+  if (activeTool === "rules") {
+    return <BasicRules onBack={() => setActiveTool(null)} />;
+  }
+  if (activeTool === "healing") {
+    return <HealingRest onBack={() => setActiveTool(null)} />;
   }
 
   return (
