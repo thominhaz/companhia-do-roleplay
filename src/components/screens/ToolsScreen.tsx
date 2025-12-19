@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { 
   Dice6, 
   BookOpen, 
@@ -27,6 +28,7 @@ const tools = [
     icon: Sparkles,
     color: "from-secondary to-secondary/70",
     featured: true,
+    path: "/grimoire",
   },
   {
     id: "conditions",
@@ -71,8 +73,15 @@ const tools = [
 ];
 
 export function ToolsScreen() {
+  const navigate = useNavigate();
   const featuredTools = tools.filter((t) => t.featured);
   const otherTools = tools.filter((t) => !t.featured);
+
+  const handleToolClick = (tool: typeof tools[0]) => {
+    if (tool.path) {
+      navigate(tool.path);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-darker pb-24">
@@ -111,6 +120,7 @@ export function ToolsScreen() {
               return (
                 <button
                   key={tool.id}
+                  onClick={() => handleToolClick(tool)}
                   className={cn(
                     "p-4 rounded-2xl bg-gradient-to-br text-left",
                     tool.color,
