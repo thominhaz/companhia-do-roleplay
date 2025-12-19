@@ -14,16 +14,301 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      campaign_players: {
+        Row: {
+          campaign_id: string
+          character_id: string | null
+          id: string
+          joined_at: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          character_id?: string | null
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          character_id?: string | null
+          id?: string
+          joined_at?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_players_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_players_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaigns: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          master_id: string
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          master_id: string
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          master_id?: string
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      characters: {
+        Row: {
+          alignment: string | null
+          armor_class: number
+          attributes: Json
+          background: string | null
+          backstory: string | null
+          bonds: string | null
+          class: string
+          created_at: string
+          currency: Json
+          current_hp: number
+          death_saves: Json
+          equipment: Json
+          experience: number
+          features: Json
+          flaws: string | null
+          hit_dice: Json
+          id: string
+          ideals: string | null
+          image_url: string | null
+          initiative: number
+          inventory: Json
+          languages: Json
+          level: number
+          max_hp: number
+          name: string
+          personality_traits: string | null
+          proficiencies: Json
+          proficiency_bonus: number
+          race: string
+          saving_throws: Json
+          skills: Json
+          speed: number
+          spellcasting: Json | null
+          spells: Json
+          subrace: string | null
+          temporary_hp: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          alignment?: string | null
+          armor_class?: number
+          attributes?: Json
+          background?: string | null
+          backstory?: string | null
+          bonds?: string | null
+          class: string
+          created_at?: string
+          currency?: Json
+          current_hp?: number
+          death_saves?: Json
+          equipment?: Json
+          experience?: number
+          features?: Json
+          flaws?: string | null
+          hit_dice?: Json
+          id?: string
+          ideals?: string | null
+          image_url?: string | null
+          initiative?: number
+          inventory?: Json
+          languages?: Json
+          level?: number
+          max_hp?: number
+          name: string
+          personality_traits?: string | null
+          proficiencies?: Json
+          proficiency_bonus?: number
+          race: string
+          saving_throws?: Json
+          skills?: Json
+          speed?: number
+          spellcasting?: Json | null
+          spells?: Json
+          subrace?: string | null
+          temporary_hp?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          alignment?: string | null
+          armor_class?: number
+          attributes?: Json
+          background?: string | null
+          backstory?: string | null
+          bonds?: string | null
+          class?: string
+          created_at?: string
+          currency?: Json
+          current_hp?: number
+          death_saves?: Json
+          equipment?: Json
+          experience?: number
+          features?: Json
+          flaws?: string | null
+          hit_dice?: Json
+          id?: string
+          ideals?: string | null
+          image_url?: string | null
+          initiative?: number
+          inventory?: Json
+          languages?: Json
+          level?: number
+          max_hp?: number
+          name?: string
+          personality_traits?: string | null
+          proficiencies?: Json
+          proficiency_bonus?: number
+          race?: string
+          saving_throws?: Json
+          skills?: Json
+          speed?: number
+          spellcasting?: Json | null
+          spells?: Json
+          subrace?: string | null
+          temporary_hp?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      sessions: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          id: string
+          location: string | null
+          notes: string | null
+          scheduled_at: string
+          title: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          scheduled_at: string
+          title: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          location?: string | null
+          notes?: string | null
+          scheduled_at?: string
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sessions_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          status: Database["public"]["Enums"]["subscription_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          status?: Database["public"]["Enums"]["subscription_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      can_create_character: { Args: { _user_id: string }; Returns: boolean }
+      count_user_characters: { Args: { _user_id: string }; Returns: number }
+      is_premium: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      subscription_status: "free" | "premium"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +435,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      subscription_status: ["free", "premium"],
+    },
   },
 } as const
