@@ -1,0 +1,82 @@
+{
+  "id": "halfling",
+  "name": "Halfling",
+  "name_en": "Halfling",
+  "size": "small",
+  "speed": 7.5,
+  "ability_bonuses": {
+    "dexterity": 2
+  },
+  "age_description": "Um halfling atinge a idade adulta aos 20 anos e geralmente vive até a metade de seu segundo século.",
+  "alignment_description": "A maioria dos halflings é leal e boa. Como regra, eles têm bom coração e são gentis, odeiam ver outros em dor e não têm tolerância para opressão. Eles também são muito ordeiros e tradicionais, dependendo fortemente do apoio de sua comunidade e do conforto de seus velhos costumes.",
+  "size_description": "Halflings têm em média cerca de 90 centímetros de altura e pesam cerca de 18 kg. Seu tamanho é Pequeno.",
+  "languages": ["Comum", "Halfling"],
+  "traits": [
+    {
+      "id": "lucky",
+      "name": "Sortudo",
+      "description_markdown": "Quando você rolar um **1** no d20 para uma jogada de ataque, teste de habilidade ou teste de resistência, você pode rolar o dado novamente e deve usar a nova rolagem.",
+      "mechanical": {
+        "reroll_on_natural_1": true,
+        "applies_to": ["attack_rolls", "ability_checks", "saving_throws"]
+      }
+    },
+    {
+      "id": "brave",
+      "name": "Corajoso",
+      "description_markdown": "Você tem **vantagem** em testes de resistência contra ser amedrontado.",
+      "mechanical": {
+        "saving_throw_advantage": ["frightened"]
+      }
+    },
+    {
+      "id": "halfling_nimbleness",
+      "name": "Agilidade Halfling",
+      "description_markdown": "Você pode se mover através do espaço de qualquer criatura que seja de um tamanho maior que o seu.",
+      "mechanical": {
+        "can_move_through_larger_creatures": true
+      }
+    }
+  ],
+  "subraces": [
+    {
+      "id": "lightfoot",
+      "name": "Halfling Pés Leves",
+      "name_en": "Lightfoot Halfling",
+      "description": "Como um halfling pés leves, você pode facilmente se esconder da vista, até mesmo usando outras pessoas como cobertura. Você é inclinado a ser afável e se dá bem com os outros. Halflings pés leves são mais propensos à vontade de viajar do que outros halflings, e frequentemente vivem ao lado de outras raças ou adotam uma vida nômade.",
+      "ability_bonuses": {
+        "charisma": 1
+      },
+      "traits": [
+        {
+          "id": "naturally_stealthy",
+          "name": "Furtividade Natural",
+          "description_markdown": "Você pode tentar se esconder mesmo quando estiver obscurecido apenas por uma criatura que seja pelo menos um tamanho maior que você.",
+          "mechanical": {
+            "can_hide_behind_larger_creatures": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "stout",
+      "name": "Halfling Robusto",
+      "name_en": "Stout Halfling",
+      "description": "Como um halfling robusto, você é mais resistente que a média e tem alguma resistência a veneno. Alguns dizem que halflings robustos têm sangue anão neles.",
+      "ability_bonuses": {
+        "constitution": 1
+      },
+      "traits": [
+        {
+          "id": "stout_resilience",
+          "name": "Resiliência Robusta",
+          "description_markdown": "Você tem **vantagem** em testes de resistência contra veneno, e você tem **resistência** a dano de veneno.",
+          "mechanical": {
+            "saving_throw_advantage": ["poison"],
+            "damage_resistance": ["poison"]
+          }
+        }
+      ]
+    }
+  ]
+}

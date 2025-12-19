@@ -1,0 +1,52 @@
+{
+  "id": "half_orc",
+  "name": "Meio-Orc",
+  "name_en": "Half-Orc",
+  "size": "medium",
+  "speed": 9,
+  "ability_bonuses": {
+    "strength": 2,
+    "constitution": 1
+  },
+  "age_description": "Meio-orcs amadurecem um pouco mais rápido que humanos, atingindo a idade adulta por volta dos 14 anos. Eles envelhecem visivelmente mais rápido e raramente vivem mais de 75 anos.",
+  "alignment_description": "Meio-orcs herdam uma tendência para o caos de seus pais orcs e não são fortemente inclinados para o bem. Meio-orcs criados entre orcs e dispostos a viver suas vidas entre eles geralmente são maus.",
+  "size_description": "Meio-orcs são um pouco maiores e mais corpulentos que humanos, e variam de 1,5 m a bem mais de 1,8 m de altura. Seu tamanho é Médio.",
+  "languages": ["Comum", "Orc"],
+  "traits": [
+    {
+      "id": "darkvision",
+      "name": "Visão no Escuro",
+      "description_markdown": "Graças ao seu sangue orc, você tem visão superior em condições escuras e de penumbra. Você pode enxergar na penumbra a até **18 metros** como se fosse luz plena, e na escuridão como se fosse penumbra.\n\nVocê não pode discernir cores na escuridão, apenas tons de cinza.",
+      "mechanical": {
+        "darkvision_range": 18
+      }
+    },
+    {
+      "id": "menacing",
+      "name": "Ameaçador",
+      "description_markdown": "Você ganha proficiência na perícia **Intimidação**.",
+      "mechanical": {
+        "skill_proficiencies": ["intimidation"]
+      }
+    },
+    {
+      "id": "relentless_endurance",
+      "name": "Resistência Incansável",
+      "description_markdown": "Quando você é reduzido a **0 pontos de vida** mas não é morto instantaneamente, você pode cair para **1 ponto de vida**.\n\nVocê não pode usar esta característica novamente até terminar um **descanso longo**.",
+      "mechanical": {
+        "drop_to_1_hp_when_reduced_to_0": true,
+        "recharge": "long_rest"
+      }
+    },
+    {
+      "id": "savage_attacks",
+      "name": "Ataques Selvagens",
+      "description_markdown": "Quando você marca um **acerto crítico** com um ataque corpo a corpo com arma, você pode rolar um dos dados de dano da arma uma vez adicional e adicioná-lo ao dano extra do acerto crítico.",
+      "mechanical": {
+        "extra_damage_die_on_crit": true,
+        "applies_to": "melee_weapon_attacks"
+      }
+    }
+  ],
+  "subraces": []
+}
