@@ -1,0 +1,720 @@
+[
+  {
+    "id": "mace_of_disruption",
+    "name": "Maça de Disrupção",
+    "name_en": "Mace of Disruption",
+    "type": "weapon",
+    "weapon_type": "mace",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Quando você acerta um corruptor ou morto-vivo com esta arma mágica, essa criatura sofre 2d6 de dano radiante extra. Se o alvo tiver 25 pontos de vida ou menos após sofrer esse dano, ele deve ter sucesso em um teste de resistência de Sabedoria CD 15 ou ser destruído. Em um sucesso, a criatura fica amedrontada de você até o final do seu próximo turno.\n\nEnquanto segura esta arma, ela emite luz plena em um raio de 6 metros e penumbra por 6 metros adicionais.",
+    "mechanical": {
+      "radiant_damage": "2d6",
+      "destroy_hp_threshold": 25,
+      "save_dc": 15,
+      "bright_light_m": 6,
+      "dim_light_m": 6
+    }
+  },
+  {
+    "id": "mace_of_smiting",
+    "name": "Maça de Golpear",
+    "name_en": "Mace of Smiting",
+    "type": "weapon",
+    "weapon_type": "mace",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Você ganha um bônus de +1 nas jogadas de ataque e dano feitas com esta arma mágica. O bônus aumenta para +3 quando você usa a maça para atacar um constructo.\n\nQuando você rola um 20 em uma jogada de ataque feita com esta arma, o alvo sofre 2d6 de dano de concussão extra, ou 4d6 de dano de concussão se for um constructo. Se um constructo tiver 25 pontos de vida ou menos após sofrer esse dano, ele é destruído.",
+    "mechanical": {
+      "attack_bonus": 1,
+      "damage_bonus": 1,
+      "vs_construct_bonus": 3,
+      "critical_damage": "2d6",
+      "critical_vs_construct_damage": "4d6",
+      "destroy_construct_hp": 25
+    }
+  },
+  {
+    "id": "mace_of_terror",
+    "name": "Maça do Terror",
+    "name_en": "Mace of Terror",
+    "type": "weapon",
+    "weapon_type": "mace",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Esta arma mágica tem 3 cargas. Enquanto a segura, você pode usar uma ação e gastar 1 carga para liberar uma onda de terror. Cada criatura à sua escolha em um raio de 9 metros a partir de você deve ter sucesso em um teste de resistência de Sabedoria CD 15 ou ficar amedrontada de você por 1 minuto. Enquanto estiver amedrontada dessa forma, uma criatura deve gastar seus turnos tentando se afastar de você o máximo que puder, e ela não pode voluntariamente se mover para um espaço a até 9 metros de você. Ela também não pode usar reações. Para sua ação, ela pode usar apenas a ação de Disparada ou tentar escapar de um efeito que a impeça de se mover. Se ela não tiver para onde se mover, a criatura pode usar a ação de Esquivar. No final de cada um de seus turnos, uma criatura pode repetir o teste de resistência, encerrando o efeito em si em um sucesso.\n\nA maça recupera 1d3 cargas gastas diariamente ao amanhecer.",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3",
+      "save_dc": 15,
+      "radius_m": 9,
+      "duration_minutes": 1
+    }
+  },
+  {
+    "id": "mantle_of_spell_resistance",
+    "name": "Manto de Resistência a Magias",
+    "name_en": "Mantle of Spell Resistance",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Você tem vantagem em testes de resistência contra magias enquanto veste este manto.",
+    "mechanical": {
+      "advantage_vs_spells": true
+    }
+  },
+  {
+    "id": "manual_of_bodily_health",
+    "name": "Manual de Saúde Corporal",
+    "name_en": "Manual of Bodily Health",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Este livro contém dicas de saúde e dieta, e suas palavras são carregadas com magia. Se você passar 48 horas ao longo de um período de 6 dias ou menos estudando o conteúdo do livro e praticando suas orientações, sua pontuação de Constituição aumenta em 2, assim como seu máximo para essa pontuação. O manual então perde sua magia, mas a recupera em um século.",
+    "mechanical": {
+      "study_hours": 48,
+      "study_period_days": 6,
+      "constitution_increase": 2,
+      "recharge_years": 100
+    }
+  },
+  {
+    "id": "manual_of_gainful_exercise",
+    "name": "Manual de Exercício Proveitoso",
+    "name_en": "Manual of Gainful Exercise",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Este livro descreve exercícios físicos, e suas palavras são carregadas com magia. Se você passar 48 horas ao longo de um período de 6 dias ou menos estudando o conteúdo do livro e praticando suas orientações, sua pontuação de Força aumenta em 2, assim como seu máximo para essa pontuação. O manual então perde sua magia, mas a recupera em um século.",
+    "mechanical": {
+      "study_hours": 48,
+      "study_period_days": 6,
+      "strength_increase": 2,
+      "recharge_years": 100
+    }
+  },
+  {
+    "id": "manual_of_golems",
+    "name": "Manual de Golens",
+    "name_en": "Manual of Golems",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Este tomo contém informações e encantamentos necessários para criar um tipo específico de golen. O Mestre escolhe o tipo ou o determina aleatoriamente. Para decifrar e usar o manual, você deve ser um conjurador com pelo menos dois espaços de magia de 5º nível. Uma criatura que não possa usar um manual de golens e tente lê-lo sofre 6d6 de dano psíquico.\n\n| d20 | Golen | Tempo | Custo |\n|-----|-------|-------|-------|\n| 1-5 | Argila | 30 dias | 65.000 po |\n| 6-17 | Carne | 60 dias | 50.000 po |\n| 18 | Ferro | 120 dias | 100.000 po |\n| 19-20 | Pedra | 90 dias | 80.000 po |\n\nPara criar um golen, você deve gastar o tempo mostrado na tabela, trabalhando sem interrupção com o manual em mãos e descansando não mais que 8 horas por dia. Você também deve pagar o custo especificado para comprar suprimentos.\n\nUma vez que você termine de criar o golen, o livro é consumido em chamas arcanas. O golen se torna animado quando as cinzas do manual são aspergidas sobre ele. Ele está sob seu controle e entende e obedece seus comandos falados.",
+    "mechanical": {
+      "read_damage": "6d6",
+      "min_spell_level": 5,
+      "min_spell_slots": 2
+    }
+  },
+  {
+    "id": "manual_of_quickness_of_action",
+    "name": "Manual de Rapidez de Ação",
+    "name_en": "Manual of Quickness of Action",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Este livro contém exercícios de coordenação e equilíbrio, e suas palavras são carregadas com magia. Se você passar 48 horas ao longo de um período de 6 dias ou menos estudando o conteúdo do livro e praticando suas orientações, sua pontuação de Destreza aumenta em 2, assim como seu máximo para essa pontuação. O manual então perde sua magia, mas a recupera em um século.",
+    "mechanical": {
+      "study_hours": 48,
+      "study_period_days": 6,
+      "dexterity_increase": 2,
+      "recharge_years": 100
+    }
+  },
+  {
+    "id": "marvelous_pigments",
+    "name": "Pigmentos Maravilhosos",
+    "name_en": "Marvelous Pigments",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Tipicamente encontrados em 1d4 potes dentro de uma caixa de madeira fina com um pincel (pesando 0,45 kg no total), estes pigmentos permitem que você crie objetos tridimensionais pintando-os em duas dimensões. A tinta flui do pincel para formar o objeto desejado enquanto você se concentra em sua imagem.\n\nCada pote de tinta é suficiente para cobrir 93 metros quadrados de superfície, o que permite criar objetos inanimados ou características de terreno — como uma porta, um fosso, flores, árvores, celas, salas ou armas — de até 283 metros cúbicos. Leva 10 minutos para cobrir 9,3 metros quadrados.\n\nQuando você completa a pintura, o objeto ou característica de terreno representado se torna um objeto real e não mágico. Assim, pintar uma porta em uma parede cria uma porta real que pode ser aberta para o que estiver além. Pintar um fosso em um piso cria um fosso real, e sua profundidade conta contra a área total de objetos que você cria.\n\nNada criado pelos pigmentos pode ter um valor superior a 25 po. Se você pintar um objeto de maior valor (como um diamante ou uma pilha de ouro), o objeto parece autêntico, mas uma inspeção minuciosa revela que é feito de pasta, osso ou algum outro material sem valor.\n\nSe você pintar uma forma de energia como fogo ou relâmpago, a energia aparece mas se dissipa assim que você completa a pintura, não causando dano a nada.",
+    "mechanical": {
+      "pots": "1d4",
+      "coverage_sqm": 93,
+      "max_volume_cbm": 283,
+      "max_value_gp": 25,
+      "time_per_9sqm_minutes": 10
+    }
+  },
+  {
+    "id": "medallion_of_thoughts",
+    "name": "Medalhão de Pensamentos",
+    "name_en": "Medallion of Thoughts",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": true,
+    "description_markdown": "O medalhão tem 3 cargas. Enquanto o veste, você pode usar uma ação e gastar 1 carga para conjurar a magia **detectar pensamentos** (CD de resistência 13) dele. O medalhão recupera 1d3 cargas gastas diariamente ao amanhecer.",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3",
+      "spell_save_dc": 13
+    }
+  },
+  {
+    "id": "mirror_of_life_trapping",
+    "name": "Espelho de Aprisionamento de Vida",
+    "name_en": "Mirror of Life Trapping",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Quando este espelho de 1,2 metro de altura é visto indiretamente, sua superfície mostra imagens tênues de criaturas. O espelho pesa 23 kg e tem CA 11, 10 pontos de vida e vulnerabilidade a dano de concussão. Ele se estilhaça e é destruído quando reduzido a 0 pontos de vida.\n\nSe o espelho estiver pendurado em uma superfície vertical e você estiver a até 1,5 metro dele, pode usar uma ação para falar sua palavra de comando e ativá-lo. Ele permanece ativado até que você use uma ação para falar a palavra de comando novamente.\n\nQualquer criatura que não seja você e que veja seu reflexo no espelho ativado enquanto estiver a até 9 metros dele deve ter sucesso em um teste de resistência de Carisma CD 15 ou ser aprisionada, junto com tudo que estiver vestindo ou carregando, em uma das doze celas extradimensionais do espelho. Este teste de resistência é feito com vantagem se a criatura conhece a natureza do espelho, e constructos têm sucesso automático.\n\nUma cela extradimensional é uma extensão infinita preenchida com névoa espessa que reduz a visibilidade a 3 metros. Criaturas aprisionadas nas celas do espelho não envelhecem e não precisam comer, beber ou dormir. Uma criatura aprisionada dentro de uma cela pode escapar usando magia que permite viagem planar. Caso contrário, a criatura fica confinada à cela até ser libertada.\n\nSe o espelho aprisionar uma criatura mas suas doze celas extradimensionais já estiverem ocupadas, o espelho liberta uma criatura aprisionada aleatoriamente para acomodar o novo prisioneiro. Uma criatura libertada aparece em um espaço desocupado à vista do espelho, mas de costas para ele. Se o espelho for estilhaçado, todas as criaturas que ele contém são libertadas e aparecem em espaços desocupados perto dele.\n\nEnquanto estiver a até 1,5 metro do espelho, você pode usar uma ação para falar o nome de uma criatura aprisionada nele ou chamar uma cela específica pelo número. A criatura nomeada ou contida na cela nomeada aparece como uma imagem na superfície do espelho. Você e a criatura podem então se comunicar normalmente.\n\nDe forma similar, você pode usar uma ação para falar uma segunda palavra de comando e libertar uma criatura aprisionada no espelho. A criatura libertada aparece, junto com seus pertences, no espaço desocupado mais próximo do espelho e de costas para ele.",
+    "mechanical": {
+      "height_m": 1.2,
+      "weight_kg": 23,
+      "ac": 11,
+      "hp": 10,
+      "save_dc": 15,
+      "activation_range_m": 1.5,
+      "trap_range_m": 9,
+      "cells": 12,
+      "cell_visibility_m": 3
+    }
+  },
+  {
+    "id": "mithral_armor",
+    "name": "Armadura de Mithral",
+    "name_en": "Mithral Armor",
+    "type": "armor",
+    "armor_type": "medium_or_heavy_not_hide",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Mithral é um metal leve e flexível. Uma camisa de cota de malha ou peitoral de mithral pode ser vestida sob roupas normais. Se a armadura normalmente impõe desvantagem em testes de Destreza (Furtividade) ou tem um requisito de Força, a versão de mithral da armadura não tem.",
+    "mechanical": {
+      "removes_stealth_disadvantage": true,
+      "removes_strength_requirement": true
+    }
+  },
+  {
+    "id": "necklace_of_adaptation",
+    "name": "Colar de Adaptação",
+    "name_en": "Necklace of Adaptation",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este colar, você pode respirar normalmente em qualquer ambiente e tem vantagem em testes de resistência feitos contra gases e vapores nocivos (como efeitos de **nuvem mortal** e **nuvem fétida**, venenos inalados e as armas de sopro de alguns dragões).",
+    "mechanical": {
+      "breathe_any_environment": true,
+      "advantage_vs_gases": true
+    }
+  },
+  {
+    "id": "necklace_of_fireballs",
+    "name": "Colar de Bolas de Fogo",
+    "name_en": "Necklace of Fireballs",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Este colar tem 1d6 + 3 contas penduradas dele. Você pode usar uma ação para destacar uma conta e jogá-la a até 18 metros de distância. Quando alcança o fim de sua trajetória, a conta detona como uma magia **bola de fogo** de 3º nível (CD de resistência 15).\n\nVocê pode arremessar múltiplas contas, ou até mesmo o colar inteiro, como uma ação. Quando fizer isso, aumente o nível da bola de fogo em 1 para cada conta além da primeira.",
+    "mechanical": {
+      "beads": "1d6+3",
+      "range_m": 18,
+      "base_spell_level": 3,
+      "save_dc": 15
+    }
+  },
+  {
+    "id": "necklace_of_prayer_beads",
+    "name": "Colar de Contas de Oração",
+    "name_en": "Necklace of Prayer Beads",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": "cleric, druid, or paladin",
+    "description_markdown": "Este colar tem 1d4 + 2 contas mágicas feitas de água-marinha, pérola negra ou topázio. Ele também tem muitas contas não mágicas feitas de pedras como âmbar, cornalina, citrino, coral, jade, pérola ou quartzo. Se uma conta mágica for removida do colar, essa conta perde sua magia.\n\nSeis tipos de contas mágicas existem. O Mestre decide o tipo de cada conta no colar ou o determina aleatoriamente. Um colar pode ter mais de uma conta do mesmo tipo. Para usar uma, você deve estar vestindo o colar. Cada conta contém uma magia que você pode conjurar dela como uma ação bônus (usando sua CD de resistência de magia se um teste de resistência for necessário). Uma vez que a magia de uma conta mágica é conjurada, essa conta não pode ser usada novamente até o próximo amanhecer.\n\n| d20 | Conta de... | Magia |\n|-----|-------------|-------|\n| 1-6 | Bênção | *Benção* |\n| 7-12 | Cura | *Curar ferimentos* (2º nível) ou *restauração menor* |\n| 13-16 | Favor | *Restauração maior* |\n| 17-18 | Golpe | *Marcação divina* |\n| 19 | Convocação | *Aliado planar* |\n| 20 | Andar no vento | *Caminhar no vento* |",
+    "mechanical": {
+      "magic_beads": "1d4+2",
+      "recharge": "daily"
+    }
+  },
+  {
+    "id": "nine_lives_stealer",
+    "name": "Ladrão de Nove Vidas",
+    "name_en": "Nine Lives Stealer",
+    "type": "weapon",
+    "weapon_type": "any_sword",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Você ganha um bônus de +2 nas jogadas de ataque e dano feitas com esta arma mágica.\n\nA espada tem 1d8 + 1 cargas. Se você acertar um crítico contra uma criatura que tenha menos de 100 pontos de vida, ela deve ter sucesso em um teste de resistência de Constituição CD 15 ou ser morta instantaneamente conforme a espada arranca sua força vital de seu corpo (um constructo ou morto-vivo é imune). A espada perde 1 carga se a criatura for morta. Quando a espada não tiver mais cargas, ela perde esta propriedade.",
+    "mechanical": {
+      "attack_bonus": 2,
+      "damage_bonus": 2,
+      "charges": "1d8+1",
+      "save_dc": 15,
+      "hp_threshold": 100
+    }
+  },
+  {
+    "id": "oathbow",
+    "name": "Arco do Juramento",
+    "name_en": "Oathbow",
+    "type": "weapon",
+    "weapon_type": "longbow",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Quando você engatilha uma flecha neste arco, ele sussurra em Élfico: \"Derrota rápida aos meus inimigos.\" Quando você usa esta arma para fazer um ataque à distância, pode, como uma frase de comando, dizer: \"Morte rápida a você que me ofendeu.\" O alvo do seu ataque se torna seu inimigo jurado até que morra ou até o amanhecer sete dias depois. Você pode ter apenas um inimigo jurado por vez. Quando seu inimigo jurado morre, você pode escolher um novo após o próximo amanhecer.\n\nQuando você faz uma jogada de ataque à distância com esta arma contra seu inimigo jurado, você tem vantagem na jogada. Além disso, seu alvo não ganha benefício de cobertura, exceto cobertura total, e você não sofre desvantagem devido ao alcance longo. Se o ataque acertar, seu inimigo jurado sofre 3d6 de dano perfurante extra.\n\nEnquanto seu inimigo jurado vive, você tem desvantagem nas jogadas de ataque com todas as outras armas.",
+    "mechanical": {
+      "piercing_damage": "3d6",
+      "oath_duration_days": 7,
+      "advantage_vs_sworn_enemy": true,
+      "disadvantage_other_weapons": true
+    }
+  },
+  {
+    "id": "oil_of_etherealness",
+    "name": "Óleo de Etereidade",
+    "name_en": "Oil of Etherealness",
+    "type": "potion",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Gotas deste óleo cinza e nublado se formam no exterior de seu recipiente e rapidamente evaporam. O óleo pode cobrir uma criatura Média ou menor, junto com o equipamento que ela está vestindo e carregando (um frasco adicional é necessário para cada categoria de tamanho acima de Médio). Aplicar o óleo leva 10 minutos. A criatura afetada então ganha o efeito da magia **etereidade** por 1 hora.",
+    "mechanical": {
+      "application_time_minutes": 10,
+      "duration_hours": 1,
+      "max_size": "medium"
+    }
+  },
+  {
+    "id": "oil_of_sharpness",
+    "name": "Óleo de Afiação",
+    "name_en": "Oil of Sharpness",
+    "type": "potion",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Este óleo transparente e gelatinoso brilha com fragmentos ultrafinos de prata. O óleo pode cobrir uma arma cortante ou perfurante ou até 5 peças de munição cortante ou perfurante. Aplicar o óleo leva 1 minuto. Por 1 hora, o item revestido é mágico e tem um bônus de +3 nas jogadas de ataque e dano.",
+    "mechanical": {
+      "application_time_minutes": 1,
+      "duration_hours": 1,
+      "attack_bonus": 3,
+      "damage_bonus": 3,
+      "max_ammunition": 5
+    }
+  },
+  {
+    "id": "oil_of_slipperiness",
+    "name": "Óleo de Escorregamento",
+    "name_en": "Oil of Slipperiness",
+    "type": "potion",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Este unguento preto pegajoso é espesso e pesado no recipiente, mas flui rapidamente quando derramado. O óleo pode cobrir uma criatura Média ou menor, junto com o equipamento que ela está vestindo e carregando (um frasco adicional é necessário para cada categoria de tamanho acima de Médio). Aplicar o óleo leva 10 minutos. A criatura afetada então ganha o efeito de uma magia **movimentação livre** por 8 horas.\n\nAlternativamente, o óleo pode ser derramado no chão como uma ação, onde cobre um quadrado de 3 metros, duplicando o efeito da magia **graxa** naquela área por 8 horas.",
+    "mechanical": {
+      "application_time_minutes": 10,
+      "duration_hours": 8,
+      "area_coverage_m": 3,
+      "max_size": "medium"
+    }
+  },
+  {
+    "id": "pearl_of_power",
+    "name": "Pérola do Poder",
+    "name_en": "Pearl of Power",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": "spellcaster",
+    "description_markdown": "Enquanto esta pérola estiver com você, você pode usar uma ação para falar sua palavra de comando e recuperar um espaço de magia gasto. Se o espaço gasto era de 4º nível ou superior, o novo espaço é de 3º nível. Uma vez que você use a pérola, ela não pode ser usada novamente até o próximo amanhecer.",
+    "mechanical": {
+      "max_spell_level_recovered": 3,
+      "recharge": "daily"
+    }
+  },
+  {
+    "id": "periapt_of_health",
+    "name": "Amuleto de Saúde",
+    "name_en": "Periapt of Health",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Você é imune a contrair qualquer doença enquanto veste este pingente. Se você já estiver infectado com uma doença, os efeitos da doença são suprimidos enquanto você veste o pingente.",
+    "mechanical": {
+      "disease_immunity": true
+    }
+  },
+  {
+    "id": "periapt_of_proof_against_poison",
+    "name": "Amuleto de Proteção contra Veneno",
+    "name_en": "Periapt of Proof against Poison",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Esta delicada corrente de prata tem um pingente de gema negra lapidada em brilhante. Enquanto você a veste, venenos não têm efeito sobre você. Você é imune à condição envenenado e tem imunidade a dano de veneno.",
+    "mechanical": {
+      "poison_immunity": true,
+      "poisoned_condition_immunity": true
+    }
+  },
+  {
+    "id": "periapt_of_wound_closure",
+    "name": "Amuleto de Fechamento de Feridas",
+    "name_en": "Periapt of Wound Closure",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este pingente, você estabiliza sempre que estiver morrendo no início do seu turno. Além disso, sempre que você rolar um Dado de Vida para recuperar pontos de vida, dobre o número de pontos de vida que ele restaura.",
+    "mechanical": {
+      "auto_stabilize": true,
+      "double_hit_dice_healing": true
+    }
+  },
+  {
+    "id": "philter_of_love",
+    "name": "Filtro do Amor",
+    "name_en": "Philter of Love",
+    "type": "potion",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Na próxima vez que você vir uma criatura dentro de 10 minutos após beber este filtro, você fica encantado por aquela criatura por 1 hora. Se a criatura for de uma espécie e gênero pelos quais você normalmente é atraído, você a considera como seu amor verdadeiro enquanto estiver encantado. O líquido efervescente cor-de-rosa desta poção contém uma bolha fácil de perder em forma de coração.",
+    "mechanical": {
+      "duration_hours": 1,
+      "activation_minutes": 10
+    }
+  },
+  {
+    "id": "pipes_of_haunting",
+    "name": "Flautas Assombrosas",
+    "name_en": "Pipes of Haunting",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Você deve ser proficiente com instrumentos de sopro para usar estas flautas. Elas têm 3 cargas. Você pode usar uma ação para tocá-las e gastar 1 carga para criar uma melodia estranha e cativante. Cada criatura a até 9 metros de você que ouça você tocar deve ter sucesso em um teste de resistência de Sabedoria CD 15 ou ficar amedrontada de você por 1 minuto. Se desejar, todas as criaturas na área que não sejam hostis a você têm sucesso automático no teste de resistência. Uma criatura que falhe no teste de resistência pode repeti-lo no final de cada um de seus turnos, encerrando o efeito em si em um sucesso. Uma criatura que tenha sucesso em seu teste de resistência é imune ao efeito destas flautas por 24 horas. As flautas recuperam 1d3 cargas gastas diariamente ao amanhecer.",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3",
+      "save_dc": 15,
+      "range_m": 9,
+      "duration_minutes": 1
+    }
+  },
+  {
+    "id": "pipes_of_the_sewers",
+    "name": "Flautas dos Esgotos",
+    "name_en": "Pipes of the Sewers",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": true,
+    "description_markdown": "Você deve ser proficiente com instrumentos de sopro para usar estas flautas. Enquanto estiver sintonizado com as flautas, ratos comuns e ratos gigantes são indiferentes a você e não o atacarão a menos que você os ameace ou machuque.\n\nAs flautas têm 3 cargas. Se você tocar as flautas como uma ação, pode usar uma ação bônus para gastar 1 a 3 cargas, convocando um enxame de ratos para cada carga gasta, desde que ratos suficientes estejam a até 800 metros de você para serem convocados dessa forma (conforme determinado pelo Mestre). Se não houver ratos suficientes para formar um enxame, a carga é desperdiçada. Enxames convocados se movem em direção à música pela rota mais curta disponível, mas não estão sob seu controle de outra forma. As flautas recuperam 1d3 cargas gastas diariamente ao amanhecer.\n\nSempre que um enxame de ratos que não esteja sob o controle de outra criatura chegar a até 9 metros de você enquanto você está tocando as flautas, você pode fazer um teste de Carisma contestado pelo teste de Sabedoria do enxame. Se você perder a disputa, o enxame se comporta como normalmente e não pode ser influenciado pela música das flautas pelas próximas 24 horas. Se você vencer a disputa, o enxame é influenciado pela música das flautas e se torna amigável a você e seus companheiros enquanto você continuar a tocar as flautas a cada rodada como uma ação. Um enxame amigável obedece seus comandos. Se você não der comandos a um enxame amigável, ele se defende mas não toma outras ações. Se um enxame amigável iniciar seu turno e não puder ouvir a música das flautas, seu controle sobre aquele enxame termina, e o enxame se comporta como normalmente e não pode ser influenciado pela música das flautas pelas próximas 24 horas.",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3",
+      "range_m": 9,
+      "summon_range_m": 800,
+      "rats_indifferent": true
+    }
+  },
+  {
+    "id": "plate_armor_of_etherealness",
+    "name": "Armadura de Placas de Etereidade",
+    "name_en": "Plate Armor of Etherealness",
+    "type": "armor",
+    "armor_type": "plate",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste esta armadura, você pode falar sua palavra de comando como uma ação para ganhar o efeito da magia **etereidade**, que dura 10 minutos ou até que você remova a armadura ou use uma ação para falar a palavra de comando novamente. Esta propriedade da armadura não pode ser usada novamente até o próximo amanhecer.",
+    "mechanical": {
+      "duration_minutes": 10,
+      "recharge": "daily"
+    }
+  },
+  {
+    "id": "portable_hole",
+    "name": "Buraco Portátil",
+    "name_en": "Portable Hole",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Este tecido preto fino, macio como seda, é dobrado nas dimensões de um lenço. Ele se desdobra em um lençol circular de 1,8 metro de diâmetro.\n\nVocê pode usar uma ação para desdobrar um buraco portátil e colocá-lo sobre ou contra uma superfície sólida, após o que o buraco portátil cria um buraco extradimensional de 3 metros de profundidade. O espaço cilíndrico dentro do buraco existe em um plano diferente, então ele não pode ser usado para criar passagens abertas. Qualquer criatura dentro de um buraco portátil aberto pode sair do buraco escalando para fora dele.\n\nVocê pode usar uma ação para fechar um buraco portátil segurando as bordas do tecido e dobrando-o. Dobrar o tecido fecha o buraco, e quaisquer criaturas ou objetos dentro permanecem no espaço extradimensional. Não importa o que esteja nele, o buraco não pesa praticamente nada.\n\nSe o buraco estiver dobrado, uma criatura dentro do espaço extradimensional do buraco pode usar uma ação para fazer um teste de Força CD 10. Em um sucesso, a criatura força sua saída e aparece a até 1,5 metro do buraco portátil ou da criatura que o carrega. Uma criatura que respira dentro de um buraco portátil fechado pode sobreviver por até 10 minutos, após o que começa a sufocar.\n\nColocar um buraco portátil dentro de um espaço extradimensional criado por uma **bolsa de devorar**, **mochila útil** ou item similar destrói instantaneamente ambos os itens e abre um portal para o Plano Astral. O portal se origina onde um item foi colocado dentro do outro. Qualquer criatura a até 3 metros do portal é sugada através dele e depositada em um local aleatório no Plano Astral. O portal então se fecha. O portal é unidirecional e não pode ser reaberto.",
+    "mechanical": {
+      "diameter_m": 1.8,
+      "depth_m": 3,
+      "escape_dc": 10,
+      "suffocation_minutes": 10,
+      "astral_gate_range_m": 3
+    }
+  },
+  {
+    "id": "potion_of_animal_friendship",
+    "name": "Poção de Amizade Animal",
+    "name_en": "Potion of Animal Friendship",
+    "type": "potion",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, pode conjurar a magia **amizade animal** (CD de resistência 13) por 1 hora à vontade. Agitar este líquido lamacento traz pequenos pedaços à vista: uma escama de peixe, uma língua de beija-flor, uma garra de gato ou um pelo de esquilo.",
+    "mechanical": {
+      "spell_save_dc": 13,
+      "duration_hours": 1
+    }
+  },
+  {
+    "id": "potion_of_clairvoyance",
+    "name": "Poção de Clarividência",
+    "name_en": "Potion of Clairvoyance",
+    "type": "potion",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, ganha o efeito da magia **clarividência**. Um globo ocular flutua neste líquido amarelado mas desaparece quando a poção é aberta.",
+    "mechanical": {}
+  },
+  {
+    "id": "potion_of_climbing",
+    "name": "Poção de Escalada",
+    "name_en": "Potion of Climbing",
+    "type": "potion",
+    "rarity": "common",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, ganha um deslocamento de escalada igual ao seu deslocamento de caminhada por 1 hora. Durante este tempo, você tem vantagem em testes de Força (Atletismo) feitos para escalar. A poção é separada em camadas marrom, prata e cinza que se assemelham a faixas de pedra. Agitar o frasco não mistura as cores.",
+    "mechanical": {
+      "duration_hours": 1,
+      "advantage_athletics_climb": true
+    }
+  },
+  {
+    "id": "potion_of_diminution",
+    "name": "Poção de Diminuição",
+    "name_en": "Potion of Diminution",
+    "type": "potion",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, ganha o efeito de \"reduzir\" da magia **aumentar/reduzir** por 1d4 horas (sem necessidade de concentração). O vermelho no líquido da poção se contrai continuamente para uma conta minúscula e então se expande para colorir o líquido claro ao redor. Agitar o frasco não interrompe este processo.",
+    "mechanical": {
+      "duration_hours": "1d4"
+    }
+  },
+  {
+    "id": "potion_of_flying",
+    "name": "Poção de Voo",
+    "name_en": "Potion of Flying",
+    "type": "potion",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, ganha um deslocamento de voo igual ao seu deslocamento de caminhada por 1 hora e pode pairar. Se você estiver no ar quando a poção acabar, você cai a menos que tenha algum outro meio de permanecer no ar. O líquido claro desta poção flutua no topo de seu recipiente e tem impurezas brancas nebulosas flutuando nele.",
+    "mechanical": {
+      "duration_hours": 1,
+      "can_hover": true
+    }
+  },
+  {
+    "id": "potion_of_gaseous_form",
+    "name": "Poção de Forma Gasosa",
+    "name_en": "Potion of Gaseous Form",
+    "type": "potion",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, ganha o efeito da magia **forma gasosa** por 1 hora (sem necessidade de concentração) ou até que você encerre o efeito como uma ação bônus. O recipiente desta poção parece conter névoa que se move e flui como água.",
+    "mechanical": {
+      "duration_hours": 1
+    }
+  },
+  {
+    "id": "potion_of_giant_strength_hill",
+    "name": "Poção de Força de Gigante (Colina)",
+    "name_en": "Potion of Giant Strength (Hill)",
+    "type": "potion",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, sua pontuação de Força muda para 21 por 1 hora. A poção não tem efeito sobre você se sua Força for igual ou maior que essa pontuação.\n\nO líquido transparente desta poção tem flutuando nele uma lasca de unha de um gigante das colinas.",
+    "mechanical": {
+      "strength_score": 21,
+      "duration_hours": 1
+    }
+  },
+  {
+    "id": "potion_of_giant_strength_frost",
+    "name": "Poção de Força de Gigante (Gelo/Pedra)",
+    "name_en": "Potion of Giant Strength (Frost/Stone)",
+    "type": "potion",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, sua pontuação de Força muda para 23 por 1 hora. A poção não tem efeito sobre você se sua Força for igual ou maior que essa pontuação.\n\nO líquido transparente desta poção tem flutuando nele uma lasca de unha de um gigante do gelo ou da pedra.",
+    "mechanical": {
+      "strength_score": 23,
+      "duration_hours": 1
+    }
+  },
+  {
+    "id": "potion_of_giant_strength_fire",
+    "name": "Poção de Força de Gigante (Fogo)",
+    "name_en": "Potion of Giant Strength (Fire)",
+    "type": "potion",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, sua pontuação de Força muda para 25 por 1 hora. A poção não tem efeito sobre você se sua Força for igual ou maior que essa pontuação.\n\nO líquido transparente desta poção tem flutuando nele uma lasca de unha de um gigante do fogo.",
+    "mechanical": {
+      "strength_score": 25,
+      "duration_hours": 1
+    }
+  },
+  {
+    "id": "potion_of_giant_strength_cloud",
+    "name": "Poção de Força de Gigante (Nuvem)",
+    "name_en": "Potion of Giant Strength (Cloud)",
+    "type": "potion",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, sua pontuação de Força muda para 27 por 1 hora. A poção não tem efeito sobre você se sua Força for igual ou maior que essa pontuação.\n\nO líquido transparente desta poção tem flutuando nele uma lasca de unha de um gigante das nuvens.",
+    "mechanical": {
+      "strength_score": 27,
+      "duration_hours": 1
+    }
+  },
+  {
+    "id": "potion_of_giant_strength_storm",
+    "name": "Poção de Força de Gigante (Tempestade)",
+    "name_en": "Potion of Giant Strength (Storm)",
+    "type": "potion",
+    "rarity": "legendary",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, sua pontuação de Força muda para 29 por 1 hora. A poção não tem efeito sobre você se sua Força for igual ou maior que essa pontuação.\n\nO líquido transparente desta poção tem flutuando nele uma lasca de unha de um gigante das tempestades.",
+    "mechanical": {
+      "strength_score": 29,
+      "duration_hours": 1
+    }
+  },
+  {
+    "id": "potion_of_growth",
+    "name": "Poção de Crescimento",
+    "name_en": "Potion of Growth",
+    "type": "potion",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, ganha o efeito de \"aumentar\" da magia **aumentar/reduzir** por 1d4 horas (sem necessidade de concentração). O vermelho no líquido da poção se expande continuamente de uma conta minúscula para colorir o líquido claro ao redor e então se contrai. Agitar o frasco não interrompe este processo.",
+    "mechanical": {
+      "duration_hours": "1d4"
+    }
+  },
+  {
+    "id": "potion_of_healing",
+    "name": "Poção de Cura",
+    "name_en": "Potion of Healing",
+    "type": "potion",
+    "rarity": "common",
+    "requires_attunement": false,
+    "description_markdown": "Você recupera pontos de vida quando bebe esta poção. O número de pontos de vida depende da raridade da poção, conforme mostrado na tabela de Poções de Cura.\n\nSeja qual for sua potência, o líquido vermelho da poção cintila quando agitado.\n\n**Cura:** 2d4 + 2 PV (comum)",
+    "mechanical": {
+      "hp_regained": "2d4+2"
+    }
+  },
+  {
+    "id": "potion_of_greater_healing",
+    "name": "Poção de Cura Maior",
+    "name_en": "Potion of Greater Healing",
+    "type": "potion",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "**Cura Maior:** 4d4 + 4 PV (incomum)",
+    "mechanical": {
+      "hp_regained": "4d4+4"
+    }
+  },
+  {
+    "id": "potion_of_superior_healing",
+    "name": "Poção de Cura Superior",
+    "name_en": "Potion of Superior Healing",
+    "type": "potion",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "**Cura Superior:** 8d4 + 8 PV (rara)",
+    "mechanical": {
+      "hp_regained": "8d4+8"
+    }
+  },
+  {
+    "id": "potion_of_supreme_healing",
+    "name": "Poção de Cura Suprema",
+    "name_en": "Potion of Supreme Healing",
+    "type": "potion",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "**Cura Suprema:** 10d4 + 20 PV (muito rara)",
+    "mechanical": {
+      "hp_regained": "10d4+20"
+    }
+  },
+  {
+    "id": "potion_of_heroism",
+    "name": "Poção de Heroísmo",
+    "name_en": "Potion of Heroism",
+    "type": "potion",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Por 1 hora após bebê-la, você ganha 10 pontos de vida temporários que duram por 1 hora. Pela mesma duração, você está sob o efeito da magia **bênção** (sem necessidade de concentração). Esta poção azul borbulha e vaporiza como se estivesse fervendo.",
+    "mechanical": {
+      "temp_hp": 10,
+      "duration_hours": 1
+    }
+  },
+  {
+    "id": "potion_of_invisibility",
+    "name": "Poção de Invisibilidade",
+    "name_en": "Potion of Invisibility",
+    "type": "potion",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "O recipiente desta poção parece vazio mas se sente como se contivesse líquido. Quando você a bebe, fica invisível por 1 hora. Qualquer coisa que você vista ou carregue fica invisível com você. O efeito termina cedo se você atacar ou conjurar uma magia.",
+    "mechanical": {
+      "duration_hours": 1
+    }
+  },
+  {
+    "id": "potion_of_mind_reading",
+    "name": "Poção de Leitura Mental",
+    "name_en": "Potion of Mind Reading",
+    "type": "potion",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, ganha o efeito da magia **detectar pensamentos** (CD de resistência 13). O líquido denso e roxo desta poção tem uma nuvem ovoide rosa flutuando nele.",
+    "mechanical": {
+      "spell_save_dc": 13
+    }
+  },
+  {
+    "id": "potion_of_poison",
+    "name": "Poção de Veneno",
+    "name_en": "Potion of Poison",
+    "type": "potion",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Esta concocção parece, cheira e tem gosto de uma poção de cura ou outra poção benéfica. No entanto, é na verdade veneno mascarado por magia de ilusão. Uma magia **identificar** revela sua verdadeira natureza.\n\nSe você bebê-la, sofre 3d6 de dano de veneno, e deve ter sucesso em um teste de resistência de Constituição CD 13 ou ficar envenenado. No início de cada um de seus turnos enquanto estiver envenenado dessa forma, você sofre 3d6 de dano de veneno. No final de cada um de seus turnos, você pode repetir o teste de resistência. Em um sucesso, o dano de veneno que você sofre nos turnos subsequentes diminui em 1d6. O envenenamento termina quando o dano diminui para 0.",
+    "mechanical": {
+      "initial_damage": "3d6",
+      "save_dc": 13,
+      "ongoing_damage": "3d6",
+      "damage_reduction": "1d6"
+    }
+  },
+  {
+    "id": "potion_of_resistance",
+    "name": "Poção de Resistência",
+    "name_en": "Potion of Resistance",
+    "type": "potion",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, ganha resistência a um tipo de dano por 1 hora. O Mestre escolhe o tipo ou o determina aleatoriamente entre as opções abaixo.\n\n| d10 | Tipo de Dano | d10 | Tipo de Dano |\n|-----|--------------|-----|---------------|\n| 1 | Ácido | 6 | Necrótico |\n| 2 | Frio | 7 | Veneno |\n| 3 | Fogo | 8 | Psíquico |\n| 4 | Força | 9 | Radiante |\n| 5 | Elétrico | 10 | Trovejante |",
+    "mechanical": {
+      "duration_hours": 1
+    }
+  },
+  {
+    "id": "potion_of_speed",
+    "name": "Poção de Velocidade",
+    "name_en": "Potion of Speed",
+    "type": "potion",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Quando você bebe esta poção, ganha o efeito da magia **acelerar** por 1 minuto (sem necessidade de concentração). O fluido amarelo desta poção é marcado com preto e roda por conta própria.",
+    "mechanical": {
+      "duration_minutes": 1
+    }
+  },
+  {
+    "id": "potion_of_water_breathing",
+    "name": "Poção de Respiração Aquática",
+    "name_en": "Potion of Water Breathing",
+    "type": "potion",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Você pode respirar embaixo d'água por 1 hora após beber esta poção. Seu fluido verde e nublado cheira ao mar e tem uma bolha semelhante a uma água-viva flutuando nele.",
+    "mechanical": {
+      "duration_hours": 1
+    }
+  }
+]

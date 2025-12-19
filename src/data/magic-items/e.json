@@ -1,0 +1,186 @@
+{
+  "itens_magicos": [
+    {
+      "id": "efficient_quiver",
+      "name": "Aljava Eficiente",
+      "name_en": "Efficient Quiver",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Cada um dos **três compartimentos** da aljava se conecta a um **espaço extradimensional** que permite que a aljava comporte numerosos itens enquanto nunca pesa mais de **0,9 kg**.\n\n- O **compartimento menor** pode comportar até **sessenta flechas, virotes ou objetos similares**.\n- O **compartimento médio** comporta até **dezoito azagaias ou objetos similares**.\n- O **compartimento maior** comporta até **seis objetos longos**, como arcos, bordões ou lanças.\n\nVocê pode sacar qualquer item que a aljava contenha como se estivesse fazendo isso de uma aljava ou bainha regular.",
+      "mechanical": {
+        "weight_kg": 0.9,
+        "compartments": 3,
+        "small_capacity": 60,
+        "small_items": ["arrows", "bolts"],
+        "medium_capacity": 18,
+        "medium_items": ["javelins"],
+        "large_capacity": 6,
+        "large_items": ["bows", "quarterstaffs", "spears"],
+        "extradimensional": true,
+        "draw_as_normal": true
+      }
+    },
+    {
+      "id": "efreeti_bottle",
+      "name": "Garrafa do Efreeti",
+      "name_en": "Efreeti Bottle",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": false,
+      "description_markdown": "Esta garrafa de latão pintada pesa **0,45 kg**. Quando você usa uma **ação** para remover a rolha, uma nuvem de fumaça espessa flui para fora da garrafa. No final do seu turno, a fumaça desaparece com um lampejo de fogo inofensivo, e um **efreeti** aparece em um espaço desocupado a **9 metros** de você.\n\nNa primeira vez que a garrafa é aberta, o Mestre rola para determinar o que acontece:\n\n| d100 | Efeito |\n|------|--------|\n| 01-10 | O efreeti **ataca você**. Após lutar por **5 rodadas**, o efreeti desaparece, e a garrafa perde sua magia. |\n| 11-90 | O efreeti **serve você** por **1 hora**, fazendo conforme você comanda. Então o efreeti retorna à garrafa, e uma nova rolha o contém. A rolha não pode ser removida por **24 horas**. As próximas duas vezes que a garrafa for aberta, o mesmo efeito ocorre. Se a garrafa for aberta uma **quarta vez**, o efreeti escapa e desaparece, e a garrafa perde sua magia. |\n| 91-00 | O efreeti pode conjurar a magia **desejo** **três vezes** para você. Ele desaparece quando concede o desejo final ou após **1 hora**, e a garrafa perde sua magia. |",
+      "mechanical": {
+        "weight_kg": 0.45,
+        "summons": "efreeti",
+        "appear_range": 9,
+        "roll_on_first_open": "1d100",
+        "attack_chance": 0.1,
+        "attack_rounds": 5,
+        "serve_chance": 0.8,
+        "serve_duration_hours": 1,
+        "serve_uses": 3,
+        "cooldown_hours": 24,
+        "wish_chance": 0.1,
+        "wish_count": 3,
+        "wish_duration_hours": 1
+      }
+    },
+    {
+      "id": "elemental_gem_blue_sapphire",
+      "name": "Gema Elemental (Safira Azul)",
+      "name_en": "Elemental Gem (Blue Sapphire)",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Esta gema contém um fragmento de energia elemental. Quando você usa uma **ação** para quebrar a gema, um **elemental** é invocado como se você tivesse conjurado a magia *conjurar elemental*, e a magia da gema é perdida.\n\nA **safira azul** invoca um **elemental do ar**.",
+      "mechanical": {
+        "spell": "conjure_elemental",
+        "elemental_type": "air",
+        "destroyed_on_use": true
+      }
+    },
+    {
+      "id": "elemental_gem_yellow_diamond",
+      "name": "Gema Elemental (Diamante Amarelo)",
+      "name_en": "Elemental Gem (Yellow Diamond)",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Esta gema contém um fragmento de energia elemental. Quando você usa uma **ação** para quebrar a gema, um **elemental** é invocado como se você tivesse conjurado a magia *conjurar elemental*, e a magia da gema é perdida.\n\nO **diamante amarelo** invoca um **elemental da terra**.",
+      "mechanical": {
+        "spell": "conjure_elemental",
+        "elemental_type": "earth",
+        "destroyed_on_use": true
+      }
+    },
+    {
+      "id": "elemental_gem_red_corundum",
+      "name": "Gema Elemental (Coríndon Vermelho)",
+      "name_en": "Elemental Gem (Red Corundum)",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Esta gema contém um fragmento de energia elemental. Quando você usa uma **ação** para quebrar a gema, um **elemental** é invocado como se você tivesse conjurado a magia *conjurar elemental*, e a magia da gema é perdida.\n\nO **coríndon vermelho** invoca um **elemental do fogo**.",
+      "mechanical": {
+        "spell": "conjure_elemental",
+        "elemental_type": "fire",
+        "destroyed_on_use": true
+      }
+    },
+    {
+      "id": "elemental_gem_emerald",
+      "name": "Gema Elemental (Esmeralda)",
+      "name_en": "Elemental Gem (Emerald)",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Esta gema contém um fragmento de energia elemental. Quando você usa uma **ação** para quebrar a gema, um **elemental** é invocado como se você tivesse conjurado a magia *conjurar elemental*, e a magia da gema é perdida.\n\nA **esmeralda** invoca um **elemental da água**.",
+      "mechanical": {
+        "spell": "conjure_elemental",
+        "elemental_type": "water",
+        "destroyed_on_use": true
+      }
+    },
+    {
+      "id": "elven_chain",
+      "name": "Cota Élfica",
+      "name_en": "Elven Chain",
+      "type": "armor",
+      "armor_type": "chain_shirt",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Você ganha um **bônus de +1 para CA** enquanto veste esta armadura. Você é considerado **proficiente** com esta armadura mesmo se você não tiver proficiência com armadura média.",
+      "mechanical": {
+        "ac_bonus": 1,
+        "grants_proficiency": true
+      }
+    },
+    {
+      "id": "eversmoking_bottle",
+      "name": "Garrafa Sempre Fumegante",
+      "name_en": "Eversmoking Bottle",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Fumaça vaza da boca com rolha de chumbo desta garrafa de latão, que pesa **0,45 kg**. Quando você usa uma **ação** para remover a rolha, uma nuvem de fumaça espessa jorra em um raio de **18 metros** da garrafa. A área da nuvem é **fortemente obscurecida**.\n\nCada minuto que a garrafa permanece aberta e dentro da nuvem, o raio aumenta em **3 metros** até atingir seu raio máximo de **36 metros**.\n\nA nuvem persiste enquanto a garrafa estiver aberta. Fechar a garrafa requer que você fale sua **palavra de comando** como uma ação. Uma vez que a garrafa esteja fechada, a nuvem se dispersa após **10 minutos**.\n\nUm vento **moderado** (18 a 32 km/h) pode também dispersar a fumaça após **1 minuto**, e um vento **forte** (33 km/h ou mais) pode fazê-lo após **1 rodada**.",
+      "mechanical": {
+        "weight_kg": 0.45,
+        "initial_radius": 18,
+        "radius_increase_per_minute": 3,
+        "max_radius": 36,
+        "heavily_obscured": true,
+        "disperse_time_closed_minutes": 10,
+        "moderate_wind_disperse_minutes": 1,
+        "strong_wind_disperse_rounds": 1,
+        "command_word_to_close": true
+      }
+    },
+    {
+      "id": "eyes_of_charming",
+      "name": "Olhos do Encantamento",
+      "name_en": "Eyes of Charming",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Estas lentes de cristal se encaixam sobre os olhos. Elas têm **3 cargas**. Enquanto as usa, você pode gastar **1 carga** como uma **ação** para conjurar a magia *enfeitiçar pessoa* (**CD de resistência 13**) em um humanoide a **9 metros** de você, desde que você e o alvo possam se ver.\n\nAs lentes recuperam todas as cargas gastas diariamente ao **amanhecer**.",
+      "mechanical": {
+        "max_charges": 3,
+        "recharge": "dawn",
+        "spell": "charm_person",
+        "save_dc": 13,
+        "range": 9,
+        "requires_sight": true,
+        "target_type": "humanoid"
+      }
+    },
+    {
+      "id": "eyes_of_minute_seeing",
+      "name": "Olhos da Visão Minuciosa",
+      "name_en": "Eyes of Minute Seeing",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Estas lentes de cristal se encaixam sobre os olhos. Enquanto as usa, você pode ver muito melhor que o normal até um alcance de **30 cm**. Você tem **vantagem** em testes de **Inteligência (Investigação)** que dependam de visão enquanto procura uma área ou estuda um objeto dentro daquele alcance.",
+      "mechanical": {
+        "vision_range_cm": 30,
+        "advantage_investigation": true,
+        "requires_sight_based": true
+      }
+    },
+    {
+      "id": "eyes_of_the_eagle",
+      "name": "Olhos da Águia",
+      "name_en": "Eyes of the Eagle",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Estas lentes de cristal se encaixam sobre os olhos. Enquanto as usa, você tem **vantagem** em testes de **Sabedoria (Percepção)** que dependam de visão. Em condições de visibilidade clara, você pode distinguir detalhes de criaturas e objetos extremamente distantes tão pequenos quanto **60 cm**.",
+      "mechanical": {
+        "advantage_perception": true,
+        "requires_sight_based": true,
+        "min_detail_size_cm": 60,
+        "extreme_distance_vision": true
+      }
+    }
+  ]
+}

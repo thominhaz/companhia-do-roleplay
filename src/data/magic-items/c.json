@@ -1,0 +1,387 @@
+{
+  "itens_magicos": [
+    {
+      "id": "candle_of_invocation",
+      "name": "Vela de Invocação",
+      "name_en": "Candle of Invocation",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "description_markdown": "Esta vela fina é dedicada a uma divindade e compartilha o tendência daquela divindade. A tendência da vela pode ser detectada com a magia *detectar o bem e o mal*. O Mestre escolhe o deus e tendência associada ou determina a tendência aleatoriamente.\n\n| d20 | Tendência |\n|-----|----------|\n| 1-2 | Caótico maligno |\n| 3-4 | Caótico neutro |\n| 5-7 | Caótico bom |\n| 8-9 | Neutro maligno |\n| 10-11 | Neutro |\n| 12-13 | Neutro bom |\n| 14-15 | Leal maligno |\n| 16-17 | Leal neutro |\n| 18-20 | Leal bom |\n\nA magia da vela é ativada quando a vela é acesa, o que requer uma **ação**. Após queimar por **4 horas**, a vela é destruída. Você pode apagá-la mais cedo para uso posterior. Deduza o tempo que queimou em incrementos de **1 minuto** do tempo total de queima da vela.\n\nEnquanto acesa, a vela emite **penumbra** em um raio de **9 metros**. Qualquer criatura dentro daquela luz cuja tendência corresponda à da vela faz **jogadas de ataque, testes de resistência e testes de atributo com vantagem**. Além disso, um **clérigo** ou **druida** na luz cuja tendência corresponda à da vela pode conjurar magias de **1º nível** que tenha preparado **sem gastar espaços de magia**, embora o efeito da magia seja como se conjurado com um espaço de 1º nível.\n\nAlternativamente, quando você acende a vela pela primeira vez, você pode conjurar a magia *portal* com ela. Fazer isso destrói a vela.",
+      "mechanical": {
+        "burn_time_hours": 4,
+        "light_radius": 9,
+        "light_type": "dim",
+        "matching_alignment_benefits": {
+          "advantage_all_rolls": true,
+          "cleric_druid_free_1st_level": true
+        },
+        "alternative_use": {
+          "spell": "gate",
+          "destroys_candle": true
+        }
+      }
+    },
+    {
+      "id": "cape_of_the_mountebank",
+      "name": "Capa do Charlatão",
+      "name_en": "Cape of the Mountebank",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Esta capa cheira levemente a enxofre. Enquanto a veste, você pode usá-la para conjurar a magia *porta dimensional* como uma **ação**. Esta propriedade da capa não pode ser usada novamente até o próximo **amanhecer**.\n\nQuando você desaparece, você deixa para trás uma nuvem de fumaça, e você aparece em uma nuvem similar de fumaça em seu destino. A fumaça **obscurece levemente** o espaço que você deixou e o espaço em que você aparece, e ela se dissipa no final do seu próximo turno. Um vento **leve** ou mais forte dispersa a fumaça.",
+      "mechanical": {
+        "spell": "dimension_door",
+        "action_type": "action",
+        "recharge": "dawn",
+        "creates_smoke": true,
+        "smoke_obscures_lightly": true
+      }
+    },
+    {
+      "id": "carpet_of_flying_3x5",
+      "name": "Tapete Voador (90cm × 150cm)",
+      "name_en": "Carpet of Flying (3 ft. × 5 ft.)",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": false,
+      "description_markdown": "Você pode falar a palavra de comando do tapete como uma **ação** para fazer o tapete pairar e voar. Ele se move de acordo com suas direções faladas, desde que você esteja a **9 metros** dele.\n\nEste tapete tem capacidade de **91 kg** e **velocidade de voo de 24 metros**. Um tapete pode carregar até o dobro do peso mostrado, mas ele voa à **metade da velocidade** se carregar mais que sua capacidade normal.",
+      "mechanical": {
+        "size": "3x5_feet",
+        "capacity_kg": 91,
+        "fly_speed": 24,
+        "overload_capacity_kg": 182,
+        "overload_speed": 12,
+        "control_range": 9,
+        "command_word": true
+      }
+    },
+    {
+      "id": "carpet_of_flying_4x6",
+      "name": "Tapete Voador (120cm × 180cm)",
+      "name_en": "Carpet of Flying (4 ft. × 6 ft.)",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": false,
+      "description_markdown": "Você pode falar a palavra de comando do tapete como uma **ação** para fazer o tapete pairar e voar. Ele se move de acordo com suas direções faladas, desde que você esteja a **9 metros** dele.\n\nEste tapete tem capacidade de **181 kg** e **velocidade de voo de 18 metros**. Um tapete pode carregar até o dobro do peso mostrado, mas ele voa à **metade da velocidade** se carregar mais que sua capacidade normal.",
+      "mechanical": {
+        "size": "4x6_feet",
+        "capacity_kg": 181,
+        "fly_speed": 18,
+        "overload_capacity_kg": 362,
+        "overload_speed": 9,
+        "control_range": 9,
+        "command_word": true
+      }
+    },
+    {
+      "id": "carpet_of_flying_5x7",
+      "name": "Tapete Voador (150cm × 210cm)",
+      "name_en": "Carpet of Flying (5 ft. × 7 ft.)",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": false,
+      "description_markdown": "Você pode falar a palavra de comando do tapete como uma **ação** para fazer o tapete pairar e voar. Ele se move de acordo com suas direções faladas, desde que você esteja a **9 metros** dele.\n\nEste tapete tem capacidade de **272 kg** e **velocidade de voo de 12 metros**. Um tapete pode carregar até o dobro do peso mostrado, mas ele voa à **metade da velocidade** se carregar mais que sua capacidade normal.",
+      "mechanical": {
+        "size": "5x7_feet",
+        "capacity_kg": 272,
+        "fly_speed": 12,
+        "overload_capacity_kg": 544,
+        "overload_speed": 6,
+        "control_range": 9,
+        "command_word": true
+      }
+    },
+    {
+      "id": "carpet_of_flying_6x9",
+      "name": "Tapete Voador (180cm × 270cm)",
+      "name_en": "Carpet of Flying (6 ft. × 9 ft.)",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": false,
+      "description_markdown": "Você pode falar a palavra de comando do tapete como uma **ação** para fazer o tapete pairar e voar. Ele se move de acordo com suas direções faladas, desde que você esteja a **9 metros** dele.\n\nEste tapete tem capacidade de **363 kg** e **velocidade de voo de 9 metros**. Um tapete pode carregar até o dobro do peso mostrado, mas ele voa à **metade da velocidade** se carregar mais que sua capacidade normal.",
+      "mechanical": {
+        "size": "6x9_feet",
+        "capacity_kg": 363,
+        "fly_speed": 9,
+        "overload_capacity_kg": 726,
+        "overload_speed": 4.5,
+        "control_range": 9,
+        "command_word": true
+      }
+    },
+    {
+      "id": "censer_of_controlling_air_elementals",
+      "name": "Incensário de Comando de Elementais do Ar",
+      "name_en": "Censer of Controlling Air Elementals",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Enquanto incenso está queimando neste incensário, você pode usar uma **ação** para falar a palavra de comando do incensário e invocar um **elemental do ar**, como se você tivesse conjurado a magia *conjurar elemental*. O incensário não pode ser usado desta forma novamente até o próximo **amanhecer**.\n\nEste vaso de **15 cm de largura** e **30 cm de altura** se assemelha a um cálice com uma tampa decorada. Ele pesa **0,45 kg**.",
+      "mechanical": {
+        "spell": "conjure_elemental",
+        "elemental_type": "air",
+        "recharge": "dawn",
+        "width_cm": 15,
+        "height_cm": 30,
+        "weight_kg": 0.45
+      }
+    },
+    {
+      "id": "chime_of_opening",
+      "name": "Carrilhão de Abertura",
+      "name_en": "Chime of Opening",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Este tubo oco de metal mede cerca de **30 cm de comprimento** e pesa **0,45 kg**. Você pode tocá-lo como uma **ação**, apontando-o para um objeto a **36 metros** de você que possa ser aberto, como uma porta, tampa ou fechadura. O carrilhão emite um tom claro, e **uma fechadura ou trinco** no objeto se abre a menos que o som não possa alcançar o objeto. Se não restarem fechaduras ou trincos, o próprio objeto se abre.\n\nO carrilhão pode ser usado **dez vezes**. Após a décima vez, ele racha e se torna inútil.",
+      "mechanical": {
+        "length_cm": 30,
+        "weight_kg": 0.45,
+        "range": 36,
+        "uses": 10,
+        "opens_locks": true,
+        "opens_object_if_no_locks": true
+      }
+    },
+    {
+      "id": "circlet_of_blasting",
+      "name": "Diadema de Explosão",
+      "name_en": "Circlet of Blasting",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Enquanto usa este diadema, você pode usar uma **ação** para conjurar a magia *raio ardente* com ele. Quando você faz os ataques da magia, você faz isso com um **bônus de ataque de +5**. O diadema não pode ser usado desta forma novamente até o próximo **amanhecer**.",
+      "mechanical": {
+        "spell": "scorching_ray",
+        "attack_bonus": 5,
+        "action_type": "action",
+        "recharge": "dawn"
+      }
+    },
+    {
+      "id": "cloak_of_arachnida",
+      "name": "Manto do Aracnídeo",
+      "name_en": "Cloak of Arachnida",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "description_markdown": "Esta vestimenta fina é feita de seda negra entrelaçada com fios prateados tênues. Enquanto a veste, você ganha os seguintes benefícios:\n\n- Você tem **resistência** a dano de **veneno**.\n- Você tem um **deslocamento de escalada** igual ao seu deslocamento de caminhada.\n- Você pode se mover para cima, para baixo e através de superfícies verticais e de cabeça para baixo ao longo de tetos, **deixando suas mãos livres**.\n- Você **não pode ser pego** em teias de qualquer tipo e pode se mover através de teias como se fossem **terreno difícil**.\n- Você pode usar uma **ação** para conjurar a magia *teia* (**CD de resistência 13**). A teia criada pela magia preenche **o dobro** de sua área normal. Uma vez usada, esta propriedade do manto não pode ser usada novamente até o próximo **amanhecer**.",
+      "mechanical": {
+        "poison_resistance": true,
+        "climb_speed_equals_walk": true,
+        "hands_free_climbing": true,
+        "immune_to_webs": true,
+        "web_spell": {
+          "save_dc": 13,
+          "area_multiplier": 2,
+          "recharge": "dawn"
+        }
+      }
+    },
+    {
+      "id": "cloak_of_displacement",
+      "name": "Manto do Deslocamento",
+      "name_en": "Cloak of Displacement",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto você veste este manto, ele projeta uma ilusão que faz você parecer estar em um lugar próximo à sua localização real, causando a qualquer criatura **desvantagem** em jogadas de ataque contra você.\n\nSe você **sofrer dano**, a propriedade cessa de funcionar até o **início do seu próximo turno**. Esta propriedade é suprimida enquanto você está **incapacitado**, **impedido** ou incapaz de se mover.",
+      "mechanical": {
+        "disadvantage_on_attacks": true,
+        "ends_on_damage": true,
+        "suppressed_when_incapacitated": true,
+        "suppressed_when_restrained": true,
+        "suppressed_when_immobile": true
+      }
+    },
+    {
+      "id": "cloak_of_elvenkind",
+      "name": "Manto Élfico",
+      "name_en": "Cloak of Elvenkind",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto você veste este manto com seu capuz levantado, testes de **Sabedoria (Percepção)** feitos para vê-lo têm **desvantagem**, e você tem **vantagem** em testes de **Destreza (Furtividade)** feitos para se esconder, já que a cor do manto muda para camuflar você. Levantar ou abaixar o capuz requer uma **ação**.",
+      "mechanical": {
+        "disadvantage_perception_to_see": true,
+        "advantage_stealth_to_hide": true,
+        "color_shifts_camouflage": true,
+        "hood_toggle_action": "action"
+      }
+    },
+    {
+      "id": "cloak_of_protection",
+      "name": "Manto de Proteção",
+      "name_en": "Cloak of Protection",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Você ganha um **bônus de +1 para CA e testes de resistência** enquanto veste este manto.",
+      "mechanical": {
+        "ac_bonus": 1,
+        "saving_throw_bonus": 1
+      }
+    },
+    {
+      "id": "cloak_of_the_bat",
+      "name": "Manto do Morcego",
+      "name_en": "Cloak of the Bat",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto veste este manto, você tem **vantagem** em testes de **Destreza (Furtividade)**.\n\nEm uma área de **penumbra** ou **escuridão**, você pode segurar as bordas do manto com ambas as mãos e usá-lo para **voar a uma velocidade de 12 metros**. Se você deixar de segurar as bordas do manto enquanto voa desta forma, ou se você não estiver mais em penumbra ou escuridão, você perde este deslocamento de voo.\n\nEnquanto veste o manto em uma área de penumbra ou escuridão, você pode usar sua **ação** para conjurar *metamorfose* em si mesmo, transformando-se em um **morcego**. Enquanto você está na forma do morcego, você retém seus valores de **Inteligência, Sabedoria e Carisma**. O manto não pode ser usado desta forma novamente até o próximo **amanhecer**.",
+      "mechanical": {
+        "advantage_stealth": true,
+        "fly_speed_in_dim_darkness": 12,
+        "requires_holding_edges": true,
+        "polymorph_bat": {
+          "spell": "polymorph",
+          "target_self": true,
+          "form": "bat",
+          "retains_mental_stats": true,
+          "recharge": "dawn"
+        }
+      }
+    },
+    {
+      "id": "cloak_of_the_manta_ray",
+      "name": "Manto da Manta",
+      "name_en": "Cloak of the Manta Ray",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Enquanto veste este manto com seu capuz levantado, você pode **respirar debaixo d'água**, e você tem um **deslocamento de natação de 18 metros**. Levantar ou abaixar o capuz requer uma **ação**.",
+      "mechanical": {
+        "breathe_underwater": true,
+        "swim_speed": 18,
+        "hood_toggle_action": "action"
+      }
+    },
+    {
+      "id": "crystal_ball",
+      "name": "Bola de Cristal",
+      "name_en": "Crystal Ball",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "description_markdown": "A bola de cristal típica, um item **muito raro**, tem cerca de **15 cm de diâmetro**. Enquanto a toca, você pode conjurar a magia *vidência* (**CD de resistência 17**) com ela.",
+      "mechanical": {
+        "diameter_cm": 15,
+        "spell": "scrying",
+        "save_dc": 17
+      }
+    },
+    {
+      "id": "crystal_ball_of_mind_reading",
+      "name": "Bola de Cristal da Leitura Mental",
+      "name_en": "Crystal Ball of Mind Reading",
+      "type": "wondrous_item",
+      "rarity": "legendary",
+      "requires_attunement": true,
+      "description_markdown": "Esta bola de cristal funciona como uma *Bola de Cristal* normal, mas tem propriedades adicionais.\n\nVocê pode usar uma **ação** para conjurar a magia *detectar pensamentos* (**CD de resistência 17**) enquanto estiver usando vidência com a bola de cristal, mirando criaturas que você possa ver a **9 metros** do sensor da magia. Você **não precisa se concentrar** nesta *detectar pensamentos* para mantê-la durante sua duração, mas ela termina se a vidência terminar.",
+      "mechanical": {
+        "base_item": "crystal_ball",
+        "diameter_cm": 15,
+        "scrying_save_dc": 17,
+        "detect_thoughts": {
+          "save_dc": 17,
+          "range_from_sensor": 9,
+          "no_concentration_required": true,
+          "ends_with_scrying": true
+        }
+      }
+    },
+    {
+      "id": "crystal_ball_of_telepathy",
+      "name": "Bola de Cristal da Telepatia",
+      "name_en": "Crystal Ball of Telepathy",
+      "type": "wondrous_item",
+      "rarity": "legendary",
+      "requires_attunement": true,
+      "description_markdown": "Esta bola de cristal funciona como uma *Bola de Cristal* normal, mas tem propriedades adicionais.\n\nEnquanto usa vidência com a bola de cristal, você pode **comunicar-se telepaticamente** com criaturas que possa ver a **9 metros** do sensor da magia. Você também pode usar uma **ação** para conjurar a magia *sugestão* (**CD de resistência 17**) através do sensor em uma daquelas criaturas.\n\nVocê **não precisa se concentrar** nesta *sugestão* para mantê-la durante sua duração, mas ela termina se a vidência terminar. Uma vez usada, o poder de sugestão da bola de cristal não pode ser usado novamente até o próximo **amanhecer**.",
+      "mechanical": {
+        "base_item": "crystal_ball",
+        "diameter_cm": 15,
+        "scrying_save_dc": 17,
+        "telepathy_range": 9,
+        "suggestion": {
+          "save_dc": 17,
+          "no_concentration_required": true,
+          "ends_with_scrying": true,
+          "recharge": "dawn"
+        }
+      }
+    },
+    {
+      "id": "crystal_ball_of_true_seeing",
+      "name": "Bola de Cristal da Visão Verdadeira",
+      "name_en": "Crystal Ball of True Seeing",
+      "type": "wondrous_item",
+      "rarity": "legendary",
+      "requires_attunement": true,
+      "description_markdown": "Esta bola de cristal funciona como uma *Bola de Cristal* normal, mas tem propriedades adicionais.\n\nEnquanto usa vidência com a bola de cristal, você tem **visão verdadeira** com um raio de **36 metros** centrado no sensor da magia.",
+      "mechanical": {
+        "base_item": "crystal_ball",
+        "diameter_cm": 15,
+        "scrying_save_dc": 17,
+        "truesight_radius": 36
+      }
+    },
+    {
+      "id": "cube_of_force",
+      "name": "Cubo de Força",
+      "name_en": "Cube of Force",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Este cubo tem cerca de **2,5 cm de largura**. Cada face tem uma marcação distinta que pode ser pressionada. O cubo começa com **36 cargas**, e ele recupera **1d20 cargas gastas** diariamente ao **amanhecer**.\n\nVocê pode usar uma **ação** para pressionar uma das faces do cubo, gastando um número de cargas baseado na face escolhida, como mostrado na tabela abaixo. Cada face tem um efeito diferente. Se o cubo tiver cargas insuficientes restantes, nada acontece. Caso contrário, uma **barreira de força invisível** surge, formando um **cubo de 4,5 metros de lado**. A barreira é centrada em você, se move com você, e dura por **1 minuto**, até você usar uma ação para pressionar a sexta face do cubo, ou o cubo ficar sem cargas.\n\nVocê pode mudar o efeito da barreira pressionando uma face diferente do cubo e gastando o número requisito de cargas, reiniciando a duração. Se seu movimento fizer a barreira entrar em contato com um objeto sólido que não possa passar através do cubo, você não pode se mover mais próximo daquele objeto enquanto a barreira permanecer.\n\n## Faces do Cubo de Força\n\n| Face | Cargas | Efeito |\n|------|--------|--------|\n| 1 | 1 | Gases, vento e névoa não podem passar através da barreira. |\n| 2 | 2 | Matéria não-viva não pode passar através da barreira. Paredes, pisos e tetos podem passar a seu critério. |\n| 3 | 3 | Matéria viva não pode passar através da barreira. |\n| 4 | 4 | Efeitos de magia não podem passar através da barreira. |\n| 5 | 5 | Nada pode passar através da barreira. Paredes, pisos e tetos podem passar a seu critério. |\n| 6 | 0 | A barreira se desativa. |\n\nO cubo **perde cargas** quando a barreira é alvo de certas magias ou entra em contato com certos efeitos de magia ou item mágico:\n\n| Magia ou Item | Cargas Perdidas |\n|---------------|----------------|\n| *Desintegrar* | 1d12 |\n| *Trompa de Explosão* | 1d10 |\n| *Moldar Rocha* | 1d6 |\n| *Aspersão Prismática* | 1d20 |\n| *Muralha de Fogo* | 1d4 |",
+      "mechanical": {
+        "size_cm": 2.5,
+        "max_charges": 36,
+        "recharge_daily": "1d20",
+        "barrier_size": 4.5,
+        "duration_minutes": 1,
+        "face_costs": {
+          "1": 1,
+          "2": 2,
+          "3": 3,
+          "4": 4,
+          "5": 5,
+          "6": 0
+        },
+        "charge_loss": {
+          "disintegrate": "1d12",
+          "horn_of_blasting": "1d10",
+          "passwall": "1d6",
+          "prismatic_spray": "1d20",
+          "wall_of_fire": "1d4"
+        }
+      }
+    },
+    {
+      "id": "cubic_gate",
+      "name": "Portal Cúbico",
+      "name_en": "Cubic Gate",
+      "type": "wondrous_item",
+      "rarity": "legendary",
+      "requires_attunement": false,
+      "description_markdown": "Este cubo tem **7,5 cm de largura** e irradia energia mágica palpável. Os **seis lados** do cubo são cada um sintonizados a um **plano de existência** diferente, um dos quais é o **Plano Material**. Os outros lados estão ligados a planos determinados pelo Mestre.\n\nVocê pode usar uma **ação** para pressionar um lado do cubo para conjurar a magia *portal* com ele, abrindo um portal para o plano sintonizado àquele lado. Alternativamente, se você usar uma ação para pressionar um lado **duas vezes**, você pode conjurar a magia *mudança planar* (**CD de resistência 17**) com o cubo e transportar os alvos para o plano sintonizado àquele lado.\n\nO cubo tem **3 cargas**. Cada uso do cubo gasta **1 carga**. O cubo recupera **1d3 cargas gastas** diariamente ao **amanhecer**.",
+      "mechanical": {
+        "size_cm": 7.5,
+        "sides": 6,
+        "planes": ["material", "five_others_gm_choice"],
+        "gate_spell": {
+          "activation": "press_once"
+        },
+        "plane_shift_spell": {
+          "activation": "press_twice",
+          "save_dc": 17
+        },
+        "max_charges": 3,
+        "charge_per_use": 1,
+        "recharge_daily": "1d3"
+      }
+    }
+  ]
+}

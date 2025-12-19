@@ -1,0 +1,272 @@
+{
+  "itens_magicos": [
+    {
+      "id": "adamantine_armor",
+      "name": "Armadura de Adamantina",
+      "name_en": "Adamantine Armor",
+      "type": "armor",
+      "armor_type": "medium_or_heavy_not_hide",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Esta armadura é reforçada com **adamantina**, uma das substâncias mais duras em existência. Enquanto você a estiver vestindo, qualquer **acerto crítico** contra você se torna um **acerto normal**.",
+      "mechanical": {
+        "critical_immunity": true
+      }
+    },
+    {
+      "id": "ammunition_plus_1",
+      "name": "Munição +1",
+      "name_en": "Ammunition, +1",
+      "type": "weapon",
+      "weapon_type": "ammunition",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Você tem um **bônus de +1** para jogadas de ataque e dano feitas com esta munição mágica. Uma vez que ela atinge um alvo, a munição não é mais mágica.",
+      "mechanical": {
+        "attack_bonus": 1,
+        "damage_bonus": 1,
+        "loses_magic_on_hit": true
+      }
+    },
+    {
+      "id": "ammunition_plus_2",
+      "name": "Munição +2",
+      "name_en": "Ammunition, +2",
+      "type": "weapon",
+      "weapon_type": "ammunition",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Você tem um **bônus de +2** para jogadas de ataque e dano feitas com esta munição mágica. Uma vez que ela atinge um alvo, a munição não é mais mágica.",
+      "mechanical": {
+        "attack_bonus": 2,
+        "damage_bonus": 2,
+        "loses_magic_on_hit": true
+      }
+    },
+    {
+      "id": "ammunition_plus_3",
+      "name": "Munição +3",
+      "name_en": "Ammunition, +3",
+      "type": "weapon",
+      "weapon_type": "ammunition",
+      "rarity": "very_rare",
+      "requires_attunement": false,
+      "description_markdown": "Você tem um **bônus de +3** para jogadas de ataque e dano feitas com esta munição mágica. Uma vez que ela atinge um alvo, a munição não é mais mágica.",
+      "mechanical": {
+        "attack_bonus": 3,
+        "damage_bonus": 3,
+        "loses_magic_on_hit": true
+      }
+    },
+    {
+      "id": "amulet_of_health",
+      "name": "Amuleto da Saúde",
+      "name_en": "Amulet of Health",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Sua pontuação de **Constituição é 19** enquanto você usa este amuleto. Ele não tem efeito sobre você se sua Constituição já for 19 ou maior.",
+      "mechanical": {
+        "sets_constitution": 19
+      }
+    },
+    {
+      "id": "amulet_of_proof_against_detection_and_location",
+      "name": "Amuleto de Proteção contra Detecção e Localização",
+      "name_en": "Amulet of Proof against Detection and Location",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa este amuleto, você está **oculto de magia de adivinhação**. Você não pode ser alvo de tal magia ou percebido através de sensores de vidência mágicos.",
+      "mechanical": {
+        "hidden_from_divination": true,
+        "blocks_scrying": true
+      }
+    },
+    {
+      "id": "amulet_of_the_planes",
+      "name": "Amuleto dos Planos",
+      "name_en": "Amulet of the Planes",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa este amuleto, você pode usar uma **ação** para nomear uma localização que você conhece em outro plano de existência. Então faça um teste de **Inteligência CD 15**.\n\n- **Sucesso:** Você conjura a magia *mudança planar*.\n- **Falha:** Você e cada criatura e objeto a **4,5 metros** de você viajam para um destino aleatório. Role um d100:\n  - **1-60:** Você viaja para uma localização aleatória no plano que você nomeou.\n  - **61-100:** Você viaja para um plano de existência determinado aleatoriamente.",
+      "mechanical": {
+        "action_type": "action",
+        "intelligence_dc": 15,
+        "spell_cast_on_success": "plane_shift",
+        "random_teleport_radius": 4.5,
+        "random_plane_chance": 0.4
+      }
+    },
+    {
+      "id": "animated_shield",
+      "name": "Escudo Animado",
+      "name_en": "Animated Shield",
+      "type": "armor",
+      "armor_type": "shield",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto segura este escudo, você pode falar sua **palavra de comando** como uma **ação bônus** para fazer com que ele se anime. O escudo salta no ar e paira em seu espaço para protegê-lo como se você o estivesse empunhando, deixando suas mãos livres.\n\nO escudo permanece animado por **1 minuto**, até você usar uma ação bônus para terminar este efeito, ou até você ficar **incapacitado** ou **morrer**, quando então o escudo cai no chão ou na sua mão se você tiver uma livre.",
+      "mechanical": {
+        "activation": "bonus_action",
+        "command_word": true,
+        "duration_minutes": 1,
+        "frees_hands": true
+      }
+    },
+    {
+      "id": "apparatus_of_the_crab",
+      "name": "Aparato do Caranguejo",
+      "name_en": "Apparatus of the Crab",
+      "type": "wondrous_item",
+      "rarity": "legendary",
+      "requires_attunement": false,
+      "description_markdown": "Este item aparece inicialmente como um barril de ferro **Grande** lacrado pesando **227 kg**. O barril tem um fecho escondido, que pode ser encontrado com um teste de **Inteligência (Investigação) CD 20** bem-sucedido. Soltar o fecho destranca uma escotilha em uma extremidade do barril, permitindo que duas criaturas **Médias** ou menores rastejem para dentro.\n\nDez alavancas são posicionadas em uma fileira na extremidade oposta, cada uma em posição neutra, capaz de mover para cima ou para baixo. Quando certas alavancas são usadas, o aparato se transforma para se assemelhar a uma lagosta gigante.\n\n## Estatísticas do Aparato\n\n- **Tamanho:** Grande\n- **Classe de Armadura:** 20\n- **Pontos de Vida:** 200\n- **Deslocamento:** 9 m, natação 9 m (ou 0 m para ambos se as pernas e cauda não estiverem estendidas)\n- **Imunidades a Dano:** veneno, psíquico\n\nPara ser usado como veículo, o aparato requer um piloto. Enquanto a escotilha do aparato estiver fechada, o compartimento é hermético e à prova d'água. O compartimento contém ar suficiente para **10 horas** de respiração, dividido pelo número de criaturas respirando dentro.\n\nO aparato flutua na água. Ele também pode ir debaixo d'água até uma profundidade de **274 metros**. Abaixo disso, o veículo sofre **2d6 de dano de concussão** por minuto devido à pressão.\n\nUma criatura no compartimento pode usar uma ação para mover até duas das alavancas do aparato para cima ou para baixo. Após cada uso, uma alavanca volta à sua posição neutra.\n\n## Alavancas do Aparato (Esquerda para Direita)\n\n| Alavanca | Para Cima | Para Baixo |\n|----------|-----------|------------|\n| 1 | Pernas e cauda estendem, permitindo que o aparato ande e nade | Pernas e cauda retraem, reduzindo o deslocamento do aparato para 0 e impossibilitando bônus de deslocamento |\n| 2 | Janela frontal abre | Janela frontal fecha |\n| 3 | Janelas laterais abrem (duas por lado) | Janelas laterais fecham (duas por lado) |\n| 4 | Duas garras estendem dos lados frontais do aparato | As garras retraem |\n| 5 | Cada garra estendida faz ataque corpo a corpo: +8 de ataque, alcance 1,5m, um alvo. Acerto: 7 (2d6) de dano de concussão | Cada garra estendida faz ataque corpo a corpo: +8 de ataque, alcance 1,5m, um alvo. Acerto: O alvo fica agarrado (escape CD 15) |\n| 6 | O aparato anda ou nada para frente | O aparato anda ou nada para trás |\n| 7 | O aparato gira 90 graus para a esquerda | O aparato gira 90 graus para a direita |\n| 8 | Luminárias oculares emitem luz brilhante em raio de **9 metros** e penumbra por mais **9 metros** | A luz se apaga |\n| 9 | O aparato afunda até **6 metros** em líquido | O aparato sobe até **6 metros** em líquido |\n| 10 | A escotilha traseira destrava e abre | A escotilha traseira fecha e trava |",
+      "mechanical": {
+        "size": "large",
+        "weight_kg": 227,
+        "ac": 20,
+        "hp": 200,
+        "speed": 9,
+        "swim_speed": 9,
+        "damage_immunities": ["poison", "psychic"],
+        "air_supply_hours": 10,
+        "max_depth_meters": 274,
+        "pressure_damage": "2d6",
+        "crew_required": 1,
+        "crew_capacity": 2,
+        "claw_attack_bonus": 8,
+        "claw_damage": "2d6",
+        "grapple_escape_dc": 15,
+        "light_radius_bright": 9,
+        "light_radius_dim": 9
+      }
+    },
+    {
+      "id": "armor_plus_1",
+      "name": "Armadura +1",
+      "name_en": "Armor, +1",
+      "type": "armor",
+      "armor_type": "light_medium_or_heavy",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Você tem um **bônus de +1 para CA** enquanto veste esta armadura.",
+      "mechanical": {
+        "ac_bonus": 1
+      }
+    },
+    {
+      "id": "armor_plus_2",
+      "name": "Armadura +2",
+      "name_en": "Armor, +2",
+      "type": "armor",
+      "armor_type": "light_medium_or_heavy",
+      "rarity": "very_rare",
+      "requires_attunement": false,
+      "description_markdown": "Você tem um **bônus de +2 para CA** enquanto veste esta armadura.",
+      "mechanical": {
+        "ac_bonus": 2
+      }
+    },
+    {
+      "id": "armor_plus_3",
+      "name": "Armadura +3",
+      "name_en": "Armor, +3",
+      "type": "armor",
+      "armor_type": "light_medium_or_heavy",
+      "rarity": "legendary",
+      "requires_attunement": false,
+      "description_markdown": "Você tem um **bônus de +3 para CA** enquanto veste esta armadura.",
+      "mechanical": {
+        "ac_bonus": 3
+      }
+    },
+    {
+      "id": "armor_of_invulnerability",
+      "name": "Armadura da Invulnerabilidade",
+      "name_en": "Armor of Invulnerability",
+      "type": "armor",
+      "armor_type": "plate",
+      "rarity": "legendary",
+      "requires_attunement": true,
+      "description_markdown": "Você tem **resistência a dano não mágico** enquanto veste esta armadura. Adicionalmente, você pode usar uma **ação** para se tornar **imune a dano não mágico** por **10 minutos** ou até você não estar mais vestindo a armadura. Uma vez que esta ação especial é usada, ela não pode ser usada novamente até o próximo **amanhecer**.",
+      "mechanical": {
+        "resistance_nonmagical": true,
+        "immunity_action": {
+          "action_type": "action",
+          "duration_minutes": 10,
+          "recharge": "dawn"
+        }
+      }
+    },
+    {
+      "id": "armor_of_resistance",
+      "name": "Armadura de Resistência",
+      "name_en": "Armor of Resistance",
+      "type": "armor",
+      "armor_type": "light_medium_or_heavy",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Você tem **resistência a um tipo de dano** enquanto veste esta armadura. O Mestre escolhe o tipo ou determina aleatoriamente das opções abaixo.\n\n| d10 | Tipo de Dano | d10 | Tipo de Dano |\n|-----|--------------|-----|-------------|\n| 1 | Ácido | 6 | Necrótico |\n| 2 | Frio | 7 | Veneno |\n| 3 | Fogo | 8 | Psíquico |\n| 4 | Força | 9 | Radiante |\n| 5 | Elétrico | 10 | Trovejante |",
+      "mechanical": {
+        "resistance_type": "random_or_chosen",
+        "damage_types": ["acid", "cold", "fire", "force", "lightning", "necrotic", "poison", "psychic", "radiant", "thunder"]
+      }
+    },
+    {
+      "id": "armor_of_vulnerability",
+      "name": "Armadura da Vulnerabilidade",
+      "name_en": "Armor of Vulnerability",
+      "type": "armor",
+      "armor_type": "plate",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "cursed": true,
+      "description_markdown": "Enquanto veste esta armadura, você tem **resistência** a um dos seguintes tipos de dano: **concussão**, **perfurante** ou **cortante**. O Mestre escolhe o tipo ou determina aleatoriamente.\n\n**Maldição.** Esta armadura é **amaldiçoada**, um fato que é revelado apenas quando uma magia *identificar* é conjurada na armadura ou você se sintoniza a ela. Sintonizar-se à armadura amaldiçoa você até você ser alvo da magia *remover maldição* ou magia similar; remover a armadura falha em terminar a maldição.\n\nEnquanto amaldiçoado, você tem **vulnerabilidade** a dois dos três tipos de dano associados à armadura (não aquele ao qual ela concede resistência).",
+      "mechanical": {
+        "resistance_type": "one_physical",
+        "curse": {
+          "vulnerability_types": "two_other_physical",
+          "removal": "remove_curse"
+        }
+      }
+    },
+    {
+      "id": "arrow_catching_shield",
+      "name": "Escudo Apara-Flechas",
+      "name_en": "Arrow-Catching Shield",
+      "type": "armor",
+      "armor_type": "shield",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Você ganha um **bônus de +2 para CA** contra ataques à distância enquanto empunha este escudo. Este bônus é adicional ao bônus normal do escudo para CA.\n\nAlém disso, sempre que um atacante fizer um ataque à distância contra um alvo a **1,5 metro** de você, você pode usar sua **reação** para se tornar o alvo do ataque.",
+      "mechanical": {
+        "ac_bonus_vs_ranged": 2,
+        "redirect_attack": {
+          "range": 1.5,
+          "action_type": "reaction"
+        }
+      }
+    },
+    {
+      "id": "arrow_of_slaying",
+      "name": "Flecha da Execução",
+      "name_en": "Arrow of Slaying",
+      "type": "weapon",
+      "weapon_type": "arrow",
+      "rarity": "very_rare",
+      "requires_attunement": false,
+      "description_markdown": "Uma flecha da execução é uma arma mágica feita para matar um tipo particular de criatura. Algumas são mais focadas que outras; por exemplo, existem tanto flechas de execução de dragão quanto flechas de execução de dragão azul.\n\nSe uma criatura pertencente ao tipo, raça ou grupo associado a uma flecha da execução sofrer dano da flecha, a criatura deve fazer um teste de resistência de **Constituição CD 17**, sofrendo **6d10 de dano perfurante extra** em uma falha, ou metade do dano extra em um sucesso.\n\nUma vez que uma flecha da execução causa seu dano extra a uma criatura, ela se torna uma flecha não mágica.\n\nOutros tipos de munição mágica deste tipo existem, como virotes da execução feitos para uma besta, embora flechas sejam mais comuns.",
+      "mechanical": {
+        "save_dc": 17,
+        "save_type": "constitution",
+        "extra_damage": "6d10",
+        "damage_type": "piercing",
+        "half_on_save": true,
+        "becomes_nonmagical_after_use": true,
+        "target_type": "specific_creature_type"
+      }
+    }
+  ]
+}
