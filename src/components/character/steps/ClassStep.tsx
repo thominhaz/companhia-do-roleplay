@@ -1,6 +1,6 @@
-import { CLASSES } from '@/data/srd';
+import { CLASSES, getAttributeName } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
-import { Check, Heart, Sword, Shield } from 'lucide-react';
+import { Check, Heart, Sword, Shield, Wand2, Music, Cross, Leaf, Flame, Skull, Moon, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ClassStepProps {
@@ -10,21 +10,52 @@ interface ClassStepProps {
 
 const classIcons: Record<string, typeof Sword> = {
   barbarian: Sword,
-  bard: Heart,
-  cleric: Shield,
-  druid: Shield,
-  fighter: Sword,
-  monk: Sword,
+  bard: Music,
+  cleric: Cross,
+  druid: Leaf,
+  fighter: Shield,
+  monk: Moon,
   paladin: Shield,
   ranger: Sword,
-  rogue: Sword,
-  sorcerer: Heart,
-  warlock: Heart,
-  wizard: Heart,
+  rogue: Skull,
+  sorcerer: Flame,
+  warlock: Wand2,
+  wizard: BookOpen,
 };
 
 export function ClassStep({ data, updateData }: ClassStepProps) {
   const selectedClass = CLASSES.find(c => c.id === data.class);
+
+  const getSkillsDisplay = (skills: { choose: number; from: string | string[] }) => {
+    if (skills.from === 'any') return 'Qualquer';
+    if (Array.isArray(skills.from)) {
+      return skills.from.map(s => s.replace(/_/g, ' ')).join(', ');
+    }
+    return skills.from;
+  };
+
+  const getArmorDisplay = (armor: string[]) => {
+    if (armor.length === 0) return 'Nenhuma';
+    return armor.map(a => {
+      const names: Record<string, string> = {
+        light: 'Leve',
+        medium: 'Média',
+        heavy: 'Pesada',
+        shields: 'Escudos',
+      };
+      return names[a] || a;
+    }).join(', ');
+  };
+
+  const getWeaponsDisplay = (weapons: string[]) => {
+    return weapons.map(w => {
+      const names: Record<string, string> = {
+        simple: 'Simples',
+        martial: 'Marciais',
+      };
+      return names[w] || w.replace(/_/g, ' ');
+    }).join(', ');
+  };
 
   return (
     <div className="px-4 py-6 space-y-6">
@@ -65,16 +96,18 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
                       <Check className="w-4 h-4 text-primary" />
                     )}
                   </div>
-                  <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-                    {charClass.description}
-                  </p>
                   <div className="flex flex-wrap gap-2 mt-2">
                     <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-destructive/20 text-destructive">
-                      {charClass.hitDice}
+                      d{charClass.hit_die}
                     </span>
-                    <span className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground">
-                      {charClass.primaryAbility.slice(0, 3).toUpperCase()} principal
-                    </span>
+                    {charClass.primary_abilities.map((ability) => (
+                      <span 
+                        key={ability}
+                        className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground"
+                      >
+                        {getAttributeName(ability)}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -91,20 +124,22 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3 rounded-lg bg-card">
               <p className="text-xs text-muted-foreground">Dado de Vida</p>
-              <p className="font-bold text-lg text-destructive">{selectedClass.hitDice}</p>
+              <p className="font-bold text-lg text-destructive">d{selectedClass.hit_die}</p>
             </div>
             <div className="p-3 rounded-lg bg-card">
               <p className="text-xs text-muted-foreground">Atributo Principal</p>
-              <p className="font-bold text-lg capitalize">{selectedClass.primaryAbility}</p>
+              <p className="font-bold text-lg capitalize">
+                {selectedClass.primary_abilities.map(a => getAttributeName(a)).join(' / ')}
+              </p>
             </div>
           </div>
 
           <div>
             <p className="text-sm font-medium mb-2">Salvaguardas</p>
             <div className="flex flex-wrap gap-2">
-              {selectedClass.savingThrows.map((save) => (
+              {selectedClass.saving_throw_proficiencies.map((save) => (
                 <span key={save} className="px-2 py-1 text-xs rounded-full bg-primary/20 text-primary capitalize">
-                  {save}
+                  {getAttributeName(save)}
                 </span>
               ))}
             </div>
@@ -113,28 +148,36 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
           <div>
             <p className="text-sm font-medium mb-2">Proficiências com Armaduras</p>
             <p className="text-sm text-muted-foreground">
-              {selectedClass.armorProficiencies.length > 0 
-                ? selectedClass.armorProficiencies.join(', ')
-                : 'Nenhuma'}
+              {getArmorDisplay(selectedClass.proficiencies.armor)}
             </p>
           </div>
 
           <div>
             <p className="text-sm font-medium mb-2">Proficiências com Armas</p>
             <p className="text-sm text-muted-foreground">
-              {selectedClass.weaponProficiencies.join(', ')}
+              {getWeaponsDisplay(selectedClass.proficiencies.weapons)}
             </p>
           </div>
 
           <div>
-            <p className="text-sm font-medium mb-2">Perícias ({selectedClass.numSkillChoices} escolhas)</p>
-            <div className="flex flex-wrap gap-1">
-              {selectedClass.skillChoices.map((skill) => (
-                <span key={skill} className="px-2 py-0.5 text-xs rounded bg-muted text-muted-foreground">
-                  {skill}
-                </span>
-              ))}
-            </div>
+            <p className="text-sm font-medium mb-2">
+              Perícias ({selectedClass.proficiencies.skills.choose} escolhas)
+            </p>
+            <p className="text-sm text-muted-foreground">
+              {getSkillsDisplay(selectedClass.proficiencies.skills)}
+            </p>
+          </div>
+
+          <div className="pt-3 border-t border-border">
+            <p className="text-sm font-medium mb-2">Equipamento Inicial</p>
+            <div 
+              className="text-sm text-muted-foreground prose prose-sm prose-invert max-w-none"
+              dangerouslySetInnerHTML={{ 
+                __html: selectedClass.equipment_markdown
+                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                  .replace(/\n/g, '<br/>') 
+              }}
+            />
           </div>
         </div>
       )}

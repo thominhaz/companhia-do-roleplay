@@ -37,13 +37,13 @@ export function AttributesStep({ data, updateData }: AttributesStepProps) {
 
   const getRacialBonus = (attr: Attribute): number => {
     let bonus = 0;
-    if (selectedRace?.abilityBonuses[attr]) {
-      bonus += selectedRace.abilityBonuses[attr] || 0;
+    if (selectedRace?.ability_bonuses[attr]) {
+      bonus += (selectedRace.ability_bonuses[attr] as number) || 0;
     }
     if (data.subrace && selectedRace?.subraces) {
       const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
-      if (subrace?.abilityBonuses[attr]) {
-        bonus += subrace.abilityBonuses[attr] || 0;
+      if (subrace?.ability_bonuses[attr]) {
+        bonus += (subrace.ability_bonuses[attr] as number) || 0;
       }
     }
     return bonus;

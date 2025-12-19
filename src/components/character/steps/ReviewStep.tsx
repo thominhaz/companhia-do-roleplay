@@ -1,4 +1,4 @@
-import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, getModifier, getModifierString, calculateHP, Attribute } from '@/data/srd';
+import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, getModifier, getModifierString, calculateHP, Attribute, getAttributeName } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
 import { Heart, Shield, Zap } from 'lucide-react';
 
@@ -6,7 +6,7 @@ interface ReviewStepProps {
   data: WizardData;
 }
 
-const ATTRIBUTE_NAMES: Record<Attribute, string> = {
+const ATTRIBUTE_ABBR: Record<Attribute, string> = {
   strength: 'FOR',
   dexterity: 'DES',
   constitution: 'CON',
@@ -25,11 +25,11 @@ export function ReviewStep({ data }: ReviewStepProps) {
   // Calculate final attributes with racial bonuses
   const getFinalScore = (attr: Attribute): number => {
     let score = data.attributes[attr];
-    if (selectedRace?.abilityBonuses[attr]) {
-      score += selectedRace.abilityBonuses[attr] || 0;
+    if (selectedRace?.ability_bonuses[attr]) {
+      score += (selectedRace.ability_bonuses[attr] as number) || 0;
     }
-    if (selectedSubrace?.abilityBonuses[attr]) {
-      score += selectedSubrace.abilityBonuses[attr] || 0;
+    if (selectedSubrace?.ability_bonuses[attr]) {
+      score += (selectedSubrace.ability_bonuses[attr] as number) || 0;
     }
     return score;
   };
@@ -40,7 +40,7 @@ export function ReviewStep({ data }: ReviewStepProps) {
 
   const conMod = getModifier(finalAttributes.constitution);
   const dexMod = getModifier(finalAttributes.dexterity);
-  const hp = selectedClass ? calculateHP(selectedClass.hitDice, conMod, 1) : 10;
+  const hp = selectedClass ? calculateHP(selectedClass.hit_die, conMod, 1) : 10;
   const ac = 10 + dexMod;
 
   return (
@@ -82,7 +82,7 @@ export function ReviewStep({ data }: ReviewStepProps) {
         </div>
         <div className="p-4 rounded-xl bg-card border border-border text-center">
           <Zap className="w-5 h-5 mx-auto text-secondary mb-1" />
-          <p className="text-2xl font-bold">{selectedRace?.speed || 30}m</p>
+          <p className="text-2xl font-bold">{selectedRace?.speed || 9}m</p>
           <p className="text-xs text-muted-foreground">Velocidade</p>
         </div>
       </div>
@@ -93,7 +93,7 @@ export function ReviewStep({ data }: ReviewStepProps) {
         <div className="grid grid-cols-3 gap-3">
           {(Object.keys(finalAttributes) as Attribute[]).map((attr) => (
             <div key={attr} className="text-center p-2 rounded-lg bg-muted/30">
-              <p className="text-xs text-muted-foreground">{ATTRIBUTE_NAMES[attr]}</p>
+              <p className="text-xs text-muted-foreground">{ATTRIBUTE_ABBR[attr]}</p>
               <p className="text-xl font-bold">{finalAttributes[attr]}</p>
               <p className="text-xs text-primary">{getModifierString(finalAttributes[attr])}</p>
             </div>
@@ -108,11 +108,13 @@ export function ReviewStep({ data }: ReviewStepProps) {
           <div className="space-y-2 text-sm">
             <p>
               <span className="text-muted-foreground">Dado de Vida:</span>{' '}
-              <span className="font-medium">{selectedClass.hitDice}</span>
+              <span className="font-medium">d{selectedClass.hit_die}</span>
             </p>
             <p>
               <span className="text-muted-foreground">Salvaguardas:</span>{' '}
-              <span className="font-medium capitalize">{selectedClass.savingThrows.join(', ')}</span>
+              <span className="font-medium">
+                {selectedClass.saving_throw_proficiencies.map(s => getAttributeName(s)).join(', ')}
+              </span>
             </p>
             <p>
               <span className="text-muted-foreground">Bônus de Proficiência:</span>{' '}
@@ -127,16 +129,16 @@ export function ReviewStep({ data }: ReviewStepProps) {
         <div className="p-4 rounded-xl bg-card border border-border">
           <h4 className="font-semibold mb-3">Traços Raciais</h4>
           <ul className="space-y-1">
-            {selectedRace.traits.map((trait, i) => (
-              <li key={i} className="text-sm flex items-start gap-2">
+            {selectedRace.traits.map((trait) => (
+              <li key={trait.id} className="text-sm flex items-start gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
-                <span className="text-muted-foreground">{trait}</span>
+                <span className="text-muted-foreground">{trait.name}</span>
               </li>
             ))}
-            {selectedSubrace?.traits.map((trait, i) => (
-              <li key={`sub-${i}`} className="text-sm flex items-start gap-2">
+            {selectedSubrace?.traits?.map((trait) => (
+              <li key={trait.id} className="text-sm flex items-start gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-secondary mt-1.5 flex-shrink-0" />
-                <span className="text-muted-foreground">{trait}</span>
+                <span className="text-muted-foreground">{trait.name}</span>
               </li>
             ))}
           </ul>

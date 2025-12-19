@@ -100,23 +100,23 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
 
     // Apply racial bonuses to attributes
     const finalAttributes = { ...data.attributes };
-    Object.entries(selectedRace.abilityBonuses).forEach(([attr, bonus]) => {
-      finalAttributes[attr as Attribute] += bonus || 0;
+    Object.entries(selectedRace.ability_bonuses).forEach(([attr, bonus]) => {
+      finalAttributes[attr as Attribute] += (bonus as number) || 0;
     });
 
     // Apply subrace bonuses if applicable
     if (data.subrace && selectedRace.subraces) {
       const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
       if (subrace) {
-        Object.entries(subrace.abilityBonuses).forEach(([attr, bonus]) => {
-          finalAttributes[attr as Attribute] += bonus || 0;
+        Object.entries(subrace.ability_bonuses).forEach(([attr, bonus]) => {
+          finalAttributes[attr as Attribute] += (bonus as number) || 0;
         });
       }
     }
 
     const conModifier = getModifier(finalAttributes.constitution);
     const dexModifier = getModifier(finalAttributes.dexterity);
-    const maxHp = calculateHP(selectedClass.hitDice, conModifier, 1);
+    const maxHp = calculateHP(selectedClass.hit_die, conModifier, 1);
 
     const character: CharacterInsert = {
       name: data.name,
@@ -135,7 +135,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       attributes: finalAttributes,
       saving_throws: {},
       skills: {},
-      hit_dice: { total: 1, current: 1, diceType: selectedClass.hitDice },
+      hit_dice: { total: 1, current: 1, diceType: `d${selectedClass.hit_die}` },
       death_saves: { successes: 0, failures: 0 },
       equipment: [],
       inventory: [],
