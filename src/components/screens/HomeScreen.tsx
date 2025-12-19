@@ -1,4 +1,4 @@
-import { Bell } from "lucide-react";
+import { Bell, Loader2 } from "lucide-react";
 import { 
   Plus, 
   Link, 
@@ -11,23 +11,11 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useCharacters, CharacterDB } from "@/hooks/useCharacters";
+import { useAllCampaigns, CampaignDB } from "@/hooks/useCampaigns";
 import { useNavigate } from "react-router-dom";
-
-// Mock data
-const mockActiveCharacter = {
-  name: "Thorin Escudo de Ferro",
-  class: "Guerreiro",
-  level: 7,
-  race: "Anão",
-  currentHp: 68,
-  maxHp: 85,
-};
-
-const mockNextSession = {
-  day: "15",
-  month: "DEZ",
-  time: "19:30",
-};
+import { formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 const quickActions = [
   { id: "create", label: "Criar Ficha", icon: Plus, gradient: "from-primary to-purple-700" },
@@ -36,48 +24,113 @@ const quickActions = [
   { id: "note", label: "Nota Rápida", icon: StickyNote, gradient: "from-amber-600 to-amber-800" },
 ];
 
-const recentItems = [
-  {
-    id: "1",
-    name: "Elara Luz da Lua",
-    description: "Elfa Maga • Nv 5",
-    icon: Wand2,
-    gradient: "from-purple-600 to-purple-800",
-    time: "Atualizado há 2h",
-  },
-  {
-    id: "2",
-    name: "A Maldição do Dragão",
-    description: "Campanha • 4 sessões",
-    icon: Flame,
-    gradient: "from-red-600 to-red-800",
-    time: "Jogado há 1 dia",
-  },
-  {
-    id: "3",
-    name: "Kael Sombra Noturna",
-    description: "Humano Paladino • Nv 3",
-    icon: Shield,
-    gradient: "from-green-600 to-green-800",
-    time: "Atualizado há 3 dias",
-  },
-  {
-    id: "4",
-    name: "Ruínas Antigas",
-    description: "Campanha • 8 sessões",
-    icon: Castle,
-    gradient: "from-blue-600 to-blue-800",
-    time: "Jogado há 1 semana",
-  },
-];
+// Map class to icon
+const classIcons: Record<string, typeof Shield> = {
+  Guerreiro: Shield,
+  Mago: Wand2,
+  Paladino: Shield,
+  Ladino: Flame,
+  Clerigo: Shield,
+  Barbaro: Flame,
+  Bardo: Wand2,
+  Druida: Wand2,
+  Feiticeiro: Wand2,
+  Bruxo: Flame,
+  Monge: Shield,
+  Patrulheiro: Shield,
+};
+
+const classGradients: Record<string, string> = {
+  Guerreiro: "from-red-600 to-red-800",
+  Mago: "from-blue-600 to-blue-800",
+  Paladino: "from-yellow-600 to-yellow-800",
+  Ladino: "from-gray-600 to-gray-800",
+  Clerigo: "from-white to-gray-300",
+  Barbaro: "from-orange-600 to-orange-800",
+  Bardo: "from-purple-600 to-purple-800",
+  Druida: "from-green-600 to-green-800",
+  Feiticeiro: "from-pink-600 to-pink-800",
+  Bruxo: "from-violet-600 to-violet-800",
+  Monge: "from-cyan-600 to-cyan-800",
+  Patrulheiro: "from-emerald-600 to-emerald-800",
+};
+
+interface RecentItem {
+  id: string;
+  name: string;
+  description: string;
+  icon: typeof Shield;
+  gradient: string;
+  time: string;
+  type: 'character' | 'campaign';
+}
+
+function buildRecentItems(characters: CharacterDB[], campaigns: { master: CampaignDB[]; player: CampaignDB[] }): RecentItem[] {
+  const items: RecentItem[] = [];
+
+  // Add characters
+  characters.forEach(char => {
+    items.push({
+      id: char.id,
+      name: char.name,
+      description: `${char.race} ${char.class} • Nv ${char.level}`,
+      icon: classIcons[char.class] || Shield,
+      gradient: classGradients[char.class] || "from-purple-600 to-purple-800",
+      time: `Atualizado ${formatDistanceToNow(new Date(char.updated_at), { locale: ptBR, addSuffix: false })}`,
+      type: 'character',
+    });
+  });
+
+  // Add master campaigns
+  campaigns.master.forEach(campaign => {
+    items.push({
+      id: campaign.id,
+      name: campaign.name,
+      description: "Campanha • Mestre",
+      icon: Castle,
+      gradient: "from-emerald-600 to-emerald-800",
+      time: `Atualizado ${formatDistanceToNow(new Date(campaign.updated_at), { locale: ptBR, addSuffix: false })}`,
+      type: 'campaign',
+    });
+  });
+
+  // Add player campaigns
+  campaigns.player.forEach(campaign => {
+    items.push({
+      id: campaign.id,
+      name: campaign.name,
+      description: "Campanha • Jogador",
+      icon: Flame,
+      gradient: "from-red-600 to-red-800",
+      time: `Atualizado ${formatDistanceToNow(new Date(campaign.updated_at), { locale: ptBR, addSuffix: false })}`,
+      type: 'campaign',
+    });
+  });
+
+  // Sort by most recent (approximation - we use the time string)
+  return items.slice(0, 6);
+}
 
 export function HomeScreen() {
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
+  const { data: characters, isLoading: loadingChars } = useCharacters();
+  const { data: campaignsData, isLoading: loadingCampaigns } = useAllCampaigns();
   const navigate = useNavigate();
 
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Aventureiro";
   const isPremium = subscription?.status === "premium";
+
+  const isLoading = loadingChars || loadingCampaigns;
+
+  // Get most recent character as active
+  const activeCharacter = characters?.[0];
+  
+  // Build recent items
+  const recentItems = buildRecentItems(
+    characters || [], 
+    campaignsData || { master: [], player: [] }
+  );
 
   return (
     <div className="min-h-screen bg-darker pb-24">
@@ -118,9 +171,9 @@ export function HomeScreen() {
             }`}>
               {isPremium ? "Premium" : "Free"}
             </span>
-            {!isPremium && subscription && (
+            {!isPremium && characters && (
               <span className="text-xs text-muted-foreground">
-                {subscription.characterCount}/3 personagens
+                {characters.length}/3 personagens
               </span>
             )}
           </div>
@@ -135,24 +188,43 @@ export function HomeScreen() {
             <div className="absolute top-0 right-0 w-32 h-32 bg-foreground opacity-5 rounded-full -mr-10 -mt-10" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-foreground opacity-5 rounded-full -ml-8 -mb-8" />
             <div className="relative z-10 h-full flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
-                    <Shield className="w-4 h-4" />
+              {isLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader2 className="w-6 h-6 animate-spin text-purple-300" />
+                </div>
+              ) : activeCharacter ? (
+                <>
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
+                        <Shield className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-medium text-purple-200">ATIVO</span>
+                    </div>
+                    <h3 className="text-lg font-bold leading-tight">{activeCharacter.name}</h3>
+                    <p className="text-xs text-purple-200 mt-1">
+                      {activeCharacter.race} {activeCharacter.class} • Nv {activeCharacter.level}
+                    </p>
                   </div>
-                  <span className="text-xs font-medium text-purple-200">ATIVO</span>
+                  <div className="flex gap-2">
+                    <div className="flex-1 bg-background/20 rounded-lg px-2 py-1.5">
+                      <p className="text-xs text-purple-200">HP</p>
+                      <p className="text-sm font-bold">{activeCharacter.current_hp}/{activeCharacter.max_hp}</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center">
+                  <Shield className="w-8 h-8 text-purple-300 mb-2" />
+                  <p className="text-sm text-purple-200">Nenhum personagem</p>
+                  <button 
+                    onClick={() => navigate("/characters")}
+                    className="mt-2 px-3 py-1 bg-purple-500 rounded-lg text-xs font-medium"
+                  >
+                    Criar
+                  </button>
                 </div>
-                <h3 className="text-lg font-bold leading-tight">{mockActiveCharacter.name}</h3>
-                <p className="text-xs text-purple-200 mt-1">
-                  {mockActiveCharacter.race} {mockActiveCharacter.class} • Nv {mockActiveCharacter.level}
-                </p>
-              </div>
-              <div className="flex gap-2">
-                <div className="flex-1 bg-background/20 rounded-lg px-2 py-1.5">
-                  <p className="text-xs text-purple-200">HP</p>
-                  <p className="text-sm font-bold">{mockActiveCharacter.currentHp}/{mockActiveCharacter.maxHp}</p>
-                </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -167,11 +239,11 @@ export function HomeScreen() {
                   </svg>
                 </div>
                 <p className="text-xs text-pink-200 font-medium">PRÓXIMA</p>
-                <p className="text-2xl font-bold mt-1">{mockNextSession.day}</p>
-                <p className="text-xs text-pink-200">{mockNextSession.month}</p>
+                <p className="text-lg font-bold mt-1">--</p>
+                <p className="text-xs text-pink-200">Sessão</p>
               </div>
               <div className="mt-2 pt-2 border-t border-pink-600 border-opacity-40">
-                <p className="text-xs font-medium leading-tight text-center">{mockNextSession.time}</p>
+                <p className="text-xs font-medium leading-tight text-center text-pink-200">Sem sessões</p>
               </div>
             </div>
           </div>
@@ -183,7 +255,13 @@ export function HomeScreen() {
         <h2 className="text-sm font-semibold text-muted-foreground mb-4">AÇÕES RÁPIDAS</h2>
         <div className="grid grid-cols-4 gap-4">
           {quickActions.map((action) => (
-            <button key={action.id} className="flex flex-col items-center gap-2">
+            <button 
+              key={action.id} 
+              className="flex flex-col items-center gap-2"
+              onClick={() => {
+                if (action.id === 'create') navigate('/characters');
+              }}
+            >
               <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-lg`}>
                 <action.icon className="w-5 h-5" />
               </div>
@@ -199,25 +277,35 @@ export function HomeScreen() {
           <h2 className="text-sm font-semibold text-muted-foreground">RECENTES</h2>
           <button className="text-xs text-primary font-medium">Ver Todos</button>
         </div>
-        <div className="overflow-x-auto scrollbar-hide">
-          <div className="flex gap-3 px-5 pb-2">
-            {recentItems.map((item) => (
-              <div 
-                key={item.id}
-                className="flex-shrink-0 w-40 bg-dark rounded-xl p-3 border border-border"
-              >
-                <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3`}>
-                  <item.icon className="w-5 h-5" />
-                </div>
-                <h3 className="font-semibold text-sm mb-1">{item.name}</h3>
-                <p className="text-xs text-muted-foreground">{item.description}</p>
-                <div className="mt-3 pt-3 border-t border-border">
-                  <p className="text-xs text-muted-foreground/70">{item.time}</p>
-                </div>
-              </div>
-            ))}
+        {isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin text-primary" />
           </div>
-        </div>
+        ) : recentItems.length === 0 ? (
+          <div className="px-5 py-8 text-center">
+            <p className="text-sm text-muted-foreground">Nenhum item recente</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-3 px-5 pb-2">
+              {recentItems.map((item) => (
+                <div 
+                  key={`${item.type}-${item.id}`}
+                  className="flex-shrink-0 w-40 bg-dark rounded-xl p-3 border border-border"
+                >
+                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3`}>
+                    <item.icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-semibold text-sm mb-1 truncate">{item.name}</h3>
+                  <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <p className="text-xs text-muted-foreground/70 truncate">{item.time}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
     </div>
   );
