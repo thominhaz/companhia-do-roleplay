@@ -1,0 +1,427 @@
+{
+  "itens_magicos": [
+    {
+      "id": "bag_of_beans",
+      "name": "Saco de Feijões",
+      "name_en": "Bag of Beans",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Dentro deste saco de tecido pesado estão **3d4 feijões secos**. O saco pesa **0,23 kg** mais **0,11 kg** para cada feijão que contém.\n\nSe você despejar o conteúdo do saco no chão, eles explodem em um raio de **3 metros**, estendendo-se a partir dos feijões. Cada criatura na área, incluindo você, deve fazer um teste de resistência de **Destreza CD 15**, sofrendo **5d4 de dano de fogo** em uma falha, ou metade do dano em um sucesso. O fogo inflama objetos inflamáveis na área que não estejam sendo vestidos ou carregados.\n\nSe você remover um feijão do saco, plantá-lo em terra ou areia, e então regá-lo, o feijão produz um efeito **1 minuto** depois a partir do solo onde foi plantado. O Mestre pode escolher um efeito da tabela a seguir, determiná-lo aleatoriamente, ou criar um efeito.\n\n| d100 | Efeito |\n|------|--------|\n| 01 | **5d4 cogumelos venenosos** brotam. Se uma criatura comer um cogumelo, role qualquer dado. Em resultado ímpar, ela deve ter sucesso em teste de resistência de **Constituição CD 15** ou sofrer **5d6 de dano de veneno** e ficar **envenenada** por 1 hora. Em resultado par, ganha **5d6 pontos de vida temporários** por 1 hora. |\n| 02-10 | Um **gêiser** irrompe e jorra água, cerveja, suco de frutas vermelhas, chá, vinagre, vinho ou óleo (escolha do Mestre) a **9 metros** de altura por **1d12 rodadas**. |\n| 11-20 | Um **ente** brota. Há 50% de chance dele ser caótico maligno e atacar. |\n| 21-30 | Uma **estátua de pedra** animada e imóvel com sua aparência surge. Ela faz ameaças verbais contra você. Se você a deixar e outros se aproximarem, ela descreve você como o mais hediondo dos vilões e direciona os recém-chegados a encontrá-lo e atacá-lo. Se você estiver no mesmo plano de existência da estátua, ela sabe onde você está. A estátua se torna inanimada após 24 horas. |\n| 31-40 | Uma **fogueira com chamas azuis** surge e queima por **24 horas** (ou até ser extinta). |\n| 41-50 | **1d6 + 6 guinchos** brotam. |\n| 51-60 | **1d4 + 8 sapos rosa brilhante** rastejam para fora. Sempre que um sapo é tocado, ele se transforma em um monstro **Grande** ou menor à escolha do Mestre. O monstro permanece por **1 minuto**, então desaparece em uma nuvem de fumaça rosa brilhante. |\n| 61-70 | Um **bulette** faminto escava para cima e ataca. |\n| 71-80 | Uma **árvore frutífera** cresce. Ela tem **1d10 + 20 frutas**, das quais **1d8** agem como poções mágicas determinadas aleatoriamente, enquanto uma age como um veneno ingerido à escolha do Mestre. A árvore desaparece após 1 hora. Frutas colhidas permanecem, retendo qualquer magia por **30 dias**. |\n| 81-90 | Um **ninho de 1d4 + 3 ovos** surge. Qualquer criatura que comer um ovo deve fazer um teste de resistência de **Constituição CD 20**. Em um sucesso, uma criatura **aumenta permanentemente** seu menor valor de atributo em 1, escolhendo aleatoriamente entre valores igualmente baixos. Em uma falha, a criatura sofre **10d6 de dano de força** de uma explosão mágica interna. |\n| 91-99 | Uma **pirâmide** com uma base quadrada de **18 metros** surge. Dentro há um sarcófago contendo um **senhor múmia**. A pirâmide é tratada como covil do senhor múmia, e seu sarcófago contém tesouro à escolha do Mestre. |\n| 00 | Um **pé de feijão gigante** brota, crescendo até uma altura à escolha do Mestre. O topo leva aonde o Mestre escolher, como para uma grande vista, um castelo de gigante das nuvens, ou um plano de existência diferente. |",
+      "mechanical": {
+        "initial_beans": "3d4",
+        "weight_base_kg": 0.23,
+        "weight_per_bean_kg": 0.11,
+        "explosion_radius": 3,
+        "explosion_save_dc": 15,
+        "explosion_save_type": "dexterity",
+        "explosion_damage": "5d4",
+        "explosion_damage_type": "fire",
+        "plant_effect_delay_minutes": 1
+      }
+    },
+    {
+      "id": "bag_of_devouring",
+      "name": "Saco Devorador",
+      "name_en": "Bag of Devouring",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": false,
+      "description_markdown": "Este saco superficialmente se assemelha a um *saco de retenção*, mas é um orifício de alimentação para uma criatura extradimensional gigantesca. Virar o saco do avesso fecha o orifício.\n\nA criatura extradimensional ligada ao saco pode sentir o que quer que seja colocado dentro do saco. Matéria animal ou vegetal colocada totalmente no saco é devorada e perdida para sempre. Quando parte de uma criatura viva é colocada no saco, como acontece quando alguém alcança dentro dele, há **50% de chance** de que a criatura seja puxada para dentro do saco.\n\nUma criatura dentro do saco pode usar sua ação para tentar escapar com um teste de **Força CD 15** bem-sucedido. Outra criatura pode usar sua ação para alcançar dentro do saco para puxar uma criatura para fora, fazendo isso com um teste de **Força CD 20** bem-sucedido (desde que não seja puxada para dentro do saco primeiro).\n\nQualquer criatura que **comece seu turno** dentro do saco é **devorada**, seu corpo destruído.\n\nObjetos inanimados podem ser armazenados no saco, que pode conter **0,03 m³** de tal material. No entanto, **uma vez por dia**, o saco engole quaisquer objetos dentro dele e os cospe em outro plano de existência. O Mestre determina o momento e plano.\n\nSe o saco for perfurado ou rasgado, ele é destruído, e qualquer coisa contida dentro dele é transportada para uma localização aleatória no **Plano Astral**.",
+      "mechanical": {
+        "pull_inside_chance": 0.5,
+        "escape_dc": 15,
+        "pull_out_dc": 20,
+        "devour_on_turn_start": true,
+        "storage_cubic_meters": 0.03,
+        "daily_planar_transport": true
+      }
+    },
+    {
+      "id": "bag_of_holding",
+      "name": "Saco de Retenção",
+      "name_en": "Bag of Holding",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Este saco tem um espaço interior consideravelmente maior que suas dimensões externas, aproximadamente **60 cm** de diâmetro na boca e **1,2 m** de profundidade. O saco pode conter até **227 kg**, não excedendo um volume de **1,8 m³**. O saco pesa **6,8 kg**, independentemente de seu conteúdo. Recuperar um item do saco requer uma **ação**.\n\nSe o saco for sobrecarregado, perfurado ou rasgado, ele se rompe e é destruído, e seu conteúdo é espalhado no **Plano Astral**. Se o saco for virado do avesso, seu conteúdo se derrama, ileso, mas o saco deve ser colocado de volta antes de poder ser usado novamente.\n\nCriaturas que respiram dentro do saco podem sobreviver até um número de **minutos igual a 10 dividido pelo número de criaturas** (mínimo 1 minuto), após o que começam a **sufocar**.\n\nColocar um *saco de retenção* dentro de um espaço extradimensional criado por uma *mochila útil*, *buraco portátil* ou item similar **instantaneamente destrói ambos os itens** e abre um portal para o **Plano Astral**. O portal se origina onde um item foi colocado dentro do outro. Qualquer criatura a **3 metros** do portal é sugada através dele para uma localização aleatória no Plano Astral. O portal então se fecha. O portal é **unidirecional** e não pode ser reaberto.",
+      "mechanical": {
+        "interior_diameter_cm": 60,
+        "interior_depth_m": 1.2,
+        "max_weight_kg": 227,
+        "max_volume_cubic_m": 1.8,
+        "weight_kg": 6.8,
+        "retrieve_action": "action",
+        "air_supply_formula": "10 / creature_count (min 1)",
+        "extradimensional_destruction": {
+          "destroys_both": true,
+          "creates_astral_gate": true,
+          "gate_radius": 3,
+          "gate_one_way": true
+        }
+      }
+    },
+    {
+      "id": "bag_of_tricks_gray",
+      "name": "Saco de Truques (Cinza)",
+      "name_en": "Bag of Tricks (Gray)",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Este saco comum, feito de tecido **cinza**, parece vazio. Alcançar dentro do saco, no entanto, revela a presença de um pequeno objeto peludo. O saco pesa **0,23 kg**.\n\nVocê pode usar uma **ação** para puxar o objeto peludo do saco e arremessá-lo até **6 metros**. Quando o objeto pousa, ele se transforma em uma criatura que você determina rolando um **d8** e consultando a tabela abaixo. A criatura desaparece no próximo **amanhecer** ou quando é reduzida a **0 pontos de vida**.\n\nA criatura é **amigável** a você e seus companheiros, e age no seu turno. Você pode usar uma **ação bônus** para comandar como a criatura se move e que ação ela toma no próximo turno dela, ou para dar ordens gerais, como atacar seus inimigos. Na ausência de tais ordens, a criatura age de uma forma apropriada à sua natureza.\n\nUma vez que **três objetos peludos** tenham sido puxados do saco, o saco não pode ser usado novamente até o próximo **amanhecer**.\n\n| d8 | Criatura |\n|----|----------|\n| 1 | Doninha |\n| 2 | Rato gigante |\n| 3 | Texugo |\n| 4 | Javali |\n| 5 | Pantera |\n| 6 | Texugo gigante |\n| 7 | Lobo atroz |\n| 8 | Alce gigante |",
+      "mechanical": {
+        "color": "gray",
+        "weight_kg": 0.23,
+        "throw_range": 6,
+        "uses_per_day": 3,
+        "recharge": "dawn",
+        "creatures": ["weasel", "giant_rat", "badger", "boar", "panther", "giant_badger", "dire_wolf", "giant_elk"]
+      }
+    },
+    {
+      "id": "bag_of_tricks_rust",
+      "name": "Saco de Truques (Ferrugem)",
+      "name_en": "Bag of Tricks (Rust)",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Este saco comum, feito de tecido **ferrugem**, funciona como um *Saco de Truques (Cinza)*.\n\n| d8 | Criatura |\n|----|----------|\n| 1 | Rato |\n| 2 | Coruja |\n| 3 | Mastim |\n| 4 | Cabra |\n| 5 | Cabra gigante |\n| 6 | Javali gigante |\n| 7 | Leão |\n| 8 | Urso pardo |",
+      "mechanical": {
+        "color": "rust",
+        "weight_kg": 0.23,
+        "throw_range": 6,
+        "uses_per_day": 3,
+        "recharge": "dawn",
+        "creatures": ["rat", "owl", "mastiff", "goat", "giant_goat", "giant_boar", "lion", "brown_bear"]
+      }
+    },
+    {
+      "id": "bag_of_tricks_tan",
+      "name": "Saco de Truques (Bronzeado)",
+      "name_en": "Bag of Tricks (Tan)",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Este saco comum, feito de tecido **bronzeado**, funciona como um *Saco de Truques (Cinza)*.\n\n| d8 | Criatura |\n|----|----------|\n| 1 | Chacal |\n| 2 | Macaco |\n| 3 | Babuíno |\n| 4 | Bico de machado |\n| 5 | Urso negro |\n| 6 | Doninha gigante |\n| 7 | Hiena gigante |\n| 8 | Tigre |",
+      "mechanical": {
+        "color": "tan",
+        "weight_kg": 0.23,
+        "throw_range": 6,
+        "uses_per_day": 3,
+        "recharge": "dawn",
+        "creatures": ["jackal", "ape", "baboon", "axe_beak", "black_bear", "giant_weasel", "giant_hyena", "tiger"]
+      }
+    },
+    {
+      "id": "bead_of_force",
+      "name": "Esfera de Força",
+      "name_en": "Bead of Force",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Esta pequena esfera negra mede **1,9 cm** de diâmetro e pesa **28 gramas**. Tipicamente, **1d4 + 4** esferas de força são encontradas juntas.\n\nVocê pode usar uma **ação** para arremessar a esfera até **18 metros**. A esfera **explode** ao impacto e é destruída. Cada criatura a **3 metros** de onde a esfera pousou deve ter sucesso em um teste de resistência de **Destreza CD 15** ou sofrer **5d4 de dano de força**.\n\nUma esfera de força transparente então encerra a área por **1 minuto**. Qualquer criatura que falhou no teste de resistência e está completamente dentro da área fica **presa** dentro desta esfera. Criaturas que tiveram sucesso no teste, ou estão parcialmente dentro da área, são empurradas para longe do centro da esfera até não estarem mais dentro dela.\n\nApenas **ar respirável** pode passar através da parede da esfera. Nenhum ataque ou outro efeito pode.\n\nUma criatura encerrada pode usar sua ação para empurrar contra a parede da esfera, movendo a esfera até **metade do deslocamento de caminhada** da criatura. A esfera pode ser levantada, e sua magia faz com que pese apenas **0,45 kg**, independentemente do peso das criaturas dentro.",
+      "mechanical": {
+        "diameter_cm": 1.9,
+        "weight_grams": 28,
+        "typical_found": "1d4+4",
+        "throw_range": 18,
+        "explosion_radius": 3,
+        "save_dc": 15,
+        "save_type": "dexterity",
+        "damage": "5d4",
+        "damage_type": "force",
+        "sphere_duration_minutes": 1,
+        "sphere_weight_kg": 0.45,
+        "move_speed_multiplier": 0.5
+      }
+    },
+    {
+      "id": "belt_of_dwarvenkind",
+      "name": "Cinto do Tipo Anão",
+      "name_en": "Belt of Dwarvenkind",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa este cinto, você ganha os seguintes benefícios:\n\n- Sua pontuação de **Constituição aumenta em 2**, até um máximo de 20.\n- Você tem **vantagem** em testes de **Carisma (Persuasão)** feitos para interagir com anões.\n\nAlém disso, enquanto sintonizado ao cinto, você tem **50% de chance** a cada dia ao amanhecer de desenvolver uma barba completa se você for capaz de desenvolver uma, ou uma barba visivelmente mais grossa se você já tiver uma.\n\n### Benefícios Adicionais (se você não for um anão)\n\nSe você não for um anão, você ganha os seguintes benefícios adicionais enquanto usa o cinto:\n\n- Você tem **vantagem** em testes de resistência contra veneno, e você tem **resistência** a dano de veneno.\n- Você tem **visão no escuro** até um alcance de **18 metros**.\n- Você pode falar, ler e escrever **Anão**.",
+      "mechanical": {
+        "constitution_bonus": 2,
+        "max_constitution": 20,
+        "advantage_persuasion_dwarves": true,
+        "beard_growth_chance": 0.5,
+        "non_dwarf_benefits": {
+          "advantage_vs_poison": true,
+          "poison_resistance": true,
+          "darkvision_range": 18,
+          "languages": ["dwarvish"]
+        }
+      }
+    },
+    {
+      "id": "belt_of_giant_strength_hill",
+      "name": "Cinto da Força Gigante (Colina)",
+      "name_en": "Belt of Giant Strength (Hill)",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa este cinto, sua **pontuação de Força muda para 21**. Se sua Força já for igual ou maior que 21, o item não tem efeito sobre você.",
+      "mechanical": {
+        "sets_strength": 21,
+        "giant_type": "hill"
+      }
+    },
+    {
+      "id": "belt_of_giant_strength_stone",
+      "name": "Cinto da Força Gigante (Pedra)",
+      "name_en": "Belt of Giant Strength (Stone)",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa este cinto, sua **pontuação de Força muda para 23**. Se sua Força já for igual ou maior que 23, o item não tem efeito sobre você.",
+      "mechanical": {
+        "sets_strength": 23,
+        "giant_type": "stone"
+      }
+    },
+    {
+      "id": "belt_of_giant_strength_frost",
+      "name": "Cinto da Força Gigante (Gelo)",
+      "name_en": "Belt of Giant Strength (Frost)",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa este cinto, sua **pontuação de Força muda para 23**. Se sua Força já for igual ou maior que 23, o item não tem efeito sobre você.",
+      "mechanical": {
+        "sets_strength": 23,
+        "giant_type": "frost"
+      }
+    },
+    {
+      "id": "belt_of_giant_strength_fire",
+      "name": "Cinto da Força Gigante (Fogo)",
+      "name_en": "Belt of Giant Strength (Fire)",
+      "type": "wondrous_item",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa este cinto, sua **pontuação de Força muda para 25**. Se sua Força já for igual ou maior que 25, o item não tem efeito sobre você.",
+      "mechanical": {
+        "sets_strength": 25,
+        "giant_type": "fire"
+      }
+    },
+    {
+      "id": "belt_of_giant_strength_cloud",
+      "name": "Cinto da Força Gigante (Nuvem)",
+      "name_en": "Belt of Giant Strength (Cloud)",
+      "type": "wondrous_item",
+      "rarity": "legendary",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa este cinto, sua **pontuação de Força muda para 27**. Se sua Força já for igual ou maior que 27, o item não tem efeito sobre você.",
+      "mechanical": {
+        "sets_strength": 27,
+        "giant_type": "cloud"
+      }
+    },
+    {
+      "id": "belt_of_giant_strength_storm",
+      "name": "Cinto da Força Gigante (Tempestade)",
+      "name_en": "Belt of Giant Strength (Storm)",
+      "type": "wondrous_item",
+      "rarity": "legendary",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa este cinto, sua **pontuação de Força muda para 29**. Se sua Força já for igual ou maior que 29, o item não tem efeito sobre você.",
+      "mechanical": {
+        "sets_strength": 29,
+        "giant_type": "storm"
+      }
+    },
+    {
+      "id": "berserker_axe",
+      "name": "Machado Berserker",
+      "name_en": "Berserker Axe",
+      "type": "weapon",
+      "weapon_type": "any_axe",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "cursed": true,
+      "description_markdown": "Você ganha um **bônus de +1** para jogadas de ataque e dano feitas com esta arma mágica. Além disso, enquanto você estiver sintonizado a esta arma, seu **máximo de pontos de vida aumenta em 1** para cada nível que você atingiu.\n\n**Maldição.** Este machado é **amaldiçoado**, e sintonizar-se a ele estende a maldição a você. Enquanto você permanecer amaldiçoado, você não está disposto a se separar do machado, mantendo-o ao alcance o tempo todo. Você também tem **desvantagem** em jogadas de ataque com armas que não sejam esta, a menos que nenhum inimigo esteja a **18 metros** de você que você possa ver ou ouvir.\n\nSempre que uma criatura hostil causar dano a você enquanto o machado está em sua posse, você deve ter sucesso em um teste de resistência de **Sabedoria CD 15** ou ficar **enlouquecido**. Enquanto enlouquecido, você deve usar sua ação a cada rodada para atacar a criatura mais próxima de você com o machado.\n\nSe você puder fazer ataques extras como parte da ação de Ataque, você usa esses ataques extras, movendo-se para atacar a próxima criatura mais próxima depois de derrubar seu alvo atual. Se você tiver múltiplos alvos possíveis, você ataca um aleatoriamente. Você está enlouquecido até começar seu turno sem criaturas a **18 metros** de você que você possa ver ou ouvir.",
+      "mechanical": {
+        "attack_bonus": 1,
+        "damage_bonus": 1,
+        "hp_per_level": 1,
+        "curse": {
+          "unwilling_to_part": true,
+          "disadvantage_other_weapons_range": 18,
+          "berserk_save_dc": 15,
+          "berserk_save_type": "wisdom",
+          "berserk_trigger": "damaged_by_hostile",
+          "berserk_range": 18
+        }
+      }
+    },
+    {
+      "id": "boots_of_elvenkind",
+      "name": "Botas Élficas",
+      "name_en": "Boots of Elvenkind",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Enquanto você usa estas botas, seus passos **não fazem som**, independentemente da superfície pela qual você está se movendo. Você também tem **vantagem** em testes de **Destreza (Furtividade)** que dependem de se mover silenciosamente.",
+      "mechanical": {
+        "silent_steps": true,
+        "advantage_stealth_movement": true
+      }
+    },
+    {
+      "id": "boots_of_levitation",
+      "name": "Botas de Levitação",
+      "name_en": "Boots of Levitation",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto você usa estas botas, você pode usar uma **ação** para conjurar a magia *levitar* em si mesmo **à vontade**.",
+      "mechanical": {
+        "spell": "levitate",
+        "cast_on_self": true,
+        "at_will": true,
+        "action_type": "action"
+      }
+    },
+    {
+      "id": "boots_of_speed",
+      "name": "Botas da Velocidade",
+      "name_en": "Boots of Speed",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto você usa estas botas, você pode usar uma **ação bônus** e clicar os calcanhares das botas juntos. Se você fizer isso, as botas **dobram seu deslocamento de caminhada**, e qualquer criatura que fizer um ataque de oportunidade contra você tem **desvantagem** na jogada de ataque. Se você clicar seus calcanhares juntos novamente, você termina o efeito.\n\nQuando a propriedade das botas tiver sido usada por um total de **10 minutos**, a magia cessa de funcionar até você terminar um **descanso longo**.",
+      "mechanical": {
+        "activation": "bonus_action",
+        "speed_multiplier": 2,
+        "disadvantage_opportunity_attacks": true,
+        "duration_minutes": 10,
+        "recharge": "long_rest"
+      }
+    },
+    {
+      "id": "boots_of_striding_and_springing",
+      "name": "Botas de Marcha e Salto",
+      "name_en": "Boots of Striding and Springing",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto você usa estas botas, seu **deslocamento de caminhada se torna 9 metros**, a menos que seu deslocamento de caminhada seja maior, e seu deslocamento não é reduzido se você estiver **sobrecarregado** ou vestindo **armadura pesada**.\n\nAlém disso, você pode **saltar três vezes a distância normal**, embora você não possa saltar mais longe do que seu movimento restante permitiria.",
+      "mechanical": {
+        "min_walking_speed": 9,
+        "ignore_encumbrance_speed_penalty": true,
+        "ignore_heavy_armor_speed_penalty": true,
+        "jump_multiplier": 3
+      }
+    },
+    {
+      "id": "boots_of_the_winterlands",
+      "name": "Botas das Terras Invernais",
+      "name_en": "Boots of the Winterlands",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Estas botas peludas são confortáveis e parecem bem quentes. Enquanto você as usa, você ganha os seguintes benefícios:\n\n- Você tem **resistência** a dano de **frio**.\n- Você ignora **terreno difícil** criado por gelo ou neve.\n- Você pode tolerar temperaturas tão baixas quanto **-45°C** sem qualquer proteção adicional. Se você usar roupas pesadas, você pode tolerar temperaturas tão baixas quanto **-73°C**.",
+      "mechanical": {
+        "cold_resistance": true,
+        "ignore_ice_snow_difficult_terrain": true,
+        "temperature_tolerance_celsius": -45,
+        "temperature_tolerance_heavy_clothes_celsius": -73
+      }
+    },
+    {
+      "id": "bowl_of_commanding_water_elementals",
+      "name": "Tigela de Comando de Elementais da Água",
+      "name_en": "Bowl of Commanding Water Elementals",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Enquanto esta tigela estiver cheia de água, você pode usar uma **ação** para falar a palavra de comando da tigela e invocar um **elemental da água**, como se você tivesse conjurado a magia *conjurar elemental*. A tigela não pode ser usada desta forma novamente até o próximo **amanhecer**.\n\nA tigela tem cerca de **30 cm** de diâmetro e metade disso de profundidade. Ela pesa **1,4 kg** e comporta cerca de **11 litros**.",
+      "mechanical": {
+        "spell": "conjure_elemental",
+        "elemental_type": "water",
+        "recharge": "dawn",
+        "diameter_cm": 30,
+        "weight_kg": 1.4,
+        "capacity_liters": 11
+      }
+    },
+    {
+      "id": "bracers_of_archery",
+      "name": "Braçadeiras de Arco e Flecha",
+      "name_en": "Bracers of Archery",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa estas braçadeiras, você tem **proficiência** com **arco longo** e **arco curto**, e você ganha um **bônus de +2** para jogadas de dano em ataques à distância feitos com tais armas.",
+      "mechanical": {
+        "grants_proficiency": ["longbow", "shortbow"],
+        "damage_bonus": 2,
+        "applies_to": ["longbow", "shortbow"]
+      }
+    },
+    {
+      "id": "bracers_of_defense",
+      "name": "Braçadeiras de Defesa",
+      "name_en": "Bracers of Defense",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa estas braçadeiras, você ganha um **bônus de +2 para CA** se você não estiver vestindo **armadura** e não estiver usando **escudo**.",
+      "mechanical": {
+        "ac_bonus": 2,
+        "requires_no_armor": true,
+        "requires_no_shield": true
+      }
+    },
+    {
+      "id": "brazier_of_commanding_fire_elementals",
+      "name": "Braseiro de Comando de Elementais do Fogo",
+      "name_en": "Brazier of Commanding Fire Elementals",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Enquanto um fogo queima neste braseiro de latão, você pode usar uma **ação** para falar a palavra de comando do braseiro e invocar um **elemental do fogo**, como se você tivesse conjurado a magia *conjurar elemental*. O braseiro não pode ser usado desta forma novamente até o próximo **amanhecer**.\n\nO braseiro pesa **2,3 kg**.",
+      "mechanical": {
+        "spell": "conjure_elemental",
+        "elemental_type": "fire",
+        "recharge": "dawn",
+        "weight_kg": 2.3
+      }
+    },
+    {
+      "id": "brooch_of_shielding",
+      "name": "Broche de Proteção",
+      "name_en": "Brooch of Shielding",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa este broche, você tem **resistência** a dano de **força**, e você tem **imunidade** a dano da magia *mísseis mágicos*.",
+      "mechanical": {
+        "force_resistance": true,
+        "magic_missile_immunity": true
+      }
+    },
+    {
+      "id": "broom_of_flying",
+      "name": "Vassoura Voadora",
+      "name_en": "Broom of Flying",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Esta vassoura de madeira, que pesa **1,4 kg**, funciona como uma vassoura mundana até você se posicionar sobre ela e falar sua **palavra de comando**. Ela então paira abaixo de você e pode ser montada no ar. Ela tem um **deslocamento de voo de 15 metros**.\n\nEla pode carregar até **181 kg**, mas seu deslocamento de voo se torna **9 metros** enquanto carrega mais de **91 kg**. A vassoura para de pairar quando você pousa.\n\nVocê pode enviar a vassoura para viajar sozinha até um destino a **1,6 km** de você se você falar a palavra de comando, nomear a localização, e estiver familiarizado com aquele lugar. A vassoura volta para você quando você fala outra palavra de comando, desde que a vassoura ainda esteja a **1,6 km** de você.",
+      "mechanical": {
+        "weight_kg": 1.4,
+        "fly_speed": 15,
+        "max_carry_kg": 181,
+        "reduced_speed_threshold_kg": 91,
+        "reduced_fly_speed": 9,
+        "autonomous_range_km": 1.6,
+        "command_word": true
+      }
+    }
+  ]
+}

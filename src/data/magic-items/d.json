@@ -1,0 +1,311 @@
+{
+  "itens_magicos": [
+    {
+      "id": "dagger_of_venom",
+      "name": "Adaga do Veneno",
+      "name_en": "Dagger of Venom",
+      "type": "weapon",
+      "weapon_type": "dagger",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Você ganha um **bônus de +1** para jogadas de ataque e dano feitas com esta arma mágica.\n\nVocê pode usar uma **ação** para fazer um veneno espesso e negro cobrir a lâmina. O veneno permanece por **1 minuto** ou até um ataque usando esta arma atingir uma criatura. Aquela criatura deve ter sucesso em um teste de resistência de **Constituição CD 15** ou sofrer **2d10 de dano de veneno** e ficar **envenenada** por 1 minuto. A adaga não pode ser usada desta forma novamente até o próximo **amanhecer**.",
+      "mechanical": {
+        "attack_bonus": 1,
+        "damage_bonus": 1,
+        "poison_damage": "2d10",
+        "poison_duration_minutes": 1,
+        "save_dc": 15,
+        "save_type": "constitution",
+        "poison_condition": true,
+        "recharge": "dawn"
+      }
+    },
+    {
+      "id": "dancing_sword",
+      "name": "Espada Dançante",
+      "name_en": "Dancing Sword",
+      "type": "weapon",
+      "weapon_type": "any_sword",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "description_markdown": "Você pode usar uma **ação bônus** para jogar esta espada mágica no ar e falar a palavra de comando. Quando você faz isso, a espada começa a pairar, voa até **9 metros**, e ataca uma criatura à sua escolha a **1,5 metro** dela. A espada usa sua **jogada de ataque** e **modificador de atributo** para jogadas de dano.\n\nEnquanto a espada paira, você pode usar uma **ação bônus** para fazê-la voar até **9 metros** para outro local a **9 metros** de você. Como parte da mesma ação bônus, você pode fazer a espada atacar uma criatura a **1,5 metro** dela.\n\nDepois que a espada pairante ataca pela **quarta vez**, ela voa até **9 metros** e tenta retornar à sua mão. Se você não tiver mão livre, ela cai no chão aos seus pés. Se a espada não tiver caminho desobstruído até você, ela se move o mais próximo de você que puder e então cai no chão. Ela também cessa de pairar se você a segurar ou se mover mais de **9 metros** dela.",
+      "mechanical": {
+        "activation": "bonus_action",
+        "fly_distance": 9,
+        "attack_range": 1.5,
+        "uses_wielder_attack_bonus": true,
+        "uses_wielder_ability_modifier": true,
+        "max_attacks": 4,
+        "control_range": 9,
+        "command_word": true
+      }
+    },
+    {
+      "id": "decanter_of_endless_water",
+      "name": "Cantil de Água Infinita",
+      "name_en": "Decanter of Endless Water",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Este frasco tampado chacoalha quando agitado, como se contivesse água. O cantil pesa **0,9 kg**.\n\nVocê pode usar uma **ação** para remover a tampa e falar uma de **três palavras de comando**, após o que uma quantidade de água doce ou salgada (sua escolha) jorra do frasco. A água para de jorrar no início do seu próximo turno. Escolha entre as seguintes opções:\n\n- **\"Corrente\"** produz **3,8 litros** de água.\n- **\"Fonte\"** produz **19 litros** de água.\n- **\"Gêiser\"** produz **114 litros** de água que jorra em um gêiser de **9 metros de comprimento** e **30 cm de largura**. Como uma ação bônus enquanto segura o cantil, você pode apontar o gêiser para uma criatura que você possa ver a **9 metros** de você. O alvo deve ter sucesso em um teste de resistência de **Força CD 13** ou sofrer **1d4 de dano de concussão** e cair **caído**. Em vez de uma criatura, você pode mirar um objeto que não esteja sendo vestido ou carregado e que pese não mais de **91 kg**. O objeto é ou derrubado ou empurrado até **4,5 metros** para longe de você.",
+      "mechanical": {
+        "weight_kg": 0.9,
+        "stream_liters": 3.8,
+        "fountain_liters": 19,
+        "geyser_liters": 114,
+        "geyser_length": 9,
+        "geyser_width": 0.3,
+        "geyser_range": 9,
+        "geyser_save_dc": 13,
+        "geyser_save_type": "strength",
+        "geyser_damage": "1d4",
+        "geyser_prone": true,
+        "geyser_max_object_weight_kg": 91,
+        "geyser_push_distance": 4.5
+      }
+    },
+    {
+      "id": "deck_of_illusions",
+      "name": "Baralho de Ilusões",
+      "name_en": "Deck of Illusions",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Esta caixa contém um conjunto de cartas de pergaminho. Um baralho completo tem **34 cartas**. Um baralho encontrado como tesouro geralmente está faltando **1d20 − 1 cartas**.\n\nA magia do baralho funciona apenas se as cartas forem compradas aleatoriamente (você pode usar um baralho alterado de cartas de jogar para simular o baralho). Você pode usar uma **ação** para comprar uma carta aleatoriamente do baralho e jogá-la no chão em um ponto a **9 metros** de você.\n\nUma ilusão de uma ou mais criaturas se forma sobre a carta jogada e permanece até ser dissipada. Uma criatura ilusória parece real, do tamanho apropriado, e se comporta como se fosse uma criatura real exceto que **não pode causar dano**.\n\nEnquanto você estiver a **36 metros** da criatura ilusória e puder vê-la, você pode usar uma **ação** para movê-la magicamente para qualquer lugar a **9 metros** de sua carta. Qualquer interação física com a criatura ilusória revela que ela é uma ilusão, porque objetos passam através dela. Alguém que usar uma ação para inspecionar visualmente a criatura a identifica como ilusória com um teste de **Inteligência (Investigação) CD 15** bem-sucedido. A criatura então aparece **translúcida**.\n\nA ilusão dura até sua carta ser movida ou a ilusão ser dissipada. Quando a ilusão termina, a imagem em sua carta desaparece, e aquela carta não pode ser usada novamente.\n\n## Carta de Jogar → Ilusão\n\n| Carta | Ilusão |\n|-------|--------|\n| Ás de copas | Dragão vermelho |\n| Rei de copas | Cavaleiro e quatro guardas |\n| Dama de copas | Súcubo ou íncubo |\n| Valete de copas | Druida |\n| 10 de copas | Gigante das nuvens |\n| 9 de copas | Ettin |\n| 8 de copas | Bugbear |\n| 2 de copas | Goblin |\n| Ás de ouros | Observador |\n| Rei de ouros | Arquimago e aprendiz de mago |\n| Dama de ouros | Megera noturna |\n| Valete de ouros | Assassino |\n| 10 de ouros | Gigante do fogo |\n| 9 de ouros | Mago ogro |\n| 8 de ouros | Gnoll |\n| 2 de ouros | Kobold |\n| Ás de espadas | Lich |\n| Rei de espadas | Sacerdote e dois acólitos |\n| Dama de espadas | Medusa |\n| Valete de espadas | Veterano |\n| 10 de espadas | Gigante do gelo |\n| 9 de espadas | Troll |\n| 8 de espadas | Hobgoblin |\n| 2 de espadas | Goblin |\n| Ás de paus | Golem de ferro |\n| Rei de paus | Capitão bandido e três bandidos |\n| Dama de paus | Erínias |\n| Valete de paus | Berserker |\n| 10 de paus | Gigante das colinas |\n| 9 de paus | Ogro |\n| 8 de paus | Orc |\n| 2 de paus | Kobold |\n| Coringas (2) | Você (dono do baralho) |",
+      "mechanical": {
+        "full_deck_cards": 34,
+        "missing_cards": "1d20-1",
+        "throw_range": 9,
+        "control_range": 36,
+        "move_range_from_card": 9,
+        "investigation_dc": 15,
+        "illusions_cannot_harm": true,
+        "card_destroyed_after_use": true
+      }
+    },
+    {
+      "id": "deck_of_many_things",
+      "name": "Baralho de Muitas Coisas",
+      "name_en": "Deck of Many Things",
+      "type": "wondrous_item",
+      "rarity": "legendary",
+      "requires_attunement": false,
+      "description_markdown": "Geralmente encontrado em uma caixa ou bolsa, este baralho contém um número de cartas feitas de marfim ou velino. A maioria (**75%**) desses baralhos tem apenas **treze cartas**, mas o resto tem **vinte e duas**.\n\nAntes de comprar uma carta, você deve declarar quantas cartas pretende comprar e então comprá-las aleatoriamente (você pode usar um baralho alterado de cartas de jogar para simular o baralho). Quaisquer cartas compradas em excesso deste número não têm efeito. Caso contrário, assim que você comprar uma carta do baralho, sua magia entra em vigor. Você deve comprar cada carta **não mais de 1 hora** após a compra anterior. Se você falhar em comprar o número escolhido, as cartas restantes voam do baralho por conta própria e entram em vigor todas de uma vez.\n\nUma vez que uma carta é comprada, ela **desaparece da existência**. A menos que a carta seja o Tolo ou o Bobo, a carta reaparece no baralho, tornando possível comprar a mesma carta duas vezes.\n\n**NOTA:** Este é um item extremamente poderoso e perigoso. Consulte o SRD completo para detalhes de todos os 22 efeitos possíveis das cartas.",
+      "mechanical": {
+        "deck_sizes": [13, 22],
+        "common_size_chance": 0.75,
+        "time_between_draws_hours": 1,
+        "cards_reappear": true,
+        "exceptions": ["fool", "jester"],
+        "extremely_dangerous": true
+      }
+    },
+    {
+      "id": "defender",
+      "name": "Defensora",
+      "name_en": "Defender",
+      "type": "weapon",
+      "weapon_type": "any_sword",
+      "rarity": "legendary",
+      "requires_attunement": true,
+      "description_markdown": "Você ganha um **bônus de +3** para jogadas de ataque e dano feitas com esta arma mágica.\n\nNa primeira vez que você atacar com a espada em cada um de seus turnos, você pode **transferir parte ou todo o bônus da espada** para sua Classe de Armadura, em vez de usar o bônus em quaisquer ataques naquele turno. Por exemplo, você poderia reduzir o bônus para suas jogadas de ataque e dano para **+1** e ganhar um **bônus de +2 para CA**. Os bônus ajustados permanecem em efeito até o início do seu próximo turno, embora você deva segurar a espada para ganhar um bônus para CA dela.",
+      "mechanical": {
+        "base_attack_bonus": 3,
+        "base_damage_bonus": 3,
+        "can_transfer_bonus_to_ac": true,
+        "transfer_duration": "until_next_turn",
+        "must_hold_for_ac_bonus": true
+      }
+    },
+    {
+      "id": "demon_armor",
+      "name": "Armadura Demoníaca",
+      "name_en": "Demon Armor",
+      "type": "armor",
+      "armor_type": "plate",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "cursed": true,
+      "description_markdown": "Enquanto veste esta armadura, você ganha um **bônus de +1 para CA**, e você pode entender e falar **Abissal**. Além disso, as **manoplas com garras** da armadura transformam golpes desarmados com suas mãos em **armas mágicas** que causam dano cortante, com um **bônus de +1** para jogadas de ataque e dano e um **dado de dano de 1d8**.\n\n**Maldição.** Uma vez que você vista esta armadura amaldiçoada, você **não pode removê-la** a menos que seja alvo da magia *remover maldição* ou magia similar. Enquanto veste a armadura, você tem **desvantagem** em jogadas de ataque contra **demônios** e em testes de resistência contra suas magias e habilidades especiais.",
+      "mechanical": {
+        "ac_bonus": 1,
+        "language": "abyssal",
+        "unarmed_strikes": {
+          "becomes_magical": true,
+          "attack_bonus": 1,
+          "damage_bonus": 1,
+          "damage_die": "1d8",
+          "damage_type": "slashing"
+        },
+        "curse": {
+          "cannot_doff": true,
+          "removal": "remove_curse",
+          "disadvantage_vs_demons_attacks": true,
+          "disadvantage_vs_demons_saves": true
+        }
+      }
+    },
+    {
+      "id": "dimensional_shackles",
+      "name": "Algemas Dimensionais",
+      "name_en": "Dimensional Shackles",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Você pode usar uma **ação** para colocar estas algemas em uma criatura **incapacitada**. As algemas se ajustam para caber em uma criatura de tamanho **Pequeno** a **Grande**. Além de servir como algemas mundanas, as algemas **impedem uma criatura presa** por elas de usar qualquer método de movimento extradimensional, incluindo **teletransporte** ou viagem para um plano de existência diferente. Elas não impedem a criatura de passar através de um portal interdimensional.\n\nVocê e qualquer criatura que você designar quando usar as algemas podem usar uma **ação** para removê-las. Uma vez a cada **30 dias**, a criatura presa pode fazer um teste de **Força (Atletismo) CD 30**. Em um sucesso, a criatura se liberta e destrói as algemas.",
+      "mechanical": {
+        "target_condition": "incapacitated",
+        "size_range": ["small", "medium", "large"],
+        "blocks_extradimensional_movement": true,
+        "blocks_teleportation": true,
+        "blocks_planar_travel": true,
+        "allows_portals": true,
+        "break_check_frequency_days": 30,
+        "break_dc": 30,
+        "break_skill": "athletics"
+      }
+    },
+    {
+      "id": "dragon_scale_mail",
+      "name": "Cota de Escamas de Dragão",
+      "name_en": "Dragon Scale Mail",
+      "type": "armor",
+      "armor_type": "scale_mail",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "description_markdown": "Cota de escamas de dragão é feita das escamas de um tipo de dragão. Às vezes dragões coletam suas escamas descartadas e as presenteiam a humanoides. Outras vezes, caçadores cuidadosamente esfol am e preservam o couro de um dragão morto. De qualquer forma, cota de escamas de dragão é altamente valorizada.\n\nEnquanto veste esta armadura, você ganha um **bônus de +1 para CA**, você tem **vantagem** em testes de resistência contra a **Presença Aterradora** e **armas de sopro** de dragões, e você tem **resistência** a um tipo de dano que é determinado pelo tipo de dragão que forneceu as escamas (veja a tabela).\n\nAdicionalmente, você pode focar seus sentidos como uma **ação** para discernir magicamente a **distância e direção** do dragão mais próximo a **48 km** de você que seja do mesmo tipo da armadura. Esta ação especial não pode ser usada novamente até o próximo **amanhecer**.\n\n## Dragão → Resistência\n\n| Dragão | Resistência | Dragão | Resistência |\n|--------|-------------|--------|-------------|\n| Negro | Ácido | Dourado | Fogo |\n| Azul | Elétrico | Verde | Veneno |\n| Latão | Fogo | Vermelho | Fogo |\n| Bronze | Elétrico | Prata | Frio |\n| Cobre | Ácido | Branco | Frio |",
+      "mechanical": {
+        "ac_bonus": 1,
+        "advantage_vs_frightful_presence": true,
+        "advantage_vs_breath_weapons": true,
+        "resistance_type_by_dragon": {
+          "black": "acid",
+          "blue": "lightning",
+          "brass": "fire",
+          "bronze": "lightning",
+          "copper": "acid",
+          "gold": "fire",
+          "green": "poison",
+          "red": "fire",
+          "silver": "cold",
+          "white": "cold"
+        },
+        "detect_dragon": {
+          "range_km": 48,
+          "action_type": "action",
+          "recharge": "dawn"
+        }
+      }
+    },
+    {
+      "id": "dragon_slayer",
+      "name": "Matadora de Dragões",
+      "name_en": "Dragon Slayer",
+      "type": "weapon",
+      "weapon_type": "any_sword",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Você ganha um **bônus de +1** para jogadas de ataque e dano feitas com esta arma mágica.\n\nQuando você atingir um **dragão** com esta arma, o dragão sofre **3d6 de dano extra** do tipo da arma. Para o propósito desta arma, \"dragão\" se refere a qualquer criatura com o tipo dragão, incluindo **tartarugas-dragão** e **serpes aladas**.",
+      "mechanical": {
+        "attack_bonus": 1,
+        "damage_bonus": 1,
+        "extra_damage_vs_dragons": "3d6",
+        "applies_to_all_dragon_type": true
+      }
+    },
+    {
+      "id": "dust_of_disappearance",
+      "name": "Pó do Desaparecimento",
+      "name_en": "Dust of Disappearance",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Encontrado em um pequeno pacote, este pó se assemelha a areia muito fina. Há o suficiente para **um uso**. Quando você usa uma **ação** para jogar o pó no ar, você e cada criatura e objeto a **3 metros** de você se tornam **invisíveis** por **2d4 minutos**. A duração é a mesma para todos os alvos, e o pó é consumido quando sua magia entra em vigor.\n\nSe uma criatura afetada pelo pó **atacar** ou **conjurar uma magia**, a invisibilidade termina para aquela criatura.",
+      "mechanical": {
+        "uses": 1,
+        "radius": 3,
+        "duration_minutes": "2d4",
+        "same_duration_all": true,
+        "ends_on_attack": true,
+        "ends_on_spell": true
+      }
+    },
+    {
+      "id": "dust_of_dryness",
+      "name": "Pó da Secura",
+      "name_en": "Dust of Dryness",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Este pequeno pacote contém **1d6 + 4 pitadas** de pó. Você pode usar uma **ação** para polvilhar uma pitada sobre água. O pó transforma um **cubo de água de 4,5 metros de lado** em uma **esfera do tamanho de uma bola de gude**, que flutua ou repousa perto de onde o pó foi polvilhado. O peso da esfera é insignificante.\n\nAlguém pode usar uma ação para **esmagar a esfera** contra uma superfície dura, fazendo a esfera se estilhaçar e liberar a água que o pó absorveu. Fazer isso termina a magia daquela esfera.\n\nUm **elemental** composto principalmente de água que for exposto a uma pitada do pó deve fazer um teste de resistência de **Constituição CD 13**, sofrendo **10d6 de dano necrótico** em uma falha, ou metade do dano em um sucesso.",
+      "mechanical": {
+        "pinches": "1d6+4",
+        "water_cube_size": 4.5,
+        "creates_marble": true,
+        "marble_weight_negligible": true,
+        "elemental_save_dc": 13,
+        "elemental_save_type": "constitution",
+        "elemental_damage": "10d6",
+        "elemental_damage_type": "necrotic"
+      }
+    },
+    {
+      "id": "dust_of_sneezing_and_choking",
+      "name": "Pó de Espirro e Sufocamento",
+      "name_en": "Dust of Sneezing and Choking",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Encontrado em um pequeno recipiente, este pó se assemelha a areia muito fina. Ele **parece ser** *pó do desaparecimento*, e uma magia *identificar* revela que ele é tal. Há o suficiente para **um uso**.\n\nQuando você usa uma **ação** para jogar um punhado do pó no ar, você e cada criatura que precise respirar a **9 metros** de você deve ter sucesso em um teste de resistência de **Constituição CD 15** ou se tornar **incapaz de respirar**, enquanto espirra incontrolavelmente. Uma criatura afetada desta forma fica **incapacitada** e **sufocando**.\n\nEnquanto estiver consciente, uma criatura pode repetir o teste de resistência no **final de cada um de seus turnos**, terminando o efeito sobre ela em um sucesso. A magia *restauração menor* também pode terminar o efeito sobre uma criatura.",
+      "mechanical": {
+        "uses": 1,
+        "appears_as": "dust_of_disappearance",
+        "identify_misleads": true,
+        "radius": 9,
+        "save_dc": 15,
+        "save_type": "constitution",
+        "incapacitated": true,
+        "suffocating": true,
+        "repeat_save_each_turn": true,
+        "ended_by_lesser_restoration": true
+      }
+    },
+    {
+      "id": "dwarven_plate",
+      "name": "Placa Anã",
+      "name_en": "Dwarven Plate",
+      "type": "armor",
+      "armor_type": "plate",
+      "rarity": "very_rare",
+      "requires_attunement": false,
+      "description_markdown": "Enquanto veste esta armadura, você ganha um **bônus de +2 para CA**. Além disso, se um efeito mover você contra sua vontade ao longo do chão, você pode usar sua **reação** para reduzir a distância que você é movido em até **3 metros**.",
+      "mechanical": {
+        "ac_bonus": 2,
+        "reduce_forced_movement": {
+          "action_type": "reaction",
+          "reduction_meters": 3
+        }
+      }
+    },
+    {
+      "id": "dwarven_thrower",
+      "name": "Arremessadora Anã",
+      "name_en": "Dwarven Thrower",
+      "type": "weapon",
+      "weapon_type": "warhammer",
+      "rarity": "very_rare",
+      "requires_attunement": "dwarf",
+      "description_markdown": "Você ganha um **bônus de +3** para jogadas de ataque e dano feitas com esta arma mágica. Ela tem a propriedade **arremesso** com um alcance normal de **6 metros** e um alcance longo de **18 metros**.\n\nQuando você atingir com um ataque à distância usando esta arma, ela causa **1d8 de dano extra** ou, se o alvo for um **gigante**, **2d8 de dano extra**. Imediatamente após o ataque, a arma **voa de volta** para sua mão.",
+      "mechanical": {
+        "attack_bonus": 3,
+        "damage_bonus": 3,
+        "thrown_range_normal": 6,
+        "thrown_range_long": 18,
+        "extra_damage_ranged": "1d8",
+        "extra_damage_vs_giants": "2d8",
+        "returns_to_hand": true,
+        "requires_dwarf": true
+      }
+    }
+  ]
+}

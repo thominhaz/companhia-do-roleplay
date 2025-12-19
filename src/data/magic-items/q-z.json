@@ -1,0 +1,678 @@
+[
+  {
+    "id": "restorative_ointment",
+    "name": "Ungüento Restaurador",
+    "name_en": "Restorative Ointment",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Este frasco de vidro, com 7,5 cm de diâmetro, contém 1d4 + 1 doses de uma mistura espessa que cheira levemente a babosa. O frasco e seu conteúdo pesam 0,23 kg.\n\nComo uma ação, uma dose do ungüento pode ser engolida ou aplicada na pele. A criatura que o recebe recupera 2d8 + 2 pontos de vida, deixa de estar envenenada e é curada de qualquer doença.",
+    "mechanical": {
+      "doses": "1d4+1",
+      "weight_kg": 0.23,
+      "hp_restored": "2d8+2",
+      "cures_poison": true,
+      "cures_disease": true
+    }
+  },
+  {
+    "id": "ring_of_animal_influence",
+    "name": "Anel de Influência Animal",
+    "name_en": "Ring of Animal Influence",
+    "type": "ring",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Este anel tem 3 cargas e recupera 1d3 cargas gastas diariamente ao amanhecer. Enquanto veste o anel, você pode usar uma ação para gastar 1 de suas cargas para conjurar uma das seguintes magias:\n\n• **Amizade animal** (CD de resistência 13)\n• **Medo** (CD de resistência 13), tendo como alvo apenas bestas que tenham Inteligência 3 ou menor\n• **Falar com animais**",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3",
+      "save_dc": 13
+    }
+  },
+  {
+    "id": "ring_of_djinni_summoning",
+    "name": "Anel de Conjuração de Djinni",
+    "name_en": "Ring of Djinni Summoning",
+    "type": "ring",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este anel, você pode falar sua palavra de comando como uma ação para convocar um djinni específico do Plano Elemental do Ar. O djinni aparece em um espaço desocupado à sua escolha a até 36 metros de você. Ele permanece enquanto você se concentrar (como se estivesse se concentrando em uma magia), até um máximo de 1 hora, ou até cair a 0 pontos de vida. Ele então retorna ao seu plano natal.\n\nEnquanto convocado, o djinni é amigável a você e seus companheiros. Ele obedece quaisquer comandos que você lhe dê, não importa que idioma você use. Se você não comandá-lo, o djinni se defende contra atacantes mas não toma outras ações.\n\nDepois que o djinni parte, ele não pode ser convocado novamente por 24 horas, e o anel se torna não mágico se o djinni morrer.",
+    "mechanical": {
+      "summon_range_m": 36,
+      "duration_hours": 1,
+      "cooldown_hours": 24
+    }
+  },
+  {
+    "id": "ring_of_elemental_command_air",
+    "name": "Anel de Comando Elemental (Ar)",
+    "name_en": "Ring of Elemental Command (Air)",
+    "type": "ring",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Este anel está ligado ao Plano Elemental do Ar. Enquanto veste este anel, você tem vantagem em jogadas de ataque contra elementais do ar, e eles têm desvantagem em jogadas de ataque contra você. Além disso, você tem acesso a propriedades baseadas no plano.\n\nO anel tem 5 cargas. Ele recupera 1d4 + 1 cargas gastas diariamente ao amanhecer. Magias conjuradas do anel têm CD de resistência 17.\n\nVocê pode gastar 2 das cargas do anel para conjurar **dominar monstro** em um elemental do ar. Além disso, quando você cai, desce 18 metros por rodada e não sofre dano de queda. Você também pode falar e entender Auran.\n\nSe você ajudar a matar um elemental do ar enquanto estiver sintonizado com o anel, ganha acesso às seguintes propriedades adicionais:\n\n• Você tem resistência a dano elétrico.\n• Você tem deslocamento de voo igual ao seu deslocamento de caminhada e pode pairar.\n• Você pode conjurar as seguintes magias do anel, gastando o número necessário de cargas: **relâmpago em cadeia** (3 cargas), **rajada de vento** (2 cargas) ou **muralha de vento** (1 carga).",
+    "mechanical": {
+      "max_charges": 5,
+      "recharge_daily": "1d4+1",
+      "spell_save_dc": 17,
+      "fall_rate_m": 18
+    }
+  },
+  {
+    "id": "ring_of_elemental_command_earth",
+    "name": "Anel de Comando Elemental (Terra)",
+    "name_en": "Ring of Elemental Command (Earth)",
+    "type": "ring",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Você pode gastar 2 das cargas do anel para conjurar **dominar monstro** em um elemental da terra. Além disso, você pode se mover em terreno difícil composto de entulho, pedras ou terra como se fosse terreno normal. Você também pode falar e entender Terran.\n\nSe você ajudar a matar um elemental da terra enquanto estiver sintonizado com o anel, ganha acesso às seguintes propriedades adicionais:\n\n• Você tem resistência a dano ácido.\n• Você pode se mover através de terra ou rocha sólidas como se essas áreas fossem terreno difícil. Se você terminar seu turno lá, é empurrado para o espaço desocupado mais próximo que ocupou por último.\n• Você pode conjurar as seguintes magias do anel, gastando o número necessário de cargas: **moldar pedra** (2 cargas), **pele de pedra** (3 cargas) ou **muralha de pedra** (3 cargas).",
+    "mechanical": {
+      "max_charges": 5,
+      "recharge_daily": "1d4+1",
+      "spell_save_dc": 17
+    }
+  },
+  {
+    "id": "ring_of_elemental_command_fire",
+    "name": "Anel de Comando Elemental (Fogo)",
+    "name_en": "Ring of Elemental Command (Fire)",
+    "type": "ring",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Você pode gastar 2 das cargas do anel para conjurar **dominar monstro** em um elemental do fogo. Além disso, você tem resistência a dano de fogo. Você também pode falar e entender Ignan.\n\nSe você ajudar a matar um elemental do fogo enquanto estiver sintonizado com o anel, ganha acesso às seguintes propriedades adicionais:\n\n• Você é imune a dano de fogo.\n• Você pode conjurar as seguintes magias do anel, gastando o número necessário de cargas: **mãos flamejantes** (1 carga), **bola de fogo** (2 cargas) e **muralha de fogo** (3 cargas).",
+    "mechanical": {
+      "max_charges": 5,
+      "recharge_daily": "1d4+1",
+      "spell_save_dc": 17
+    }
+  },
+  {
+    "id": "ring_of_elemental_command_water",
+    "name": "Anel de Comando Elemental (Água)",
+    "name_en": "Ring of Elemental Command (Water)",
+    "type": "ring",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Você pode gastar 2 das cargas do anel para conjurar **dominar monstro** em um elemental da água. Além disso, você pode ficar em pé e andar sobre superfícies líquidas como se fossem solo sólido. Você também pode falar e entender Aquan.\n\nSe você ajudar a matar um elemental da água enquanto estiver sintonizado com o anel, ganha acesso às seguintes propriedades adicionais:\n\n• Você pode respirar embaixo d'água e tem deslocamento de natação igual ao seu deslocamento de caminhada.\n• Você pode conjurar as seguintes magias do anel, gastando o número necessário de cargas: **criar ou destruir água** (1 carga), **controlar água** (3 cargas), **tempestade de gelo** (2 cargas) ou **muralha de gelo** (3 cargas).",
+    "mechanical": {
+      "max_charges": 5,
+      "recharge_daily": "1d4+1",
+      "spell_save_dc": 17
+    }
+  },
+  {
+    "id": "ring_of_evasion",
+    "name": "Anel de Evasão",
+    "name_en": "Ring of Evasion",
+    "type": "ring",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Este anel tem 3 cargas e recupera 1d3 cargas gastas diariamente ao amanhecer. Quando você falhar em um teste de resistência de Destreza enquanto o veste, pode usar sua reação para gastar 1 das cargas do anel e ter sucesso naquele teste de resistência.",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3"
+    }
+  },
+  {
+    "id": "ring_of_feather_falling",
+    "name": "Anel de Queda Suave",
+    "name_en": "Ring of Feather Falling",
+    "type": "ring",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Quando você cai enquanto veste este anel, desce 18 metros por rodada e não sofre dano de queda.",
+    "mechanical": {
+      "fall_rate_m": 18,
+      "no_fall_damage": true
+    }
+  },
+  {
+    "id": "ring_of_free_action",
+    "name": "Anel de Ação Livre",
+    "name_en": "Ring of Free Action",
+    "type": "ring",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este anel, terreno difícil não custa movimento extra para você. Além disso, magia não pode reduzir seu deslocamento nem fazer com que você fique paralisado ou contido.",
+    "mechanical": {
+      "ignore_difficult_terrain": true,
+      "magic_movement_immunity": true
+    }
+  },
+  {
+    "id": "ring_of_invisibility",
+    "name": "Anel de Invisibilidade",
+    "name_en": "Ring of Invisibility",
+    "type": "ring",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este anel, você pode ficar invisível como uma ação. Qualquer coisa que você esteja vestindo ou carregando fica invisível com você. Você permanece invisível até que o anel seja removido, até que você ataque ou conjure uma magia, ou até que use uma ação bônus para ficar visível novamente.",
+    "mechanical": {}
+  },
+  {
+    "id": "ring_of_jumping",
+    "name": "Anel de Salto",
+    "name_en": "Ring of Jumping",
+    "type": "ring",
+    "rarity": "uncommon",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este anel, você pode conjurar a magia **salto** dele como uma ação bônus à vontade, mas pode ter como alvo apenas você mesmo quando o fizer.",
+    "mechanical": {}
+  },
+  {
+    "id": "ring_of_mind_shielding",
+    "name": "Anel de Proteção Mental",
+    "name_en": "Ring of Mind Shielding",
+    "type": "ring",
+    "rarity": "uncommon",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este anel, você é imune a magia que permite que outras criaturas leiam seus pensamentos, determinem se você está mentindo, conheçam seu alinhamento ou conheçam seu tipo de criatura. Criaturas podem se comunicar telepaticamente com você apenas se você permitir.\n\nVocê pode usar uma ação para fazer com que o anel fique invisível até que use outra ação para torná-lo visível, até que remova o anel ou até que morra.\n\nSe você morrer enquanto veste o anel, sua alma entra nele, a menos que ele já abrigue uma alma. Você pode permanecer no anel ou partir para a vida após a morte. Enquanto sua alma estiver no anel, você pode se comunicar telepaticamente com qualquer criatura que o veste. Um portador não pode impedir esta comunicação telepática.",
+    "mechanical": {
+      "thought_immunity": true,
+      "soul_storage": true
+    }
+  },
+  {
+    "id": "ring_of_protection",
+    "name": "Anel de Proteção",
+    "name_en": "Ring of Protection",
+    "type": "ring",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Você ganha um bônus de +1 na CA e nos testes de resistência enquanto veste este anel.",
+    "mechanical": {
+      "ac_bonus": 1,
+      "saving_throw_bonus": 1
+    }
+  },
+  {
+    "id": "ring_of_regeneration",
+    "name": "Anel de Regeneração",
+    "name_en": "Ring of Regeneration",
+    "type": "ring",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este anel, você recupera 1d6 pontos de vida a cada 10 minutos, desde que tenha pelo menos 1 ponto de vida. Se você perder uma parte do corpo, o anel faz com que a parte perdida cresça novamente e retorne à plena funcionalidade após 1d6 + 1 dias, se você tiver pelo menos 1 ponto de vida durante todo o tempo.",
+    "mechanical": {
+      "hp_regen_per_10min": "1d6",
+      "regrowth_days": "1d6+1"
+    }
+  },
+  {
+    "id": "ring_of_resistance",
+    "name": "Anel de Resistência",
+    "name_en": "Ring of Resistance",
+    "type": "ring",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Você tem resistência a um tipo de dano enquanto veste este anel. A gema no anel indica o tipo, que o Mestre escolhe ou determina aleatoriamente.\n\n| d10 | Tipo de Dano | Gema |\n|-----|--------------|------|\n| 1 | Ácido | Pérola |\n| 2 | Frio | Turmalina |\n| 3 | Fogo | Granada |\n| 4 | Força | Safira |\n| 5 | Elétrico | Citrino |\n| 6 | Necrótico | Azeviche |\n| 7 | Veneno | Ametista |\n| 8 | Psíquico | Jade |\n| 9 | Radiante | Topázio |\n| 10 | Trovejante | Espinélio |",
+    "mechanical": {}
+  },
+  {
+    "id": "ring_of_shooting_stars",
+    "name": "Anel de Estrelas Cadentes",
+    "name_en": "Ring of Shooting Stars",
+    "type": "ring",
+    "rarity": "very_rare",
+    "requires_attunement": "outdoors at night",
+    "description_markdown": "Enquanto veste este anel em penumbra ou escuridão, você pode conjurar **luzes dançantes** e **luz** do anel à vontade. Conjurar qualquer magia do anel requer uma ação.\n\nO anel tem 6 cargas para as seguintes outras propriedades. O anel recupera 1d6 cargas gastas diariamente ao amanhecer.\n\n**Fogo das Fadas:** Você pode gastar 1 carga como uma ação para conjurar **fogo das fadas** do anel.\n\n**Relâmpago Esférico:** Você pode gastar 2 cargas como uma ação para criar uma a quatro esferas de relâmpago de 0,9 metro de diâmetro. Quanto mais esferas você criar, menos poderosa cada esfera é individualmente.\n\nCada esfera aparece em um espaço desocupado que você possa ver a até 36 metros de você. As esferas duram enquanto você se concentrar (como se estivesse se concentrando em uma magia), até 1 minuto. Cada esfera emite penumbra em um raio de 9 metros.\n\nComo uma ação bônus, você pode mover cada esfera até 9 metros, mas não mais que 36 metros de você. Quando uma criatura que não seja você chega a até 1,5 metro de uma esfera, a esfera descarrega relâmpago naquela criatura e desaparece. Aquela criatura deve fazer um teste de resistência de Destreza CD 15. Em uma falha, a criatura sofre dano elétrico baseado no número de esferas que você criou.\n\n| Esferas | Dano Elétrico |\n|---------|---------------|\n| 4 | 2d4 |\n| 3 | 2d6 |\n| 2 | 5d4 |\n| 1 | 4d12 |\n\n**Estrelas Cadentes:** Você pode gastar 1 a 3 cargas como uma ação. Para cada carga que você gastar, lança um ponto de luz brilhante do anel a um ponto que você possa ver a até 18 metros de você. Cada criatura dentro de um cubo de 4,5 metros originado daquele ponto é coberta de faíscas e deve fazer um teste de resistência de Destreza CD 15, sofrendo 5d4 de dano de fogo em uma falha, ou metade do dano em um sucesso.",
+    "mechanical": {
+      "max_charges": 6,
+      "recharge_daily": "1d6",
+      "save_dc": 15
+    }
+  },
+  {
+    "id": "ring_of_spell_storing",
+    "name": "Anel de Armazenamento de Magias",
+    "name_en": "Ring of Spell Storing",
+    "type": "ring",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Este anel armazena magias conjuradas nele, mantendo-as até que o portador sintonizado as use. O anel pode armazenar até 5 níveis de magias por vez. Quando encontrado, contém 1d6 − 1 níveis de magias armazenadas escolhidas pelo Mestre.\n\nQualquer criatura pode conjurar uma magia de 1º a 5º nível no anel tocando o anel enquanto a magia é conjurada. A magia não tem efeito, exceto ser armazenada no anel. Se o anel não puder armazenar a magia, a magia é gasta sem efeito. O nível do espaço usado para conjurar a magia determina quanto espaço ela usa.\n\nEnquanto veste este anel, você pode conjurar qualquer magia armazenada nele. A magia usa o nível do espaço, CD de resistência da magia, bônus de ataque de magia e habilidade de conjuração do conjurador original, mas é tratada como se você tivesse conjurado a magia. A magia conjurada do anel não está mais armazenada nele, liberando espaço.",
+    "mechanical": {
+      "spell_levels_stored": 5,
+      "initial_spells": "1d6-1",
+      "max_spell_level": 5
+    }
+  },
+  {
+    "id": "ring_of_spell_turning",
+    "name": "Anel de Reversão de Magias",
+    "name_en": "Ring of Spell Turning",
+    "type": "ring",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este anel, você tem vantagem em testes de resistência contra qualquer magia que tenha como alvo apenas você (não em uma área de efeito). Além disso, se você rolar um 20 natural no teste de resistência e a magia for de 7º nível ou inferior, a magia não tem efeito sobre você e, em vez disso, tem como alvo o conjurador, usando o nível do espaço, CD de resistência da magia, bônus de ataque e habilidade de conjuração do conjurador.",
+    "mechanical": {
+      "max_spell_level_turn": 7
+    }
+  },
+  {
+    "id": "ring_of_swimming",
+    "name": "Anel de Natação",
+    "name_en": "Ring of Swimming",
+    "type": "ring",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Você tem deslocamento de natação de 12 metros enquanto veste este anel.",
+    "mechanical": {
+      "swim_speed_m": 12
+    }
+  },
+  {
+    "id": "ring_of_telekinesis",
+    "name": "Anel de Telecinese",
+    "name_en": "Ring of Telekinesis",
+    "type": "ring",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este anel, você pode conjurar a magia **telecinese** à vontade, mas pode ter como alvo apenas objetos que não estejam sendo vestidos ou carregados.",
+    "mechanical": {}
+  },
+  {
+    "id": "ring_of_the_ram",
+    "name": "Anel do Aríete",
+    "name_en": "Ring of the Ram",
+    "type": "ring",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Este anel tem 3 cargas e recupera 1d3 cargas gastas diariamente ao amanhecer. Enquanto veste o anel, você pode usar uma ação para gastar 1 a 3 de suas cargas para atacar uma criatura que você possa ver a até 18 metros de você. O anel produz uma cabeça de aríete espectral e faz sua jogada de ataque com bônus de +7. Em um acerto, para cada carga que você gastar, o alvo sofre 2d10 de dano de força e é empurrado 1,5 metro para longe de você.\n\nAlternativamente, você pode gastar 1 a 3 das cargas do anel como uma ação para tentar quebrar um objeto que você possa ver a até 18 metros de você que não esteja sendo vestido ou carregado. O anel faz um teste de Força com bônus de +5 para cada carga que você gastar.",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3",
+      "attack_bonus": 7,
+      "damage_per_charge": "2d10",
+      "push_per_charge_m": 1.5,
+      "strength_bonus": 5,
+      "range_m": 18
+    }
+  },
+  {
+    "id": "ring_of_three_wishes",
+    "name": "Anel de Três Desejos",
+    "name_en": "Ring of Three Wishes",
+    "type": "ring",
+    "rarity": "legendary",
+    "requires_attunement": false,
+    "description_markdown": "Enquanto veste este anel, você pode usar uma ação para gastar 1 de suas 3 cargas para conjurar a magia **desejo** dele. O anel se torna não mágico quando você usa a última carga.",
+    "mechanical": {
+      "wishes": 3
+    }
+  },
+  {
+    "id": "ring_of_warmth",
+    "name": "Anel de Aquecimento",
+    "name_en": "Ring of Warmth",
+    "type": "ring",
+    "rarity": "uncommon",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este anel, você tem resistência a dano de frio. Além disso, você e tudo que você veste e carrega não são prejudicados por temperaturas tão baixas quanto -46°C.",
+    "mechanical": {
+      "cold_resistance": true,
+      "temperature_protection_celsius": -46
+    }
+  },
+  {
+    "id": "ring_of_water_walking",
+    "name": "Anel de Caminhar sobre a Água",
+    "name_en": "Ring of Water Walking",
+    "type": "ring",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Enquanto veste este anel, você pode ficar em pé e se mover sobre qualquer superfície líquida como se fosse solo sólido.",
+    "mechanical": {}
+  },
+  {
+    "id": "ring_of_x_ray_vision",
+    "name": "Anel de Visão de Raio-X",
+    "name_en": "Ring of X-ray Vision",
+    "type": "ring",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este anel, você pode usar uma ação para falar sua palavra de comando. Quando fizer isso, você pode ver dentro e através de matéria sólida por 1 minuto. Esta visão tem um raio de 9 metros. Para você, objetos sólidos dentro daquele raio parecem transparentes e não impedem a passagem de luz. A visão pode penetrar 30 cm de pedra, 2,5 cm de metal comum ou até 90 cm de madeira ou terra. Substâncias mais espessas bloqueiam a visão, assim como uma fina camada de chumbo.\n\nSempre que você usar o anel novamente antes de fazer um descanso longo, deve ter sucesso em um teste de resistência de Constituição CD 15 ou ganhar um nível de exaustão.",
+    "mechanical": {
+      "vision_radius_m": 9,
+      "duration_minutes": 1,
+      "penetration_stone_cm": 30,
+      "penetration_metal_cm": 2.5,
+      "penetration_wood_cm": 90,
+      "exhaustion_dc": 15
+    }
+  },
+  {
+    "id": "robe_of_eyes",
+    "name": "Manto de Olhos",
+    "name_en": "Robe of Eyes",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Este manto é adornado com padrões semelhantes a olhos. Enquanto veste o manto, você ganha os seguintes benefícios:\n\n• O manto permite que você veja em todas as direções, e você tem vantagem em testes de Sabedoria (Percepção) que dependem de visão.\n• Você tem visão no escuro até um alcance de 36 metros.\n• Você pode ver criaturas e objetos invisíveis, bem como ver no Plano Etéreo, até um alcance de 36 metros.\n\nOs olhos no manto não podem ser fechados ou desviados. Embora você possa fechar ou desviar seus próprios olhos, você nunca é considerado como estando fazendo isso enquanto veste este manto.\n\nUma magia **luz** conjurada no manto ou uma magia **luz do dia** conjurada a até 1,5 metro do manto faz com que você fique cego por 1 minuto. No final de cada um de seus turnos, você pode fazer um teste de resistência de Constituição (CD 11 para luz ou CD 15 para luz do dia), encerrando a cegueira em um sucesso.",
+    "mechanical": {
+      "darkvision_m": 36,
+      "see_invisible_m": 36,
+      "see_ethereal_m": 36,
+      "light_blind_dc": 11,
+      "daylight_blind_dc": 15
+    }
+  },
+  {
+    "id": "robe_of_scintillating_colors",
+    "name": "Manto de Cores Cintilantes",
+    "name_en": "Robe of Scintillating Colors",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Este manto tem 3 cargas e recupera 1d3 cargas gastas diariamente ao amanhecer. Enquanto o veste, você pode usar uma ação e gastar 1 carga para fazer com que a veste exiba um padrão cambiante de tons deslumbrantes até o final do seu próximo turno. Durante este tempo, o manto emite luz plena em um raio de 9 metros e penumbra por 9 metros adicionais. Criaturas que possam vê-lo têm desvantagem em jogadas de ataque contra você. Além disso, qualquer criatura na luz plena que possa vê-lo quando o poder do manto for ativado deve ter sucesso em um teste de resistência de Sabedoria CD 15 ou ficar atordoada até que o efeito termine.",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3",
+      "bright_light_m": 9,
+      "dim_light_m": 9,
+      "save_dc": 15
+    }
+  },
+  {
+    "id": "robe_of_stars",
+    "name": "Manto de Estrelas",
+    "name_en": "Robe of Stars",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Este manto preto ou azul-escuro é bordado com pequenas estrelas brancas ou prateadas. Você ganha um bônus de +1 nos testes de resistência enquanto o veste.\n\nSeis estrelas, localizadas na parte superior frontal do manto, são particularmente grandes. Enquanto veste este manto, você pode usar uma ação para arrancar uma das estrelas e usá-la para conjurar **mísseis mágicos** como uma magia de 5º nível. Diariamente ao anoitecer, 1d6 estrelas removidas reaparecem no manto.\n\nEnquanto veste o manto, você pode usar uma ação para entrar no Plano Astral junto com tudo que está vestindo e carregando. Você permanece lá até que use uma ação para retornar ao plano em que estava. Você reaparece no último espaço que ocupou ou, se aquele espaço estiver ocupado, no espaço desocupado mais próximo.",
+    "mechanical": {
+      "saving_throw_bonus": 1,
+      "stars": 6,
+      "stars_regain": "1d6"
+    }
+  },
+  {
+    "id": "robe_of_the_archmagi",
+    "name": "Manto do Arquimago",
+    "name_en": "Robe of the Archmagi",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": "sorcerer, warlock, or wizard",
+    "description_markdown": "Esta veste elegante é feita de tecido requisitoado branco, cinza ou preto e adornada com runas prateadas. A cor do manto corresponde ao alinhamento para o qual o item foi criado. Um manto branco foi feito para o bem, cinza para neutro e preto para o mal. Você não pode se sintonizar com um manto do arquimago que não corresponda ao seu alinhamento.\n\nVocê ganha estes benefícios enquanto veste o manto:\n\n• Se você não estiver vestindo armadura, sua Classe de Armadura base é 15 + seu modificador de Destreza.\n• Você tem vantagem em testes de resistência contra magias e outros efeitos mágicos.\n• Sua CD de resistência de magia e bônus de ataque de magia aumentam em 2.",
+    "mechanical": {
+      "base_ac": "15+DEX",
+      "advantage_vs_spells": true,
+      "spell_dc_bonus": 2,
+      "spell_attack_bonus": 2
+    }
+  },
+  {
+    "id": "robe_of_useful_items",
+    "name": "Manto de Itens Úteis",
+    "name_en": "Robe of Useful Items",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Este manto tem remendos de tecido de várias formas e cores cobrindo-o. Enquanto veste o manto, você pode usar uma ação para destacar um dos remendos, fazendo com que ele se torne o objeto ou criatura que representa. Uma vez que o último remendo seja removido, o manto se torna uma veste comum.\n\nO manto tem dois de cada um dos seguintes remendos:\n\n• Adaga\n• Lanterna de feixo (cheia e acesa)\n• Espelho de aço\n• Vara de 3 metros\n• Corda de cânhamo (15 metros, enrolada)\n• Saco\n\nAlém disso, o manto tem 4d4 outros remendos. O Mestre escolhe os remendos ou os determina aleatoriamente.",
+    "mechanical": {
+      "random_patches": "4d4"
+    }
+  },
+  {
+    "id": "rod_of_absorption",
+    "name": "Bastão de Absorção",
+    "name_en": "Rod of Absorption",
+    "type": "rod",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto segura este bastão, você pode usar sua reação para absorver uma magia que esteja tendo como alvo apenas você e não com uma área de efeito. O efeito da magia absorvida é cancelado, e a energia da magia — não a magia em si — é armazenada no bastão. A energia tem o mesmo nível que a magia quando foi conjurada. O bastão pode absorver e armazenar até 50 níveis de energia ao longo de sua existência. Uma vez que o bastão absorva 50 níveis de energia, ele não pode absorver mais. Se você for alvo de uma magia que o bastão não possa armazenar, o bastão não tem efeito sobre aquela magia.\n\nQuando você se sintonizar com o bastão, saberá quantos níveis de energia o bastão absorveu ao longo de sua existência e quantos níveis de energia de magia ele tem atualmente armazenados.\n\nSe você for um conjurador segurando o bastão, pode converter energia armazenada nele em espaços de magia para conjurar magias que tenha preparado ou conheça. Você pode criar espaços de magia apenas de um nível igual ou inferior aos seus próprios espaços de magia, até um máximo de 5º nível. Você usa os níveis armazenados no lugar de seus espaços, mas conjura a magia normalmente. Por exemplo, você pode usar 3 níveis armazenados no bastão como um espaço de magia de 3º nível.\n\nUm bastão recém-encontrado tem 1d10 níveis de energia de magia já armazenados nele. Um bastão que não pode mais absorver energia de magia e não tem energia restante se torna não mágico.",
+    "mechanical": {
+      "max_spell_levels": 50,
+      "initial_levels": "1d10",
+      "max_spell_slot_level": 5
+    }
+  },
+  {
+    "id": "rod_of_alertness",
+    "name": "Bastão de Alerta",
+    "name_en": "Rod of Alertness",
+    "type": "rod",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Este bastão tem uma cabeça flangeada e as seguintes propriedades:\n\n**Alerta:** Enquanto segura o bastão, você tem vantagem em testes de Sabedoria (Percepção) e em jogadas de iniciativa.\n\n**Magias:** Enquanto segura o bastão, você pode usar uma ação para conjurar uma das seguintes magias dele: **detectar o bem e o mal**, **detectar magia**, **detectar veneno e doença** ou **ver o invisível**.\n\n**Aura Protetora:** Como uma ação, você pode fincar a ponta do bastão no chão, após o que a cabeça do bastão emite luz plena em um raio de 18 metros e penumbra por 18 metros adicionais. Enquanto estiver naquela luz plena, você e qualquer criatura amigável a você ganham um bônus de +1 na CA e nos testes de resistência e podem sentir a localização de qualquer criatura hostil invisível que também esteja na luz plena.\n\nA cabeça do bastão para de brilhar e o efeito termina após 10 minutos, ou quando uma criatura usa uma ação para arrancar o bastão do chão. Esta propriedade não pode ser usada novamente até o próximo amanhecer.",
+    "mechanical": {
+      "aura_bright_light_m": 18,
+      "aura_dim_light_m": 18,
+      "aura_bonus": 1,
+      "aura_duration_minutes": 10
+    }
+  },
+  {
+    "id": "rod_of_lordly_might",
+    "name": "Bastão do Poder Senhorial",
+    "name_en": "Rod of Lordly Might",
+    "type": "rod",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Este bastão tem uma cabeça flangeada e funciona como uma maça mágica que concede um bônus de +3 nas jogadas de ataque e dano feitas com ele. O bastão tem propriedades associadas a seis botões diferentes que são dispostos em fileira ao longo da haste. Ele tem três outras propriedades também, detalhadas abaixo.\n\n**Seis Botões:** Você pode pressionar um dos seis botões do bastão como uma ação bônus. O efeito de um botão dura até que você pressione um botão diferente ou até que pressione o mesmo botão novamente, o que faz com que o bastão volte à sua forma normal.\n\nSe você pressionar o botão 1, o bastão se torna uma **língua flamejante**, conforme uma lâmina flamejante brota da extremidade oposta à cabeça flangeada do bastão.\n\nSe você pressionar o botão 2, a cabeça flangeada do bastão se dobra para baixo e duas lâminas em forma de crescente saltam para fora, transformando o bastão em um machado de batalha mágico que concede um bônus de +3 nas jogadas de ataque e dano feitas com ele.\n\nSe você pressionar o botão 3, a cabeça flangeada do bastão se dobra para baixo, uma ponta de lança brota da ponta do bastão e a haste do bastão se alonga em uma hasta de 1,8 metro, transformando o bastão em uma lança mágica que concede um bônus de +3 nas jogadas de ataque e dano feitas com ela.\n\nSe você pressionar o botão 4, o bastão se transforma em uma vara de escalada de até 15 metros de comprimento, conforme você especificar. Em superfícies tão duras quanto granito, um pino na base e três ganchos no topo ancoram a vara. Barras horizontais de 7,5 cm de comprimento se dobram dos lados, a 30 cm de distância, formando uma escada. A vara pode suportar até 1.814 kg. Mais peso ou falta de ancoragem sólida faz com que o bastão volte à sua forma normal.\n\nSe você pressionar o botão 5, o bastão se transforma em um aríete portátil e concede ao seu usuário um bônus de +10 em testes de Força feitos para arrombar portas, barricadas e outras barreiras.\n\nSe você pressionar o botão 6, o bastão assume ou permanece em sua forma normal e indica o norte magnético. (Nada acontece se esta função do bastão for usada em um local que não tenha norte magnético.) O bastão também lhe dá conhecimento de sua profundidade aproximada abaixo do solo ou sua altura acima dele.\n\n**Drenar Vida:** Quando você acerta uma criatura com um ataque corpo a corpo usando o bastão, pode forçar o alvo a fazer um teste de resistência de Constituição CD 17. Em uma falha, o alvo sofre 4d6 de dano necrótico extra, e você recupera um número de pontos de vida igual à metade daquele dano necrótico. Esta propriedade não pode ser usada novamente até o próximo amanhecer.\n\n**Paralisar:** Quando você acerta uma criatura com um ataque corpo a corpo usando o bastão, pode forçar o alvo a fazer um teste de resistência de Força CD 17. Em uma falha, o alvo fica paralisado por 1 minuto. O alvo pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito em si em um sucesso. Esta propriedade não pode ser usada novamente até o próximo amanhecer.\n\n**Aterrorizar:** Enquanto segura o bastão, você pode usar uma ação para forçar cada criatura que você possa ver a até 9 metros de você a fazer um teste de resistência de Sabedoria CD 17. Em uma falha, um alvo fica amedrontado de você por 1 minuto. Um alvo amedrontado pode repetir o teste de resistência no final de cada um de seus turnos, encerrando o efeito em si em um sucesso. Esta propriedade não pode ser usada novamente até o próximo amanhecer.",
+    "mechanical": {
+      "attack_bonus": 3,
+      "damage_bonus": 3,
+      "drain_damage": "4d6",
+      "save_dc": 17,
+      "max_weight_kg": 1814,
+      "climbing_pole_max_m": 15
+    }
+  },
+  {
+    "id": "rod_of_rulership",
+    "name": "Bastão de Soberania",
+    "name_en": "Rod of Rulership",
+    "type": "rod",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Você pode usar uma ação para apresentar o bastão e comandar obediência de cada criatura à sua escolha que você possa ver a até 36 metros de você. Cada alvo deve ter sucesso em um teste de resistência de Sabedoria CD 15 ou ficar encantado por você por 8 horas. Enquanto encantado dessa forma, a criatura o considera como seu líder de confiança. Se prejudicado por você ou seus companheiros, ou comandado a fazer algo contrário à sua natureza, um alvo deixa de estar encantado dessa forma. O bastão não pode ser usado novamente até o próximo amanhecer.",
+    "mechanical": {
+      "range_m": 36,
+      "save_dc": 15,
+      "duration_hours": 8
+    }
+  },
+  {
+    "id": "rod_of_security",
+    "name": "Bastão de Segurança",
+    "name_en": "Rod of Security",
+    "type": "rod",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Enquanto segura este bastão, você pode usar uma ação para ativá-lo. O bastão então instantaneamente transporta você e até 199 outras criaturas voluntárias que você possa ver para um paraíso que existe em um espaço extraplanar. Você escolhe a forma que o paraíso assume. Pode ser um jardim tranquilo, clareira adorável, taverna alegre, palácio imenso, ilha tropical, carnaval fantástico ou qualquer outra coisa que você possa imaginar. Independentemente de sua natureza, o paraíso contém água e comida suficientes para sustentar seus visitantes. Tudo o mais que possa ser interagido dentro do espaço extraplanar só pode existir lá. Por exemplo, uma flor colhida de um jardim no paraíso desaparece se for levada para fora do espaço extraplanar.\n\nPara cada hora passada no paraíso, um visitante recupera pontos de vida como se tivesse gasto 1 Dado de Vida. Além disso, criaturas não envelhecem enquanto estão no paraíso, embora o tempo passe normalmente. Visitantes podem permanecer no paraíso por até 200 dias divididos pelo número de criaturas presentes (arredonde para baixo).\n\nQuando o tempo acabar ou você usar uma ação para encerrá-lo, todos os visitantes reaparecem no local que ocupavam quando você ativou o bastão, ou em um espaço desocupado mais próximo daquele local. O bastão não pode ser usado novamente até que dez dias tenham se passado.",
+    "mechanical": {
+      "max_creatures": 200,
+      "max_days_formula": "200/creatures",
+      "cooldown_days": 10
+    }
+  },
+  {
+    "id": "rope_of_climbing",
+    "name": "Corda de Escalada",
+    "name_en": "Rope of Climbing",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Este comprimento de 18 metros de corda de seda pesa 1,4 kg e pode suportar até 1.361 kg. Se você segurar uma ponta da corda e usar uma ação para falar a palavra de comando, a corda se anima. Como uma ação bônus, você pode comandar a outra ponta a se mover em direção a um destino que você escolher. Aquela ponta se move 3 metros no seu turno quando você a comanda pela primeira vez e 3 metros em cada um de seus turnos até alcançar seu destino, até seu comprimento máximo de distância, ou até que você diga para ela parar. Você também pode dizer à corda para se prender com segurança a um objeto ou para se soltar, para se atar ou desatar, ou para se enrolar para transporte.\n\nSe você disser à corda para se atar, grandes nós aparecem em intervalos de 30 cm ao longo da corda. Enquanto atada, a corda encurta para um comprimento de 15 metros e concede vantagem em testes feitos para escalá-la.\n\nA corda tem CA 20 e 20 pontos de vida. Ela recupera 1 ponto de vida a cada 5 minutos, desde que tenha pelo menos 1 ponto de vida. Se a corda cair a 0 pontos de vida, ela é destruída.",
+    "mechanical": {
+      "length_m": 18,
+      "weight_kg": 1.4,
+      "max_weight_kg": 1361,
+      "move_speed_m": 3,
+      "knotted_length_m": 15,
+      "ac": 20,
+      "hp": 20,
+      "regen_per_5min": 1
+    }
+  },
+  {
+    "id": "rope_of_entanglement",
+    "name": "Corda de Emaranhamento",
+    "name_en": "Rope of Entanglement",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Esta corda tem 9 metros de comprimento e pesa 1,4 kg. Se você segurar uma ponta da corda e usar uma ação para falar sua palavra de comando, a outra ponta dispara para a frente para emaranhar uma criatura que você possa ver a até 6 metros de você. O alvo deve ter sucesso em um teste de resistência de Destreza CD 15 ou ficar contido.\n\nVocê pode libertar a criatura usando uma ação bônus para falar uma segunda palavra de comando. Um alvo contido pela corda pode usar uma ação para fazer um teste de Força ou Destreza CD 15 (à escolha do alvo). Em um sucesso, a criatura não está mais contida pela corda.\n\nA corda tem CA 20 e 20 pontos de vida. Ela recupera 1 ponto de vida a cada 5 minutos, desde que tenha pelo menos 1 ponto de vida. Se a corda cair a 0 pontos de vida, ela é destruída.",
+    "mechanical": {
+      "length_m": 9,
+      "weight_kg": 1.4,
+      "range_m": 6,
+      "save_dc": 15,
+      "escape_dc": 15,
+      "ac": 20,
+      "hp": 20,
+      "regen_per_5min": 1
+    }
+  },
+  {
+    "id": "scarab_of_protection",
+    "name": "Escaravelho de Proteção",
+    "name_en": "Scarab of Protection",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Se você segurar este medalhão em forma de besouro em sua mão por 1 rodada, uma inscrição aparece em sua superfície revelando sua natureza mágica. Ele fornece dois benefícios enquanto estiver com você:\n\n• Você tem vantagem em testes de resistência contra magias.\n• O escaravelho tem 12 cargas. Se você falhar em um teste de resistência contra uma magia de necromancia ou um efeito prejudicial originado de uma criatura morta-viva, pode usar sua reação para gastar 1 carga e transformar a falha em um sucesso. O escaravelho se desfaz em pó e é destruído quando sua última carga é gasta.",
+    "mechanical": {
+      "max_charges": 12,
+      "advantage_vs_spells": true
+    }
+  },
+  {
+    "id": "scimitar_of_speed",
+    "name": "Cimitarra de Velocidade",
+    "name_en": "Scimitar of Speed",
+    "type": "weapon",
+    "weapon_type": "scimitar",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Você ganha um bônus de +2 nas jogadas de ataque e dano feitas com esta arma mágica. Além disso, você pode fazer um ataque com ela como uma ação bônus em cada um de seus turnos.",
+    "mechanical": {
+      "attack_bonus": 2,
+      "damage_bonus": 2,
+      "bonus_action_attack": true
+    }
+  },
+  {
+    "id": "shield_plus_1",
+    "name": "Escudo +1",
+    "name_en": "Shield, +1",
+    "type": "armor",
+    "armor_type": "shield",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Enquanto segura este escudo, você tem um bônus de +1 na CA. Este bônus é adicional ao bônus normal do escudo na CA.",
+    "mechanical": {
+      "ac_bonus": 1
+    }
+  },
+  {
+    "id": "shield_plus_2",
+    "name": "Escudo +2",
+    "name_en": "Shield, +2",
+    "type": "armor",
+    "armor_type": "shield",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Enquanto segura este escudo, você tem um bônus de +2 na CA. Este bônus é adicional ao bônus normal do escudo na CA.",
+    "mechanical": {
+      "ac_bonus": 2
+    }
+  },
+  {
+    "id": "shield_plus_3",
+    "name": "Escudo +3",
+    "name_en": "Shield, +3",
+    "type": "armor",
+    "armor_type": "shield",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Enquanto segura este escudo, você tem um bônus de +3 na CA. Este bônus é adicional ao bônus normal do escudo na CA.",
+    "mechanical": {
+      "ac_bonus": 3
+    }
+  },
+  {
+    "id": "shield_of_missile_attraction",
+    "name": "Escudo de Atração de Projéteis",
+    "name_en": "Shield of Missile Attraction",
+    "type": "armor",
+    "armor_type": "shield",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "cursed": true,
+    "description_markdown": "Enquanto segura este escudo, você tem resistência a dano de ataques com armas à distância.\n\n**Maldição:** Este escudo é amaldiçoado. Sintonizar-se com ele o amaldiçoa até que você seja alvo da magia **remover maldição** ou magia similar. Remover o escudo não encerra a maldição sobre você. Sempre que um ataque com arma à distância for feito contra um alvo a até 3 metros de você, a maldição faz com que você se torne o alvo.",
+    "mechanical": {
+      "ranged_resistance": true,
+      "curse_range_m": 3
+    }
+  },
+  {
+    "id": "slippers_of_spider_climbing",
+    "name": "Pantufas de Escalada de Aranha",
+    "name_en": "Slippers of Spider Climbing",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste estes sapatos leves, você pode se mover para cima, para baixo e através de superfícies verticais e de cabeça para baixo ao longo de tetos, enquanto deixa suas mãos livres. Você tem deslocamento de escalada igual ao seu deslocamento de caminhada. No entanto, as pantufas não permitem que você se mova dessa forma em uma superfície escorregadia, como uma coberta de gelo ou óleo.",
+    "mechanical": {
+      "climb_speed_equals_walk": true
+    }
+  },
+  {
+    "id": "sovereign_glue",
+    "name": "Cola Soberana",
+    "name_en": "Sovereign Glue",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": false,
+    "description_markdown": "Esta substância viscosa e branco-leitosa pode formar uma ligação adesiva permanente entre quaisquer dois objetos. Deve ser armazenada em um frasco ou frasco que tenha sido revestido internamente com **óleo de escorregamento**. Quando encontrado, um recipiente contém 1d6 + 1 onças (28-56 gramas).\n\nUma onça da cola pode cobrir uma superfície de 30 cm quadrados. A cola leva 1 minuto para fixar. Uma vez fixada, a ligação que ela cria só pode ser quebrada pela aplicação de **solvente universal** ou **óleo de etereidade**, ou com uma magia **desejo**.",
+    "mechanical": {
+      "ounces": "1d6+1",
+      "coverage_per_ounce_sqcm": 929,
+      "set_time_minutes": 1
+    }
+  },
+  {
+    "id": "spell_scroll",
+    "name": "Pergaminho de Magia",
+    "name_en": "Spell Scroll",
+    "type": "scroll",
+    "rarity": "varies",
+    "requires_attunement": false,
+    "description_markdown": "Um pergaminho de magia traz as palavras de uma única magia, escrita em uma cifra mística. Se a magia estiver na lista de magias da sua classe, você pode ler o pergaminho e conjurar sua magia sem fornecer componentes materiais. Caso contrário, o pergaminho é ininteligível. Conjurar a magia lendo o pergaminho requer o tempo de conjuração normal da magia. Uma vez que a magia seja conjurada, as palavras no pergaminho desaparecem e ele se desfaz em pó. Se a conjuração for interrompida, o pergaminho não é perdido.\n\nSe a magia estiver na lista de magias da sua classe mas de um nível superior ao que você normalmente pode conjurar, você deve fazer um teste de habilidade usando sua habilidade de conjuração para determinar se a conjura com sucesso. A CD é igual a 10 + o nível da magia. Em um teste falhado, a magia desaparece do pergaminho sem outro efeito.\n\nO nível da magia no pergaminho determina a CD de resistência da magia e o bônus de ataque, bem como a raridade do pergaminho, conforme mostrado na tabela de Pergaminho de Magia.\n\nUma magia de mago em um pergaminho de magia pode ser copiada da mesma forma que magias em grimórios podem ser copiadas. Quando uma magia é copiada de um pergaminho de magia, o copiador deve ter sucesso em um teste de Inteligência (Arcanismo) com CD igual a 10 + o nível da magia. Se o teste tiver sucesso, a magia é copiada com sucesso. Independentemente de o teste ter sucesso ou falhar, o pergaminho de magia é destruído.",
+    "mechanical": {}
+  },
+  {
+    "id": "spellguard_shield",
+    "name": "Escudo Guardião de Magias",
+    "name_en": "Spellguard Shield",
+    "type": "armor",
+    "armor_type": "shield",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto segura este escudo, você tem vantagem em testes de resistência contra magias e outros efeitos mágicos, e ataques de magia têm desvantagem contra você.",
+    "mechanical": {
+      "advantage_vs_spells": true,
+      "spell_attack_disadvantage": true
+    }
+  },
+  {
+    "id": "sphere_of_annihilation",
+    "name": "Esfera de Aniquilação",
+    "name_en": "Sphere of Annihilation",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": false,
+    "description_markdown": "Esta esfera negra de 60 cm de diâmetro é um buraco no multiverso, pairando no espaço e estabilizada por um campo mágico ao seu redor.\n\nA esfera aniquila toda matéria pela qual passa e toda matéria que passa por ela. Artefatos são a exceção. A menos que um artefato seja suscetível a dano de uma esfera de aniquilação, ele passa pela esfera ileso. Qualquer outra coisa que toque a esfera mas não seja totalmente engolfada e aniquilada por ela sofre 4d10 de dano de força.\n\nA esfera é estacionária até que alguém a controle. Se você estiver a até 18 metros de uma esfera não controlada, pode usar uma ação para fazer um teste de Inteligência (Arcanismo) CD 25. Em um sucesso, a esfera levita em uma direção à sua escolha, até um número de metros igual a 5 × seu modificador de Inteligência (mínimo 1,5 metro). Em uma falha, a esfera se move 3 metros em sua direção. Uma criatura cujo espaço a esfera entra deve ter sucesso em um teste de resistência de Destreza CD 13 ou ser tocada por ela, sofrendo 4d10 de dano de força.\n\nSe você tentar controlar uma esfera que está sob o controle de outra criatura, você faz um teste de Inteligência (Arcanismo) contestado pelo teste de Inteligência (Arcanismo) da outra criatura. O vencedor da disputa ganha controle da esfera e pode levitá-la normalmente.\n\nSe a esfera entrar em contato com um portal planar, como aquele criado pela magia **portal**, ou um espaço extradimensional, como aquele dentro de um **buraco portátil**, o Mestre determina aleatoriamente o que acontece, usando a seguinte tabela:\n\n| d100 | Resultado |\n|------|----------|\n| 01-50 | A esfera é destruída. |\n| 51-85 | A esfera se move através do portal ou para dentro do espaço extradimensional. |\n| 86-00 | Uma fenda espacial envia cada criatura e objeto a até 54 metros da esfera, incluindo a esfera, para um plano de existência aleatório. |",
+    "mechanical": {
+      "diameter_cm": 60,
+      "damage": "4d10",
+      "control_dc": 25,
+      "control_range_m": 18,
+      "move_failure_m": 3,
+      "save_dc": 13,
+      "rift_range_m": 54
+    }
+  }
+]

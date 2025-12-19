@@ -1,0 +1,333 @@
+[
+  {
+    "id": "immovable_rod",
+    "name": "Bastão Imóvel",
+    "name_en": "Immovable Rod",
+    "type": "rod",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Este bastão de ferro achatado tem um botão em uma das extremidades. Você pode usar uma ação para pressionar o botão, o que faz com que o bastão fique magicamente fixado no lugar. Até que você ou outra criatura use uma ação para pressionar o botão novamente, o bastão não se move, mesmo que esteja desafiando a gravidade.\n\nO bastão pode suportar até **3.629 kg** de peso. Mais peso faz com que o bastão se desative e caia. Uma criatura pode usar uma ação para fazer um teste de Força CD 30, movendo o bastão fixo até 3 metros em um sucesso.",
+    "mechanical": {
+      "max_weight_kg": 3629,
+      "strength_check_dc": 30,
+      "move_distance_m": 3
+    }
+  },
+  {
+    "id": "instant_fortress",
+    "name": "Fortaleza Instantânea",
+    "name_en": "Instant Fortress",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Você pode usar uma ação para colocar este cubo de metal de 2,5 cm no chão e falar sua palavra de comando. O cubo cresce rapidamente em uma fortaleza que permanece até que você use uma ação para falar a palavra de comando que a dispensa, o que funciona apenas se a fortaleza estiver vazia.\n\nA fortaleza é uma torre quadrada, com 6 metros de lado e 9 metros de altura, com seteiras em todos os lados e ameias no topo. Seu interior é dividido em dois andares, com uma escada ao longo de uma parede para conectá-los. A escada termina em um alçapão que leva ao telhado. Quando ativada, a torre tem uma pequena porta no lado voltado para você. A porta só se abre ao seu comando, que você pode falar como uma ação bônus. Ela é imune à magia **abrir** e magias similares, como a de um **carrilhão de abertura**.\n\nCada criatura na área onde a fortaleza aparece deve fazer um teste de resistência de Destreza CD 15, sofrendo 10d10 de dano de concussão em uma falha, ou metade do dano em um sucesso. Em qualquer caso, a criatura é empurrada para um espaço desocupado fora, mas próximo à fortaleza. Objetos na área que não estejam sendo vestidos ou carregados sofrem esse dano e são empurrados automaticamente.\n\nA torre é feita de **adamantina**, e sua magia a impede de ser derrubada. O telhado, a porta e as paredes têm cada um 100 pontos de vida, imunidade a dano de armas não mágicas excluindo armas de cerco, e resistência a todos os outros danos. Apenas uma magia **desejo** pode reparar a fortaleza (este uso da magia conta como replicar uma magia de 8º nível ou inferior). Cada conjuração de **desejo** faz com que o telhado, a porta ou uma parede recupere 50 pontos de vida.",
+    "mechanical": {
+      "tower_size_m": 6,
+      "tower_height_m": 9,
+      "expansion_save_dc": 15,
+      "expansion_damage": "10d10",
+      "hp_per_section": 100,
+      "material": "adamantine",
+      "repair_per_wish": 50
+    }
+  },
+  {
+    "id": "ioun_stone_absorption",
+    "name": "Pedra de Ioun (Absorção)",
+    "name_en": "Ioun Stone (Absorption)",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Uma Pedra de Ioun recebe o nome de Ioun, um deus do conhecimento e da profecia reverenciado em alguns mundos. Muitos tipos de Pedra de Ioun existem, cada tipo uma combinação distinta de forma e cor.\n\nQuando você usa uma ação para jogar uma dessas pedras no ar, a pedra orbita sua cabeça a uma distância de 0,3 a 0,9 metros e confere um benefício a você. Depois disso, outra criatura deve usar uma ação para agarrar ou capturar a pedra para separá-la de você, seja fazendo uma jogada de ataque bem-sucedida contra CA 24 ou um teste de Destreza (Acrobacia) CD 24 bem-sucedido. Você pode usar uma ação para agarrar e guardar a pedra, encerrando seu efeito.\n\nUma pedra tem CA 24, 10 pontos de vida e resistência a todo dano. Ela é considerada um objeto que está sendo vestido enquanto orbita sua cabeça.\n\n**Elipsoide Lavanda Pálido:** Enquanto esta elipse orbita sua cabeça, você pode usar sua reação para cancelar uma magia de 4º nível ou inferior conjurada por uma criatura que você possa ver e que tenha como alvo apenas você.\n\nUma vez que a pedra tenha cancelado 20 níveis de magias, ela se apaga e fica cinza opaca, perdendo sua magia. Se você for alvo de uma magia cujo nível seja superior ao número de níveis de magia que a pedra tem restantes, a pedra não pode cancelá-la.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "spell_levels_absorbed": 20,
+      "max_spell_level": 4
+    }
+  },
+  {
+    "id": "ioun_stone_greater_absorption",
+    "name": "Pedra de Ioun (Absorção Maior)",
+    "name_en": "Ioun Stone (Greater Absorption)",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "**Elipsoide Lavanda e Verde Marmorizado:** Enquanto esta elipse orbita sua cabeça, você pode usar sua reação para cancelar uma magia de 8º nível ou inferior conjurada por uma criatura que você possa ver e que tenha como alvo apenas você.\n\nUma vez que a pedra tenha cancelado 50 níveis de magias, ela se apaga e fica cinza opaca, perdendo sua magia. Se você for alvo de uma magia cujo nível seja superior ao número de níveis de magia que a pedra tem restantes, a pedra não pode cancelá-la.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "spell_levels_absorbed": 50,
+      "max_spell_level": 8
+    }
+  },
+  {
+    "id": "ioun_stone_agility",
+    "name": "Pedra de Ioun (Agilidade)",
+    "name_en": "Ioun Stone (Agility)",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "**Esfera Vermelha Profunda:** Sua pontuação de Destreza aumenta em 2, até um máximo de 20, enquanto esta esfera orbita sua cabeça.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "dexterity_bonus": 2,
+      "max_score": 20
+    }
+  },
+  {
+    "id": "ioun_stone_awareness",
+    "name": "Pedra de Ioun (Percepção)",
+    "name_en": "Ioun Stone (Awareness)",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "**Romboide Azul Escuro:** Você não pode ser surpreendido enquanto este romboide orbita sua cabeça.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "cannot_be_surprised": true
+    }
+  },
+  {
+    "id": "ioun_stone_fortitude",
+    "name": "Pedra de Ioun (Fortitude)",
+    "name_en": "Ioun Stone (Fortitude)",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "**Romboide Rosa:** Sua pontuação de Constituição aumenta em 2, até um máximo de 20, enquanto este romboide orbita sua cabeça.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "constitution_bonus": 2,
+      "max_score": 20
+    }
+  },
+  {
+    "id": "ioun_stone_insight",
+    "name": "Pedra de Ioun (Perspicácia)",
+    "name_en": "Ioun Stone (Insight)",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "**Esfera Azul Incandescente:** Sua pontuação de Sabedoria aumenta em 2, até um máximo de 20, enquanto esta esfera orbita sua cabeça.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "wisdom_bonus": 2,
+      "max_score": 20
+    }
+  },
+  {
+    "id": "ioun_stone_intellect",
+    "name": "Pedra de Ioun (Intelecto)",
+    "name_en": "Ioun Stone (Intellect)",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "**Esfera Escarlate e Azul Marmorizada:** Sua pontuação de Inteligência aumenta em 2, até um máximo de 20, enquanto esta esfera orbita sua cabeça.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "intelligence_bonus": 2,
+      "max_score": 20
+    }
+  },
+  {
+    "id": "ioun_stone_leadership",
+    "name": "Pedra de Ioun (Liderança)",
+    "name_en": "Ioun Stone (Leadership)",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "**Esfera Rosa e Verde Marmorizada:** Sua pontuação de Carisma aumenta em 2, até um máximo de 20, enquanto esta esfera orbita sua cabeça.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "charisma_bonus": 2,
+      "max_score": 20
+    }
+  },
+  {
+    "id": "ioun_stone_mastery",
+    "name": "Pedra de Ioun (Maestria)",
+    "name_en": "Ioun Stone (Mastery)",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "**Prisma Verde Pálido:** Seu bônus de proficiência aumenta em 1 enquanto este prisma orbita sua cabeça.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "proficiency_bonus": 1
+    }
+  },
+  {
+    "id": "ioun_stone_protection",
+    "name": "Pedra de Ioun (Proteção)",
+    "name_en": "Ioun Stone (Protection)",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "**Prisma Rosa Empoeirado:** Você ganha um bônus de +1 na CA enquanto este prisma orbita sua cabeça.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "ac_bonus": 1
+    }
+  },
+  {
+    "id": "ioun_stone_regeneration",
+    "name": "Pedra de Ioun (Regeneração)",
+    "name_en": "Ioun Stone (Regeneration)",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "**Fuso Branco Perolado:** Você recupera 15 pontos de vida no final de cada hora que este fuso orbita sua cabeça, desde que você tenha pelo menos 1 ponto de vida.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "hp_regen_per_hour": 15
+    }
+  },
+  {
+    "id": "ioun_stone_reserve",
+    "name": "Pedra de Ioun (Reserva)",
+    "name_en": "Ioun Stone (Reserve)",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "**Prisma Roxo Vibrante:** Este prisma armazena magias conjuradas nele, mantendo-as até que você as use. A pedra pode armazenar até 3 níveis de magias por vez. Quando encontrada, ela contém 1d4 − 1 níveis de magias armazenadas escolhidas pelo Mestre.\n\nQualquer criatura pode conjurar uma magia de 1º a 3º nível na pedra tocando-a enquanto a magia é conjurada. A magia não tem efeito, exceto ser armazenada na pedra. Se a pedra não puder armazenar a magia, a magia é gasta sem efeito. O nível do espaço usado para conjurar a magia determina quanto espaço ela usa.\n\nEnquanto esta pedra orbita sua cabeça, você pode conjurar qualquer magia armazenada nela. A magia usa o nível do espaço, CD de resistência da magia, bônus de ataque de magia e habilidade de conjuração do conjurador original, mas é tratada como se você tivesse conjurado a magia. A magia conjurada da pedra não está mais armazenada nela, liberando espaço.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "spell_levels_stored": 3,
+      "initial_spells": "1d4-1",
+      "max_spell_level": 3
+    }
+  },
+  {
+    "id": "ioun_stone_strength",
+    "name": "Pedra de Ioun (Força)",
+    "name_en": "Ioun Stone (Strength)",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "**Romboide Azul Pálido:** Sua pontuação de Força aumenta em 2, até um máximo de 20, enquanto este romboide orbita sua cabeça.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "strength_bonus": 2,
+      "max_score": 20
+    }
+  },
+  {
+    "id": "ioun_stone_sustenance",
+    "name": "Pedra de Ioun (Sustento)",
+    "name_en": "Ioun Stone (Sustenance)",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "**Fuso Transparente:** Você não precisa comer ou beber enquanto este fuso orbita sua cabeça.",
+    "mechanical": {
+      "orbit_distance_m": "0.3-0.9",
+      "ac": 24,
+      "hp": 10,
+      "no_food_or_drink": true
+    }
+  },
+  {
+    "id": "iron_bands_of_binding",
+    "name": "Faixas de Ferro de Amarração",
+    "name_en": "Iron Bands of Binding",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Esta esfera de ferro enferrujada mede 7,5 cm de diâmetro e pesa 0,45 kg. Você pode usar uma ação para falar a palavra de comando e jogar a esfera em uma criatura Enorme ou menor que você possa ver a até 18 metros de você. Conforme a esfera se move pelo ar, ela se abre em um emaranhado de faixas metálicas.\n\nFaça uma jogada de ataque à distância com um bônus de ataque igual ao seu modificador de Destreza mais seu bônus de proficiência. Em um acerto, o alvo fica contido até que você use uma ação bônus para falar a palavra de comando novamente para liberá-lo. Fazer isso, ou errar o ataque, faz com que as faixas se contraiam e se tornem uma esfera novamente.\n\nUma criatura, incluindo a contida, pode usar uma ação para fazer um teste de Força CD 20 para quebrar as faixas de ferro. Em um sucesso, o item é destruído e a criatura contida é libertada. Se o teste falhar, quaisquer tentativas adicionais feitas por essa criatura falham automaticamente até que 24 horas tenham se passado.\n\nUma vez que as faixas sejam usadas, elas não podem ser usadas novamente até o próximo amanhecer.",
+    "mechanical": {
+      "range_m": 18,
+      "max_creature_size": "huge",
+      "break_dc": 20,
+      "recharge": "daily"
+    }
+  },
+  {
+    "id": "iron_flask",
+    "name": "Frasco de Ferro",
+    "name_en": "Iron Flask",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": false,
+    "description_markdown": "Esta garrafa de ferro tem uma tampa de latão. Você pode usar uma ação para falar a palavra de comando do frasco, tendo como alvo uma criatura que você possa ver a até 18 metros de você. Se o alvo for nativo de um plano de existência diferente daquele em que você está, o alvo deve ter sucesso em um teste de resistência de Sabedoria CD 17 ou ser preso no frasco. Se o alvo foi preso pelo frasco antes, ele tem vantagem no teste de resistência. Uma vez preso, uma criatura permanece no frasco até ser liberada. O frasco pode conter apenas uma criatura por vez. Uma criatura presa no frasco não precisa respirar, comer ou beber e não envelhece.\n\nVocê pode usar uma ação para remover a tampa do frasco e liberar a criatura que o frasco contém. A criatura é amigável a você e seus companheiros por 1 hora e obedece seus comandos durante essa duração. Se você não der comandos ou der um comando que provavelmente resultará em sua morte, ela se defende mas não toma outras ações. No final da duração, a criatura age de acordo com sua disposição e tendência normais.\n\nUma magia **identificar** revela que uma criatura está dentro do frasco, mas a única maneira de determinar o tipo de criatura é abrir o frasco. Um frasco recém-descoberto pode já conter uma criatura escolhida pelo Mestre ou determinada aleatoriamente.\n\n| d100 | Conteúdo |\n|------|----------|\n| 1-50 | Vazio |\n| 51-54 | Demônio (tipo 1) |\n| 55-58 | Demônio (tipo 2) |\n| 59-62 | Demônio (tipo 3) |\n| 63-64 | Demônio (tipo 4) |\n| 65 | Demônio (tipo 5) |\n| 66 | Demônio (tipo 6) |\n| 67 | Deva |\n| 68-69 | Diabo (maior) |\n| 70-73 | Diabo (menor) |\n| 74-75 | Djinni |\n| 76-77 | Efreeti |\n| 78-83 | Elemental (qualquer) |\n| 84-86 | Espreita Invisível |\n| 87-90 | Bruxa Noturna |\n| 91 | Planetar |\n| 92-95 | Salamandra |\n| 96 | Solar |\n| 97-99 | Súcubo/Íncubo |\n| 100 | Xorn |",
+    "mechanical": {
+      "range_m": 18,
+      "save_dc": 17,
+      "control_duration_hours": 1
+    }
+  },
+  {
+    "id": "javelin_of_lightning",
+    "name": "Azagaia de Relâmpago",
+    "name_en": "Javelin of Lightning",
+    "type": "weapon",
+    "weapon_type": "javelin",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Esta azagaia é uma arma mágica. Quando você a arremessa e fala sua palavra de comando, ela se transforma em um raio, formando uma linha de 1,5 metro de largura que se estende de você até um alvo a até 36 metros. Cada criatura na linha, excluindo você e o alvo, deve fazer um teste de resistência de Destreza CD 13, sofrendo 4d6 de dano elétrico em uma falha e metade do dano em um sucesso. O raio volta a ser uma azagaia quando alcança o alvo. Faça um ataque com arma à distância contra o alvo. Em um acerto, o alvo sofre dano da azagaia mais 4d6 de dano elétrico.\n\nA propriedade da azagaia não pode ser usada novamente até o próximo amanhecer. Enquanto isso, a azagaia ainda pode ser usada como uma arma mágica.",
+    "mechanical": {
+      "line_width_m": 1.5,
+      "line_length_m": 36,
+      "save_dc": 13,
+      "lightning_damage": "4d6",
+      "recharge": "daily"
+    }
+  },
+  {
+    "id": "lantern_of_revealing",
+    "name": "Lanterna de Revelação",
+    "name_en": "Lantern of Revealing",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Enquanto acesa, esta lanterna com capuz queima por 6 horas com 0,47 litros de óleo, emitindo luz plena em um raio de 9 metros e penumbra por 9 metros adicionais. Criaturas e objetos invisíveis são visíveis enquanto estiverem na luz plena da lanterna. Você pode usar uma ação para abaixar o capuz, reduzindo a luz para penumbra em um raio de 1,5 metro.",
+    "mechanical": {
+      "burn_time_hours": 6,
+      "oil_liters": 0.47,
+      "bright_light_m": 9,
+      "dim_light_m": 9,
+      "reveals_invisible": true
+    }
+  },
+  {
+    "id": "luck_blade",
+    "name": "Lâmina da Sorte",
+    "name_en": "Luck Blade",
+    "type": "weapon",
+    "weapon_type": "any_sword",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Você ganha um bônus de +1 nas jogadas de ataque e dano feitas com esta arma mágica. Enquanto a espada estiver com você, você também ganha um bônus de +1 nos testes de resistência.\n\n**Sorte:** Se a espada estiver com você, você pode invocar sua sorte (nenhuma ação necessária) para rolar novamente uma jogada de ataque, teste de habilidade ou teste de resistência que você não goste. Você deve usar a segunda rolagem. Esta propriedade não pode ser usada novamente até o próximo amanhecer.\n\n**Desejo:** A espada tem 1d4 − 1 cargas. Enquanto a segura, você pode usar uma ação para gastar 1 carga e conjurar a magia **desejo** dela. Esta propriedade não pode ser usada novamente até o próximo amanhecer. A espada perde esta propriedade se não tiver cargas.",
+    "mechanical": {
+      "attack_bonus": 1,
+      "damage_bonus": 1,
+      "saving_throw_bonus": 1,
+      "luck_rerolls_daily": 1,
+      "wish_charges": "1d4-1"
+    }
+  }
+]

@@ -1,0 +1,387 @@
+{
+  "itens_magicos": [
+    {
+      "id": "feather_token_anchor",
+      "name": "Ficha de Pena (Âncora)",
+      "name_en": "Feather Token (Anchor)",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Este pequeno objeto parece uma pena. Você pode usar uma **ação** para tocar a ficha em um barco ou navio. Pelas próximas **24 horas**, a embarcação **não pode ser movida** por qualquer meio. Tocar a ficha na embarcação novamente termina o efeito. Quando o efeito termina, a ficha desaparece.",
+      "mechanical": {
+        "duration_hours": 24,
+        "immobilizes_vessel": true,
+        "single_use": true
+      }
+    },
+    {
+      "id": "feather_token_bird",
+      "name": "Ficha de Pena (Pássaro)",
+      "name_en": "Feather Token (Bird)",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Você pode usar uma **ação** para jogar a ficha **1,5 metro** no ar. A ficha desaparece e um enorme pássaro multicolorido toma seu lugar. O pássaro tem as estatísticas de um **roca**, mas obedece seus comandos simples e **não pode atacar**. Ele pode carregar até **227 kg** enquanto voa em sua velocidade máxima (**26 km/h** por no máximo **232 km por dia**, com **1 hora de descanso** para cada **3 horas de voo**), ou **454 kg** à metade daquela velocidade. O pássaro desaparece após voar sua distância máxima por um dia ou se cair a 0 pontos de vida. Você pode dispensar o pássaro como uma ação.",
+      "mechanical": {
+        "creature": "roc",
+        "cannot_attack": true,
+        "max_carry_kg": 227,
+        "fly_speed_kmh": 26,
+        "max_distance_km": 232,
+        "overload_carry_kg": 454,
+        "rest_ratio": "1h_per_3h_flight",
+        "single_use": true
+      }
+    },
+    {
+      "id": "feather_token_fan",
+      "name": "Ficha de Pena (Leque)",
+      "name_en": "Feather Token (Fan)",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Se você estiver em um barco ou navio, você pode usar uma **ação** para jogar a ficha até **3 metros** no ar. A ficha desaparece, e um **leque gigante** agitando toma seu lugar. O leque flutua e cria um vento forte o suficiente para encher as velas de um navio, aumentando sua velocidade em **8 km/h** por **8 horas**. Você pode dispensar o leque como uma ação.",
+      "mechanical": {
+        "requires_vessel": true,
+        "speed_bonus_kmh": 8,
+        "duration_hours": 8,
+        "single_use": true
+      }
+    },
+    {
+      "id": "feather_token_swan_boat",
+      "name": "Ficha de Pena (Barco-Cisne)",
+      "name_en": "Feather Token (Swan Boat)",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Você pode usar uma **ação** para tocar a ficha em um corpo d'água com pelo menos **18 metros de diâmetro**. A ficha desaparece, e um barco de **15 metros de comprimento** e **6 metros de largura** em forma de cisne toma seu lugar. O barco é **autopropelido** e se move através da água a uma velocidade de **10 km/h**. Você pode usar uma ação enquanto no barco para comandá-lo a se mover ou virar até **90 graus**. O barco pode carregar até **trinta e duas** criaturas **Médias** ou menores. Uma criatura **Grande** conta como quatro criaturas Médias, enquanto uma criatura **Enorme** conta como nove. O barco permanece por **24 horas** e então desaparece. Você pode dispensar o barco como uma ação.",
+      "mechanical": {
+        "min_water_diameter": 18,
+        "length": 15,
+        "width": 6,
+        "speed_kmh": 10,
+        "capacity_medium": 32,
+        "large_counts_as": 4,
+        "huge_counts_as": 9,
+        "duration_hours": 24,
+        "single_use": true
+      }
+    },
+    {
+      "id": "feather_token_tree",
+      "name": "Ficha de Pena (Árvore)",
+      "name_en": "Feather Token (Tree)",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Você deve estar **ao ar livre** para usar esta ficha. Você pode usar uma **ação** para tocá-la em um espaço desocupado no chão. A ficha desaparece, e em seu lugar uma **árvore de carvalho não mágica** surge. A árvore tem **18 metros de altura** e tem um tronco de **1,5 metro de diâmetro**, e seus galhos no topo se espalham em um raio de **6 metros**.",
+      "mechanical": {
+        "requires_outdoors": true,
+        "tree_type": "oak",
+        "height": 18,
+        "trunk_diameter": 1.5,
+        "branch_radius": 6,
+        "single_use": true
+      }
+    },
+    {
+      "id": "feather_token_whip",
+      "name": "Ficha de Pena (Chicote)",
+      "name_en": "Feather Token (Whip)",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Você pode usar uma **ação** para jogar a ficha até um ponto a **3 metros** de você. A ficha desaparece, e um **chicote flutuante** toma seu lugar. Você pode então usar uma **ação bônus** para fazer um **ataque de magia corpo a corpo** contra uma criatura a **3 metros** do chicote, com um **bônus de ataque de +9**. Em um acerto, o alvo sofre **1d6 + 5 de dano de força**.\n\nComo uma ação bônus em seu turno, você pode direcionar o chicote a voar até **6 metros** e repetir o ataque contra uma criatura a **3 metros** dele. O chicote desaparece após **1 hora**, quando você usa uma ação para dispensá-lo, ou quando você fica **incapacitado** ou **morre**.",
+      "mechanical": {
+        "throw_range": 3,
+        "attack_range": 3,
+        "attack_bonus": 9,
+        "damage": "1d6+5",
+        "damage_type": "force",
+        "fly_distance": 6,
+        "duration_hours": 1,
+        "single_use": true
+      }
+    },
+    {
+      "id": "flame_tongue",
+      "name": "Língua Flamejante",
+      "name_en": "Flame Tongue",
+      "type": "weapon",
+      "weapon_type": "any_sword",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Você pode usar uma **ação bônus** para falar a palavra de comando desta espada mágica, fazendo chamas irromperam da lâmina. Essas chamas emitem **luz brilhante** em um raio de **12 metros** e **penumbra** por mais **12 metros**. Enquanto a espada está em chamas, ela causa **2d6 de dano de fogo extra** a qualquer alvo que ela atingir. As chamas duram até você usar uma ação bônus para falar a palavra de comando novamente ou até você soltar ou embainhar a espada.",
+      "mechanical": {
+        "activation": "bonus_action",
+        "light_bright": 12,
+        "light_dim": 12,
+        "extra_damage": "2d6",
+        "damage_type": "fire",
+        "command_word": true
+      }
+    },
+    {
+      "id": "folding_boat",
+      "name": "Barco Dobrável",
+      "name_en": "Folding Boat",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Este objeto aparece como uma caixa de madeira medindo **30 cm de comprimento**, **15 cm de largura** e **15 cm de profundidade**. Ela pesa **1,8 kg** e **flutua**. Ela pode ser aberta para guardar itens dentro. Este item também tem **três palavras de comando**, cada uma requerendo que você use uma ação para falar.\n\n**Palavra 1 (Barco):** A caixa se desdobra em um barco de **3 metros de comprimento**, **1,2 metro de largura** e **60 cm de profundidade**. O barco tem um par de remos, uma âncora, um mastro e uma vela latina. O barco pode comportar até **quatro** criaturas **Médias** confortavelmente.\n\n**Palavra 2 (Navio):** A caixa se desdobra em um navio de **7,2 metros de comprimento**, **2,4 metros de largura** e **1,8 metro de profundidade**. O navio tem um convés, assentos de remo, cinco conjuntos de remos, um remo de direção, uma âncora, uma cabine de convés e um mastro com vela quadrada. O navio pode comportar **quinze** criaturas Médias confortavelmente.\n\nQuando a caixa se torna uma embarcação, seu peso se torna o de uma embarcação normal de seu tamanho, e qualquer coisa que estava guardada na caixa permanece no barco.\n\n**Palavra 3 (Dobrar):** Faz o barco dobrável se dobrar de volta em uma caixa, desde que não haja criaturas a bordo. Quaisquer objetos na embarcação que não caibam dentro da caixa permanecem fora da caixa quando ela se dobra. Quaisquer objetos na embarcação que caibam dentro da caixa o fazem.",
+      "mechanical": {
+        "box_size_cm": "30x15x15",
+        "box_weight_kg": 1.8,
+        "floats": true,
+        "boat_size": "3x1.2x0.6m",
+        "boat_capacity": 4,
+        "ship_size": "7.2x2.4x1.8m",
+        "ship_capacity": 15,
+        "command_words": 3
+      }
+    },
+    {
+      "id": "frost_brand",
+      "name": "Marca Gélida",
+      "name_en": "Frost Brand",
+      "type": "weapon",
+      "weapon_type": "any_sword",
+      "rarity": "very_rare",
+      "requires_attunement": true,
+      "description_markdown": "Quando você atingir com um ataque usando esta espada mágica, o alvo sofre **1d6 de dano de frio extra**. Além disso, enquanto você segurar a espada, você tem **resistência** a dano de **fogo**.\n\nEm **temperaturas congelantes**, a lâmina emite **luz brilhante** em um raio de **3 metros** e **penumbra** por mais **3 metros**.\n\nQuando você sacar esta arma, você pode **extinguir todas as chamas não mágicas** a **9 metros** de você. Esta propriedade pode ser usada **no máximo uma vez por hora**.",
+      "mechanical": {
+        "extra_damage": "1d6",
+        "damage_type": "cold",
+        "fire_resistance": true,
+        "light_in_cold": {
+          "bright": 3,
+          "dim": 3
+        },
+        "extinguish_flames_range": 9,
+        "extinguish_recharge_hours": 1
+      }
+    },
+    {
+      "id": "gauntlets_of_ogre_power",
+      "name": "Manoplas do Poder Ogro",
+      "name_en": "Gauntlets of Ogre Power",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Sua pontuação de **Força é 19** enquanto você usa estas manoplas. Elas não têm efeito sobre você se sua Força já for 19 ou maior.",
+      "mechanical": {
+        "sets_strength": 19
+      }
+    },
+    {
+      "id": "gem_of_brightness",
+      "name": "Gema do Brilho",
+      "name_en": "Gem of Brightness",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Este prisma tem **50 cargas**. Enquanto você o estiver segurando, você pode usar uma **ação** para falar uma de três palavras de comando para causar um dos seguintes efeitos:\n\n- **Primeira palavra:** A gema emite **luz brilhante** em um raio de **9 metros** e **penumbra** por mais **9 metros**. Este efeito **não gasta carga**. Dura até você usar uma ação bônus para repetir a palavra de comando ou até você usar outra função da gema.\n- **Segunda palavra:** Gasta **1 carga** e faz a gema disparar um raio brilhante de luz em uma criatura que você possa ver a **18 metros** de você. A criatura deve ter sucesso em um teste de resistência de **Constituição CD 15** ou ficar **cega** por 1 minuto. A criatura pode repetir o teste de resistência no final de cada um de seus turnos, terminando o efeito sobre ela em um sucesso.\n- **Terceira palavra:** Gasta **5 cargas** e faz a gema brilhar com luz ofuscante em um **cone de 9 metros** originando dela. Cada criatura no cone deve fazer um teste de resistência como se atingida pelo raio criado com a segunda palavra de comando.\n\nQuando todas as cargas da gema forem gastas, a gema se torna uma **joia não mágica** valendo **50 po**.",
+      "mechanical": {
+        "max_charges": 50,
+        "light_no_charge": {
+          "bright": 9,
+          "dim": 9
+        },
+        "beam_cost": 1,
+        "beam_range": 18,
+        "beam_save_dc": 15,
+        "beam_save_type": "constitution",
+        "beam_blinds": true,
+        "cone_cost": 5,
+        "cone_range": 9,
+        "becomes_nonmagical_value_gp": 50
+      }
+    },
+    {
+      "id": "gem_of_seeing",
+      "name": "Gema da Visão",
+      "name_en": "Gem of Seeing",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": true,
+      "description_markdown": "Esta gema tem **3 cargas**. Como uma **ação**, você pode falar a palavra de comando da gema e gastar **1 carga**. Pelos próximos **10 minutos**, você tem **visão verdadeira** até **36 metros** quando você olha através da gema.\n\nA gema recupera **1d3 cargas gastas** diariamente ao **amanhecer**.",
+      "mechanical": {
+        "max_charges": 3,
+        "recharge_daily": "1d3",
+        "duration_minutes": 10,
+        "truesight_range": 36,
+        "command_word": true
+      }
+    },
+    {
+      "id": "giant_slayer",
+      "name": "Matadora de Gigantes",
+      "name_en": "Giant Slayer",
+      "type": "weapon",
+      "weapon_type": "any_axe_or_sword",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Você ganha um **bônus de +1** para jogadas de ataque e dano feitas com esta arma mágica.\n\nQuando você atingir um **gigante** com ela, o gigante sofre **2d6 de dano extra** do tipo da arma e deve ter sucesso em um teste de resistência de **Força CD 15** ou cair **caído**. Para o propósito desta arma, \"gigante\" se refere a qualquer criatura com o tipo gigante, incluindo **ettins** e **trolls**.",
+      "mechanical": {
+        "attack_bonus": 1,
+        "damage_bonus": 1,
+        "extra_damage_vs_giants": "2d6",
+        "save_dc": 15,
+        "save_type": "strength",
+        "prone_on_fail": true
+      }
+    },
+    {
+      "id": "glamoured_studded_leather",
+      "name": "Couro Batido Glamouroso",
+      "name_en": "Glamoured Studded Leather",
+      "type": "armor",
+      "armor_type": "studded_leather",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Enquanto veste esta armadura, você ganha um **bônus de +1 para CA**.\n\nVocê também pode usar uma **ação bônus** para falar a palavra de comando da armadura e fazer com que a armadura assuma a aparência de um **conjunto normal de roupas** ou algum outro tipo de armadura. Você decide como ela parece, incluindo cor, estilo e acessórios, mas a armadura retém seu volume e peso normais. A aparência ilusória dura até você usar esta propriedade novamente ou remover a armadura.",
+      "mechanical": {
+        "ac_bonus": 1,
+        "disguise": {
+          "activation": "bonus_action",
+          "command_word": true,
+          "retains_bulk_weight": true
+        }
+      }
+    },
+    {
+      "id": "gloves_of_missile_snaring",
+      "name": "Luvas de Captura de Projéteis",
+      "name_en": "Gloves of Missile Snaring",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Estas luvas parecem quase se fundir em suas mãos quando você as veste. Quando um ataque de arma à distância atingir você enquanto você as estiver usando, você pode usar sua **reação** para reduzir o dano em **1d10 + seu modificador de Destreza**, desde que você tenha uma **mão livre**. Se você reduzir o dano a **0**, você pode **capturar o projétil** se ele for pequeno o suficiente para você segurar naquela mão.",
+      "mechanical": {
+        "damage_reduction": "1d10+dex_mod",
+        "requires_free_hand": true,
+        "can_catch_projectile": true,
+        "action_type": "reaction"
+      }
+    },
+    {
+      "id": "gloves_of_swimming_and_climbing",
+      "name": "Luvas de Natação e Escalada",
+      "name_en": "Gloves of Swimming and Climbing",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa estas luvas, escalar e nadar **não custam movimento extra** para você, e você ganha um **bônus de +5** para testes de **Força (Atletismo)** feitos para escalar ou nadar.",
+      "mechanical": {
+        "no_extra_movement_climb": true,
+        "no_extra_movement_swim": true,
+        "athletics_bonus": 5
+      }
+    },
+    {
+      "id": "goggles_of_night",
+      "name": "Óculos Noturnos",
+      "name_en": "Goggles of Night",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Enquanto usa estas lentes escuras, você tem **visão no escuro** até um alcance de **18 metros**. Se você já tiver visão no escuro, usar os óculos aumenta seu alcance em **18 metros**.",
+      "mechanical": {
+        "grants_darkvision": 18,
+        "increases_existing_darkvision": 18
+      }
+    },
+    {
+      "id": "hammer_of_thunderbolts",
+      "name": "Martelo dos Trovões",
+      "name_en": "Hammer of Thunderbolts",
+      "type": "weapon",
+      "weapon_type": "maul",
+      "rarity": "legendary",
+      "requires_attunement": false,
+      "description_markdown": "Você ganha um **bônus de +1** para jogadas de ataque e dano feitas com esta arma mágica.\n\n**Ruína de Gigantes (Requer Sintonização).** Você deve estar vestindo um *cinto da força gigante* (qualquer variedade) e *manoplas do poder ogro* para se sintonizar a esta arma. A sintonização termina se você remover qualquer um daqueles itens. Enquanto você estiver sintonizado a esta arma e a segurando, sua **pontuação de Força aumenta em 4** e pode exceder 20, mas não 30. Quando você rolar um **20** em uma jogada de ataque feita com esta arma contra um gigante, o gigante deve ter sucesso em um teste de resistência de **Constituição CD 17** ou **morrer**.\n\nO martelo também tem **5 cargas**. Enquanto sintonizado a ele, você pode gastar **1 carga** e fazer um **ataque de arma à distância** com o martelo, arremessando-o como se tivesse a propriedade arremesso com um alcance normal de **6 metros** e um alcance longo de **18 metros**. Se o ataque atingir, o martelo libera um **estrondo audível a 91 metros**. O alvo e cada criatura a **9 metros** dele devem ter sucesso em um teste de resistência de **Constituição CD 17** ou ficar **atordoados** até o final do seu próximo turno. O martelo recupera **1d4 + 1 cargas gastas** diariamente ao **amanhecer**.",
+      "mechanical": {
+        "base_bonus": 1,
+        "attunement_requires": ["belt_of_giant_strength", "gauntlets_of_ogre_power"],
+        "strength_bonus": 4,
+        "max_strength": 30,
+        "giant_death_on_nat_20": {
+          "save_dc": 17,
+          "save_type": "constitution"
+        },
+        "max_charges": 5,
+        "thrown_range_normal": 6,
+        "thrown_range_long": 18,
+        "thunderclap_audible_range": 91,
+        "stun_radius": 9,
+        "stun_save_dc": 17,
+        "recharge_daily": "1d4+1"
+      }
+    },
+    {
+      "id": "handy_haversack",
+      "name": "Mochila Útil",
+      "name_en": "Handy Haversack",
+      "type": "wondrous_item",
+      "rarity": "rare",
+      "requires_attunement": false,
+      "description_markdown": "Esta mochila tem uma bolsa central e duas bolsas laterais, cada uma das quais é um **espaço extradimensional**. Cada bolsa lateral pode comportar até **9 kg** de material, não excedendo um volume de **0,06 m³**. A grande bolsa central pode comportar até **0,23 m³** ou **36 kg** de material. A mochila sempre pesa **2,3 kg**, independentemente de seu conteúdo.\n\nColocar um objeto na mochila segue as regras normais para interagir com objetos. Recuperar um item da mochila requer que você use uma **ação**. Quando você alcança dentro da mochila por um item específico, o item está sempre magicamente no topo.\n\nA mochila tem algumas limitações. Se ela for **sobrecarregada**, ou se um **objeto afiado** perfurá-la ou rasgá-la, a mochila se rompe e é destruída. Se a mochila for destruída, seu conteúdo é perdido para sempre, embora um **artefato** sempre apareça novamente em algum lugar. Se a mochila for virada do avesso, seu conteúdo se derrama, ileso, e a mochila deve ser colocada de volta antes de poder ser usada novamente. Se uma **criatura que respira** for colocada dentro da mochila, a criatura pode sobreviver por até **10 minutos**, após o qual começa a **sufocar**.\n\nColocar a mochila dentro de um espaço extradimensional criado por um *saco de retenção*, *buraco portátil* ou item similar **instantaneamente destrói ambos os itens** e abre um portal para o **Plano Astral**. O portal se origina onde um item foi colocado dentro do outro. Qualquer criatura a **3 metros** do portal é sugada através dele e depositada em uma localização aleatória no Plano Astral. O portal então se fecha. O portal é **unidirecional** e não pode ser reaberto.",
+      "mechanical": {
+        "side_pouch_capacity_kg": 9,
+        "side_pouch_volume_cubic_m": 0.06,
+        "central_pouch_volume_cubic_m": 0.23,
+        "central_pouch_capacity_kg": 36,
+        "weight_kg": 2.3,
+        "retrieve_action": "action",
+        "item_always_on_top": true,
+        "air_supply_minutes": 10,
+        "extradimensional_destruction": {
+          "destroys_both": true,
+          "creates_astral_gate": true,
+          "gate_radius": 3,
+          "gate_one_way": true
+        }
+      }
+    },
+    {
+      "id": "hat_of_disguise",
+      "name": "Chapéu do Disfarce",
+      "name_en": "Hat of Disguise",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Enquanto usa este chapéu, você pode usar uma **ação** para conjurar a magia *disfarçar-se* dele **à vontade**. A magia termina se o chapéu for removido.",
+      "mechanical": {
+        "spell": "disguise_self",
+        "at_will": true,
+        "ends_when_removed": true
+      }
+    },
+    {
+      "id": "headband_of_intellect",
+      "name": "Tiara do Intelecto",
+      "name_en": "Headband of Intellect",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": true,
+      "description_markdown": "Sua pontuação de **Inteligência é 19** enquanto você usa esta tiara. Ela não tem efeito sobre você se sua Inteligência já for 19 ou maior.",
+      "mechanical": {
+        "sets_intelligence": 19
+      }
+    },
+    {
+      "id": "helm_of_comprehending_languages",
+      "name": "Elmo de Compreensão de Idiomas",
+      "name_en": "Helm of Comprehending Languages",
+      "type": "wondrous_item",
+      "rarity": "uncommon",
+      "requires_attunement": false,
+      "description_markdown": "Enquanto usa este elmo, você pode usar uma **ação** para conjurar a magia *compreender idiomas* dele **à vontade**.",
+      "mechanical": {
+        "spell": "comprehend_languages",
+        "at_will": true
+      }
+    }
+  ]
+}

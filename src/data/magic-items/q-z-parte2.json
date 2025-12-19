@@ -1,0 +1,747 @@
+[
+  {
+    "id": "staff_of_charming",
+    "name": "Cajado de Encantamento",
+    "name_en": "Staff of Charming",
+    "type": "staff",
+    "rarity": "rare",
+    "requires_attunement": "bard, cleric, druid, sorcerer, warlock, or wizard",
+    "description_markdown": "Enquanto segura este cajado, você pode usar uma ação para gastar 1 de suas 10 cargas para conjurar **enfeitiçar pessoa**, **comando** ou **compreender idiomas** dele usando sua CD de resistência de magia. O cajado também pode ser usado como um bordão mágico.\n\nSe você estiver segurando o cajado e falhar em um teste de resistência contra uma magia de encantamento que tenha como alvo apenas você, pode transformar sua falha em um sucesso. Você não pode usar esta propriedade do cajado novamente até o próximo amanhecer. Se você tiver sucesso em um teste de resistência contra uma magia de encantamento que tenha como alvo apenas você, com ou sem a intervenção do cajado, pode usar sua reação para gastar 1 carga do cajado e refletir a magia de volta ao seu conjurador como se você tivesse conjurado a magia.\n\nO cajado recupera 1d8 + 2 cargas gastas diariamente ao amanhecer. Se você gastar a última carga, role um d20. Em um 1, o cajado se torna um bordão não mágico.",
+    "mechanical": {
+      "max_charges": 10,
+      "recharge_daily": "1d8+2"
+    }
+  },
+  {
+    "id": "staff_of_fire",
+    "name": "Cajado de Fogo",
+    "name_en": "Staff of Fire",
+    "type": "staff",
+    "rarity": "very_rare",
+    "requires_attunement": "druid, sorcerer, warlock, or wizard",
+    "description_markdown": "Você tem resistência a dano de fogo enquanto segura este cajado.\n\nO cajado tem 10 cargas. Enquanto o segura, você pode usar uma ação para gastar 1 ou mais de suas cargas para conjurar uma das seguintes magias dele, usando sua CD de resistência de magia: **mãos flamejantes** (1 carga), **bola de fogo** (3 cargas) ou **muralha de fogo** (4 cargas).\n\nO cajado recupera 1d6 + 4 cargas gastas diariamente ao amanhecer. Se você gastar a última carga, role um d20. Em um 1, o cajado escurece, se desfaz em cinzas e é destruído.",
+    "mechanical": {
+      "max_charges": 10,
+      "recharge_daily": "1d6+4",
+      "fire_resistance": true
+    }
+  },
+  {
+    "id": "staff_of_frost",
+    "name": "Cajado de Gelo",
+    "name_en": "Staff of Frost",
+    "type": "staff",
+    "rarity": "very_rare",
+    "requires_attunement": "druid, sorcerer, warlock, or wizard",
+    "description_markdown": "Você tem resistência a dano de frio enquanto segura este cajado.\n\nO cajado tem 10 cargas. Enquanto o segura, você pode usar uma ação para gastar 1 ou mais de suas cargas para conjurar uma das seguintes magias dele, usando sua CD de resistência de magia: **cone de frio** (5 cargas), **névoa obscurecente** (1 carga), **tempestade de gelo** (4 cargas) ou **muralha de gelo** (4 cargas).\n\nO cajado recupera 1d6 + 4 cargas gastas diariamente ao amanhecer. Se você gastar a última carga, role um d20. Em um 1, o cajado se transforma em água e é destruído.",
+    "mechanical": {
+      "max_charges": 10,
+      "recharge_daily": "1d6+4",
+      "cold_resistance": true
+    }
+  },
+  {
+    "id": "staff_of_healing",
+    "name": "Cajado de Cura",
+    "name_en": "Staff of Healing",
+    "type": "staff",
+    "rarity": "rare",
+    "requires_attunement": "bard, cleric, or druid",
+    "description_markdown": "Este cajado tem 10 cargas. Enquanto o segura, você pode usar uma ação para gastar 1 ou mais de suas cargas para conjurar uma das seguintes magias dele, usando sua CD de resistência de magia e modificador de habilidade de conjuração: **curar ferimentos** (1 carga por nível de magia, até 4º), **restauração menor** (2 cargas) ou **curar ferimentos em massa** (5 cargas).\n\nO cajado recupera 1d6 + 4 cargas gastas diariamente ao amanhecer. Se você gastar a última carga, role um d20. Em um 1, o cajado desaparece em um flash de luz, perdido para sempre.",
+    "mechanical": {
+      "max_charges": 10,
+      "recharge_daily": "1d6+4"
+    }
+  },
+  {
+    "id": "staff_of_power",
+    "name": "Cajado do Poder",
+    "name_en": "Staff of Power",
+    "type": "staff",
+    "rarity": "very_rare",
+    "requires_attunement": "sorcerer, warlock, or wizard",
+    "description_markdown": "Este cajado pode ser empunhado como um bordão mágico que concede um bônus de +2 nas jogadas de ataque e dano feitas com ele. Enquanto o segura, você ganha um bônus de +2 na CA, testes de resistência e jogadas de ataque de magia.\n\nO cajado tem 20 cargas para as seguintes propriedades. O cajado recupera 2d8 + 4 cargas gastas diariamente ao amanhecer. Se você gastar a última carga, role um d20. Em um 1, o cajado mantém seu bônus de +2 em jogadas de ataque e dano mas perde todas as outras propriedades. Em um 20, o cajado recupera 1d8 + 2 cargas.\n\n**Golpe Poderoso:** Quando você acerta com um ataque corpo a corpo usando o cajado, pode gastar 1 carga para causar 1d6 de dano de força extra ao alvo.\n\n**Magias:** Enquanto segura este cajado, você pode usar uma ação para gastar 1 ou mais de suas cargas para conjurar uma das seguintes magias dele, usando sua CD de resistência de magia e bônus de ataque de magia: **cone de frio** (5 cargas), **bola de fogo** (versão de 5º nível, 5 cargas), **globo de invulnerabilidade** (6 cargas), **prender monstro** (5 cargas), **levitação** (2 cargas), **relâmpago** (versão de 5º nível, 5 cargas), **mísseis mágicos** (1 carga), **raio de enfraquecimento** (1 carga) ou **muralha de força** (5 cargas).\n\n**Golpe Retaliatório:** Você pode usar uma ação para quebrar o cajado sobre seu joelho ou contra uma superfície sólida, realizando um golpe retaliatório. O cajado é destruído e libera sua magia restante em uma explosão que se expande para preencher uma esfera de 9 metros de raio centrada nele.\n\nVocê tem 50% de chance de viajar instantaneamente para um plano de existência aleatório, evitando a explosão. Se você falhar em evitar o efeito, sofre dano de força igual a 16 × o número de cargas no cajado. Toda outra criatura na área deve fazer um teste de resistência de Destreza CD 17. Em uma falha, uma criatura sofre uma quantidade de dano baseada em quão longe está do ponto de origem. Em um sucesso, uma criatura sofre metade do dano.\n\n| Distância da Origem | Dano |\n|---------------------|------|\n| Até 3 m ou menos | 8 × o número de cargas no cajado |\n| 3,3 a 6 m | 6 × o número de cargas no cajado |\n| 6,3 a 9 m | 4 × o número de cargas no cajado |",
+    "mechanical": {
+      "attack_bonus": 2,
+      "damage_bonus": 2,
+      "ac_bonus": 2,
+      "saving_throw_bonus": 2,
+      "spell_attack_bonus": 2,
+      "max_charges": 20,
+      "recharge_daily": "2d8+4",
+      "retributive_strike_radius_m": 9,
+      "retributive_strike_save_dc": 17
+    }
+  },
+  {
+    "id": "staff_of_striking",
+    "name": "Cajado de Golpear",
+    "name_en": "Staff of Striking",
+    "type": "staff",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Este cajado pode ser empunhado como um bordão mágico que concede um bônus de +3 nas jogadas de ataque e dano feitas com ele.\n\nO cajado tem 10 cargas. Quando você acerta com um ataque corpo a corpo usando-o, pode gastar até 3 de suas cargas. Para cada carga que você gastar, o alvo sofre 1d6 de dano de força extra. O cajado recupera 1d6 + 4 cargas gastas diariamente ao amanhecer. Se você gastar a última carga, role um d20. Em um 1, o cajado se torna um bordão não mágico.",
+    "mechanical": {
+      "attack_bonus": 3,
+      "damage_bonus": 3,
+      "max_charges": 10,
+      "recharge_daily": "1d6+4",
+      "force_damage_per_charge": "1d6"
+    }
+  },
+  {
+    "id": "staff_of_swarming_insects",
+    "name": "Cajado de Enxame de Insetos",
+    "name_en": "Staff of Swarming Insects",
+    "type": "staff",
+    "rarity": "rare",
+    "requires_attunement": "bard, cleric, druid, sorcerer, warlock, or wizard",
+    "description_markdown": "Este cajado tem 10 cargas e recupera 1d6 + 4 cargas gastas diariamente ao amanhecer. Se você gastar a última carga, role um d20. Em um 1, um enxame de insetos consome e destrói o cajado, então se dispersa.\n\n**Magias:** Enquanto segura o cajado, você pode usar uma ação para gastar algumas de suas cargas para conjurar uma das seguintes magias dele, usando sua CD de resistência de magia: **inseto gigante** (4 cargas) ou **praga de insetos** (5 cargas).\n\n**Nuvem de Insetos:** Enquanto segura o cajado, você pode usar uma ação e gastar 1 carga para fazer com que um enxame de insetos voadores inofensivos se espalhe em um raio de 9 metros a partir de você. Os insetos permanecem por 10 minutos, tornando a área fortemente obscurecida para criaturas que não sejam você. O enxame se move com você, permanecendo centrado em você. Um vento de pelo menos 16 km/h dispersa o enxame e encerra o efeito.",
+    "mechanical": {
+      "max_charges": 10,
+      "recharge_daily": "1d6+4",
+      "cloud_radius_m": 9,
+      "cloud_duration_minutes": 10
+    }
+  },
+  {
+    "id": "staff_of_the_magi",
+    "name": "Cajado do Mago",
+    "name_en": "Staff of the Magi",
+    "type": "staff",
+    "rarity": "legendary",
+    "requires_attunement": "sorcerer, warlock, or wizard",
+    "description_markdown": "Este cajado pode ser empunhado como um bordão mágico que concede um bônus de +2 nas jogadas de ataque e dano feitas com ele. Enquanto o segura, você ganha um bônus de +2 em jogadas de ataque de magia.\n\nO cajado tem 50 cargas para as seguintes propriedades. Ele recupera 4d6 + 2 cargas gastas diariamente ao amanhecer. Se você gastar a última carga, role um d20. Em um 20, o cajado recupera 1d12 + 1 cargas.\n\n**Absorção de Magia:** Enquanto segura o cajado, você tem vantagem em testes de resistência contra magias. Além disso, você pode usar sua reação quando outra criatura conjurar uma magia que tenha como alvo apenas você. Se fizer isso, o cajado absorve a magia da magia, cancelando seu efeito e ganhando um número de cargas igual ao nível da magia absorvida. No entanto, se fazer isso trouxer o número total de cargas do cajado acima de 50, o cajado explode como se você ativasse seu golpe retaliatório.\n\n**Magias:** Enquanto segura o cajado, você pode usar uma ação para gastar algumas de suas cargas para conjurar uma das seguintes magias dele, usando sua CD de resistência de magia e habilidade de conjuração: **conjurar elemental** (7 cargas), **dissipar magia** (3 cargas), **bola de fogo** (versão de 7º nível, 7 cargas), **esfera flamejante** (2 cargas), **tempestade de gelo** (4 cargas), **invisibilidade** (2 cargas), **arrombar** (2 cargas), **relâmpago** (versão de 7º nível, 7 cargas), **passagem sem portas** (5 cargas), **viagem planar** (7 cargas), **telecinese** (5 cargas), **muralha de fogo** (4 cargas) ou **teia** (2 cargas).\n\nVocê também pode usar uma ação para conjurar uma das seguintes magias do cajado sem usar cargas: **tranca arcana**, **detectar magia**, **aumentar/reduzir**, **luz**, **mãos mágicas** ou **proteção contra o bem e o mal**.\n\n**Golpe Retaliatório:** Você pode usar uma ação para quebrar o cajado sobre seu joelho ou contra uma superfície sólida, realizando um golpe retaliatório. O cajado é destruído e libera sua magia restante em uma explosão que se expande para preencher uma esfera de 9 metros de raio centrada nele.\n\nVocê tem 50% de chance de viajar instantaneamente para um plano de existência aleatório, evitando a explosão. Se você falhar em evitar o efeito, sofre dano de força igual a 16 × o número de cargas no cajado. Toda outra criatura na área deve fazer um teste de resistência de Destreza CD 17. Em uma falha, uma criatura sofre uma quantidade de dano baseada em quão longe está do ponto de origem. Em um sucesso, uma criatura sofre metade do dano.",
+    "mechanical": {
+      "attack_bonus": 2,
+      "damage_bonus": 2,
+      "spell_attack_bonus": 2,
+      "max_charges": 50,
+      "recharge_daily": "4d6+2",
+      "retributive_strike_radius_m": 9,
+      "retributive_strike_save_dc": 17
+    }
+  },
+  {
+    "id": "staff_of_the_python",
+    "name": "Cajado da Píton",
+    "name_en": "Staff of the Python",
+    "type": "staff",
+    "rarity": "uncommon",
+    "requires_attunement": "cleric, druid, or warlock",
+    "description_markdown": "Você pode usar uma ação para falar a palavra de comando deste cajado e jogá-lo no chão a até 3 metros de você. O cajado se torna uma **píton constritora gigante** sob seu controle e age em sua própria contagem de iniciativa. Usando uma ação bônus para falar a palavra de comando novamente, você retorna o cajado à sua forma normal em um espaço anteriormente ocupado pela cobra.\n\nNo seu turno, você pode comandar mentalmente a cobra se ela estiver a até 18 metros de você e você não estiver incapacitado. Você decide que ação a cobra realiza e para onde ela se move durante seu próximo turno, ou pode dar um comando geral, como atacar seus inimigos ou guardar um local.\n\nSe a cobra for reduzida a 0 pontos de vida, ela morre e volta à forma de cajado. O cajado então se estilhaça e é destruído. Se a cobra voltar à forma de cajado antes de perder todos os seus pontos de vida, ela recupera todos eles.",
+    "mechanical": {
+      "throw_range_m": 3,
+      "command_range_m": 18
+    }
+  },
+  {
+    "id": "staff_of_the_woodlands",
+    "name": "Cajado das Florestas",
+    "name_en": "Staff of the Woodlands",
+    "type": "staff",
+    "rarity": "rare",
+    "requires_attunement": "druid",
+    "description_markdown": "Este cajado pode ser empunhado como um bordão mágico que concede um bônus de +2 nas jogadas de ataque e dano feitas com ele. Enquanto o segura, você tem um bônus de +2 em jogadas de ataque de magia.\n\nO cajado tem 10 cargas para as seguintes propriedades. Ele recupera 1d6 + 4 cargas gastas diariamente ao amanhecer. Se você gastar a última carga, role um d20. Em um 1, o cajado perde suas propriedades e se torna um bordão não mágico.\n\n**Magias:** Você pode usar uma ação para gastar 1 ou mais das cargas do cajado para conjurar uma das seguintes magias dele, usando sua CD de resistência de magia: **amizade animal** (1 carga), **despertar** (5 cargas), **pele de árvore** (2 cargas), **localizar animais ou plantas** (2 cargas), **falar com animais** (1 carga), **falar com plantas** (3 cargas) ou **muralha de espinhos** (6 cargas).\n\nVocê também pode usar uma ação para conjurar a magia **passar sem deixar rastros** do cajado sem usar cargas.\n\n**Forma de Árvore:** Você pode usar uma ação para fincar uma ponta do cajado em solo fértil e gastar 1 carga para transformar o cajado em uma árvore saudável. A árvore tem 18 metros de altura e um tronco de 1,5 metro de diâmetro, e seus galhos no topo se espalham em um raio de 6 metros. A árvore parece comum mas emana uma aura fraca de magia de transmutação se alvo de **detectar magia**. Enquanto toca a árvore e usa outra ação para falar sua palavra de comando, você retorna o cajado à sua forma normal. Qualquer criatura na árvore cai quando ela volta a ser um cajado.",
+    "mechanical": {
+      "attack_bonus": 2,
+      "damage_bonus": 2,
+      "spell_attack_bonus": 2,
+      "max_charges": 10,
+      "recharge_daily": "1d6+4",
+      "tree_height_m": 18,
+      "tree_diameter_m": 1.5,
+      "tree_branches_radius_m": 6
+    }
+  },
+  {
+    "id": "staff_of_thunder_and_lightning",
+    "name": "Cajado de Trovão e Relâmpago",
+    "name_en": "Staff of Thunder and Lightning",
+    "type": "staff",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Este cajado pode ser empunhado como um bordão mágico que concede um bônus de +2 nas jogadas de ataque e dano feitas com ele. Ele também tem as seguintes propriedades adicionais. Quando uma dessas propriedades é usada, ela não pode ser usada novamente até o próximo amanhecer.\n\n**Relâmpago:** Quando você acerta com um ataque corpo a corpo usando o cajado, pode fazer com que o alvo sofra 2d6 de dano elétrico extra.\n\n**Trovão:** Quando você acerta com um ataque corpo a corpo usando o cajado, pode fazer com que o cajado emita um estrondo de trovão, audível a até 549 metros. O alvo que você acertou deve ter sucesso em um teste de resistência de Constituição CD 17 ou ficar atordoado até o final do seu próximo turno.\n\n**Golpe de Relâmpago:** Você pode usar uma ação para fazer com que um raio salte da ponta do cajado em uma linha de 1,5 metro de largura e 36 metros de comprimento. Cada criatura naquela linha deve fazer um teste de resistência de Destreza CD 17, sofrendo 9d6 de dano elétrico em uma falha ou metade do dano em um sucesso.\n\n**Trovoada:** Você pode usar uma ação para fazer com que o cajado emita uma trovoada ensurdecedora, audível a até 914 metros. Cada criatura a até 18 metros de você (não incluindo você) deve fazer um teste de resistência de Constituição CD 17. Em uma falha, uma criatura sofre 2d6 de dano trovejante e fica surda por 1 minuto. Em um sucesso, uma criatura sofre metade do dano e não fica surda.\n\n**Trovão e Relâmpago:** Você pode usar uma ação para usar as propriedades Golpe de Relâmpago e Trovoada ao mesmo tempo. Fazer isso não gasta o uso diário dessas propriedades, apenas o uso desta.",
+    "mechanical": {
+      "attack_bonus": 2,
+      "damage_bonus": 2,
+      "lightning_damage": "2d6",
+      "thunder_damage": "2d6",
+      "lightning_strike_damage": "9d6",
+      "save_dc": 17,
+      "thunder_audible_m": 549,
+      "thunderclap_audible_m": 914,
+      "lightning_line_width_m": 1.5,
+      "lightning_line_length_m": 36,
+      "thunderclap_radius_m": 18
+    }
+  },
+  {
+    "id": "staff_of_withering",
+    "name": "Cajado de Murchar",
+    "name_en": "Staff of Withering",
+    "type": "staff",
+    "rarity": "rare",
+    "requires_attunement": "cleric, druid, or warlock",
+    "description_markdown": "Este cajado tem 3 cargas e recupera 1d3 cargas gastas diariamente ao amanhecer.\n\nO cajado pode ser empunhado como um bordão mágico. Em um acerto, ele causa dano como um bordão normal, e você pode gastar 1 carga para causar 2d10 de dano necrótico extra ao alvo. Além disso, o alvo deve ter sucesso em um teste de resistência de Constituição CD 15 ou ter desvantagem por 1 hora em qualquer teste de habilidade ou teste de resistência que use Força ou Constituição.",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3",
+      "necrotic_damage": "2d10",
+      "save_dc": 15
+    }
+  },
+  {
+    "id": "stone_of_controlling_earth_elementals",
+    "name": "Pedra de Controlar Elementais da Terra",
+    "name_en": "Stone of Controlling Earth Elementals",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Se a pedra estiver tocando o chão, você pode usar uma ação para falar sua palavra de comando e convocar um elemental da terra, como se tivesse conjurado a magia **conjurar elemental**. A pedra não pode ser usada dessa forma novamente até o próximo amanhecer. A pedra pesa 2,3 kg.",
+    "mechanical": {
+      "weight_kg": 2.3,
+      "recharge": "daily"
+    }
+  },
+  {
+    "id": "stone_of_good_luck",
+    "name": "Pedra de Boa Sorte",
+    "name_en": "Stone of Good Luck (Luckstone)",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto esta ágata polida estiver com você, você ganha um bônus de +1 em testes de habilidade e testes de resistência.",
+    "mechanical": {
+      "ability_check_bonus": 1,
+      "saving_throw_bonus": 1
+    }
+  },
+  {
+    "id": "sun_blade",
+    "name": "Lâmina Solar",
+    "name_en": "Sun Blade",
+    "type": "weapon",
+    "weapon_type": "longsword",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Este item parece ser um punho de espada longa. Enquanto segura o punho, você pode usar uma ação bônus para fazer com que uma lâmina de radiância pura surja, ou fazer com que a lâmina desapareça. Enquanto a lâmina existe, esta espada longa mágica tem a propriedade acuidade. Se você for proficiente com espadas curtas ou espadas longas, você é proficiente com a lâmina solar.\n\nVocê ganha um bônus de +2 nas jogadas de ataque e dano feitas com esta arma, que causa dano radiante em vez de dano cortante. Quando você acerta um morto-vivo com ela, aquele alvo sofre 1d8 de dano radiante extra.\n\nA lâmina luminosa da espada emite luz plena em um raio de 4,5 metros e penumbra por 4,5 metros adicionais. A luz é luz solar. Enquanto a lâmina persiste, você pode usar uma ação para expandir ou reduzir seu raio de luz plena e penumbra em 1,5 metro cada, até um máximo de 9 metros cada ou um mínimo de 3 metros cada.",
+    "mechanical": {
+      "attack_bonus": 2,
+      "damage_bonus": 2,
+      "damage_type": "radiant",
+      "vs_undead_damage": "1d8",
+      "bright_light_m": 4.5,
+      "dim_light_m": 4.5,
+      "max_light_m": 9,
+      "min_light_m": 3
+    }
+  },
+  {
+    "id": "sword_of_life_stealing",
+    "name": "Espada de Roubar Vida",
+    "name_en": "Sword of Life Stealing",
+    "type": "weapon",
+    "weapon_type": "any_sword",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Quando você ataca uma criatura com esta arma mágica e rola um 20 na jogada de ataque, aquele alvo sofre 3d6 de dano necrótico extra, desde que o alvo não seja um constructo ou morto-vivo. Você ganha pontos de vida temporários iguais ao dano extra causado.",
+    "mechanical": {
+      "critical_necrotic_damage": "3d6"
+    }
+  },
+  {
+    "id": "sword_of_sharpness",
+    "name": "Espada da Afiação",
+    "name_en": "Sword of Sharpness",
+    "type": "weapon",
+    "weapon_type": "any_slashing_sword",
+    "rarity": "very_rare",
+    "requires_attunement": true,
+    "description_markdown": "Quando você ataca um objeto com esta espada mágica e acerta, maximize seus dados de dano da arma contra o alvo.\n\nQuando você ataca uma criatura com esta arma e rola um 20 na jogada de ataque, aquele alvo sofre 4d6 de dano cortante extra. Então role outro d20. Se você rolar um 20, você decepa um dos membros do alvo, com o efeito de tal perda determinado pelo Mestre. Se a criatura não tiver membro para decepar, você decepa uma porção de seu corpo.\n\nAlém disso, você pode falar a palavra de comando da espada para fazer com que a lâmina emita luz plena em um raio de 3 metros e penumbra por 3 metros adicionais. Falar a palavra de comando novamente ou embainhar a espada apaga a luz.",
+    "mechanical": {
+      "maximize_damage_vs_objects": true,
+      "critical_slashing_damage": "4d6",
+      "sever_limb_on_double_20": true,
+      "bright_light_m": 3,
+      "dim_light_m": 3
+    }
+  },
+  {
+    "id": "sword_of_wounding",
+    "name": "Espada de Ferir",
+    "name_en": "Sword of Wounding",
+    "type": "weapon",
+    "weapon_type": "any_sword",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Pontos de vida perdidos pelo dano desta arma só podem ser recuperados através de um descanso curto ou longo, em vez de regeneração, magia ou qualquer outro meio.\n\nUma vez por turno, quando você acerta uma criatura com um ataque usando esta arma mágica, você pode ferir o alvo. No início de cada um dos turnos da criatura ferida, ela sofre 1d4 de dano necrótico para cada vez que você a feriu, e então pode fazer um teste de resistência de Constituição CD 15, encerrando o efeito de todos esses ferimentos em si em um sucesso. Alternativamente, a criatura ferida, ou uma criatura a até 1,5 metro dela, pode usar uma ação para fazer um teste de Sabedoria (Medicina) CD 15, encerrando o efeito de tais ferimentos em um sucesso.",
+    "mechanical": {
+      "wound_damage_per_turn": "1d4",
+      "save_dc": 15,
+      "medicine_dc": 15
+    }
+  },
+  {
+    "id": "talisman_of_pure_good",
+    "name": "Talismã do Bem Puro",
+    "name_en": "Talisman of Pure Good",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": "good alignment",
+    "description_markdown": "Este talismã é um símbolo poderoso de bondade. Uma criatura que não seja boa nem maligna em alinhamento sofre 6d6 de dano radiante ao tocar o talismã. Uma criatura maligna sofre 8d6 de dano radiante ao tocar o talismã. Qualquer tipo de criatura sofre o dano novamente cada vez que terminar seu turno segurando ou carregando o talismã.\n\nSe você for um clérigo ou paladino bom, pode usar o talismã como um símbolo sagrado, e ganha um bônus de +2 em jogadas de ataque de magia enquanto o veste ou segura.\n\nO talismã tem 7 cargas. Se você o estiver vestindo ou segurando, pode usar uma ação para gastar 1 carga dele e escolher uma criatura que você possa ver no chão a até 36 metros de você. Se o alvo for de alinhamento maligno, uma fissura flamejante se abre sob ele. O alvo deve ter sucesso em um teste de resistência de Destreza CD 20 ou cair na fissura e ser destruído, não deixando restos. A fissura então se fecha, não deixando vestígio de sua existência. Quando você gastar a última carga, o talismã se dispersa em pontos de luz dourada e é destruído.",
+    "mechanical": {
+      "neutral_damage": "6d6",
+      "evil_damage": "8d6",
+      "spell_attack_bonus": 2,
+      "max_charges": 7,
+      "range_m": 36,
+      "save_dc": 20
+    }
+  },
+  {
+    "id": "talisman_of_the_sphere",
+    "name": "Talismã da Esfera",
+    "name_en": "Talisman of the Sphere",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Quando você faz um teste de Inteligência (Arcanismo) para controlar uma **esfera de aniquilação** enquanto está segurando este talismã, você dobra seu bônus de proficiência no teste. Além disso, quando você inicia seu turno com controle sobre uma esfera de aniquilação, pode usar uma ação para levitá-la 3 metros mais um número adicional de metros igual a 10 × seu modificador de Inteligência.",
+    "mechanical": {
+      "double_proficiency_vs_sphere": true,
+      "levitate_base_m": 3,
+      "levitate_per_int_mod_m": 10
+    }
+  },
+  {
+    "id": "talisman_of_ultimate_evil",
+    "name": "Talismã do Mal Supremo",
+    "name_en": "Talisman of Ultimate Evil",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": "evil alignment",
+    "description_markdown": "Este item simboliza maldade impenitente. Uma criatura que não seja boa nem maligna em alinhamento sofre 6d6 de dano necrótico ao tocar o talismã. Uma criatura boa sofre 8d6 de dano necrótico ao tocar o talismã. Qualquer tipo de criatura sofre o dano novamente cada vez que terminar seu turno segurando ou carregando o talismã.\n\nSe você for um clérigo ou paladino maligno, pode usar o talismã como um símbolo sagrado, e ganha um bônus de +2 em jogadas de ataque de magia enquanto o veste ou segura.\n\nO talismã tem 6 cargas. Se você o estiver vestindo ou segurando, pode usar uma ação para gastar 1 carga dele e escolher uma criatura que você possa ver no chão a até 36 metros de você. Se o alvo for de alinhamento bom, uma fissura flamejante se abre sob ele. O alvo deve ter sucesso em um teste de resistência de Destreza CD 20 ou cair na fissura e ser destruído, não deixando restos. A fissura então se fecha, não deixando vestígio de sua existência. Quando você gastar a última carga, o talismã se dissolve em lodo fedorento e é destruído.",
+    "mechanical": {
+      "neutral_damage": "6d6",
+      "good_damage": "8d6",
+      "spell_attack_bonus": 2,
+      "max_charges": 6,
+      "range_m": 36,
+      "save_dc": 20
+    }
+  },
+  {
+    "id": "tome_of_clear_thought",
+    "name": "Tomo do Pensamento Claro",
+    "name_en": "Tome of Clear Thought",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Este livro contém exercícios de memória e lógica, e suas palavras são carregadas com magia. Se você passar 48 horas ao longo de um período de 6 dias ou menos estudando o conteúdo do livro e praticando suas orientações, sua pontuação de Inteligência aumenta em 2, assim como seu máximo para essa pontuação. O manual então perde sua magia, mas a recupera em um século.",
+    "mechanical": {
+      "study_hours": 48,
+      "study_period_days": 6,
+      "intelligence_increase": 2,
+      "recharge_years": 100
+    }
+  },
+  {
+    "id": "tome_of_leadership_and_influence",
+    "name": "Tomo de Liderança e Influência",
+    "name_en": "Tome of Leadership and Influence",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Este livro contém diretrizes para influenciar e encantar outros, e suas palavras são carregadas com magia. Se você passar 48 horas ao longo de um período de 6 dias ou menos estudando o conteúdo do livro e praticando suas orientações, sua pontuação de Carisma aumenta em 2, assim como seu máximo para essa pontuação. O manual então perde sua magia, mas a recupera em um século.",
+    "mechanical": {
+      "study_hours": 48,
+      "study_period_days": 6,
+      "charisma_increase": 2,
+      "recharge_years": 100
+    }
+  },
+  {
+    "id": "tome_of_understanding",
+    "name": "Tomo da Compreensão",
+    "name_en": "Tome of Understanding",
+    "type": "wondrous_item",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Este livro contém exercícios de intuição e perspicácia, e suas palavras são carregadas com magia. Se você passar 48 horas ao longo de um período de 6 dias ou menos estudando o conteúdo do livro e praticando suas orientações, sua pontuação de Sabedoria aumenta em 2, assim como seu máximo para essa pontuação. O manual então perde sua magia, mas a recupera em um século.",
+    "mechanical": {
+      "study_hours": 48,
+      "study_period_days": 6,
+      "wisdom_increase": 2,
+      "recharge_years": 100
+    }
+  },
+  {
+    "id": "trident_of_fish_command",
+    "name": "Tridente de Comando de Peixes",
+    "name_en": "Trident of Fish Command",
+    "type": "weapon",
+    "weapon_type": "trident",
+    "rarity": "uncommon",
+    "requires_attunement": true,
+    "description_markdown": "Este tridente é uma arma mágica. Ele tem 3 cargas. Enquanto o carrega, você pode usar uma ação e gastar 1 carga para conjurar **dominar besta** (CD de resistência 15) dele em uma besta que tenha deslocamento de natação inato. O tridente recupera 1d3 cargas gastas diariamente ao amanhecer.",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3",
+      "save_dc": 15
+    }
+  },
+  {
+    "id": "universal_solvent",
+    "name": "Solvente Universal",
+    "name_en": "Universal Solvent",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": false,
+    "description_markdown": "Este tubo contém líquido leitoso com um forte cheiro de álcool. Você pode usar uma ação para despejar o conteúdo do tubo em uma superfície ao alcance. O líquido dissolve instantaneamente até 30 cm quadrados de adesivo que tocar, incluindo **cola soberana**.",
+    "mechanical": {
+      "dissolve_area_sqcm": 929
+    }
+  },
+  {
+    "id": "vicious_weapon",
+    "name": "Arma Cruel",
+    "name_en": "Vicious Weapon",
+    "type": "weapon",
+    "weapon_type": "any",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Quando você rola um 20 em sua jogada de ataque com esta arma mágica, seu acerto crítico causa 2d6 de dano extra do tipo da arma.",
+    "mechanical": {
+      "critical_extra_damage": "2d6"
+    }
+  },
+  {
+    "id": "vorpal_sword",
+    "name": "Espada Vorpal",
+    "name_en": "Vorpal Sword",
+    "type": "weapon",
+    "weapon_type": "any_slashing_sword",
+    "rarity": "legendary",
+    "requires_attunement": true,
+    "description_markdown": "Você ganha um bônus de +3 nas jogadas de ataque e dano feitas com esta arma mágica. Além disso, a arma ignora resistência a dano cortante.\n\nQuando você ataca uma criatura que tenha pelo menos uma cabeça com esta arma e rola um 20 na jogada de ataque, você decepa uma das cabeças da criatura. A criatura morre se não puder sobreviver sem a cabeça perdida. Uma criatura é imune a este efeito se for imune a dano cortante, não tiver ou não precisar de uma cabeça, tiver ações lendárias, ou o Mestre decidir que a criatura é grande demais para que sua cabeça seja decepada com esta arma. Tal criatura, em vez disso, sofre 6d8 de dano cortante extra do acerto.",
+    "mechanical": {
+      "attack_bonus": 3,
+      "damage_bonus": 3,
+      "ignore_slashing_resistance": true,
+      "behead_on_critical": true,
+      "alternative_critical_damage": "6d8"
+    }
+  },
+  {
+    "id": "wand_of_binding",
+    "name": "Varinha de Amarrar",
+    "name_en": "Wand of Binding",
+    "type": "wand",
+    "rarity": "rare",
+    "requires_attunement": "spellcaster",
+    "description_markdown": "Esta varinha tem 7 cargas para as seguintes propriedades. Ela recupera 1d6 + 1 cargas gastas diariamente ao amanhecer. Se você gastar a última carga da varinha, role um d20. Em um 1, a varinha se desfaz em cinzas e é destruída.\n\n**Magias:** Enquanto segura a varinha, você pode usar uma ação para gastar algumas de suas cargas para conjurar uma das seguintes magias (CD de resistência 17): **prender monstro** (5 cargas) ou **prender pessoa** (2 cargas).\n\n**Fuga Assistida:** Enquanto segura a varinha, você pode usar sua reação para gastar 1 carga e ganhar vantagem em um teste de resistência que fizer para evitar ficar paralisado ou contido, ou pode gastar 1 carga e ganhar vantagem em qualquer teste que fizer para escapar de um agarrão.",
+    "mechanical": {
+      "max_charges": 7,
+      "recharge_daily": "1d6+1",
+      "spell_save_dc": 17
+    }
+  },
+  {
+    "id": "wand_of_enemy_detection",
+    "name": "Varinha de Detecção de Inimigos",
+    "name_en": "Wand of Enemy Detection",
+    "type": "wand",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Esta varinha tem 7 cargas. Enquanto a segura, você pode usar uma ação e gastar 1 carga para falar sua palavra de comando. Pelo próximo minuto, você sabe a direção da criatura mais próxima hostil a você a até 18 metros, mas não sua distância de você. A varinha pode sentir a presença de criaturas hostis que sejam etéreas, invisíveis, disfarçadas ou escondidas, assim como aquelas à vista plena. O efeito termina se você parar de segurar a varinha.\n\nA varinha recupera 1d6 + 1 cargas gastas diariamente ao amanhecer. Se você gastar a última carga da varinha, role um d20. Em um 1, a varinha se desfaz em cinzas e é destruída.",
+    "mechanical": {
+      "max_charges": 7,
+      "recharge_daily": "1d6+1",
+      "duration_minutes": 1,
+      "range_m": 18
+    }
+  },
+  {
+    "id": "wand_of_fear",
+    "name": "Varinha do Medo",
+    "name_en": "Wand of Fear",
+    "type": "wand",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Esta varinha tem 7 cargas para as seguintes propriedades. Ela recupera 1d6 + 1 cargas gastas diariamente ao amanhecer. Se você gastar a última carga da varinha, role um d20. Em um 1, a varinha se desfaz em cinzas e é destruída.\n\n**Comando:** Enquanto segura a varinha, você pode usar uma ação para gastar 1 carga e comandar outra criatura a fugir ou se ajoelhar, como com a magia **comando** (CD de resistência 15).\n\n**Cone de Medo:** Enquanto segura a varinha, você pode usar uma ação para gastar 2 cargas, fazendo com que a ponta da varinha emita um cone de luz âmbar de 18 metros. Cada criatura no cone deve ter sucesso em um teste de resistência de Sabedoria CD 15 ou ficar amedrontada de você por 1 minuto. Enquanto amedrontada dessa forma, uma criatura deve gastar seus turnos tentando se afastar de você o máximo que puder, e não pode voluntariamente se mover para um espaço a até 9 metros de você. Ela também não pode usar reações. Para sua ação, ela pode usar apenas a ação de Disparada ou tentar escapar de um efeito que a impeça de se mover. Se ela não tiver para onde se mover, a criatura pode usar a ação de Esquivar. No final de cada um de seus turnos, uma criatura pode repetir o teste de resistência, encerrando o efeito em si em um sucesso.",
+    "mechanical": {
+      "max_charges": 7,
+      "recharge_daily": "1d6+1",
+      "save_dc": 15,
+      "cone_length_m": 18,
+      "fear_distance_m": 9
+    }
+  },
+  {
+    "id": "wand_of_fireballs",
+    "name": "Varinha de Bolas de Fogo",
+    "name_en": "Wand of Fireballs",
+    "type": "wand",
+    "rarity": "rare",
+    "requires_attunement": "spellcaster",
+    "description_markdown": "Esta varinha tem 7 cargas. Enquanto a segura, você pode usar uma ação para gastar 1 ou mais de suas cargas para conjurar a magia **bola de fogo** (CD de resistência 15) dela. Para 1 carga, você conjura a versão de 3º nível da magia. Você pode aumentar o nível do espaço de magia em um para cada carga adicional que gastar.\n\nA varinha recupera 1d6 + 1 cargas gastas diariamente ao amanhecer. Se você gastar a última carga da varinha, role um d20. Em um 1, a varinha se desfaz em cinzas e é destruída.",
+    "mechanical": {
+      "max_charges": 7,
+      "recharge_daily": "1d6+1",
+      "save_dc": 15,
+      "base_spell_level": 3
+    }
+  },
+  {
+    "id": "wand_of_lightning_bolts",
+    "name": "Varinha de Relâmpagos",
+    "name_en": "Wand of Lightning Bolts",
+    "type": "wand",
+    "rarity": "rare",
+    "requires_attunement": "spellcaster",
+    "description_markdown": "Esta varinha tem 7 cargas. Enquanto a segura, você pode usar uma ação para gastar 1 ou mais de suas cargas para conjurar a magia **relâmpago** (CD de resistência 15) dela. Para 1 carga, você conjura a versão de 3º nível da magia. Você pode aumentar o nível do espaço de magia em um para cada carga adicional que gastar.\n\nA varinha recupera 1d6 + 1 cargas gastas diariamente ao amanhecer. Se você gastar a última carga da varinha, role um d20. Em um 1, a varinha se desfaz em cinzas e é destruída.",
+    "mechanical": {
+      "max_charges": 7,
+      "recharge_daily": "1d6+1",
+      "save_dc": 15,
+      "base_spell_level": 3
+    }
+  },
+  {
+    "id": "wand_of_magic_detection",
+    "name": "Varinha de Detecção de Magia",
+    "name_en": "Wand of Magic Detection",
+    "type": "wand",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Esta varinha tem 3 cargas. Enquanto a segura, você pode gastar 1 carga como uma ação para conjurar a magia **detectar magia** dela. A varinha recupera 1d3 cargas gastas diariamente ao amanhecer.",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3"
+    }
+  },
+  {
+    "id": "wand_of_magic_missiles",
+    "name": "Varinha de Mísseis Mágicos",
+    "name_en": "Wand of Magic Missiles",
+    "type": "wand",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Esta varinha tem 7 cargas. Enquanto a segura, você pode usar uma ação para gastar 1 ou mais de suas cargas para conjurar a magia **mísseis mágicos** dela. Para 1 carga, você conjura a versão de 1º nível da magia. Você pode aumentar o nível do espaço de magia em um para cada carga adicional que gastar.\n\nA varinha recupera 1d6 + 1 cargas gastas diariamente ao amanhecer. Se você gastar a última carga da varinha, role um d20. Em um 1, a varinha se desfaz em cinzas e é destruída.",
+    "mechanical": {
+      "max_charges": 7,
+      "recharge_daily": "1d6+1",
+      "base_spell_level": 1
+    }
+  },
+  {
+    "id": "wand_of_paralysis",
+    "name": "Varinha de Paralisia",
+    "name_en": "Wand of Paralysis",
+    "type": "wand",
+    "rarity": "rare",
+    "requires_attunement": "spellcaster",
+    "description_markdown": "Esta varinha tem 7 cargas. Enquanto a segura, você pode usar uma ação para gastar 1 de suas cargas para fazer com que um raio azul fino dispare da ponta em direção a uma criatura que você possa ver a até 18 metros de você. O alvo deve ter sucesso em um teste de resistência de Constituição CD 15 ou ficar paralisado por 1 minuto. No final de cada um dos turnos do alvo, ele pode repetir o teste de resistência, encerrando o efeito em si em um sucesso.\n\nA varinha recupera 1d6 + 1 cargas gastas diariamente ao amanhecer. Se você gastar a última carga da varinha, role um d20. Em um 1, a varinha se desfaz em cinzas e é destruída.",
+    "mechanical": {
+      "max_charges": 7,
+      "recharge_daily": "1d6+1",
+      "save_dc": 15,
+      "range_m": 18,
+      "duration_minutes": 1
+    }
+  },
+  {
+    "id": "wand_of_polymorph",
+    "name": "Varinha de Polimorfar",
+    "name_en": "Wand of Polymorph",
+    "type": "wand",
+    "rarity": "very_rare",
+    "requires_attunement": "spellcaster",
+    "description_markdown": "Esta varinha tem 7 cargas. Enquanto a segura, você pode usar uma ação para gastar 1 de suas cargas para conjurar a magia **polimorfar** (CD de resistência 15) dela.\n\nA varinha recupera 1d6 + 1 cargas gastas diariamente ao amanhecer. Se você gastar a última carga da varinha, role um d20. Em um 1, a varinha se desfaz em cinzas e é destruída.",
+    "mechanical": {
+      "max_charges": 7,
+      "recharge_daily": "1d6+1",
+      "save_dc": 15
+    }
+  },
+  {
+    "id": "wand_of_secrets",
+    "name": "Varinha de Segredos",
+    "name_en": "Wand of Secrets",
+    "type": "wand",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "A varinha tem 3 cargas. Enquanto a segura, você pode usar uma ação para gastar 1 de suas cargas e, se uma porta secreta ou armadilha estiver a até 9 metros de você, a varinha pulsa e aponta para a mais próxima de você. A varinha recupera 1d3 cargas gastas diariamente ao amanhecer.",
+    "mechanical": {
+      "max_charges": 3,
+      "recharge_daily": "1d3",
+      "range_m": 9
+    }
+  },
+  {
+    "id": "wand_of_the_war_mage_plus_1",
+    "name": "Varinha do Mago de Guerra +1",
+    "name_en": "Wand of the War Mage, +1",
+    "type": "wand",
+    "rarity": "uncommon",
+    "requires_attunement": "spellcaster",
+    "description_markdown": "Enquanto segura esta varinha, você ganha um bônus de +1 em jogadas de ataque de magia. Além disso, você ignora meia cobertura ao fazer um ataque de magia.",
+    "mechanical": {
+      "spell_attack_bonus": 1,
+      "ignore_half_cover": true
+    }
+  },
+  {
+    "id": "wand_of_the_war_mage_plus_2",
+    "name": "Varinha do Mago de Guerra +2",
+    "name_en": "Wand of the War Mage, +2",
+    "type": "wand",
+    "rarity": "rare",
+    "requires_attunement": "spellcaster",
+    "description_markdown": "Enquanto segura esta varinha, você ganha um bônus de +2 em jogadas de ataque de magia. Além disso, você ignora meia cobertura ao fazer um ataque de magia.",
+    "mechanical": {
+      "spell_attack_bonus": 2,
+      "ignore_half_cover": true
+    }
+  },
+  {
+    "id": "wand_of_the_war_mage_plus_3",
+    "name": "Varinha do Mago de Guerra +3",
+    "name_en": "Wand of the War Mage, +3",
+    "type": "wand",
+    "rarity": "very_rare",
+    "requires_attunement": "spellcaster",
+    "description_markdown": "Enquanto segura esta varinha, você ganha um bônus de +3 em jogadas de ataque de magia. Além disso, você ignora meia cobertura ao fazer um ataque de magia.",
+    "mechanical": {
+      "spell_attack_bonus": 3,
+      "ignore_half_cover": true
+    }
+  },
+  {
+    "id": "wand_of_web",
+    "name": "Varinha de Teia",
+    "name_en": "Wand of Web",
+    "type": "wand",
+    "rarity": "uncommon",
+    "requires_attunement": "spellcaster",
+    "description_markdown": "Esta varinha tem 7 cargas. Enquanto a segura, você pode usar uma ação para gastar 1 de suas cargas para conjurar a magia **teia** (CD de resistência 15) dela.\n\nA varinha recupera 1d6 + 1 cargas gastas diariamente ao amanhecer. Se você gastar a última carga da varinha, role um d20. Em um 1, a varinha se desfaz em cinzas e é destruída.",
+    "mechanical": {
+      "max_charges": 7,
+      "recharge_daily": "1d6+1",
+      "save_dc": 15
+    }
+  },
+  {
+    "id": "wand_of_wonder",
+    "name": "Varinha das Maravilhas",
+    "name_en": "Wand of Wonder",
+    "type": "wand",
+    "rarity": "rare",
+    "requires_attunement": "spellcaster",
+    "description_markdown": "Esta varinha tem 7 cargas. Enquanto a segura, você pode usar uma ação para gastar 1 de suas cargas e escolher um alvo a até 36 metros de você. O alvo pode ser uma criatura, um objeto ou um ponto no espaço. Role d100 e consulte a tabela a seguir para descobrir o que acontece.\n\nSe o efeito faz com que você conjure uma magia da varinha, a CD de resistência da magia é 15. Se a magia normalmente tem um alcance expresso em pés, seu alcance se torna 36 metros se já não for.\n\nSe um efeito cobre uma área, você deve centralizar a magia no alvo e incluí-lo. Se um efeito tem múltiplos alvos possíveis, o Mestre determina aleatoriamente quais são afetados.\n\nA varinha recupera 1d6 + 1 cargas gastas diariamente ao amanhecer. Se você gastar a última carga da varinha, role um d20. Em um 1, a varinha se desfaz em pó e é destruída.\n\n**(A varinha possui uma tabela d100 extensa com efeitos aleatórios que vão desde conjurar magias como lentidão, fogo das fadas, até efeitos bizarros como fazer chover ou transformar a pele do alvo em azul brilhante)**",
+    "mechanical": {
+      "max_charges": 7,
+      "recharge_daily": "1d6+1",
+      "save_dc": 15,
+      "range_m": 36
+    }
+  },
+  {
+    "id": "weapon_plus_1",
+    "name": "Arma +1",
+    "name_en": "Weapon, +1",
+    "type": "weapon",
+    "weapon_type": "any",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Você tem um bônus de +1 nas jogadas de ataque e dano feitas com esta arma mágica.",
+    "mechanical": {
+      "attack_bonus": 1,
+      "damage_bonus": 1
+    }
+  },
+  {
+    "id": "weapon_plus_2",
+    "name": "Arma +2",
+    "name_en": "Weapon, +2",
+    "type": "weapon",
+    "weapon_type": "any",
+    "rarity": "rare",
+    "requires_attunement": false,
+    "description_markdown": "Você tem um bônus de +2 nas jogadas de ataque e dano feitas com esta arma mágica.",
+    "mechanical": {
+      "attack_bonus": 2,
+      "damage_bonus": 2
+    }
+  },
+  {
+    "id": "weapon_plus_3",
+    "name": "Arma +3",
+    "name_en": "Weapon, +3",
+    "type": "weapon",
+    "weapon_type": "any",
+    "rarity": "very_rare",
+    "requires_attunement": false,
+    "description_markdown": "Você tem um bônus de +3 nas jogadas de ataque e dano feitas com esta arma mágica.",
+    "mechanical": {
+      "attack_bonus": 3,
+      "damage_bonus": 3
+    }
+  },
+  {
+    "id": "well_of_many_worlds",
+    "name": "Poço de Muitos Mundos",
+    "name_en": "Well of Many Worlds",
+    "type": "wondrous_item",
+    "rarity": "legendary",
+    "requires_attunement": false,
+    "description_markdown": "Este tecido preto fino, macio como seda, é dobrado nas dimensões de um lenço. Ele se desdobra em um lençol circular de 1,8 metro de diâmetro.\n\nVocê pode usar uma ação para desdobrar e colocar o poço de muitos mundos em uma superfície sólida, após o que ele cria um portal bidirecional para outro mundo ou plano de existência. Cada vez que o item abre um portal, o Mestre decide para onde ele leva. Você pode usar uma ação para fechar um portal aberto segurando as bordas do tecido e dobrando-o. Uma vez que o poço de muitos mundos tenha aberto um portal, ele não pode fazê-lo novamente por 1d8 horas.",
+    "mechanical": {
+      "diameter_m": 1.8,
+      "cooldown_hours": "1d8"
+    }
+  },
+  {
+    "id": "wind_fan",
+    "name": "Leque de Vento",
+    "name_en": "Wind Fan",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": false,
+    "description_markdown": "Enquanto segura este leque, você pode usar uma ação para conjurar a magia **rajada de vento** (CD de resistência 13) dele. Uma vez usado, o leque não deve ser usado novamente até o próximo amanhecer. Cada vez que for usado novamente antes disso, ele tem uma chance cumulativa de 20% de não funcionar e se rasgar em farrapos não mágicos e inúteis.",
+    "mechanical": {
+      "save_dc": 13,
+      "failure_chance_per_use": 20
+    }
+  },
+  {
+    "id": "winged_boots",
+    "name": "Botas Aladas",
+    "name_en": "Winged Boots",
+    "type": "wondrous_item",
+    "rarity": "uncommon",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste estas botas, você tem deslocamento de voo igual ao seu deslocamento de caminhada. Você pode usar as botas para voar por até 4 horas, tudo de uma vez ou em vários voos mais curtos, cada um usando um mínimo de 1 minuto da duração. Se você estiver voando quando a duração expirar, você desce a uma taxa de 9 metros por rodada até pousar.\n\nAs botas recuperam 2 horas de capacidade de voo para cada 12 horas que não estiverem em uso.",
+    "mechanical": {
+      "fly_speed_equals_walk": true,
+      "max_flight_hours": 4,
+      "descent_rate_m": 9,
+      "recharge_hours": 2,
+      "recharge_period_hours": 12
+    }
+  },
+  {
+    "id": "wings_of_flying",
+    "name": "Asas Voadoras",
+    "name_en": "Wings of Flying",
+    "type": "wondrous_item",
+    "rarity": "rare",
+    "requires_attunement": true,
+    "description_markdown": "Enquanto veste este manto, você pode usar uma ação para falar sua palavra de comando. Isso transforma o manto em um par de asas de morcego ou asas de pássaro em suas costas por 1 hora ou até que você repita a palavra de comando como uma ação. As asas lhe dão deslocamento de voo de 18 metros. Quando elas desaparecem, você não pode usá-las novamente por 1d12 horas.",
+    "mechanical": {
+      "fly_speed_m": 18,
+      "duration_hours": 1,
+      "cooldown_hours": "1d12"
+    }
+  }
+]
