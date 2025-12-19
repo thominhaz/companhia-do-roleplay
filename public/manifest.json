@@ -1,0 +1,24 @@
+{
+  "name": "Ward RPG - Companheiro D&D 5e",
+  "short_name": "Ward RPG",
+  "description": "Gerencie seus personagens de D&D 5e, campanhas e ferramentas de RPG",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#111827",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
