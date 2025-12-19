@@ -144,7 +144,7 @@ export function HomeScreen() {
             </h1>
           </div>
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Go20" className="w-9 h-9" />
+            <img src="/logo.png" alt="Go20" className="h-10 w-auto" />
             {!user && (
               <button 
                 onClick={() => navigate("/auth")}
