@@ -1,0 +1,368 @@
+{
+  "id": "druid",
+  "name": "Druida",
+  "name_en": "Druid",
+  "hit_die": 8,
+  "primary_abilities": ["wisdom"],
+  "saving_throw_proficiencies": ["intelligence", "wisdom"],
+  "proficiencies": {
+    "armor": ["light", "medium", "shields"],
+    "armor_restriction": "Druidas não usam armadura ou escudos feitos de metal",
+    "weapons": ["club", "dagger", "dart", "javelin", "mace", "quarterstaff", "scimitar", "sickle", "sling", "spear"],
+    "tools": ["herbalism_kit"],
+    "skills": {
+      "choose": 2,
+      "from": ["arcana", "animal_handling", "insight", "medicine", "nature", "perception", "religion", "survival"]
+    }
+  },
+  "equipment_markdown": "Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:\n\n- **(a)** um escudo de madeira OU **(b)** qualquer arma simples\n- **(a)** uma cimitarra OU **(b)** qualquer arma corpo a corpo simples\n- Armadura de couro, um pacote de explorador e um foco druídico",
+  "starting_equipment": {
+    "choices": [
+      {
+        "choose": 1,
+        "from": [
+          ["wooden_shield"],
+          ["simple_weapon"]
+        ]
+      },
+      {
+        "choose": 1,
+        "from": [
+          ["scimitar"],
+          ["simple_melee_weapon"]
+        ]
+      }
+    ],
+    "granted": ["leather_armor", "explorers_pack", "druidic_focus"]
+  },
+  "levels": [
+    {
+      "level": 1,
+      "proficiency_bonus": 2,
+      "features": ["druidic", "spellcasting"],
+      "cantrips_known": 2,
+      "spell_slots": [2, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "level": 2,
+      "proficiency_bonus": 2,
+      "features": ["wild_shape", "druid_circle"],
+      "cantrips_known": 2,
+      "spell_slots": [3, 0, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "level": 3,
+      "proficiency_bonus": 2,
+      "features": [],
+      "cantrips_known": 2,
+      "spell_slots": [4, 2, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "level": 4,
+      "proficiency_bonus": 2,
+      "features": ["wild_shape_improvement", "ability_score_improvement"],
+      "cantrips_known": 3,
+      "spell_slots": [4, 3, 0, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "level": 5,
+      "proficiency_bonus": 3,
+      "features": [],
+      "cantrips_known": 3,
+      "spell_slots": [4, 3, 2, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "level": 6,
+      "proficiency_bonus": 3,
+      "features": ["druid_circle_feature"],
+      "cantrips_known": 3,
+      "spell_slots": [4, 3, 3, 0, 0, 0, 0, 0, 0]
+    },
+    {
+      "level": 7,
+      "proficiency_bonus": 3,
+      "features": [],
+      "cantrips_known": 3,
+      "spell_slots": [4, 3, 3, 1, 0, 0, 0, 0, 0]
+    },
+    {
+      "level": 8,
+      "proficiency_bonus": 3,
+      "features": ["wild_shape_improvement_2", "ability_score_improvement"],
+      "cantrips_known": 3,
+      "spell_slots": [4, 3, 3, 2, 0, 0, 0, 0, 0]
+    },
+    {
+      "level": 9,
+      "proficiency_bonus": 4,
+      "features": [],
+      "cantrips_known": 3,
+      "spell_slots": [4, 3, 3, 3, 1, 0, 0, 0, 0]
+    },
+    {
+      "level": 10,
+      "proficiency_bonus": 4,
+      "features": ["druid_circle_feature"],
+      "cantrips_known": 4,
+      "spell_slots": [4, 3, 3, 3, 2, 0, 0, 0, 0]
+    },
+    {
+      "level": 11,
+      "proficiency_bonus": 4,
+      "features": [],
+      "cantrips_known": 4,
+      "spell_slots": [4, 3, 3, 3, 2, 1, 0, 0, 0]
+    },
+    {
+      "level": 12,
+      "proficiency_bonus": 4,
+      "features": ["ability_score_improvement"],
+      "cantrips_known": 4,
+      "spell_slots": [4, 3, 3, 3, 2, 1, 0, 0, 0]
+    },
+    {
+      "level": 13,
+      "proficiency_bonus": 5,
+      "features": [],
+      "cantrips_known": 4,
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1, 0, 0]
+    },
+    {
+      "level": 14,
+      "proficiency_bonus": 5,
+      "features": ["druid_circle_feature"],
+      "cantrips_known": 4,
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1, 0, 0]
+    },
+    {
+      "level": 15,
+      "proficiency_bonus": 5,
+      "features": [],
+      "cantrips_known": 4,
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1, 0]
+    },
+    {
+      "level": 16,
+      "proficiency_bonus": 5,
+      "features": ["ability_score_improvement"],
+      "cantrips_known": 4,
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1, 0]
+    },
+    {
+      "level": 17,
+      "proficiency_bonus": 6,
+      "features": [],
+      "cantrips_known": 4,
+      "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1, 1]
+    },
+    {
+      "level": 18,
+      "proficiency_bonus": 6,
+      "features": ["timeless_body", "beast_spells"],
+      "cantrips_known": 4,
+      "spell_slots": [4, 3, 3, 3, 3, 1, 1, 1, 1]
+    },
+    {
+      "level": 19,
+      "proficiency_bonus": 6,
+      "features": ["ability_score_improvement"],
+      "cantrips_known": 4,
+      "spell_slots": [4, 3, 3, 3, 3, 2, 1, 1, 1]
+    },
+    {
+      "level": 20,
+      "proficiency_bonus": 6,
+      "features": ["archdruid"],
+      "cantrips_known": 4,
+      "spell_slots": [4, 3, 3, 3, 3, 2, 2, 1, 1]
+    }
+  ],
+  "features": [
+    {
+      "id": "druidic",
+      "name": "Druídico",
+      "level": 1,
+      "description_markdown": "Você conhece o Druídico, a linguagem secreta dos druidas. Você pode falar a língua e usá-la para deixar mensagens ocultas. Você e outros que conheçam essa língua automaticamente identificam tal mensagem. Outros identificam a presença da mensagem com um teste de Sabedoria (**Percepção**) CD 15 bem-sucedido, mas não conseguem decifrá-la sem magia.",
+      "mechanical": {
+        "secret_language": true,
+        "spot_dc": 15
+      }
+    },
+    {
+      "id": "spellcasting",
+      "name": "Conjuração",
+      "level": 1,
+      "description_markdown": "Recorrendo à essência divina da própria natureza, você pode conjurar magias para moldar essa essência à sua vontade.\n\n### Truques\nNo 1º nível, você conhece **dois truques** à sua escolha da lista de magias de druida. Você aprende truques de druida adicionais à sua escolha em níveis mais altos, conforme mostrado na coluna Truques Conhecidos da tabela do Druida.\n\n### Preparando e Conjurando Magias\nA tabela do Druida mostra quantos espaços de magia você possui para conjurar suas magias de 1º nível e superiores. Para conjurar uma dessas magias de druida, você deve gastar um espaço do nível da magia ou superior. Você recupera todos os espaços de magia gastos quando termina um **descanso longo**.\n\nVocê prepara a lista de magias de druida que estão disponíveis para você conjurar, escolhendo da lista de magias de druida. Ao fazer isso, escolha um número de magias de druida igual ao seu **modificador de Sabedoria + seu nível de druida** (mínimo de uma magia). As magias devem ser de um nível para o qual você tenha espaços de magia.\n\nPor exemplo, se você é um druida de 3º nível, você possui quatro espaços de magia de 1º nível e dois de 2º nível. Com uma Sabedoria 16, sua lista de magias preparadas pode incluir seis magias de 1º ou 2º nível, em qualquer combinação. Se você preparar a magia de 1º nível *curar ferimentos*, você pode conjurá-la usando um espaço de magia de 1º nível ou de 2º nível. Conjurar a magia não a remove da sua lista de magias preparadas.\n\nVocê pode mudar sua lista de magias preparadas quando termina um descanso longo. Preparar uma nova lista de magias de druida requer tempo gasto em oração e meditação: pelo menos **1 minuto por nível de magia** para cada magia na sua lista.\n\n### Habilidade de Conjuração\nSabedoria é sua habilidade de conjuração para suas magias de druida, já que sua magia provém de sua devoção e sintonia com a natureza. Você usa sua Sabedoria sempre que uma magia se referir à sua habilidade de conjuração. Além disso, você usa seu modificador de Sabedoria ao definir a **CD de resistência** para uma magia de druida que você conjurar e ao fazer uma **jogada de ataque** com uma.\n\n**CD de resistência de magia** = 8 + bônus de proficiência + modificador de Sabedoria\n\n**Modificador de ataque de magia** = bônus de proficiência + modificador de Sabedoria\n\n### Conjuração de Ritual\nVocê pode conjurar uma magia de druida como um ritual se essa magia possuir o descritor ritual e você tiver a magia preparada.\n\n### Foco de Conjuração\nVocê pode usar um **foco druídico** como foco de conjuração para suas magias de druida.",
+      "mechanical": {
+        "spellcasting_ability": "wisdom",
+        "spell_save_dc": "8 + proficiency_bonus + wisdom_modifier",
+        "spell_attack_bonus": "proficiency_bonus + wisdom_modifier",
+        "prepared_spells": "wisdom_modifier + druid_level",
+        "ritual_casting": true
+      }
+    },
+    {
+      "id": "wild_shape",
+      "name": "Forma Selvagem",
+      "level": 2,
+      "description_markdown": "A partir do 2º nível, você pode usar sua **ação** para assumir magicamente a forma de uma besta que você já tenha visto antes. Você pode usar essa característica **duas vezes**. Você recupera os usos gastos quando termina um **descanso curto** ou **longo**.\n\nSeu nível de druida determina as bestas nas quais você pode se transformar, conforme mostrado na tabela Formas de Besta. No 2º nível, por exemplo, você pode se transformar em qualquer besta que tenha um nível de desafio de 1/4 ou inferior que não possua deslocamento de voo ou natação.\n\n### Formas de Besta\n\n| Nível | ND Máx. | Limitações | Exemplo |\n|-------|---------|------------|----------|\n| 2º | 1/4 | Sem voo ou natação | Lobo |\n| 4º | 1/2 | Sem voo | Crocodilo |\n| 8º | 1 | — | Águia gigante |\n\nVocê pode permanecer em uma forma de besta por um número de **horas** igual a **metade do seu nível de druida (arredondado para baixo)**. Você então reverte à sua forma normal, a menos que gaste outro uso dessa característica. Você pode reverter à sua forma normal mais cedo usando uma **ação bônus** no seu turno. Você reverte automaticamente se cair **inconsciente**, cair a **0 pontos de vida** ou **morrer**.\n\nEnquanto você estiver transformado, as seguintes regras se aplicam:\n\n- Suas estatísticas de jogo são substituídas pelas estatísticas da besta, mas você retém seu alinhamento, personalidade e valores de Inteligência, Sabedoria e Carisma. Você também retém todas as suas proficiências em perícias e testes de resistência, além de ganhar as da criatura.\n- Quando você se transformar, você assume os pontos de vida e Dados de Vida da besta. Quando você reverter à sua forma normal, você retorna ao número de pontos de vida que tinha antes de se transformar. Porém, se você reverter como resultado de cair a 0 pontos de vida, qualquer dano excedente é transferido para sua forma normal.\n- Você não pode conjurar magias, e sua habilidade de falar ou fazer qualquer ação que requeira mãos é limitada às capacidades de sua forma de besta. Transformar-se não quebra sua concentração em uma magia que você já tenha conjurado.\n- Você retém o benefício de quaisquer características de sua classe, raça ou outra fonte e pode usá-las se a nova forma for fisicamente capaz de fazê-lo.\n- Você escolhe se seu equipamento cai no chão no seu espaço, se funde à nova forma ou é usado por ela. Equipamento que se funde à forma não tem efeito até você deixar a forma.",
+      "mechanical": {
+        "action_type": "action",
+        "uses": 2,
+        "recharge": "short_or_long_rest",
+        "duration": "druid_level / 2 (round down) hours",
+        "beast_shapes": {
+          "2": {
+            "max_cr": 0.25,
+            "no_fly": true,
+            "no_swim": true
+          },
+          "4": {
+            "max_cr": 0.5,
+            "no_fly": true
+          },
+          "8": {
+            "max_cr": 1
+          }
+        }
+      }
+    },
+    {
+      "id": "wild_shape_improvement",
+      "name": "Forma Selvagem (Aprimorada)",
+      "level": 4,
+      "description_markdown": "No 4º nível, você pode se transformar em bestas de **ND 1/2 ou inferior** que não possuam deslocamento de voo.",
+      "mechanical": {
+        "max_cr": 0.5,
+        "no_fly": true
+      }
+    },
+    {
+      "id": "wild_shape_improvement_2",
+      "name": "Forma Selvagem (Aprimorada 2)",
+      "level": 8,
+      "description_markdown": "No 8º nível, você pode se transformar em bestas de **ND 1 ou inferior**.",
+      "mechanical": {
+        "max_cr": 1
+      }
+    },
+    {
+      "id": "druid_circle",
+      "name": "Círculo Druídico",
+      "level": 2,
+      "description_markdown": "No 2º nível, você escolhe se identificar com um círculo de druidas, como o **Círculo da Terra**. Sua escolha concede características no 2º nível e novamente no 6º, 10º e 14º níveis."
+    },
+    {
+      "id": "ability_score_improvement",
+      "name": "Incremento de Atributo",
+      "level": 4,
+      "description_markdown": "Quando você atinge o 4º nível e novamente no 8º, 12º, 16º e 19º nível, você pode aumentar um valor de atributo de sua escolha em 2 ou você pode aumentar dois valores de atributo de sua escolha em 1.\n\nComo sempre, você não pode aumentar um atributo acima de 20 usando essa característica.",
+      "mechanical": {
+        "improvements": [4, 8, 12, 16, 19]
+      }
+    },
+    {
+      "id": "timeless_body",
+      "name": "Corpo Atemporal",
+      "level": 18,
+      "description_markdown": "A partir do 18º nível, a magia primordial que você maneja faz com que você envelheça mais lentamente. Para cada **10 anos** que passam, seu corpo envelhece apenas **1 ano**.",
+      "mechanical": {
+        "aging_rate": 0.1
+      }
+    },
+    {
+      "id": "beast_spells",
+      "name": "Magias Bestiais",
+      "level": 18,
+      "description_markdown": "A partir do 18º nível, você pode conjurar muitas de suas magias de druida em qualquer forma que você assumir usando Forma Selvagem. Você pode executar os componentes somáticos e verbais de uma magia de druida enquanto estiver em uma forma de besta, mas você não é capaz de fornecer componentes materiais.",
+      "mechanical": {
+        "cast_spells_in_wild_shape": true,
+        "no_material_components": true
+      }
+    },
+    {
+      "id": "archdruid",
+      "name": "Arquidruida",
+      "level": 20,
+      "description_markdown": "No 20º nível, você pode usar sua Forma Selvagem um **número ilimitado de vezes**.\n\nAdicionalmente, você pode ignorar os componentes verbais e somáticos de suas magias de druida, bem como quaisquer componentes materiais que não tenham custo e não sejam consumidos por uma magia. Você ganha esse benefício tanto na sua forma normal quanto na sua forma de besta da Forma Selvagem.",
+      "mechanical": {
+        "unlimited_wild_shape": true,
+        "ignore_vsm_components": true
+      }
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "circle_of_the_land",
+      "name": "Círculo da Terra",
+      "name_en": "Circle of the Land",
+      "description": "O Círculo da Terra é formado por místicos e sábios que protegem conhecimento e ritos antigos através de uma vasta tradição oral. Esses druidas se encontram dentro de círculos sagrados de árvores ou pedras erguidas para sussurrar segredos primordiais em Druídico. Os membros mais sábios do círculo presidem como os sacerdotes chefes de comunidades que mantêm a Fé Antiga e servem como conselheiros dos governantes daquele povo.",
+      "land_types": ["arctic", "coast", "desert", "forest", "grassland", "mountain", "swamp"],
+      "features": [
+        {
+          "id": "bonus_cantrip",
+          "name": "Truque Adicional",
+          "level": 2,
+          "description_markdown": "Quando você escolhe este círculo no 2º nível, você aprende **um truque de druida adicional** à sua escolha.",
+          "mechanical": {
+            "bonus_cantrips": 1
+          }
+        },
+        {
+          "id": "natural_recovery",
+          "name": "Recuperação Natural",
+          "level": 2,
+          "description_markdown": "A partir do 2º nível, você pode recuperar parte de sua energia mágica sentando em meditação e comungando com a natureza. Durante um **descanso curto**, você escolhe espaços de magia gastos para recuperar. Os espaços de magia podem ter um nível combinado igual ou menor que **metade do seu nível de druida (arredondado para cima)**, e nenhum dos espaços pode ser de **6º nível ou superior**. Você não pode usar essa característica novamente até terminar um descanso longo.\n\nPor exemplo, quando você é um druida de 4º nível, você pode recuperar até dois níveis de espaços de magia. Você pode recuperar um espaço de magia de 2º nível ou dois espaços de magia de 1º nível.",
+          "mechanical": {
+            "slot_levels_recovered": "druid_level / 2 (round up)",
+            "max_slot_level": 5,
+            "recharge": "long_rest"
+          }
+        },
+        {
+          "id": "circle_spells",
+          "name": "Magias do Círculo",
+          "level": 3,
+          "description_markdown": "Sua conexão mística com a terra infunde você com a habilidade de conjurar certas magias. No 3º, 5º, 7º e 9º nível você ganha acesso a magias do círculo conectadas à terra onde você se tornou um druida.\n\nEscolha aquela terra — **ártico**, **costa**, **deserto**, **floresta**, **planície**, **montanha** ou **pântano** — e consulte a lista associada de magias.\n\nUma vez que você ganha acesso a uma magia do círculo, você sempre a tem preparada, e ela **não conta** contra o número de magias que você pode preparar a cada dia. Se você ganhar acesso a uma magia que não aparece na lista de magias de druida, a magia ainda é uma magia de druida para você.",
+          "mechanical": {
+            "always_prepared": true,
+            "not_against_prepared_count": true
+          }
+        },
+        {
+          "id": "lands_stride",
+          "name": "Passos da Terra",
+          "level": 6,
+          "description_markdown": "A partir do 6º nível, mover-se através de terreno difícil não mágico não custa movimento extra para você. Você também pode passar através de plantas não mágicas sem ser desacelerado por elas e sem sofrer dano delas se elas tiverem espinhos, espículas ou um perigo similar.\n\nAlém disso, você tem **vantagem** em testes de resistência contra plantas que são magicamente criadas ou manipuladas para impedir movimento, como aquelas criadas pela magia *entrelaçar*.",
+          "mechanical": {
+            "ignore_difficult_terrain": true,
+            "pass_through_plants": true,
+            "advantage_vs_magical_plants": true
+          }
+        },
+        {
+          "id": "natures_ward",
+          "name": "Proteção da Natureza",
+          "level": 10,
+          "description_markdown": "Quando você atinge o 10º nível, você não pode ser **enfeitiçado** ou **amedrontado** por **elementais** ou **fadas**, e você é **imune** a veneno e doença.",
+          "mechanical": {
+            "immune_charm_fear_from": ["elemental", "fey"],
+            "immune_poison": true,
+            "immune_disease": true
+          }
+        },
+        {
+          "id": "natures_sanctuary",
+          "name": "Santuário da Natureza",
+          "level": 14,
+          "description_markdown": "Quando você atinge o 14º nível, criaturas do mundo natural sentem sua conexão com a natureza e ficam hesitantes em atacar você.\n\nQuando uma besta ou planta atacar você, aquela criatura deve fazer um teste de resistência de **Sabedoria** contra sua CD de resistência de magias de druida. Em uma falha, a criatura deve escolher um alvo diferente, ou o ataque automaticamente erra. Em um sucesso, a criatura é imune a esse efeito por **24 horas**.\n\nA criatura está ciente desse efeito antes de fazer seu ataque contra você.",
+          "mechanical": {
+            "affects": ["beast", "plant"],
+            "save": "wisdom",
+            "immunity_duration": "24 hours"
+          }
+        }
+      ]
+    }
+  ]
+}

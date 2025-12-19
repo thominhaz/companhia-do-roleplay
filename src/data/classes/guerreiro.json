@@ -1,0 +1,371 @@
+{
+  "id": "fighter",
+  "name": "Guerreiro",
+  "name_en": "Fighter",
+  "hit_die": 10,
+  "primary_abilities": ["strength", "dexterity"],
+  "saving_throw_proficiencies": ["strength", "constitution"],
+  "proficiencies": {
+    "armor": ["light", "medium", "heavy", "shields"],
+    "weapons": ["simple", "martial"],
+    "tools": [],
+    "skills": {
+      "choose": 2,
+      "from": ["acrobatics", "animal_handling", "athletics", "history", "insight", "intimidation", "perception", "survival"]
+    }
+  },
+  "equipment_markdown": "Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:\n\n- **(a)** cota de malha OU **(b)** armadura de couro, arco longo e 20 flechas\n- **(a)** uma arma marcial e um escudo OU **(b)** duas armas marciais\n- **(a)** uma besta leve e 20 virotes OU **(b)** duas machadinhas\n- **(a)** um pacote de aventureiro OU **(b)** um pacote de explorador",
+  "starting_equipment": {
+    "choices": [
+      {
+        "choose": 1,
+        "from": [
+          ["chain_mail"],
+          ["leather_armor", "longbow", "arrows:20"]
+        ]
+      },
+      {
+        "choose": 1,
+        "from": [
+          ["martial_weapon", "shield"],
+          ["martial_weapon", "martial_weapon"]
+        ]
+      },
+      {
+        "choose": 1,
+        "from": [
+          ["light_crossbow", "crossbow_bolts:20"],
+          ["handaxe", "handaxe"]
+        ]
+      },
+      {
+        "choose": 1,
+        "from": [
+          ["dungeoneers_pack"],
+          ["explorers_pack"]
+        ]
+      }
+    ]
+  },
+  "levels": [
+    {
+      "level": 1,
+      "proficiency_bonus": 2,
+      "features": ["fighting_style", "second_wind"]
+    },
+    {
+      "level": 2,
+      "proficiency_bonus": 2,
+      "features": ["action_surge_1"]
+    },
+    {
+      "level": 3,
+      "proficiency_bonus": 2,
+      "features": ["martial_archetype"]
+    },
+    {
+      "level": 4,
+      "proficiency_bonus": 2,
+      "features": ["ability_score_improvement"]
+    },
+    {
+      "level": 5,
+      "proficiency_bonus": 3,
+      "features": ["extra_attack_1"]
+    },
+    {
+      "level": 6,
+      "proficiency_bonus": 3,
+      "features": ["ability_score_improvement"]
+    },
+    {
+      "level": 7,
+      "proficiency_bonus": 3,
+      "features": ["martial_archetype_feature"]
+    },
+    {
+      "level": 8,
+      "proficiency_bonus": 3,
+      "features": ["ability_score_improvement"]
+    },
+    {
+      "level": 9,
+      "proficiency_bonus": 4,
+      "features": ["indomitable_1"]
+    },
+    {
+      "level": 10,
+      "proficiency_bonus": 4,
+      "features": ["martial_archetype_feature"]
+    },
+    {
+      "level": 11,
+      "proficiency_bonus": 4,
+      "features": ["extra_attack_2"]
+    },
+    {
+      "level": 12,
+      "proficiency_bonus": 4,
+      "features": ["ability_score_improvement"]
+    },
+    {
+      "level": 13,
+      "proficiency_bonus": 5,
+      "features": ["indomitable_2"]
+    },
+    {
+      "level": 14,
+      "proficiency_bonus": 5,
+      "features": ["ability_score_improvement"]
+    },
+    {
+      "level": 15,
+      "proficiency_bonus": 5,
+      "features": ["martial_archetype_feature"]
+    },
+    {
+      "level": 16,
+      "proficiency_bonus": 5,
+      "features": ["ability_score_improvement"]
+    },
+    {
+      "level": 17,
+      "proficiency_bonus": 6,
+      "features": ["action_surge_2", "indomitable_3"]
+    },
+    {
+      "level": 18,
+      "proficiency_bonus": 6,
+      "features": ["martial_archetype_feature"]
+    },
+    {
+      "level": 19,
+      "proficiency_bonus": 6,
+      "features": ["ability_score_improvement"]
+    },
+    {
+      "level": 20,
+      "proficiency_bonus": 6,
+      "features": ["extra_attack_3"]
+    }
+  ],
+  "features": [
+    {
+      "id": "fighting_style",
+      "name": "Estilo de Luta",
+      "level": 1,
+      "description_markdown": "Você adota um estilo particular de luta como sua especialidade. Escolha uma das opções a seguir. Você não pode escolher a mesma opção de Estilo de Luta mais de uma vez, mesmo se mais tarde puder escolher novamente.",
+      "options": [
+        {
+          "id": "archery",
+          "name": "Arquearia",
+          "description_markdown": "Você ganha **+2** de bônus nas jogadas de ataque que você fizer com armas de ataque à distância.",
+          "mechanical": {
+            "attack_bonus": 2,
+            "applies_to": "ranged_weapons"
+          }
+        },
+        {
+          "id": "defense",
+          "name": "Defesa",
+          "description_markdown": "Enquanto você estiver usando armadura, você ganha **+1** de bônus na CA.",
+          "mechanical": {
+            "ac_bonus": 1,
+            "requires": "wearing_armor"
+          }
+        },
+        {
+          "id": "dueling",
+          "name": "Duelismo",
+          "description_markdown": "Quando você estiver empunhando uma arma corpo a corpo em uma mão e nenhuma outra arma, você ganha **+2** de bônus nas jogadas de dano com essa arma.",
+          "mechanical": {
+            "damage_bonus": 2,
+            "requires": "one_handed_melee_no_other_weapon"
+          }
+        },
+        {
+          "id": "great_weapon_fighting",
+          "name": "Luta com Arma Grande",
+          "description_markdown": "Quando você rolar um **1** ou **2** num dado de dano de um ataque com arma corpo a corpo que você esteja empunhando com duas mãos, você pode rolar o dado novamente e usar a nova rolagem, mesmo que resulte em 1 ou 2. A arma deve ter a propriedade **duas mãos** ou **versátil** para ganhar esse benefício.",
+          "mechanical": {
+            "reroll_damage_1_or_2": true,
+            "requires": "two_handed_or_versatile_melee"
+          }
+        },
+        {
+          "id": "protection",
+          "name": "Proteção",
+          "description_markdown": "Quando uma criatura que você possa ver atacar um alvo que esteja a até **1,5 m** de você, você pode usar sua **reação** para impor **desvantagem** na jogada de ataque. Você deve estar empunhando um **escudo**.",
+          "mechanical": {
+            "reaction": true,
+            "impose_disadvantage": true,
+            "range": 1.5,
+            "requires": "wielding_shield"
+          }
+        },
+        {
+          "id": "two_weapon_fighting",
+          "name": "Luta com Duas Armas",
+          "description_markdown": "Quando você estiver engajado em uma luta com duas armas, você pode adicionar seu modificador de habilidade ao dano do segundo ataque.",
+          "mechanical": {
+            "add_ability_modifier_to_offhand": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "second_wind",
+      "name": "Segundo Fôlego",
+      "level": 1,
+      "description_markdown": "Você tem um poço limitado de stamina do qual pode recorrer para proteger a si mesmo de dano. No seu turno, você pode usar uma **ação bônus** para recuperar pontos de vida igual a **1d10 + seu nível de guerreiro**.\n\nUma vez que você use essa característica, você precisa terminar um **descanso curto** ou **longo** antes de poder usá-la novamente.",
+      "mechanical": {
+        "action_type": "bonus_action",
+        "healing": "1d10 + fighter_level",
+        "recharge": "short_or_long_rest"
+      }
+    },
+    {
+      "id": "action_surge_1",
+      "name": "Surto de Ação",
+      "level": 2,
+      "description_markdown": "A partir do 2º nível, você pode forçar-se além dos seus limites normais por um momento. No seu turno, você pode realizar uma **ação adicional** além da sua ação normal e uma possível ação bônus.\n\nUma vez que você use essa característica, você precisa terminar um **descanso curto** ou **longo** antes de poder usá-la novamente.\n\nA partir do 17º nível, você pode usá-la duas vezes antes de descansar, mas apenas uma vez no mesmo turno.",
+      "mechanical": {
+        "extra_action": 1,
+        "uses_per_rest": 1,
+        "recharge": "short_or_long_rest"
+      }
+    },
+    {
+      "id": "martial_archetype",
+      "name": "Arquétipo Marcial",
+      "level": 3,
+      "description_markdown": "No 3º nível, você escolhe um arquétipo que você se esforça para imitar nos seus estilos e técnicas de combate, como **Campeão**.\n\nO arquétipo que você escolher concede características no 3º nível e novamente no 7º, 10º, 15º e 18º níveis."
+    },
+    {
+      "id": "ability_score_improvement",
+      "name": "Incremento de Atributo",
+      "level": 4,
+      "description_markdown": "Quando você atinge o 4º nível e novamente no 6º, 8º, 12º, 14º, 16º e 19º nível, você pode aumentar um valor de atributo de sua escolha em 2 ou você pode aumentar dois valores de atributo de sua escolha em 1.\n\nComo sempre, você não pode aumentar um atributo acima de 20 usando essa característica.",
+      "mechanical": {
+        "improvements": [4, 6, 8, 12, 14, 16, 19]
+      }
+    },
+    {
+      "id": "extra_attack_1",
+      "name": "Ataque Extra",
+      "level": 5,
+      "description_markdown": "A partir do 5º nível, você pode atacar **duas vezes**, ao invés de uma, sempre que você realizar a ação de Ataque no seu turno.\n\nO número de ataques aumenta para **três** quando você alcança o 11º nível nessa classe e para **quatro** quando você alcança o 20º nível nessa classe.",
+      "mechanical": {
+        "attacks_per_action": 2
+      }
+    },
+    {
+      "id": "extra_attack_2",
+      "name": "Ataque Extra (2)",
+      "level": 11,
+      "description_markdown": "Você pode atacar **três vezes** sempre que realizar a ação de Ataque no seu turno.",
+      "mechanical": {
+        "attacks_per_action": 3
+      }
+    },
+    {
+      "id": "extra_attack_3",
+      "name": "Ataque Extra (3)",
+      "level": 20,
+      "description_markdown": "Você pode atacar **quatro vezes** sempre que realizar a ação de Ataque no seu turno.",
+      "mechanical": {
+        "attacks_per_action": 4
+      }
+    },
+    {
+      "id": "indomitable_1",
+      "name": "Indomável",
+      "level": 9,
+      "description_markdown": "A partir do 9º nível, você pode rolar novamente um teste de resistência que você falhou. Se fizer isso, você deve usar a nova rolagem, e você não pode usar essa característica novamente até terminar um **descanso longo**.\n\nVocê pode usar essa característica **duas vezes** entre descansos longos a partir do 13º nível e **três vezes** entre descansos longos a partir do 17º nível.",
+      "mechanical": {
+        "reroll_failed_save": true,
+        "uses_per_long_rest": 1,
+        "recharge": "long_rest"
+      }
+    },
+    {
+      "id": "indomitable_2",
+      "name": "Indomável (2 usos)",
+      "level": 13,
+      "mechanical": {
+        "uses_per_long_rest": 2
+      }
+    },
+    {
+      "id": "indomitable_3",
+      "name": "Indomável (3 usos)",
+      "level": 17,
+      "mechanical": {
+        "uses_per_long_rest": 3
+      }
+    },
+    {
+      "id": "action_surge_2",
+      "name": "Surto de Ação (2 usos)",
+      "level": 17,
+      "mechanical": {
+        "uses_per_rest": 2
+      }
+    }
+  ],
+  "subclasses": [
+    {
+      "id": "champion",
+      "name": "Campeão",
+      "name_en": "Champion",
+      "description": "O arquétipo de Campeão foca no desenvolvimento de poder físico bruto afiado até a perfeição mortal. Aqueles que se modelam nesse arquétipo combinam treinamento rigoroso com excelência física para desferir golpes devastadores.",
+      "features": [
+        {
+          "id": "improved_critical",
+          "name": "Crítico Aprimorado",
+          "level": 3,
+          "description_markdown": "A partir de quando você escolhe esse arquétipo no 3º nível, seus ataques com arma marcam um acerto crítico numa rolagem de **19** ou **20**.",
+          "mechanical": {
+            "critical_hit_range": [19, 20]
+          }
+        },
+        {
+          "id": "remarkable_athlete",
+          "name": "Atleta Notável",
+          "level": 7,
+          "description_markdown": "A partir do 7º nível, você pode adicionar **metade do seu bônus de proficiência** (arredondado para cima) a qualquer teste de **Força**, **Destreza** ou **Constituição** que você fizer que ainda não use seu bônus de proficiência.\n\nAlém disso, quando você realizar um salto longo com corrida, a distância que você pode cobrir aumenta em um número de **metros** igual ao seu modificador de Força.",
+          "mechanical": {
+            "half_proficiency_bonus_to_checks": ["strength", "dexterity", "constitution"],
+            "running_jump_bonus": "strength_modifier"
+          }
+        },
+        {
+          "id": "additional_fighting_style",
+          "name": "Estilo de Luta Adicional",
+          "level": 10,
+          "description_markdown": "No 10º nível, você pode escolher uma segunda opção da característica **Estilo de Luta**."
+        },
+        {
+          "id": "superior_critical",
+          "name": "Crítico Superior",
+          "level": 15,
+          "description_markdown": "A partir do 15º nível, seus ataques com arma marcam um acerto crítico numa rolagem de **18-20**.",
+          "mechanical": {
+            "critical_hit_range": [18, 19, 20]
+          }
+        },
+        {
+          "id": "survivor",
+          "name": "Sobrevivente",
+          "level": 18,
+          "description_markdown": "No 18º nível, você atinge o auge da resiliência em batalha. No começo de cada um dos seus turnos, você recupera pontos de vida igual a **5 + seu modificador de Constituição** se você não tiver mais da metade dos seus pontos de vida restantes.\n\nVocê não ganha esse benefício se tiver **0 pontos de vida**.",
+          "mechanical": {
+            "regeneration": "5 + constitution_modifier",
+            "condition": "hp_below_half",
+            "not_at_0_hp": true
+          }
+        }
+      ]
+    }
+  ]
+}

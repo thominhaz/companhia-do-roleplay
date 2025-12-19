@@ -1,0 +1,60 @@
+{
+  "id": "sorcerer",
+  "name": "Feiticeiro",
+  "name_en": "Sorcerer",
+  "hit_die": 6,
+  "primary_abilities": ["charisma"],
+  "saving_throw_proficiencies": ["constitution", "charisma"],
+  "proficiencies": {
+    "armor": [],
+    "weapons": ["dagger", "dart", "sling", "quarterstaff", "light_crossbow"],
+    "tools": [],
+    "skills": {"choose": 2, "from": ["arcana", "deception", "insight", "intimidation", "persuasion", "religion"]}
+  },
+  "equipment_markdown": "Você começa com:\n- **(a)** uma besta leve e 20 virotes OU **(b)** qualquer arma simples\n- **(a)** uma bolsa de componentes OU **(b)** um foco arcano\n- **(a)** um pacote de aventureiro OU **(b)** um pacote de explorador\n- Duas adagas",
+  "levels": [
+    {"level": 1, "proficiency_bonus": 2, "sorcery_points": 0, "features": ["spellcasting", "sorcerous_origin"], "cantrips_known": 4, "spells_known": 2, "spell_slots": [2, 0, 0, 0, 0, 0, 0, 0, 0]},
+    {"level": 2, "proficiency_bonus": 2, "sorcery_points": 2, "features": ["font_of_magic"], "cantrips_known": 4, "spells_known": 3, "spell_slots": [3, 0, 0, 0, 0, 0, 0, 0, 0]},
+    {"level": 3, "proficiency_bonus": 2, "sorcery_points": 3, "features": ["metamagic"], "cantrips_known": 4, "spells_known": 4, "spell_slots": [4, 2, 0, 0, 0, 0, 0, 0, 0]},
+    {"level": 4, "proficiency_bonus": 2, "sorcery_points": 4, "features": ["ability_score_improvement"], "cantrips_known": 5, "spells_known": 5, "spell_slots": [4, 3, 0, 0, 0, 0, 0, 0, 0]},
+    {"level": 5, "proficiency_bonus": 3, "sorcery_points": 5, "features": [], "cantrips_known": 5, "spells_known": 6, "spell_slots": [4, 3, 2, 0, 0, 0, 0, 0, 0]},
+    {"level": 6, "proficiency_bonus": 3, "sorcery_points": 6, "features": ["sorcerous_origin_feature"], "cantrips_known": 5, "spells_known": 7, "spell_slots": [4, 3, 3, 0, 0, 0, 0, 0, 0]},
+    {"level": 7, "proficiency_bonus": 3, "sorcery_points": 7, "features": [], "cantrips_known": 5, "spells_known": 8, "spell_slots": [4, 3, 3, 1, 0, 0, 0, 0, 0]},
+    {"level": 8, "proficiency_bonus": 3, "sorcery_points": 8, "features": ["ability_score_improvement"], "cantrips_known": 5, "spells_known": 9, "spell_slots": [4, 3, 3, 2, 0, 0, 0, 0, 0]},
+    {"level": 9, "proficiency_bonus": 4, "sorcery_points": 9, "features": [], "cantrips_known": 5, "spells_known": 10, "spell_slots": [4, 3, 3, 3, 1, 0, 0, 0, 0]},
+    {"level": 10, "proficiency_bonus": 4, "sorcery_points": 10, "features": ["metamagic_2"], "cantrips_known": 6, "spells_known": 11, "spell_slots": [4, 3, 3, 3, 2, 0, 0, 0, 0]},
+    {"level": 11, "proficiency_bonus": 4, "sorcery_points": 11, "features": [], "cantrips_known": 6, "spells_known": 12, "spell_slots": [4, 3, 3, 3, 2, 1, 0, 0, 0]},
+    {"level": 12, "proficiency_bonus": 4, "sorcery_points": 12, "features": ["ability_score_improvement"], "cantrips_known": 6, "spells_known": 12, "spell_slots": [4, 3, 3, 3, 2, 1, 0, 0, 0]},
+    {"level": 13, "proficiency_bonus": 5, "sorcery_points": 13, "features": [], "cantrips_known": 6, "spells_known": 13, "spell_slots": [4, 3, 3, 3, 2, 1, 1, 0, 0]},
+    {"level": 14, "proficiency_bonus": 5, "sorcery_points": 14, "features": ["sorcerous_origin_feature"], "cantrips_known": 6, "spells_known": 13, "spell_slots": [4, 3, 3, 3, 2, 1, 1, 0, 0]},
+    {"level": 15, "proficiency_bonus": 5, "sorcery_points": 15, "features": [], "cantrips_known": 6, "spells_known": 14, "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1, 0]},
+    {"level": 16, "proficiency_bonus": 5, "sorcery_points": 16, "features": ["ability_score_improvement"], "cantrips_known": 6, "spells_known": 14, "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1, 0]},
+    {"level": 17, "proficiency_bonus": 6, "sorcery_points": 17, "features": ["metamagic_3"], "cantrips_known": 6, "spells_known": 15, "spell_slots": [4, 3, 3, 3, 2, 1, 1, 1, 1]},
+    {"level": 18, "proficiency_bonus": 6, "sorcery_points": 18, "features": ["sorcerous_origin_feature"], "cantrips_known": 6, "spells_known": 15, "spell_slots": [4, 3, 3, 3, 3, 1, 1, 1, 1]},
+    {"level": 19, "proficiency_bonus": 6, "sorcery_points": 19, "features": ["ability_score_improvement"], "cantrips_known": 6, "spells_known": 15, "spell_slots": [4, 3, 3, 3, 3, 2, 1, 1, 1]},
+    {"level": 20, "proficiency_bonus": 6, "sorcery_points": 20, "features": ["sorcerous_restoration"], "cantrips_known": 6, "spells_known": 15, "spell_slots": [4, 3, 3, 3, 3, 2, 2, 1, 1]}
+  ],
+  "features": [
+    {"id": "spellcasting", "name": "Conjuração", "level": 1, "description_markdown": "Um evento no seu passado, ou na vida de um pai ou ancestral, deixou uma marca indelével em você, infundindo você com magia arcana. Essa fonte de magia, qualquer que seja sua origem, abastece suas magias.\n\nVocê conhece **quatro truques** à sua escolha da lista de magias de feiticeiro. Você aprende truques de feiticeiro adicionais à sua escolha em níveis mais altos.\n\nVocê conhece **duas magias de 1º nível** à sua escolha da lista de magias de feiticeiro. Quando você ganha um nível nesta classe, você pode escolher uma das magias de feiticeiro que conhece e substituí-la por outra magia da lista de magias de feiticeiro.\n\nCarisma é sua habilidade de conjuração.", "mechanical": {"spellcasting_ability": "charisma", "spell_save_dc": "8 + proficiency_bonus + charisma_modifier", "spell_attack_bonus": "proficiency_bonus + charisma_modifier", "spells_known": true, "can_replace_spell_on_level": true}},
+    {"id": "sorcerous_origin", "name": "Origem Feiticeira", "level": 1, "description_markdown": "Escolha uma origem feiticeira, que descreve a fonte do seu poder mágico inato, como **Linhagem Dracônica**. Sua escolha concede características quando você a escolhe no 1º nível e novamente no 6º, 14º e 18º níveis."},
+    {"id": "font_of_magic", "name": "Fonte de Magia", "level": 2, "description_markdown": "No 2º nível, você toca em uma fonte profunda de magia dentro de si mesmo. Essa fonte é representada por **pontos de feitiçaria**, que permitem que você crie uma variedade de efeitos mágicos.\n\n**Pontos de Feitiçaria:** Você tem um número de pontos de feitiçaria igual ao seu nível de feiticeiro. Você recupera todos os pontos gastos quando termina um descanso longo.\n\n**Criando Espaços de Magia:** Você pode transformar pontos de feitiçaria não gastos em um espaço de magia como uma ação bônus no seu turno. A tabela de Criação de Espaço de Magia mostra o custo de criar um espaço de magia de um dado nível. Você pode criar espaços de magia de no máximo 5º nível.\n\n**Convertendo um Espaço de Magia em Pontos de Feitiçaria:** Como uma ação bônus no seu turno, você pode gastar um espaço de magia e ganhar um número de pontos de feitiçaria igual ao nível do espaço.", "mechanical": {"sorcery_points": "sorcerer_level", "recharge": "long_rest", "create_slot_action": "bonus_action", "convert_slot_action": "bonus_action", "max_slot_level": 5}},
+    {"id": "metamagic", "name": "Metamagia", "level": 3, "description_markdown": "No 3º nível, você ganha a habilidade de torcer suas magias para se adequarem às suas necessidades. Você ganha **duas** das seguintes opções de Metamagia à sua escolha. Você ganha outra no 10º e 17º níveis.\n\nVocê pode usar apenas uma opção de Metamagia em uma magia quando você a conjurar, a menos que de outra forma observado.\n\nOpções: **Magia Cuidadosa**, **Magia Distante**, **Magia Potencializada**, **Magia Estendida**, **Magia Intensificada**, **Magia Acelerada**, **Magia Sutil**, **Magia Geminada**.", "mechanical": {"choices": 2, "additional_at": [10, 17]}},
+    {"id": "ability_score_improvement", "name": "Incremento de Atributo", "level": 4, "mechanical": {"improvements": [4, 8, 12, 16, 19]}},
+    {"id": "sorcerous_restoration", "name": "Restauração Feiticeira", "level": 20, "description_markdown": "No 20º nível, você recupera **4 pontos de feitiçaria** gastos sempre que você terminar um descanso curto.", "mechanical": {"regain_on_short_rest": 4}}
+  ],
+  "subclasses": [
+    {
+      "id": "draconic_bloodline",
+      "name": "Linhagem Dracônica",
+      "name_en": "Draconic Bloodline",
+      "description": "Sua magia inata vem da magia dracônica que foi misturada com seu sangue ou com o de seus ancestrais. Mais comumente, feiticeiros com essa origem traçam sua descendência de volta a um poderoso feiticeiro dos tempos antigos que fez um pacto com um dragão ou que pode até mesmo ter reivindicado um pai dragão. Alguns desses linhagens são bem estabelecidos no mundo, mas a maioria é obscura.",
+      "features": [
+        {"id": "dragon_ancestor", "name": "Ancestral Dragão", "level": 1, "description_markdown": "No 1º nível, você escolhe um tipo de dragão como seu ancestral. O tipo de dano associado a cada dragão é usado por características que você ganha mais tarde.\n\nVocê pode falar, ler e escrever **Dracônico**. Além disso, sempre que você fizer um teste de Carisma ao interagir com dragões, seu bônus de proficiência é **dobrado** se ele se aplicar ao teste.", "mechanical": {"dragon_types": ["black", "blue", "brass", "bronze", "copper", "gold", "green", "red", "silver", "white"], "language": "draconic", "double_proficiency_with_dragons": true}},
+        {"id": "draconic_resilience", "name": "Resiliência Dracônica", "level": 1, "description_markdown": "Conforme a magia flui através do seu corpo, ela causa traços físicos do seu ancestral dragão a emergir. No 1º nível, seu máximo de pontos de vida aumenta em **1** e aumenta em **1** novamente sempre que você ganhar um nível nesta classe.\n\nAdicionalmente, partes da sua pele são cobertas por uma camada fina de escamas semelhantes a dragão. Quando você não estiver usando armadura, sua CA é igual a **13 + seu modificador de Destreza**.", "mechanical": {"hp_per_level": 1, "unarmored_ac": "13 + dexterity_modifier"}},
+        {"id": "elemental_affinity", "name": "Afinidade Elemental", "level": 6, "description_markdown": "A partir do 6º nível, quando você conjurar uma magia que causa dano do tipo associado à sua herança dracônica, você pode adicionar seu **modificador de Carisma** a uma jogada de dano dessa magia. Ao mesmo tempo, você pode gastar **1 ponto de feitiçaria** para ganhar **resistência** àquele tipo de dano por **1 hora**.", "mechanical": {"damage_bonus": "charisma_modifier", "resistance_cost": 1, "resistance_duration": "1 hour"}},
+        {"id": "dragon_wings", "name": "Asas de Dragão", "level": 14, "description_markdown": "No 14º nível, você ganha a habilidade de brotar um par de asas de dragão das suas costas, ganhando deslocamento de voo igual ao seu deslocamento atual. Você pode criar essas asas como uma **ação bônus** no seu turno. Elas duram até você descartá-las como uma ação bônus no seu turno.\n\nVocê não pode manifestar suas asas enquanto estiver usando armadura, a menos que a armadura seja feita para acomodá-las, e roupas que não sejam feitas para acomodar suas asas podem ser destruídas quando você as manifestar.", "mechanical": {"action_type": "bonus_action", "fly_speed": "walking_speed"}},
+        {"id": "draconic_presence", "name": "Presença Dracônica", "level": 18, "description_markdown": "A partir do 18º nível, você pode canalizar a temível presença do seu ancestral dragão, causando aqueles ao seu redor a ficarem maravilhados ou amedrontados. Como uma **ação**, você pode gastar **5 pontos de feitiçaria** para usar essa característica. Quando você fizer isso, escolha qualquer número de criaturas que você possa ver dentro de **18 m** de você. Cada uma dessas criaturas deve ter sucesso em um teste de resistência de **Sabedoria** contra sua CD de resistência de magia de feiticeiro ou ficar **enfeitiçada** por você por **1 minuto** ou até você perder sua concentração. Enquanto uma criatura estiver enfeitiçada dessa forma, ela fica **incapacitada** e tem deslocamento de **0**.\n\nEsse efeito termina para uma criatura se ela sofrer qualquer dano.", "mechanical": {"action_type": "action", "cost": 5, "range": 18, "save": "wisdom", "duration": "1 minute", "concentration": true, "condition": "charmed_and_incapacitated"}}
+      ]
+    }
+  ]
+}
