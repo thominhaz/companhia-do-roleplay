@@ -10,8 +10,11 @@ import { RaceStep } from './steps/RaceStep';
 import { ClassStep } from './steps/ClassStep';
 import { AttributesStep } from './steps/AttributesStep';
 import { SkillsStep } from './steps/SkillsStep';
+import { LanguagesStep } from './steps/LanguagesStep';
 import { EquipmentStep } from './steps/EquipmentStep';
 import { BackgroundStep } from './steps/BackgroundStep';
+import { BackstoryStep } from './steps/BackstoryStep';
+import { SpellsStep } from './steps/SpellsStep';
 import { ReviewStep } from './steps/ReviewStep';
 
 export type WizardData = {
@@ -31,6 +34,21 @@ export type WizardData = {
   secondaryWeapon: string;
   armor: string;
   selectedSkills: string[];
+  extraLanguages: string[];
+  // Backstory fields
+  age: string;
+  height: string;
+  weight: string;
+  eyes: string;
+  hair: string;
+  skin: string;
+  distinctiveFeatures: string;
+  backstory: string;
+  goals: string;
+  alliesOrganizations: string;
+  // Spells
+  selectedCantrips: string[];
+  selectedSpells: string[];
 };
 
 const initialData: WizardData = {
@@ -57,6 +75,19 @@ const initialData: WizardData = {
   secondaryWeapon: '',
   armor: '',
   selectedSkills: [],
+  extraLanguages: [],
+  age: '',
+  height: '',
+  weight: '',
+  eyes: '',
+  hair: '',
+  skin: '',
+  distinctiveFeatures: '',
+  backstory: '',
+  goals: '',
+  alliesOrganizations: '',
+  selectedCantrips: [],
+  selectedSpells: [],
 };
 
 const STEPS = [
@@ -64,8 +95,11 @@ const STEPS = [
   { id: 'class', title: 'Classe', description: 'Escolha sua classe' },
   { id: 'attributes', title: 'Atributos', description: 'Distribua seus pontos' },
   { id: 'skills', title: 'Perícias', description: 'Escolha suas perícias' },
+  { id: 'languages', title: 'Idiomas', description: 'Escolha idiomas extras' },
   { id: 'equipment', title: 'Equipamento', description: 'Escolha seu equipamento' },
+  { id: 'spells', title: 'Magias', description: 'Escolha suas magias' },
   { id: 'background', title: 'História', description: 'Defina seu background' },
+  { id: 'backstory', title: 'Backstory', description: 'História do personagem' },
   { id: 'review', title: 'Revisão', description: 'Confirme seu personagem' },
 ];
 
@@ -88,11 +122,14 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     switch (step) {
       case 0: return !!data.race;
       case 1: return !!data.class;
-      case 2: return true;
-      case 3: return data.selectedSkills.length === requiredSkills;
-      case 4: return !!data.equipmentPack;
-      case 5: return !!data.name && !!data.background && !!data.alignment;
-      case 6: return true;
+      case 2: return true; // Attributes
+      case 3: return data.selectedSkills.length === requiredSkills; // Skills
+      case 4: return true; // Languages (optional or auto-skip)
+      case 5: return !!data.equipmentPack; // Equipment
+      case 6: return true; // Spells (optional for non-casters)
+      case 7: return !!data.name && !!data.background && !!data.alignment; // Background
+      case 8: return true; // Backstory (optional)
+      case 9: return true; // Review
       default: return false;
     }
   };
@@ -163,18 +200,21 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       ],
       inventory: [],
       currency: { copper: 0, silver: 0, electrum: 0, gold: 10, platinum: 0 },
-      spellcasting: null,
-      spells: [],
+      spellcasting: data.selectedCantrips.length > 0 || data.selectedSpells.length > 0 ? {
+        cantrips: data.selectedCantrips,
+        knownSpells: data.selectedSpells,
+      } : null,
+      spells: [...data.selectedCantrips, ...data.selectedSpells],
       background: BACKGROUNDS.find(b => b.id === data.background)?.name || data.background,
       alignment: ALIGNMENTS.find(a => a.id === data.alignment)?.name || data.alignment,
       personality_traits: data.personalityTraits,
       ideals: data.ideals,
       bonds: data.bonds,
       flaws: data.flaws,
-      backstory: null,
+      backstory: data.backstory || null,
       features: [],
       proficiencies: [],
-      languages: selectedRace.languages,
+      languages: [...selectedRace.languages, ...data.extraLanguages],
       image_url: null,
     };
 
@@ -197,10 +237,16 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       case 3:
         return <SkillsStep data={data} updateData={updateData} />;
       case 4:
-        return <EquipmentStep data={data} updateData={updateData} />;
+        return <LanguagesStep data={data} updateData={updateData} />;
       case 5:
-        return <BackgroundStep data={data} updateData={updateData} />;
+        return <EquipmentStep data={data} updateData={updateData} />;
       case 6:
+        return <SpellsStep data={data} updateData={updateData} />;
+      case 7:
+        return <BackgroundStep data={data} updateData={updateData} />;
+      case 8:
+        return <BackstoryStep data={data} updateData={updateData} />;
+      case 9:
         return <ReviewStep data={data} />;
       default:
         return null;
