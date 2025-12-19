@@ -1,90 +1,14 @@
-import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Hash, Signal, Brain, Wand2, Eye, Skull, Check, Lock } from "lucide-react";
+import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Wand2, Skull, Check, Lock, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
+import { useMasterCampaigns, usePlayerCampaigns, CampaignDB } from "@/hooks/useCampaigns";
 import { toast } from "sonner";
+import { format, formatDistanceToNow } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
 type FilterType = 'all' | 'mastering' | 'playing';
-
-interface MasterCampaign {
-  id: string;
-  name: string;
-  system: string;
-  playerCount: number;
-  session: number;
-  level: string;
-  status: 'Ativa' | 'Pausa';
-  nextSession?: string;
-  lastSession?: string;
-  icon: 'dragon' | 'skull';
-  gradient: 'emerald' | 'orange';
-}
-
-interface PlayerCampaign {
-  id: string;
-  name: string;
-  system: string;
-  masterName: string;
-  session: number;
-  level?: number;
-  sanity?: number;
-  nextSession: string;
-  icon: 'wand' | 'eye';
-  color: 'blue' | 'purple';
-}
-
-const mockMasterCampaigns: MasterCampaign[] = [
-  {
-    id: "1",
-    name: "O Despertar dos Dragões",
-    system: "D&D 5e",
-    playerCount: 4,
-    session: 12,
-    level: "7-8",
-    status: "Ativa",
-    nextSession: "Sáb 21h",
-    icon: "dragon",
-    gradient: "emerald",
-  },
-  {
-    id: "2",
-    name: "Curse of Strahd",
-    system: "D&D 5e",
-    playerCount: 3,
-    session: 8,
-    level: "5-6",
-    status: "Pausa",
-    lastSession: "há 2 semanas",
-    icon: "skull",
-    gradient: "orange",
-  },
-];
-
-const mockPlayerCampaigns: PlayerCampaign[] = [
-  {
-    id: "3",
-    name: "Academia de Magia",
-    system: "D&D 5e",
-    masterName: "Rafael",
-    session: 15,
-    level: 9,
-    nextSession: "Dom 19h",
-    icon: "wand",
-    color: "blue",
-  },
-  {
-    id: "4",
-    name: "Call of Cthulhu",
-    system: "CoC 7e",
-    masterName: "Ana",
-    session: 6,
-    sanity: 85,
-    nextSession: "Sex 20h",
-    icon: "eye",
-    color: "purple",
-  },
-];
 
 interface PremiumModalProps {
   isOpen: boolean;
@@ -153,7 +77,14 @@ function PremiumModal({ isOpen, onClose }: PremiumModalProps) {
   );
 }
 
-function MasterCampaignCard({ campaign }: { campaign: MasterCampaign }) {
+function MasterCampaignCard({ campaign, playerCount, nextSession }: { 
+  campaign: CampaignDB; 
+  playerCount: number;
+  nextSession?: string | null;
+}) {
+  const isActive = !!nextSession;
+  const gradient = isActive ? "emerald" : "orange";
+  
   const gradientClasses = {
     emerald: "from-emerald-900 to-emerald-700",
     orange: "from-orange-900 to-red-700",
@@ -179,17 +110,34 @@ function MasterCampaignCard({ campaign }: { campaign: MasterCampaign }) {
     orange: "border-orange-600/40",
   };
 
-  const IconComponent = campaign.icon === 'dragon' ? Wand2 : Skull;
+  const IconComponent = isActive ? Wand2 : Skull;
+
+  const formatNextSession = (date: string) => {
+    try {
+      const d = new Date(date);
+      return format(d, "EEE HH'h'", { locale: ptBR });
+    } catch {
+      return date;
+    }
+  };
+
+  const formatLastUpdate = (date: string) => {
+    try {
+      return formatDistanceToNow(new Date(date), { locale: ptBR, addSuffix: true });
+    } catch {
+      return date;
+    }
+  };
 
   return (
-    <div className={cn("bg-gradient-to-br rounded-2xl p-5 relative overflow-hidden", gradientClasses[campaign.gradient])}>
+    <div className={cn("bg-gradient-to-br rounded-2xl p-5 relative overflow-hidden", gradientClasses[gradient])}>
       <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -mr-16 -mt-16" />
       <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-5 rounded-full -ml-12 -mb-12" />
       
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className={cn("w-14 h-14 rounded-xl flex items-center justify-center text-2xl", iconBgClasses[campaign.gradient])}>
+            <div className={cn("w-14 h-14 rounded-xl flex items-center justify-center text-2xl", iconBgClasses[gradient])}>
               <IconComponent className="w-7 h-7 text-white" />
             </div>
             <div>
@@ -197,53 +145,49 @@ function MasterCampaignCard({ campaign }: { campaign: MasterCampaign }) {
                 <h3 className="text-lg font-bold text-foreground">{campaign.name}</h3>
                 <Crown className="w-4 h-4 text-amber-400" />
               </div>
-              <p className={cn("text-sm", textColorClasses[campaign.gradient])}>
-                {campaign.system} • {campaign.playerCount} jogadores
+              <p className={cn("text-sm", textColorClasses[gradient])}>
+                D&D 5e • {playerCount} jogadores
               </p>
             </div>
           </div>
           <button className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center">
-            <MoreVertical className={cn("w-4 h-4", textColorClasses[campaign.gradient])} />
+            <MoreVertical className={cn("w-4 h-4", textColorClasses[gradient])} />
           </button>
         </div>
         
-        <div className="grid grid-cols-3 gap-2 mb-4">
+        <div className="grid grid-cols-2 gap-2 mb-4">
           <div className="bg-black/20 rounded-lg p-2.5">
-            <p className={cn("text-xs mb-0.5", textColorClasses[campaign.gradient])}>Sessão</p>
-            <p className="text-xl font-bold text-foreground">{campaign.session}</p>
+            <p className={cn("text-xs mb-0.5", textColorClasses[gradient])}>Jogadores</p>
+            <p className="text-xl font-bold text-foreground">{playerCount}</p>
           </div>
           <div className="bg-black/20 rounded-lg p-2.5">
-            <p className={cn("text-xs mb-0.5", textColorClasses[campaign.gradient])}>Nível</p>
-            <p className="text-xl font-bold text-foreground">{campaign.level}</p>
-          </div>
-          <div className="bg-black/20 rounded-lg p-2.5">
-            <p className={cn("text-xs mb-0.5", textColorClasses[campaign.gradient])}>Status</p>
-            <p className="text-xs font-bold text-foreground">{campaign.status}</p>
+            <p className={cn("text-xs mb-0.5", textColorClasses[gradient])}>Status</p>
+            <p className="text-xs font-bold text-foreground">{isActive ? "Ativa" : "Pausa"}</p>
           </div>
         </div>
 
         <div className="flex gap-2 mb-4">
-          <button className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[campaign.gradient])}>
+          <button className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}>
             <MessageCircle className="w-3 h-3 inline mr-2" />Chat
           </button>
-          <button className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[campaign.gradient])}>
+          <button className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}>
             <StickyNote className="w-3 h-3 inline mr-2" />Notas
           </button>
-          <button className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[campaign.gradient])}>
+          <button className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}>
             <Calendar className="w-3 h-3 inline mr-2" />Agenda
           </button>
         </div>
         
-        <div className={cn("flex items-center justify-between pt-3 border-t", borderClasses[campaign.gradient])}>
+        <div className={cn("flex items-center justify-between pt-3 border-t", borderClasses[gradient])}>
           <div className="flex items-center gap-2">
-            <Calendar className={cn("w-4 h-4", textColorClasses[campaign.gradient])} />
-            <span className={cn("text-xs", textColorClasses[campaign.gradient])}>
-              {campaign.nextSession ? `Próxima: ${campaign.nextSession}` : `Última: ${campaign.lastSession}`}
+            <Calendar className={cn("w-4 h-4", textColorClasses[gradient])} />
+            <span className={cn("text-xs", textColorClasses[gradient])}>
+              {nextSession ? `Próxima: ${formatNextSession(nextSession)}` : `Atualizado: ${formatLastUpdate(campaign.updated_at)}`}
             </span>
           </div>
           <button className={cn(
             "px-3 py-1.5 rounded-lg text-xs font-semibold",
-            campaign.gradient === 'emerald' ? "bg-white text-emerald-900" : "bg-white text-orange-900"
+            gradient === 'emerald' ? "bg-white text-emerald-900" : "bg-white text-orange-900"
           )}>
             Gerenciar
           </button>
@@ -253,37 +197,26 @@ function MasterCampaignCard({ campaign }: { campaign: MasterCampaign }) {
   );
 }
 
-function PlayerCampaignCard({ campaign }: { campaign: PlayerCampaign }) {
-  const colorClasses = {
-    blue: {
-      iconBg: "from-blue-600 to-blue-800",
-      buttonBg: "bg-blue-600/20",
-      buttonText: "text-blue-400",
-      nextSession: "text-blue-400",
-    },
-    purple: {
-      iconBg: "from-purple-600 to-purple-800",
-      buttonBg: "bg-purple-600/20",
-      buttonText: "text-purple-400",
-      nextSession: "text-purple-400",
-    },
+function PlayerCampaignCard({ campaign, masterName }: { campaign: CampaignDB; masterName?: string }) {
+  const colors = {
+    iconBg: "from-blue-600 to-blue-800",
+    buttonBg: "bg-blue-600/20",
+    buttonText: "text-blue-400",
+    nextSession: "text-blue-400",
   };
-
-  const colors = colorClasses[campaign.color];
-  const IconComponent = campaign.icon === 'wand' ? Wand2 : Eye;
 
   return (
     <div className="bg-dark rounded-xl p-4 border border-border">
       <div className="flex items-center gap-3 mb-3">
         <div className={cn("w-12 h-12 rounded-lg bg-gradient-to-br flex items-center justify-center", colors.iconBg)}>
-          <IconComponent className="w-5 h-5 text-white" />
+          <Wand2 className="w-5 h-5 text-white" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <h3 className="font-semibold text-sm text-foreground truncate">{campaign.name}</h3>
             <Users className="w-3 h-3 text-muted-foreground flex-shrink-0" />
           </div>
-          <p className="text-xs text-muted-foreground">Mestre: {campaign.masterName} • {campaign.system}</p>
+          <p className="text-xs text-muted-foreground">Mestre: {masterName || "Desconhecido"} • D&D 5e</p>
         </div>
         <button className="w-8 h-8 rounded-lg bg-darker flex items-center justify-center">
           <MoreVertical className="w-4 h-4 text-muted-foreground" />
@@ -301,24 +234,11 @@ function PlayerCampaignCard({ campaign }: { campaign: PlayerCampaign }) {
 
       <div className="flex items-center gap-4 pt-3 border-t border-border">
         <div className="flex items-center gap-1.5">
-          <Hash className="w-3 h-3 text-muted-foreground" />
-          <span className="text-xs text-muted-foreground">Sessão {campaign.session}</span>
+          <Calendar className="w-3 h-3 text-muted-foreground" />
+          <span className="text-xs text-muted-foreground">
+            {formatDistanceToNow(new Date(campaign.updated_at), { locale: ptBR, addSuffix: true })}
+          </span>
         </div>
-        <div className="flex items-center gap-1.5">
-          {campaign.level ? (
-            <>
-              <Signal className="w-3 h-3 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">Nv {campaign.level}</span>
-            </>
-          ) : (
-            <>
-              <Brain className="w-3 h-3 text-muted-foreground" />
-              <span className="text-xs text-muted-foreground">{campaign.sanity} Sanidade</span>
-            </>
-          )}
-        </div>
-        <div className="flex-1" />
-        <span className={cn("text-xs", colors.nextSession)}>{campaign.nextSession}</span>
       </div>
     </div>
   );
@@ -331,7 +251,15 @@ export function CampaignsScreen() {
   const { data: subscription } = useSubscription();
   const isPremium = subscription?.status === 'premium';
 
-  const totalCampaigns = mockMasterCampaigns.length + mockPlayerCampaigns.length;
+  const { data: masterData, isLoading: loadingMaster } = useMasterCampaigns();
+  const { data: playerData, isLoading: loadingPlayer } = usePlayerCampaigns();
+
+  const isLoading = loadingMaster || loadingPlayer;
+
+  const masterCampaigns = masterData || [];
+  const playerCampaigns = playerData?.map(p => p.campaigns).filter(Boolean) as CampaignDB[] || [];
+
+  const totalCampaigns = masterCampaigns.length + playerCampaigns.length;
 
   const handleCreateCampaign = () => {
     if (!user) {
@@ -345,8 +273,8 @@ export function CampaignsScreen() {
     console.log("Create campaign");
   };
 
-  const filteredMasterCampaigns = activeFilter === 'playing' ? [] : mockMasterCampaigns;
-  const filteredPlayerCampaigns = activeFilter === 'mastering' ? [] : mockPlayerCampaigns;
+  const filteredMasterCampaigns = activeFilter === 'playing' ? [] : masterCampaigns;
+  const filteredPlayerCampaigns = activeFilter === 'mastering' ? [] : playerCampaigns;
 
   return (
     <div className="min-h-screen bg-darker pb-24">
@@ -386,7 +314,7 @@ export function CampaignsScreen() {
               activeFilter === 'mastering' ? "bg-primary text-foreground" : "bg-dark text-muted-foreground"
             )}
           >
-            Mestrando ({mockMasterCampaigns.length})
+            Mestrando ({masterCampaigns.length})
           </button>
           <button 
             onClick={() => setActiveFilter('playing')}
@@ -395,41 +323,70 @@ export function CampaignsScreen() {
               activeFilter === 'playing' ? "bg-primary text-foreground" : "bg-dark text-muted-foreground"
             )}
           >
-            Jogando ({mockPlayerCampaigns.length})
+            Jogando ({playerCampaigns.length})
           </button>
         </div>
       </header>
 
-      {/* Master Campaigns */}
-      {filteredMasterCampaigns.length > 0 && (
-        <section className="px-5 mt-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase">Mestrando</h2>
-            <span className="text-xs text-muted-foreground">{filteredMasterCampaigns.length} campanhas</span>
+      {isLoading ? (
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      ) : totalCampaigns === 0 ? (
+        <div className="px-5 py-20 text-center">
+          <div className="w-20 h-20 rounded-full bg-dark flex items-center justify-center mx-auto mb-4">
+            <Wand2 className="w-8 h-8 text-muted-foreground" />
           </div>
-          
-          <div className="space-y-4">
-            {filteredMasterCampaigns.map((campaign) => (
-              <MasterCampaignCard key={campaign.id} campaign={campaign} />
-            ))}
-          </div>
-        </section>
-      )}
+          <h3 className="text-lg font-semibold text-foreground mb-2">Nenhuma campanha</h3>
+          <p className="text-sm text-muted-foreground mb-6">
+            {isPremium ? "Crie sua primeira campanha!" : "Assine o Premium para criar campanhas ou entre em uma mesa existente."}
+          </p>
+          <button
+            onClick={handleCreateCampaign}
+            className="px-6 py-3 bg-gradient-to-r from-primary to-purple-700 rounded-xl text-sm font-semibold text-foreground"
+          >
+            {isPremium ? "Criar Campanha" : "Ver Planos"}
+          </button>
+        </div>
+      ) : (
+        <>
+          {/* Master Campaigns */}
+          {filteredMasterCampaigns.length > 0 && (
+            <section className="px-5 mt-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-semibold text-muted-foreground uppercase">Mestrando</h2>
+                <span className="text-xs text-muted-foreground">{filteredMasterCampaigns.length} campanhas</span>
+              </div>
+              
+              <div className="space-y-4">
+                {filteredMasterCampaigns.map((campaign: any) => (
+                  <MasterCampaignCard 
+                    key={campaign.id} 
+                    campaign={campaign}
+                    playerCount={campaign.campaign_players?.[0]?.count || 0}
+                    nextSession={campaign.sessions?.[0]?.scheduled_at}
+                  />
+                ))}
+              </div>
+            </section>
+          )}
 
-      {/* Player Campaigns */}
-      {filteredPlayerCampaigns.length > 0 && (
-        <section className="px-5 mt-8">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-muted-foreground uppercase">Jogando</h2>
-            <span className="text-xs text-muted-foreground">{filteredPlayerCampaigns.length} campanhas</span>
-          </div>
-          
-          <div className="space-y-3">
-            {filteredPlayerCampaigns.map((campaign) => (
-              <PlayerCampaignCard key={campaign.id} campaign={campaign} />
-            ))}
-          </div>
-        </section>
+          {/* Player Campaigns */}
+          {filteredPlayerCampaigns.length > 0 && (
+            <section className="px-5 mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-sm font-semibold text-muted-foreground uppercase">Jogando</h2>
+                <span className="text-xs text-muted-foreground">{filteredPlayerCampaigns.length} campanhas</span>
+              </div>
+              
+              <div className="space-y-3">
+                {filteredPlayerCampaigns.map((campaign) => (
+                  <PlayerCampaignCard key={campaign.id} campaign={campaign} />
+                ))}
+              </div>
+            </section>
+          )}
+        </>
       )}
 
       {/* Premium Modal */}
