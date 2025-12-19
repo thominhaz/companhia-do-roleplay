@@ -9,6 +9,9 @@ import {
   Castle,
   Flame
 } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useNavigate } from "react-router-dom";
 
 // Mock data
 const mockActiveCharacter = {
@@ -69,22 +72,59 @@ const recentItems = [
 ];
 
 export function HomeScreen() {
+  const { user } = useAuth();
+  const { data: subscription } = useSubscription();
+  const navigate = useNavigate();
+
+  const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Aventureiro";
+  const isPremium = subscription?.status === "premium";
+
   return (
     <div className="min-h-screen bg-darker pb-24">
       {/* Header */}
       <header className="px-5 pt-6 pb-4 bg-gradient-to-b from-dark to-darker">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-gray-400 text-sm">Bem-vindo de volta</p>
-            <h1 className="text-2xl font-bold mt-1">Olá, Aventureiro 🖐️</h1>
+            <p className="text-muted-foreground text-sm">Bem-vindo de volta</p>
+            <h1 className="text-2xl font-bold mt-1">
+              Olá, {displayName} {user ? "🖐️" : ""}
+            </h1>
           </div>
-          <div className="relative">
-            <button className="w-11 h-11 rounded-full bg-dark flex items-center justify-center relative">
-              <Bell className="w-5 h-5 text-gray-300" />
-              <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-secondary rounded-full border-2 border-darker" />
-            </button>
+          <div className="flex items-center gap-3">
+            {!user && (
+              <button 
+                onClick={() => navigate("/auth")}
+                className="px-4 py-2 text-sm font-medium bg-gradient-primary rounded-xl text-foreground"
+              >
+                Entrar
+              </button>
+            )}
+            <div className="relative">
+              <button className="w-11 h-11 rounded-full bg-dark flex items-center justify-center relative">
+                <Bell className="w-5 h-5 text-muted-foreground" />
+                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-secondary rounded-full border-2 border-darker" />
+              </button>
+            </div>
           </div>
         </div>
+        
+        {/* Subscription Badge */}
+        {user && (
+          <div className="mt-3 flex items-center gap-2">
+            <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+              isPremium 
+                ? "bg-gold/20 text-gold" 
+                : "bg-muted text-muted-foreground"
+            }`}>
+              {isPremium ? "Premium" : "Free"}
+            </span>
+            {!isPremium && subscription && (
+              <span className="text-xs text-muted-foreground">
+                {subscription.characterCount}/3 personagens
+              </span>
+            )}
+          </div>
+        )}
       </header>
 
       {/* Hero Grid */}
@@ -92,8 +132,8 @@ export function HomeScreen() {
         <div className="grid grid-cols-3 gap-3 h-48">
           {/* Active Character Card */}
           <div className="col-span-2 bg-gradient-to-br from-purple-900 to-purple-700 rounded-2xl p-4 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full -ml-8 -mb-8" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-foreground opacity-5 rounded-full -mr-10 -mt-10" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-foreground opacity-5 rounded-full -ml-8 -mb-8" />
             <div className="relative z-10 h-full flex flex-col justify-between">
               <div>
                 <div className="flex items-center gap-2 mb-2">
@@ -108,7 +148,7 @@ export function HomeScreen() {
                 </p>
               </div>
               <div className="flex gap-2">
-                <div className="flex-1 bg-black bg-opacity-20 rounded-lg px-2 py-1.5">
+                <div className="flex-1 bg-background/20 rounded-lg px-2 py-1.5">
                   <p className="text-xs text-purple-200">HP</p>
                   <p className="text-sm font-bold">{mockActiveCharacter.currentHp}/{mockActiveCharacter.maxHp}</p>
                 </div>
@@ -118,7 +158,7 @@ export function HomeScreen() {
 
           {/* Next Session Card */}
           <div className="col-span-1 bg-gradient-to-br from-pink-900 to-pink-700 rounded-2xl p-3 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-white opacity-5 rounded-full -mr-8 -mt-8" />
+            <div className="absolute top-0 right-0 w-20 h-20 bg-foreground opacity-5 rounded-full -mr-8 -mt-8" />
             <div className="relative z-10 h-full flex flex-col">
               <div className="flex-1 flex flex-col justify-center items-center text-center">
                 <div className="w-12 h-12 rounded-full bg-pink-500 flex items-center justify-center mb-2">
@@ -140,14 +180,14 @@ export function HomeScreen() {
 
       {/* Quick Actions */}
       <section className="px-5 mt-8">
-        <h2 className="text-sm font-semibold text-gray-400 mb-4">AÇÕES RÁPIDAS</h2>
+        <h2 className="text-sm font-semibold text-muted-foreground mb-4">AÇÕES RÁPIDAS</h2>
         <div className="grid grid-cols-4 gap-4">
           {quickActions.map((action) => (
             <button key={action.id} className="flex flex-col items-center gap-2">
               <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-lg`}>
                 <action.icon className="w-5 h-5" />
               </div>
-              <span className="text-xs text-gray-300 text-center leading-tight">{action.label}</span>
+              <span className="text-xs text-muted-foreground text-center leading-tight">{action.label}</span>
             </button>
           ))}
         </div>
@@ -156,7 +196,7 @@ export function HomeScreen() {
       {/* Recents */}
       <section className="mt-8 mb-6">
         <div className="px-5 flex items-center justify-between mb-4">
-          <h2 className="text-sm font-semibold text-gray-400">RECENTES</h2>
+          <h2 className="text-sm font-semibold text-muted-foreground">RECENTES</h2>
           <button className="text-xs text-primary font-medium">Ver Todos</button>
         </div>
         <div className="overflow-x-auto scrollbar-hide">
@@ -164,15 +204,15 @@ export function HomeScreen() {
             {recentItems.map((item) => (
               <div 
                 key={item.id}
-                className="flex-shrink-0 w-40 bg-dark rounded-xl p-3 border border-gray-800"
+                className="flex-shrink-0 w-40 bg-dark rounded-xl p-3 border border-border"
               >
                 <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3`}>
                   <item.icon className="w-5 h-5" />
                 </div>
                 <h3 className="font-semibold text-sm mb-1">{item.name}</h3>
-                <p className="text-xs text-gray-400">{item.description}</p>
-                <div className="mt-3 pt-3 border-t border-gray-800">
-                  <p className="text-xs text-gray-500">{item.time}</p>
+                <p className="text-xs text-muted-foreground">{item.description}</p>
+                <div className="mt-3 pt-3 border-t border-border">
+                  <p className="text-xs text-muted-foreground/70">{item.time}</p>
                 </div>
               </div>
             ))}
