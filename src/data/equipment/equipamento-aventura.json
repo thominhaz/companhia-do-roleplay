@@ -1,0 +1,365 @@
+{
+  "adventuring_gear": {
+    "name": "Equipamento de Aventura",
+    "name_en": "Adventuring Gear",
+    "description_markdown": "Esta seção descreve itens que possuem regras especiais ou requerem explicação adicional.",
+    "items": [
+      {
+        "id": "abacus",
+        "name": "Ábaco",
+        "name_en": "Abacus",
+        "cost_gp": 2,
+        "weight_lb": 2,
+        "weight_kg": 0.9
+      },
+      {
+        "id": "acid_vial",
+        "name": "Ácido (frasco)",
+        "name_en": "Acid (vial)",
+        "cost_gp": 25,
+        "weight_lb": 1,
+        "weight_kg": 0.45,
+        "description_markdown": "Como uma ação, você pode espirrar o conteúdo deste frasco em uma criatura a até 1,5 metros de você ou lançar o frasco a até 6 metros, quebrando-o ao impacto. Em ambos os casos, faça um ataque à distância contra uma criatura ou objeto, tratando o ácido como uma arma improvisada. Ao acertar, o alvo sofre 2d6 de dano ácido."
+      },
+      {
+        "id": "alchemists_fire",
+        "name": "Fogo de Alquimista (frasco)",
+        "name_en": "Alchemist's Fire (flask)",
+        "cost_gp": 50,
+        "weight_lb": 1,
+        "weight_kg": 0.45,
+        "description_markdown": "Este fluido pegajoso e adesivo inflama quando exposto ao ar. Como uma ação, você pode lançar este frasco a até 6 metros, quebrando-o ao impacto. Faça um ataque à distância contra uma criatura ou objeto, tratando o fogo de alquimista como uma arma improvisada. Ao acertar, o alvo sofre 1d4 de dano de fogo no início de cada um de seus turnos. Uma criatura pode encerrar este dano usando sua ação para fazer um teste de Destreza CD 10 para apagar as chamas."
+      },
+      {
+        "id": "antitoxin",
+        "name": "Antitoxina (frasco)",
+        "name_en": "Antitoxin (vial)",
+        "cost_gp": 50,
+        "weight_lb": 0,
+        "weight_kg": 0,
+        "description_markdown": "Uma criatura que bebe este frasco de líquido ganha vantagem em testes de resistência contra veneno por 1 hora. Não confere benefício a mortos-vivos ou constructos."
+      },
+      {
+        "id": "backpack",
+        "name": "Mochila",
+        "name_en": "Backpack",
+        "cost_gp": 2,
+        "weight_lb": 5,
+        "weight_kg": 2.3,
+        "capacity": "0,03 m³ (1 pé cúbico) ou 13,6 kg (30 libras) de equipamento"
+      },
+      {
+        "id": "ball_bearings",
+        "name": "Esferas de Metal (saco de 1.000)",
+        "name_en": "Ball Bearings (bag of 1,000)",
+        "cost_gp": 1,
+        "weight_lb": 2,
+        "weight_kg": 0.9,
+        "description_markdown": "Como uma ação, você pode derramar estas pequenas esferas de metal de sua bolsa para cobrir uma área quadrada nivelada de 3 metros de lado. Uma criatura que se mover pela área coberta deve ter sucesso em um teste de resistência de Destreza CD 10 ou cair no chão. Uma criatura que se mover pela área em metade de sua velocidade não precisa fazer o teste de resistência."
+      },
+      {
+        "id": "bedroll",
+        "name": "Saco de Dormir",
+        "name_en": "Bedroll",
+        "cost_gp": 1,
+        "weight_lb": 7,
+        "weight_kg": 3.2
+      },
+      {
+        "id": "bell",
+        "name": "Sino",
+        "name_en": "Bell",
+        "cost_gp": 1,
+        "weight_lb": 0,
+        "weight_kg": 0
+      },
+      {
+        "id": "blanket",
+        "name": "Cobertor",
+        "name_en": "Blanket",
+        "cost_gp": 0.5,
+        "weight_lb": 3,
+        "weight_kg": 1.4
+      },
+      {
+        "id": "block_and_tackle",
+        "name": "Bloco e Roldana",
+        "name_en": "Block and Tackle",
+        "cost_gp": 1,
+        "weight_lb": 5,
+        "weight_kg": 2.3,
+        "description_markdown": "Um conjunto de roldanas com um cabo enfiado através delas e um gancho para prender a objetos, um bloco e roldana permite que você içe até quatro vezes o peso que normalmente conseguiria levantar."
+      },
+      {
+        "id": "book",
+        "name": "Livro",
+        "name_en": "Book",
+        "cost_gp": 25,
+        "weight_lb": 5,
+        "weight_kg": 2.3,
+        "description_markdown": "Um livro pode conter poesia, relatos históricos, informações pertencentes a um campo particular de conhecimento, diagramas e notas sobre engenhocas gnômicas, ou praticamente qualquer outra coisa que possa ser representada usando texto ou imagens. Um livro de magias é um grimório (descrito mais adiante nesta seção)."
+      },
+      {
+        "id": "caltrops",
+        "name": "Estrepes (saco de 20)",
+        "name_en": "Caltrops (bag of 20)",
+        "cost_gp": 1,
+        "weight_lb": 2,
+        "weight_kg": 0.9,
+        "description_markdown": "Como uma ação, você pode espalhar um saco de estrepes para cobrir uma área quadrada de 1,5 metros de lado. Qualquer criatura que entrar na área deve ter sucesso em um teste de resistência de Destreza CD 15 ou parar de se mover neste turno e sofrer 1 de dano perfurante. Sofrer este dano reduz a velocidade de caminhada da criatura em 3 metros até que a criatura recupere pelo menos 1 ponto de vida. Uma criatura que se mover pela área em metade de sua velocidade não precisa fazer o teste de resistência."
+      },
+      {
+        "id": "candle",
+        "name": "Vela",
+        "name_en": "Candle",
+        "cost_gp": 0.01,
+        "weight_lb": 0,
+        "weight_kg": 0,
+        "description_markdown": "Por 1 hora, uma vela emite luz brilhante em um raio de 1,5 metros e penumbra por mais 1,5 metros."
+      },
+      {
+        "id": "chain",
+        "name": "Corrente (3 metros)",
+        "name_en": "Chain (10 feet)",
+        "cost_gp": 5,
+        "weight_lb": 10,
+        "weight_kg": 4.5,
+        "description_markdown": "Uma corrente tem 10 pontos de vida. Ela pode ser arrebentada com um teste de Força CD 20 bem-sucedido."
+      },
+      {
+        "id": "climbers_kit",
+        "name": "Kit de Alpinista",
+        "name_en": "Climber's Kit",
+        "cost_gp": 25,
+        "weight_lb": 12,
+        "weight_kg": 5.4,
+        "description_markdown": "Um kit de alpinista inclui pitons especiais, pontas de botas, luvas e um arnês. Você pode usar o kit de alpinista como uma ação para se ancorar; quando o fizer, você não pode cair mais de 7,5 metros do ponto onde se ancorou, e não pode escalar mais de 7,5 metros daquele ponto sem desfazer a âncora."
+      },
+      {
+        "id": "component_pouch",
+        "name": "Bolsa de Componentes",
+        "name_en": "Component Pouch",
+        "cost_gp": 25,
+        "weight_lb": 2,
+        "weight_kg": 0.9,
+        "description_markdown": "Uma bolsa de componentes é uma pequena bolsa de couro à prova d'água que tem compartimentos para guardar todos os componentes materiais e outros itens especiais que você precisa para conjurar suas magias, exceto aqueles componentes que têm um custo específico (conforme indicado na descrição da magia)."
+      },
+      {
+        "id": "crowbar",
+        "name": "Pé de Cabra",
+        "name_en": "Crowbar",
+        "cost_gp": 2,
+        "weight_lb": 5,
+        "weight_kg": 2.3,
+        "description_markdown": "Usar um pé de cabra concede vantagem em testes de Força onde a alavancagem do pé de cabra pode ser aplicada."
+      },
+      {
+        "id": "fishing_tackle",
+        "name": "Apetrechos de Pesca",
+        "name_en": "Fishing Tackle",
+        "cost_gp": 1,
+        "weight_lb": 4,
+        "weight_kg": 1.8,
+        "description_markdown": "Este kit inclui uma vara de madeira, linha de seda, boias de cortiça, anzóis de aço, chumbadas de chumbo, iscas de veludo e rede estreita."
+      },
+      {
+        "id": "healers_kit",
+        "name": "Kit de Curandeiro",
+        "name_en": "Healer's Kit",
+        "cost_gp": 5,
+        "weight_lb": 3,
+        "weight_kg": 1.4,
+        "description_markdown": "Este kit é uma bolsa de couro contendo ataduras, unguentos e talas. O kit tem dez usos. Como uma ação, você pode gastar um uso do kit para estabilizar uma criatura que tenha 0 pontos de vida, sem precisar fazer um teste de Sabedoria (Medicina)."
+      },
+      {
+        "id": "holy_water",
+        "name": "Água Benta (frasco)",
+        "name_en": "Holy Water (flask)",
+        "cost_gp": 25,
+        "weight_lb": 1,
+        "weight_kg": 0.45,
+        "description_markdown": "Como uma ação, você pode espirrar o conteúdo deste frasco em uma criatura a até 1,5 metros de você ou lançá-lo a até 6 metros, quebrando-o ao impacto. Em ambos os casos, faça um ataque à distância contra uma criatura alvo, tratando a água benta como uma arma improvisada. Se o alvo for um demônio ou morto-vivo, ele sofre 2d6 de dano radiante.\n\nUm clérigo ou paladino pode criar água benta realizando um ritual especial. O ritual leva 1 hora para ser realizado, usa 25 po de prata em pó, e requer que o conjurador gaste um espaço de magia de 1º nível."
+      },
+      {
+        "id": "hunting_trap",
+        "name": "Armadilha de Caça",
+        "name_en": "Hunting Trap",
+        "cost_gp": 5,
+        "weight_lb": 25,
+        "weight_kg": 11.3,
+        "description_markdown": "Quando você usa sua ação para armá-la, esta armadilha forma um anel de aço serrilhado que se fecha quando uma criatura pisa em uma placa de pressão no centro. A armadilha é fixada por uma corrente pesada a um objeto imóvel, como uma árvore ou um pino cravado no chão. Uma criatura que pisar na placa deve ter sucesso em um teste de resistência de Destreza CD 13 ou sofrer 1d4 de dano perfurante e parar de se mover. A partir daí, até que a criatura se liberte da armadilha, seu movimento é limitado pelo comprimento da corrente (tipicamente 90 cm de comprimento). Uma criatura pode usar sua ação para fazer um teste de Força CD 13, libertando-se ou outra criatura ao seu alcance com um sucesso. Cada teste falhado causa 1 de dano perfurante à criatura presa."
+      },
+      {
+        "id": "lamp",
+        "name": "Lamparina",
+        "name_en": "Lamp",
+        "cost_gp": 0.5,
+        "weight_lb": 1,
+        "weight_kg": 0.45,
+        "description_markdown": "Uma lamparina emite luz brilhante em um raio de 4,5 metros e penumbra por mais 9 metros. Uma vez acesa, ela queima por 6 horas com um frasco (1 pint / 0,47 litros) de óleo."
+      },
+      {
+        "id": "lantern_bullseye",
+        "name": "Lanterna Direcional",
+        "name_en": "Lantern, Bullseye",
+        "cost_gp": 10,
+        "weight_lb": 2,
+        "weight_kg": 0.9,
+        "description_markdown": "Uma lanterna direcional emite luz brilhante em um cone de 18 metros e penumbra por mais 18 metros. Uma vez acesa, ela queima por 6 horas com um frasco (1 pint / 0,47 litros) de óleo."
+      },
+      {
+        "id": "lantern_hooded",
+        "name": "Lanterna com Cobertura",
+        "name_en": "Lantern, Hooded",
+        "cost_gp": 5,
+        "weight_lb": 2,
+        "weight_kg": 0.9,
+        "description_markdown": "Uma lanterna com cobertura emite luz brilhante em um raio de 9 metros e penumbra por mais 9 metros. Uma vez acesa, ela queima por 6 horas com um frasco (1 pint / 0,47 litros) de óleo. Como uma ação, você pode baixar a cobertura, reduzindo a luz para penumbra em um raio de 1,5 metros."
+      },
+      {
+        "id": "lock",
+        "name": "Cadeado",
+        "name_en": "Lock",
+        "cost_gp": 10,
+        "weight_lb": 1,
+        "weight_kg": 0.45,
+        "description_markdown": "Uma chave é fornecida com o cadeado. Sem a chave, uma criatura proficiente com ferramentas de ladrão pode abrir este cadeado com um teste de Destreza CD 15 bem-sucedido. Seu Mestre pode decidir que cadeados melhores estão disponíveis por preços mais altos."
+      },
+      {
+        "id": "magnifying_glass",
+        "name": "Lupa",
+        "name_en": "Magnifying Glass",
+        "cost_gp": 100,
+        "weight_lb": 0,
+        "weight_kg": 0,
+        "description_markdown": "Esta lente permite um olhar mais próximo de objetos pequenos. Também é útil como substituto de pederneira e aço ao acender fogos. Acender um fogo com uma lupa requer luz tão brilhante quanto a luz do sol para focar, material inflamável para acender, e cerca de 5 minutos para o fogo pegar. Uma lupa concede vantagem em qualquer teste de atributo feito para avaliar ou inspecionar um item que seja pequeno ou altamente detalhado."
+      },
+      {
+        "id": "manacles",
+        "name": "Algemas",
+        "name_en": "Manacles",
+        "cost_gp": 2,
+        "weight_lb": 6,
+        "weight_kg": 2.7,
+        "description_markdown": "Estas algemas de metal podem prender uma criatura Pequena ou Média. Escapar das algemas requer um teste de Destreza CD 20 bem-sucedido. Quebrá-las requer um teste de Força CD 20 bem-sucedido. Cada conjunto de algemas vem com uma chave. Sem a chave, uma criatura proficiente com ferramentas de ladrão pode abrir a fechadura das algemas com um teste de Destreza CD 15 bem-sucedido. As algemas têm 15 pontos de vida."
+      },
+      {
+        "id": "oil_flask",
+        "name": "Óleo (frasco)",
+        "name_en": "Oil (flask)",
+        "cost_gp": 0.1,
+        "weight_lb": 1,
+        "weight_kg": 0.45,
+        "description_markdown": "Óleo geralmente vem em um frasco de argila que contém 1 pint (0,47 litros). Como uma ação, você pode espirrar o óleo deste frasco em uma criatura a até 1,5 metros de você ou lançá-lo a até 6 metros, quebrando-o ao impacto. Faça um ataque à distância contra uma criatura ou objeto alvo, tratando o óleo como uma arma improvisada. Ao acertar, o alvo fica coberto de óleo. Se o alvo sofrer qualquer dano de fogo antes do óleo secar (após 1 minuto), o alvo sofre 5 de dano de fogo adicional do óleo em chamas. Você também pode derramar um frasco de óleo no chão para cobrir uma área quadrada de 1,5 metros, desde que a superfície seja nivelada. Se aceso, o óleo queima por 2 rodadas e causa 5 de dano de fogo a qualquer criatura que entrar na área ou encerrar seu turno na área. Uma criatura pode sofrer este dano apenas uma vez por turno."
+      },
+      {
+        "id": "poison_basic",
+        "name": "Veneno Básico (frasco)",
+        "name_en": "Poison, Basic (vial)",
+        "cost_gp": 100,
+        "weight_lb": 0,
+        "weight_kg": 0,
+        "description_markdown": "Você pode usar o veneno neste frasco para cobrir uma arma cortante ou perfurante ou até três peças de munição. Aplicar o veneno leva uma ação. Uma criatura atingida pela arma ou munição envenenada deve fazer um teste de resistência de Constituição CD 10 ou sofrer 1d4 de dano venenoso. Uma vez aplicado, o veneno retém potência por 1 minuto antes de secar."
+      },
+      {
+        "id": "potion_of_healing",
+        "name": "Poção de Cura",
+        "name_en": "Potion of Healing",
+        "cost_gp": 50,
+        "weight_lb": 0.5,
+        "weight_kg": 0.23,
+        "description_markdown": "Um personagem que bebe o fluido vermelho mágico neste frasco recupera 2d4 + 2 pontos de vida. Beber ou administrar uma poção leva uma ação."
+      },
+      {
+        "id": "ram_portable",
+        "name": "Aríete Portátil",
+        "name_en": "Ram, Portable",
+        "cost_gp": 4,
+        "weight_lb": 35,
+        "weight_kg": 15.9,
+        "description_markdown": "Você pode usar um aríete portátil para derrubar portas. Ao fazê-lo, você ganha um bônus de +4 no teste de Força. Um outro personagem pode ajudá-lo a usar o aríete, concedendo-lhe vantagem neste teste."
+      },
+      {
+        "id": "rations",
+        "name": "Rações (1 dia)",
+        "name_en": "Rations (1 day)",
+        "cost_gp": 0.5,
+        "weight_lb": 2,
+        "weight_kg": 0.9,
+        "description_markdown": "Rações consistem em alimentos secos adequados para viagens prolongadas, incluindo carne seca, frutas secas, biscoitos duros e nozes."
+      },
+      {
+        "id": "rope_hempen",
+        "name": "Corda de Cânhamo (15 metros)",
+        "name_en": "Rope, Hempen (50 feet)",
+        "cost_gp": 1,
+        "weight_lb": 10,
+        "weight_kg": 4.5,
+        "description_markdown": "Corda, seja feita de cânhamo ou seda, tem 2 pontos de vida e pode ser arrebentada com um teste de Força CD 17."
+      },
+      {
+        "id": "rope_silk",
+        "name": "Corda de Seda (15 metros)",
+        "name_en": "Rope, Silk (50 feet)",
+        "cost_gp": 10,
+        "weight_lb": 5,
+        "weight_kg": 2.3,
+        "description_markdown": "Corda, seja feita de cânhamo ou seda, tem 2 pontos de vida e pode ser arrebentada com um teste de Força CD 17."
+      },
+      {
+        "id": "spellbook",
+        "name": "Grimório",
+        "name_en": "Spellbook",
+        "cost_gp": 50,
+        "weight_lb": 3,
+        "weight_kg": 1.4,
+        "description_markdown": "Essencial para magos, um grimório é um tomo encadernado em couro com 100 páginas de pergaminho em branco adequadas para registrar magias."
+      },
+      {
+        "id": "spyglass",
+        "name": "Luneta",
+        "name_en": "Spyglass",
+        "cost_gp": 1000,
+        "weight_lb": 1,
+        "weight_kg": 0.45,
+        "description_markdown": "Objetos vistos através de uma luneta são ampliados ao dobro de seu tamanho."
+      },
+      {
+        "id": "tent",
+        "name": "Tenda (para duas pessoas)",
+        "name_en": "Tent (two-person)",
+        "cost_gp": 2,
+        "weight_lb": 20,
+        "weight_kg": 9.1,
+        "description_markdown": "Um abrigo simples e portátil de lona, uma tenda acomoda duas pessoas."
+      },
+      {
+        "id": "tinderbox",
+        "name": "Caixa de Fogo",
+        "name_en": "Tinderbox",
+        "cost_gp": 0.5,
+        "weight_lb": 1,
+        "weight_kg": 0.45,
+        "description_markdown": "Este pequeno recipiente contém pederneira, aço e material inflamável (geralmente pano seco embebido em óleo leve) usado para acender um fogo. Usá-lo para acender uma tocha—ou qualquer outra coisa com combustível abundante e exposto—leva uma ação. Acender qualquer outro fogo leva 1 minuto."
+      },
+      {
+        "id": "torch",
+        "name": "Tocha",
+        "name_en": "Torch",
+        "cost_gp": 0.01,
+        "weight_lb": 1,
+        "weight_kg": 0.45,
+        "description_markdown": "Uma tocha queima por 1 hora, fornecendo luz brilhante em um raio de 6 metros e penumbra por mais 6 metros. Se você fizer um ataque corpo a corpo com uma tocha acesa e acertar, ela causa 1 de dano de fogo."
+      },
+      {
+        "id": "waterskin",
+        "name": "Cantil",
+        "name_en": "Waterskin",
+        "cost_gp": 0.2,
+        "weight_lb": 5,
+        "weight_kg": 2.3,
+        "note": "peso quando cheio (4 pints / 1,9 litros)"
+      }
+    ]
+  }
+}

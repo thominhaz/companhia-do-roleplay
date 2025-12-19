@@ -1,0 +1,265 @@
+{
+  "mounts_and_vehicles": {
+    "name": "Montarias e Veículos",
+    "name_en": "Mounts and Vehicles",
+    "description_markdown": "Uma boa montaria pode ajudá-lo a se mover mais rapidamente através do ermo, mas seu propósito principal é carregar o equipamento que de outra forma o desaceleraria. A tabela de Montarias e Outros Animais mostra a velocidade e capacidade de carga base de cada animal.\n\nUm animal puxando uma carruagem, carroça, carruagem de guerra, trenó ou vagão pode mover peso até cinco vezes sua capacidade de carga base, incluindo o peso do veículo. Se múltiplos animais puxam o mesmo veículo, eles podem somar suas capacidades de carga.\n\nMontarias diferentes das listadas aqui estão disponíveis em mundos de fantasia, mas são raras e normalmente não estão disponíveis para compra. Estas incluem montarias voadoras (pégasos, grifos, hipogrifos e animais similares) e até montarias aquáticas (cavalos marinhos gigantes, por exemplo). Adquirir tal montaria geralmente significa conseguir um ovo e criar a criatura você mesmo, fazer um acordo com uma entidade poderosa, ou negociar com a própria montaria.",
+    "mounts_and_animals": {
+      "name": "Montarias e Outros Animais",
+      "name_en": "Mounts and Other Animals",
+      "animals": [
+        {
+          "id": "camel",
+          "name": "Camelo",
+          "name_en": "Camel",
+          "cost_gp": 50,
+          "speed_ft": 50,
+          "speed_m": 15,
+          "carrying_capacity_lb": 480,
+          "carrying_capacity_kg": 218
+        },
+        {
+          "id": "donkey_mule",
+          "name": "Burro ou Mula",
+          "name_en": "Donkey or Mule",
+          "cost_gp": 8,
+          "speed_ft": 40,
+          "speed_m": 12,
+          "carrying_capacity_lb": 420,
+          "carrying_capacity_kg": 191
+        },
+        {
+          "id": "elephant",
+          "name": "Elefante",
+          "name_en": "Elephant",
+          "cost_gp": 200,
+          "speed_ft": 40,
+          "speed_m": 12,
+          "carrying_capacity_lb": 1320,
+          "carrying_capacity_kg": 599
+        },
+        {
+          "id": "horse_draft",
+          "name": "Cavalo de Carga",
+          "name_en": "Horse, Draft",
+          "cost_gp": 50,
+          "speed_ft": 40,
+          "speed_m": 12,
+          "carrying_capacity_lb": 540,
+          "carrying_capacity_kg": 245
+        },
+        {
+          "id": "horse_riding",
+          "name": "Cavalo de Montaria",
+          "name_en": "Horse, Riding",
+          "cost_gp": 75,
+          "speed_ft": 60,
+          "speed_m": 18,
+          "carrying_capacity_lb": 480,
+          "carrying_capacity_kg": 218
+        },
+        {
+          "id": "mastiff",
+          "name": "Mastim",
+          "name_en": "Mastiff",
+          "cost_gp": 25,
+          "speed_ft": 40,
+          "speed_m": 12,
+          "carrying_capacity_lb": 195,
+          "carrying_capacity_kg": 88
+        },
+        {
+          "id": "pony",
+          "name": "Pônei",
+          "name_en": "Pony",
+          "cost_gp": 30,
+          "speed_ft": 40,
+          "speed_m": 12,
+          "carrying_capacity_lb": 225,
+          "carrying_capacity_kg": 102
+        },
+        {
+          "id": "warhorse",
+          "name": "Cavalo de Guerra",
+          "name_en": "Warhorse",
+          "cost_gp": 400,
+          "speed_ft": 60,
+          "speed_m": 18,
+          "carrying_capacity_lb": 540,
+          "carrying_capacity_kg": 245
+        }
+      ]
+    },
+    "barding": {
+      "name": "Armadura para Animais",
+      "name_en": "Barding",
+      "description_markdown": "Armadura para animais é uma armadura projetada para proteger a cabeça, pescoço, peito e corpo de um animal. Qualquer tipo de armadura mostrada na tabela de Armaduras pode ser comprada como armadura para animais. O custo é quatro vezes o da armadura equivalente feita para humanoides, e pesa o dobro.",
+      "cost_multiplier": 4,
+      "weight_multiplier": 2
+    },
+    "saddles": {
+      "name": "Selas",
+      "name_en": "Saddles",
+      "description_markdown": "Uma sela militar ampara o cavaleiro, ajudando você a manter seu assento em uma montaria ativa em batalha. Ela lhe dá vantagem em qualquer teste que você faça para permanecer montado. Uma sela exótica é necessária para cavalgar qualquer montaria aquática ou voadora.",
+      "types": [
+        {
+          "id": "exotic",
+          "name": "Exótica",
+          "name_en": "Exotic",
+          "cost_gp": 60,
+          "weight_lb": 40,
+          "weight_kg": 18,
+          "description": "Necessária para montarias aquáticas ou voadoras"
+        },
+        {
+          "id": "military",
+          "name": "Militar",
+          "name_en": "Military",
+          "cost_gp": 20,
+          "weight_lb": 30,
+          "weight_kg": 13.6,
+          "description": "Dá vantagem em testes para permanecer montado"
+        },
+        {
+          "id": "pack",
+          "name": "de Carga",
+          "name_en": "Pack",
+          "cost_gp": 5,
+          "weight_lb": 15,
+          "weight_kg": 6.8
+        },
+        {
+          "id": "riding",
+          "name": "de Montaria",
+          "name_en": "Riding",
+          "cost_gp": 10,
+          "weight_lb": 25,
+          "weight_kg": 11.3
+        }
+      ]
+    },
+    "tack_harness_vehicles": {
+      "name": "Arreios, Arneses e Veículos Puxados",
+      "name_en": "Tack, Harness, and Drawn Vehicles",
+      "items": [
+        {
+          "id": "bit_and_bridle",
+          "name": "Freio e Rédeas",
+          "name_en": "Bit and Bridle",
+          "cost_gp": 2,
+          "weight_lb": 1,
+          "weight_kg": 0.45
+        },
+        {
+          "id": "carriage",
+          "name": "Carruagem",
+          "name_en": "Carriage",
+          "cost_gp": 100,
+          "weight_lb": 600,
+          "weight_kg": 272
+        },
+        {
+          "id": "cart",
+          "name": "Carroça",
+          "name_en": "Cart",
+          "cost_gp": 15,
+          "weight_lb": 200,
+          "weight_kg": 91
+        },
+        {
+          "id": "chariot",
+          "name": "Carruagem de Guerra",
+          "name_en": "Chariot",
+          "cost_gp": 250,
+          "weight_lb": 100,
+          "weight_kg": 45
+        },
+        {
+          "id": "feed_per_day",
+          "name": "Ração Animal (por dia)",
+          "name_en": "Feed (per day)",
+          "cost_gp": 0.05,
+          "weight_lb": 10,
+          "weight_kg": 4.5
+        },
+        {
+          "id": "sled",
+          "name": "Trenó",
+          "name_en": "Sled",
+          "cost_gp": 20,
+          "weight_lb": 300,
+          "weight_kg": 136
+        },
+        {
+          "id": "wagon",
+          "name": "Vagão",
+          "name_en": "Wagon",
+          "cost_gp": 35,
+          "weight_lb": 400,
+          "weight_kg": 181
+        }
+      ]
+    },
+    "waterborne_vehicles": {
+      "name": "Veículos Aquáticos",
+      "name_en": "Waterborne Vehicles",
+      "description_markdown": "**Embarcações a Remo.** Barcos a quilha e barcos a remo são usados em lagos e rios. Se indo rio abaixo, adicione a velocidade da correnteza (tipicamente 4,8 km/h ou 3 milhas por hora) à velocidade do veículo. Estes veículos não podem remar contra nenhuma correnteza significativa, mas podem ser puxados rio acima por animais de tração nas margens. Um barco a remo pesa 45 kg (100 libras), caso os aventureiros precisem carregá-lo por terra.",
+      "vehicles": [
+        {
+          "id": "galley",
+          "name": "Galera",
+          "name_en": "Galley",
+          "cost_gp": 30000,
+          "speed_mph": 4,
+          "speed_kmh": 6.4
+        },
+        {
+          "id": "keelboat",
+          "name": "Barco a Quilha",
+          "name_en": "Keelboat",
+          "cost_gp": 3000,
+          "speed_mph": 1,
+          "speed_kmh": 1.6
+        },
+        {
+          "id": "longship",
+          "name": "Drakkar",
+          "name_en": "Longship",
+          "cost_gp": 10000,
+          "speed_mph": 3,
+          "speed_kmh": 4.8
+        },
+        {
+          "id": "rowboat",
+          "name": "Barco a Remo",
+          "name_en": "Rowboat",
+          "cost_gp": 50,
+          "speed_mph": 1.5,
+          "speed_kmh": 2.4,
+          "weight_lb": 100,
+          "weight_kg": 45
+        },
+        {
+          "id": "sailing_ship",
+          "name": "Navio à Vela",
+          "name_en": "Sailing Ship",
+          "cost_gp": 10000,
+          "speed_mph": 2,
+          "speed_kmh": 3.2
+        },
+        {
+          "id": "warship",
+          "name": "Navio de Guerra",
+          "name_en": "Warship",
+          "cost_gp": 25000,
+          "speed_mph": 2.5,
+          "speed_kmh": 4
+        }
+      ]
+    },
+    "vehicle_proficiency": {
+      "name": "Proficiência com Veículos",
+      "name_en": "Vehicle Proficiency",
+      "description_markdown": "Se você tem proficiência com um certo tipo de veículo (terrestre ou aquático), você pode adicionar seu bônus de proficiência a qualquer teste que você faça para controlar aquele tipo de veículo em circunstâncias difíceis."
+    }
+  }
+}

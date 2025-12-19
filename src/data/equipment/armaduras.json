@@ -1,0 +1,269 @@
+{
+  "armor_categories": {
+    "light": {
+      "name": "Armadura Leve",
+      "name_en": "Light Armor",
+      "description": "Feita de materiais flexíveis e finos, a armadura leve favorece aventureiros ágeis, já que oferece alguma proteção sem sacrificar a mobilidade."
+    },
+    "medium": {
+      "name": "Armadura Média",
+      "name_en": "Medium Armor",
+      "description": "A armadura média oferece mais proteção que armadura leve, mas também impede mais o movimento. Se você usar armadura média, adiciona seu modificador de Destreza, até um máximo de +2, à CA base da armadura."
+    },
+    "heavy": {
+      "name": "Armadura Pesada",
+      "name_en": "Heavy Armor",
+      "description": "De todas as categorias de armadura, armadura pesada oferece a melhor proteção. Essas armaduras cobrem todo o corpo. Armadura pesada interfere na habilidade de se mover rápida e furtivamente. Se você usar armadura pesada, seu deslocamento é reduzido em 3 metros a menos que você tenha um valor de Força igual ou maior ao exigido."
+    }
+  },
+  "items": [
+    {
+      "id": "padded",
+      "name": "Acolchoada",
+      "name_en": "Padded",
+      "category": "light",
+      "cost": {
+        "value": 5,
+        "currency": "gp"
+      },
+      "weight": 4,
+      "armor_class": {
+        "base": 11,
+        "add_dex_modifier": true,
+        "max_dex_bonus": null
+      },
+      "strength_requirement": null,
+      "stealth_disadvantage": true,
+      "description_markdown": "Armadura acolchoada consiste de camadas de tecido acolchoado e matelado."
+    },
+    {
+      "id": "leather",
+      "name": "Couro",
+      "name_en": "Leather",
+      "category": "light",
+      "cost": {
+        "value": 10,
+        "currency": "gp"
+      },
+      "weight": 5,
+      "armor_class": {
+        "base": 11,
+        "add_dex_modifier": true,
+        "max_dex_bonus": null
+      },
+      "strength_requirement": null,
+      "stealth_disadvantage": false,
+      "description_markdown": "O peitoral e os protetores de ombro desta armadura são feitos de couro que foi endurecido ao ser fervido em óleo."
+    },
+    {
+      "id": "studded_leather",
+      "name": "Couro Batido",
+      "name_en": "Studded Leather",
+      "category": "light",
+      "cost": {
+        "value": 45,
+        "currency": "gp"
+      },
+      "weight": 6.5,
+      "armor_class": {
+        "base": 12,
+        "add_dex_modifier": true,
+        "max_dex_bonus": null
+      },
+      "strength_requirement": null,
+      "stealth_disadvantage": false,
+      "description_markdown": "Feita de couro resistente mas flexível, a armadura de couro batido é reforçada com rebites próximos ou pontas."
+    },
+    {
+      "id": "hide",
+      "name": "Gibão de Peles",
+      "name_en": "Hide",
+      "category": "medium",
+      "cost": {
+        "value": 10,
+        "currency": "gp"
+      },
+      "weight": 6,
+      "armor_class": {
+        "base": 12,
+        "add_dex_modifier": true,
+        "max_dex_bonus": 2
+      },
+      "strength_requirement": null,
+      "stealth_disadvantage": false,
+      "description_markdown": "Esta armadura rústica consiste de peles grossas. É comumente usada por tribos bárbaras, humanoides malignos e outros povos que não têm acesso às ferramentas e materiais necessários para criar armaduras melhores."
+    },
+    {
+      "id": "chain_shirt",
+      "name": "Camisão de Malha",
+      "name_en": "Chain Shirt",
+      "category": "medium",
+      "cost": {
+        "value": 50,
+        "currency": "gp"
+      },
+      "weight": 10,
+      "armor_class": {
+        "base": 13,
+        "add_dex_modifier": true,
+        "max_dex_bonus": 2
+      },
+      "strength_requirement": null,
+      "stealth_disadvantage": false,
+      "description_markdown": "Feita de anéis de metal entrelaçados, um camisão de malha é vestido entre camadas de roupa ou couro."
+    },
+    {
+      "id": "scale_mail",
+      "name": "Cota de Escamas",
+      "name_en": "Scale Mail",
+      "category": "medium",
+      "cost": {
+        "value": 50,
+        "currency": "gp"
+      },
+      "weight": 22.5,
+      "armor_class": {
+        "base": 14,
+        "add_dex_modifier": true,
+        "max_dex_bonus": 2
+      },
+      "strength_requirement": null,
+      "stealth_disadvantage": true,
+      "description_markdown": "Esta armadura consiste de uma capa e calças (e talvez uma saia separada) de couro coberto com peças sobrepostas de metal, como escamas de peixe."
+    },
+    {
+      "id": "breastplate",
+      "name": "Peitoral",
+      "name_en": "Breastplate",
+      "category": "medium",
+      "cost": {
+        "value": 400,
+        "currency": "gp"
+      },
+      "weight": 10,
+      "armor_class": {
+        "base": 14,
+        "add_dex_modifier": true,
+        "max_dex_bonus": 2
+      },
+      "strength_requirement": null,
+      "stealth_disadvantage": false,
+      "description_markdown": "Esta armadura consiste de uma peça de metal moldada para cobrir o peito do usuário e é complementada com couro macio e flexível."
+    },
+    {
+      "id": "half_plate",
+      "name": "Meia-Armadura",
+      "name_en": "Half Plate",
+      "category": "medium",
+      "cost": {
+        "value": 750,
+        "currency": "gp"
+      },
+      "weight": 18,
+      "armor_class": {
+        "base": 15,
+        "add_dex_modifier": true,
+        "max_dex_bonus": 2
+      },
+      "strength_requirement": null,
+      "stealth_disadvantage": true,
+      "description_markdown": "Meia-armadura consiste de placas de metal moldadas que cobrem a maior parte do corpo do usuário. Não inclui proteção para as pernas além de caneleiras simples presas com tiras de couro."
+    },
+    {
+      "id": "ring_mail",
+      "name": "Cota de Anéis",
+      "name_en": "Ring Mail",
+      "category": "heavy",
+      "cost": {
+        "value": 30,
+        "currency": "gp"
+      },
+      "weight": 18,
+      "armor_class": {
+        "base": 14,
+        "add_dex_modifier": false,
+        "max_dex_bonus": null
+      },
+      "strength_requirement": null,
+      "stealth_disadvantage": true,
+      "description_markdown": "Esta armadura é armadura de couro com anéis de metal pesados costurados nela. Os anéis ajudam a reforçar a armadura contra golpes de espadas e machados."
+    },
+    {
+      "id": "chain_mail",
+      "name": "Cota de Malha",
+      "name_en": "Chain Mail",
+      "category": "heavy",
+      "cost": {
+        "value": 75,
+        "currency": "gp"
+      },
+      "weight": 25,
+      "armor_class": {
+        "base": 16,
+        "add_dex_modifier": false,
+        "max_dex_bonus": null
+      },
+      "strength_requirement": 13,
+      "stealth_disadvantage": true,
+      "description_markdown": "Feita de anéis de metal entrelaçados, a cota de malha inclui uma camada de tecido acolchoado vestido sob a malha para prevenir atrito e amortecer o impacto de golpes."
+    },
+    {
+      "id": "splint",
+      "name": "Cota de Talas",
+      "name_en": "Splint",
+      "category": "heavy",
+      "cost": {
+        "value": 200,
+        "currency": "gp"
+      },
+      "weight": 27,
+      "armor_class": {
+        "base": 17,
+        "add_dex_modifier": false,
+        "max_dex_bonus": null
+      },
+      "strength_requirement": 15,
+      "stealth_disadvantage": true,
+      "description_markdown": "Esta armadura é feita de tiras estreitas verticais de metal rebitadas a um suporte de couro vestido sobre um acolchoado de tecido."
+    },
+    {
+      "id": "plate",
+      "name": "Placa",
+      "name_en": "Plate",
+      "category": "heavy",
+      "cost": {
+        "value": 1500,
+        "currency": "gp"
+      },
+      "weight": 29.5,
+      "armor_class": {
+        "base": 18,
+        "add_dex_modifier": false,
+        "max_dex_bonus": null
+      },
+      "strength_requirement": 15,
+      "stealth_disadvantage": true,
+      "description_markdown": "Armadura de placas consiste de peças de metal moldadas e entrelaçadas para cobrir todo o corpo. Inclui manoplas, botas pesadas de couro, um elmo com viseira e camadas grossas de acolchoado sob a armadura."
+    },
+    {
+      "id": "shield",
+      "name": "Escudo",
+      "name_en": "Shield",
+      "category": "shield",
+      "cost": {
+        "value": 10,
+        "currency": "gp"
+      },
+      "weight": 3,
+      "armor_class": {
+        "base": 0,
+        "bonus": 2,
+        "add_dex_modifier": false,
+        "max_dex_bonus": null
+      },
+      "strength_requirement": null,
+      "stealth_disadvantage": false,
+      "description_markdown": "Um escudo é feito de madeira ou metal e é carregado em uma mão. Empunhar um escudo aumenta sua Classe de Armadura em **+2**.\n\nVocê só pode se beneficiar de um escudo por vez."
+    }
+  ]
+}
