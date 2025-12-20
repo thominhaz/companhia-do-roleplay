@@ -437,6 +437,39 @@ export type Database = {
           },
         ]
       }
+      notification_preferences: {
+        Row: {
+          campaign_invite: boolean | null
+          campaign_update: boolean | null
+          chat_message: boolean | null
+          created_at: string | null
+          id: string
+          session_reminder: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          campaign_invite?: boolean | null
+          campaign_update?: boolean | null
+          chat_message?: boolean | null
+          created_at?: string | null
+          id?: string
+          session_reminder?: boolean | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          campaign_invite?: boolean | null
+          campaign_update?: boolean | null
+          chat_message?: boolean | null
+          created_at?: string | null
+          id?: string
+          session_reminder?: boolean | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string | null
@@ -577,6 +610,25 @@ export type Database = {
         Returns: string
       }
       generate_invite_code: { Args: never; Returns: string }
+      get_or_create_notification_preferences: {
+        Args: { _user_id: string }
+        Returns: {
+          campaign_invite: boolean | null
+          campaign_update: boolean | null
+          chat_message: boolean | null
+          created_at: string | null
+          id: string
+          session_reminder: boolean | null
+          updated_at: string | null
+          user_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "notification_preferences"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
       is_campaign_master: {
         Args: { _campaign_id: string; _user_id: string }
         Returns: boolean

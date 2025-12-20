@@ -20,6 +20,7 @@ import { AppHeader } from "@/components/layout/AppHeader";
 import { toast } from "sonner";
 import { ProfileEditSheet } from "@/components/menu/ProfileEditSheet";
 import { ChangelogSheet } from "@/components/menu/ChangelogSheet";
+import { NotificationSettingsSheet } from "@/components/menu/NotificationSettingsSheet";
 
 const menuSections = [
   {
@@ -97,6 +98,7 @@ export function MenuScreen() {
   
   const [profileOpen, setProfileOpen] = useState(false);
   const [changelogOpen, setChangelogOpen] = useState(false);
+  const [notificationsOpen, setNotificationsOpen] = useState(false);
 
   const handleLogout = async () => {
     await signOut();
@@ -121,7 +123,11 @@ export function MenuScreen() {
         toast.info("Em breve: Gerenciamento de assinatura");
         break;
       case "notifications":
-        toast.info("Em breve: Configurações de notificações");
+        if (user) {
+          setNotificationsOpen(true);
+        } else {
+          navigate("/auth");
+        }
         break;
       case "appearance":
         toast.info("Em breve: Configurações de aparência");
@@ -283,6 +289,8 @@ export function MenuScreen() {
 
       {/* Sheets */}
       <ProfileEditSheet open={profileOpen} onOpenChange={setProfileOpen} />
+      <ChangelogSheet open={changelogOpen} onOpenChange={setChangelogOpen} />
+      <NotificationSettingsSheet open={notificationsOpen} onOpenChange={setNotificationsOpen} />
       <ChangelogSheet open={changelogOpen} onOpenChange={setChangelogOpen} />
     </div>
   );
