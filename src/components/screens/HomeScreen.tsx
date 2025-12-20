@@ -19,6 +19,11 @@ import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import type { TabRoute } from "@/types";
+
+interface HomeScreenProps {
+  onNavigate?: (tab: TabRoute) => void;
+}
 
 const quickActions = [
   { id: "create", label: "Criar Ficha", icon: Plus, gradient: "from-primary to-purple-700" },
@@ -114,7 +119,7 @@ function buildRecentItems(characters: CharacterDB[], campaigns: { master: Campai
   return items.slice(0, 6);
 }
 
-export function HomeScreen() {
+export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
   const { data: characters, isLoading: loadingChars } = useCharacters();
@@ -316,7 +321,12 @@ export function HomeScreen() {
       <section className="mt-8 mb-6">
         <div className="px-5 flex items-center justify-between mb-4">
           <h2 className="text-sm font-semibold text-muted-foreground">RECENTES</h2>
-          <button className="text-xs text-primary font-medium">Ver Todos</button>
+          <button 
+            onClick={() => onNavigate?.("characters")}
+            className="text-xs text-primary font-medium hover:underline"
+          >
+            Ver Todos
+          </button>
         </div>
         {isLoading ? (
           <div className="flex items-center justify-center py-8">

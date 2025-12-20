@@ -14,7 +14,7 @@ const Index = () => {
   const renderScreen = () => {
     switch (activeTab) {
       case "home":
-        return <HomeScreen />;
+        return <HomeScreen onNavigate={setActiveTab} />;
       case "characters":
         return <CharactersScreen />;
       case "campaigns":
@@ -24,7 +24,7 @@ const Index = () => {
       case "menu":
         return <MenuScreen />;
       default:
-        return <HomeScreen />;
+        return <HomeScreen onNavigate={setActiveTab} />;
     }
   };
 
