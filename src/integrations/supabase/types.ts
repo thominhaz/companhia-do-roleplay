@@ -326,6 +326,54 @@ export type Database = {
           },
         ]
       }
+      combat_logs: {
+        Row: {
+          action_type: string
+          combatant_id: string | null
+          combatant_name: string | null
+          created_at: string
+          details: string | null
+          encounter_id: string
+          id: string
+          value: number | null
+        }
+        Insert: {
+          action_type: string
+          combatant_id?: string | null
+          combatant_name?: string | null
+          created_at?: string
+          details?: string | null
+          encounter_id: string
+          id?: string
+          value?: number | null
+        }
+        Update: {
+          action_type?: string
+          combatant_id?: string | null
+          combatant_name?: string | null
+          created_at?: string
+          details?: string | null
+          encounter_id?: string
+          id?: string
+          value?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combat_logs_combatant_id_fkey"
+            columns: ["combatant_id"]
+            isOneToOne: false
+            referencedRelation: "combatants"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "combat_logs_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "combat_encounters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       combatants: {
         Row: {
           armor_class: number
