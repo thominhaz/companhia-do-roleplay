@@ -62,6 +62,7 @@ export type Database = {
           description: string | null
           id: string
           image_url: string | null
+          invite_code: string | null
           master_id: string
           name: string
           updated_at: string
@@ -71,6 +72,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          invite_code?: string | null
           master_id: string
           name: string
           updated_at?: string
@@ -80,6 +82,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          invite_code?: string | null
           master_id?: string
           name?: string
           updated_at?: string
@@ -305,6 +308,7 @@ export type Database = {
     Functions: {
       can_create_character: { Args: { _user_id: string }; Returns: boolean }
       count_user_characters: { Args: { _user_id: string }; Returns: number }
+      generate_invite_code: { Args: never; Returns: string }
       is_campaign_master: {
         Args: { _campaign_id: string; _user_id: string }
         Returns: boolean
@@ -314,6 +318,10 @@ export type Database = {
         Returns: boolean
       }
       is_premium: { Args: { _user_id: string }; Returns: boolean }
+      join_campaign_by_code: {
+        Args: { _character_id?: string; _invite_code: string; _user_id: string }
+        Returns: string
+      }
     }
     Enums: {
       subscription_status: "free" | "premium"
