@@ -313,10 +313,12 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
                         </div>
                         <div className="flex-1">
                           <p className="font-medium text-sm">
-                            {player.role === 'master' ? 'Mestre' : `Jogador`}
+                            {player.profile?.display_name || 'Jogador'}
                           </p>
                           <p className="text-xs text-muted-foreground">
-                            {player.character_id ? 'Personagem vinculado' : 'Sem personagem'}
+                            {player.character?.name 
+                              ? `${player.character.name} • ${player.character.class} Nv.${player.character.level}`
+                              : 'Sem personagem vinculado'}
                           </p>
                         </div>
                         <span className={`text-xs px-2 py-1 rounded-full ${

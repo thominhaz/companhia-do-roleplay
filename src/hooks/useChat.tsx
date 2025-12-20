@@ -33,10 +33,19 @@ export function useCampaignMessages(campaignId: string) {
           table: 'campaign_messages',
           filter: `campaign_id=eq.${campaignId}`,
         },
-        (payload) => {
+        async (payload) => {
+          const newMessage = payload.new as CampaignMessage;
+          
+          // Fetch the profile for the new message
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('id, display_name, avatar_url')
+            .eq('id', newMessage.user_id)
+            .single();
+          
           queryClient.setQueryData<CampaignMessage[]>(
             ['campaign-messages', campaignId],
-            (old = []) => [...old, payload.new as CampaignMessage]
+            (old = []) => [...old, { ...newMessage, profile: profile || undefined }]
           );
         }
       )
