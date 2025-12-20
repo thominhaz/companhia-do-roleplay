@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   useActiveEncounter, 
   useCombatants, 
@@ -15,6 +16,7 @@ import {
   useRemoveCombatant,
   Combatant
 } from "@/hooks/useCombat";
+import { useCampaignPlayers } from "@/hooks/useSessions";
 import { 
   Swords, 
   Plus, 
@@ -87,6 +89,8 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
   const [showAddCombatant, setShowAddCombatant] = useState(false);
   const [hpDialog, setHpDialog] = useState<HpDialogState>({ open: false, combatant: null, mode: 'damage' });
   const [hpAmount, setHpAmount] = useState("");
+  const [combatantType, setCombatantType] = useState<'monster' | 'npc' | 'player'>('monster');
+  const [selectedPlayerId, setSelectedPlayerId] = useState("");
   const [newCombatant, setNewCombatant] = useState({
     name: "",
     initiative: 10,
@@ -94,7 +98,16 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
     max_hp: 10,
     armor_class: 10,
     is_player: false,
+    character_id: null as string | null,
   });
+
+  // Fetch campaign players for the player selection
+  const { data: campaignPlayers } = useCampaignPlayers(campaignId);
+  
+  // Filter only players with characters (not master)
+  const playersWithCharacters = campaignPlayers?.filter(
+    p => p.role === 'player' && p.character_id && p.character
+  ) || [];
 
   const { data: encounter, isLoading: loadingEncounter } = useActiveEncounter(campaignId);
   const { data: combatants, isLoading: loadingCombatants } = useCombatants(encounter?.id || "");
@@ -152,7 +165,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
       armor_class: newCombatant.armor_class,
       is_player: newCombatant.is_player,
       conditions: [],
-      character_id: null,
+      character_id: newCombatant.character_id,
       notes: null,
       sort_order: 0,
     });
@@ -164,7 +177,10 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
       max_hp: 10,
       armor_class: 10,
       is_player: false,
+      character_id: null,
     });
+    setCombatantType('monster');
+    setSelectedPlayerId("");
     setShowAddCombatant(false);
   };
 
@@ -484,90 +500,241 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
             </ScrollArea>
 
             {/* Add Combatant Sheet */}
-            <Sheet open={showAddCombatant} onOpenChange={setShowAddCombatant}>
-              <SheetContent side="bottom" className="h-auto rounded-t-3xl">
+            <Sheet open={showAddCombatant} onOpenChange={(open) => {
+              setShowAddCombatant(open);
+              if (!open) {
+                setCombatantType('monster');
+                setSelectedPlayerId("");
+                setNewCombatant({
+                  name: "",
+                  initiative: 10,
+                  current_hp: 10,
+                  max_hp: 10,
+                  armor_class: 10,
+                  is_player: false,
+                  character_id: null,
+                });
+              }
+            }}>
+              <SheetContent side="bottom" className="h-auto rounded-t-3xl max-h-[85vh] overflow-y-auto">
                 <SheetHeader className="mb-4">
                   <SheetTitle>Adicionar Combatente</SheetTitle>
                 </SheetHeader>
                 
                 <div className="space-y-4">
+                  {/* Combatant Type Selection */}
                   <div className="space-y-2">
-                    <Label>Nome</Label>
-                    <Input
-                      value={newCombatant.name}
-                      onChange={(e) => setNewCombatant(prev => ({ ...prev, name: e.target.value }))}
-                      placeholder="Goblin, Bandido..."
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-2">
-                      <Label>Iniciativa</Label>
-                      <Input
-                        type="number"
-                        value={newCombatant.initiative}
-                        onChange={(e) => setNewCombatant(prev => ({ ...prev, initiative: parseInt(e.target.value) || 0 }))}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>CA</Label>
-                      <Input
-                        type="number"
-                        value={newCombatant.armor_class}
-                        onChange={(e) => setNewCombatant(prev => ({ ...prev, armor_class: parseInt(e.target.value) || 10 }))}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-2">
-                      <Label>HP Atual</Label>
-                      <Input
-                        type="number"
-                        value={newCombatant.current_hp}
-                        onChange={(e) => {
-                          const hp = parseInt(e.target.value) || 0;
+                    <Label>Tipo de Combatente</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button
+                        variant={combatantType === 'monster' ? "default" : "outline"}
+                        className="flex-1"
+                        onClick={() => {
+                          setCombatantType('monster');
+                          setSelectedPlayerId("");
                           setNewCombatant(prev => ({ 
                             ...prev, 
-                            current_hp: hp,
-                            max_hp: Math.max(hp, prev.max_hp)
+                            is_player: false, 
+                            character_id: null,
+                            name: "",
+                            initiative: 10,
+                            current_hp: 10,
+                            max_hp: 10,
+                            armor_class: 10,
                           }));
                         }}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>HP Máximo</Label>
-                      <Input
-                        type="number"
-                        value={newCombatant.max_hp}
-                        onChange={(e) => setNewCombatant(prev => ({ ...prev, max_hp: parseInt(e.target.value) || 0 }))}
-                      />
+                      >
+                        <Skull className="w-4 h-4 mr-1" />
+                        Monstro
+                      </Button>
+                      <Button
+                        variant={combatantType === 'npc' ? "default" : "outline"}
+                        className="flex-1"
+                        onClick={() => {
+                          setCombatantType('npc');
+                          setSelectedPlayerId("");
+                          setNewCombatant(prev => ({ 
+                            ...prev, 
+                            is_player: false, 
+                            character_id: null,
+                            name: "",
+                            initiative: 10,
+                            current_hp: 10,
+                            max_hp: 10,
+                            armor_class: 10,
+                          }));
+                        }}
+                      >
+                        <User className="w-4 h-4 mr-1" />
+                        NPC
+                      </Button>
+                      <Button
+                        variant={combatantType === 'player' ? "default" : "outline"}
+                        className="flex-1"
+                        onClick={() => {
+                          setCombatantType('player');
+                          setSelectedPlayerId("");
+                          setNewCombatant(prev => ({ 
+                            ...prev, 
+                            is_player: true, 
+                            character_id: null,
+                            name: "",
+                            initiative: 10,
+                            current_hp: 10,
+                            max_hp: 10,
+                            armor_class: 10,
+                          }));
+                        }}
+                      >
+                        <User className="w-4 h-4 mr-1" />
+                        Jogador
+                      </Button>
                     </div>
                   </div>
 
-                  <div className="flex gap-2">
-                    <Button
-                      variant={newCombatant.is_player ? "default" : "outline"}
-                      className="flex-1"
-                      onClick={() => setNewCombatant(prev => ({ ...prev, is_player: true }))}
-                    >
-                      <User className="w-4 h-4 mr-2" />
-                      Jogador
-                    </Button>
-                    <Button
-                      variant={!newCombatant.is_player ? "default" : "outline"}
-                      className="flex-1"
-                      onClick={() => setNewCombatant(prev => ({ ...prev, is_player: false }))}
-                    >
-                      <Skull className="w-4 h-4 mr-2" />
-                      Monstro/NPC
-                    </Button>
-                  </div>
+                  {/* Player Selection - Only shown when type is player */}
+                  {combatantType === 'player' && (
+                    <div className="space-y-2">
+                      <Label>Selecionar Jogador da Campanha</Label>
+                      {playersWithCharacters.length === 0 ? (
+                        <div className="bg-muted/50 rounded-lg p-4 text-center">
+                          <p className="text-sm text-muted-foreground">
+                            Nenhum jogador com personagem vinculado nesta campanha.
+                          </p>
+                        </div>
+                      ) : (
+                        <Select 
+                          value={selectedPlayerId} 
+                          onValueChange={(value) => {
+                            setSelectedPlayerId(value);
+                            const player = playersWithCharacters.find(p => p.id === value);
+                            if (player && player.character) {
+                              setNewCombatant({
+                                name: player.character.name,
+                                initiative: 10, // Will be rolled
+                                current_hp: (player.character as any).current_hp || (player.character as any).max_hp || 10,
+                                max_hp: (player.character as any).max_hp || 10,
+                                armor_class: (player.character as any).armor_class || 10,
+                                is_player: true,
+                                character_id: player.character_id,
+                              });
+                            }
+                          }}
+                        >
+                          <SelectTrigger className="bg-muted/50 border-0">
+                            <SelectValue placeholder="Selecione um jogador" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {playersWithCharacters.map(player => (
+                              <SelectItem key={player.id} value={player.id}>
+                                <div className="flex items-center gap-2">
+                                  <User className="w-4 h-4 text-blue-500" />
+                                  <span className="font-medium">{player.character?.name}</span>
+                                  <span className="text-muted-foreground text-sm">
+                                    - {player.character?.class} Nv {player.character?.level}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Manual fields for Monster/NPC or if no player selected */}
+                  {(combatantType !== 'player' || !selectedPlayerId) && combatantType !== 'player' && (
+                    <>
+                      <div className="space-y-2">
+                        <Label>Nome</Label>
+                        <Input
+                          value={newCombatant.name}
+                          onChange={(e) => setNewCombatant(prev => ({ ...prev, name: e.target.value }))}
+                          placeholder={combatantType === 'monster' ? "Goblin, Lobo..." : "Guarda, Mercador..."}
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <Label>Iniciativa</Label>
+                          <Input
+                            type="number"
+                            value={newCombatant.initiative}
+                            onChange={(e) => setNewCombatant(prev => ({ ...prev, initiative: parseInt(e.target.value) || 0 }))}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>CA</Label>
+                          <Input
+                            type="number"
+                            value={newCombatant.armor_class}
+                            onChange={(e) => setNewCombatant(prev => ({ ...prev, armor_class: parseInt(e.target.value) || 10 }))}
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-2">
+                          <Label>HP Atual</Label>
+                          <Input
+                            type="number"
+                            value={newCombatant.current_hp}
+                            onChange={(e) => {
+                              const hp = parseInt(e.target.value) || 0;
+                              setNewCombatant(prev => ({ 
+                                ...prev, 
+                                current_hp: hp,
+                                max_hp: Math.max(hp, prev.max_hp)
+                              }));
+                            }}
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label>HP Máximo</Label>
+                          <Input
+                            type="number"
+                            value={newCombatant.max_hp}
+                            onChange={(e) => setNewCombatant(prev => ({ ...prev, max_hp: parseInt(e.target.value) || 0 }))}
+                          />
+                        </div>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Show selected player stats */}
+                  {combatantType === 'player' && selectedPlayerId && (
+                    <div className="bg-muted/30 rounded-xl p-4 space-y-3">
+                      <h4 className="font-semibold text-sm">Dados do Personagem</h4>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="flex items-center gap-2">
+                          <Heart className="w-4 h-4 text-red-500" />
+                          <span className="text-sm">{newCombatant.current_hp}/{newCombatant.max_hp} HP</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Shield className="w-4 h-4 text-blue-500" />
+                          <span className="text-sm">CA {newCombatant.armor_class}</span>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Iniciativa</Label>
+                        <Input
+                          type="number"
+                          value={newCombatant.initiative}
+                          onChange={(e) => setNewCombatant(prev => ({ ...prev, initiative: parseInt(e.target.value) || 0 }))}
+                          placeholder="Role a iniciativa..."
+                        />
+                      </div>
+                    </div>
+                  )}
 
                   <Button 
                     onClick={handleAddCombatant} 
                     className="w-full"
-                    disabled={!newCombatant.name || addCombatant.isPending}
+                    disabled={
+                      !newCombatant.name || 
+                      addCombatant.isPending || 
+                      (combatantType === 'player' && !selectedPlayerId)
+                    }
                   >
                     {addCombatant.isPending ? (
                       <Loader2 className="w-4 h-4 mr-2 animate-spin" />
