@@ -9,7 +9,7 @@ import { useCampaignSessions, useCreateSession, useCampaignPlayers, useInvitePla
 import { 
   Crown, Users, Calendar, Settings, Plus, Trash2, 
   Copy, User, Loader2, ChevronRight, Clock, MapPin,
-  UserPlus, Share2, Swords, StickyNote
+  UserPlus, Share2, Swords, StickyNote, MessageCircle
 } from "lucide-react";
 import { format, formatDistanceToNow, isFuture, isPast } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -29,6 +29,7 @@ import { CreateSessionSheet } from "./CreateSessionSheet";
 import { AddPlayerSheet } from "./AddPlayerSheet";
 import { CombatTracker } from "./CombatTracker";
 import { CampaignNotesSheet } from "./CampaignNotesSheet";
+import { CampaignChatSheet } from "./CampaignChatSheet";
 
 interface CampaignDetailSheetProps {
   campaign: CampaignDB | null;
@@ -43,6 +44,7 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [showCombatTracker, setShowCombatTracker] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
+  const [showChat, setShowChat] = useState(false);
   
   const { data: sessions, isLoading: loadingSessions } = useCampaignSessions(campaign?.id || '');
   const { data: players, isLoading: loadingPlayers } = useCampaignPlayers(campaign?.id || '');
@@ -120,24 +122,32 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
             )}
 
             {/* Quick Stats */}
-            <div className="flex gap-3 mt-4">
-              <div className="flex-1 bg-card/50 rounded-xl p-3 text-center">
+            <div className="grid grid-cols-4 gap-2 mt-4">
+              <div className="bg-card/50 rounded-xl p-3 text-center">
                 <Users className="w-4 h-4 mx-auto mb-1 text-primary" />
                 <p className="text-lg font-bold">{players?.length || 0}</p>
                 <p className="text-[10px] text-muted-foreground">Jogadores</p>
               </div>
-              <div className="flex-1 bg-card/50 rounded-xl p-3 text-center">
+              <div className="bg-card/50 rounded-xl p-3 text-center">
                 <Calendar className="w-4 h-4 mx-auto mb-1 text-primary" />
                 <p className="text-lg font-bold">{sessions?.length || 0}</p>
                 <p className="text-[10px] text-muted-foreground">Sessões</p>
               </div>
               <button 
                 onClick={() => setShowNotes(true)}
-                className="flex-1 bg-card/50 rounded-xl p-3 text-center hover:bg-card/70 transition-colors"
+                className="bg-card/50 rounded-xl p-3 text-center hover:bg-card/70 transition-colors"
               >
                 <StickyNote className="w-4 h-4 mx-auto mb-1 text-amber-500" />
-                <p className="text-lg font-bold">Notas</p>
-                <p className="text-[10px] text-muted-foreground">Ver todas</p>
+                <p className="text-sm font-bold">Notas</p>
+                <p className="text-[10px] text-muted-foreground">Ver</p>
+              </button>
+              <button 
+                onClick={() => setShowChat(true)}
+                className="bg-card/50 rounded-xl p-3 text-center hover:bg-card/70 transition-colors"
+              >
+                <MessageCircle className="w-4 h-4 mx-auto mb-1 text-blue-500" />
+                <p className="text-sm font-bold">Chat</p>
+                <p className="text-[10px] text-muted-foreground">Abrir</p>
               </button>
             </div>
 
@@ -393,6 +403,12 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
         campaignId={campaign.id}
         open={showNotes}
         onOpenChange={setShowNotes}
+      />
+
+      <CampaignChatSheet
+        campaignId={campaign.id}
+        open={showChat}
+        onOpenChange={setShowChat}
       />
     </>
   );
