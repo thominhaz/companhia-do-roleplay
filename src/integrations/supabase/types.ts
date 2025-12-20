@@ -185,6 +185,7 @@ export type Database = {
           image_url: string | null
           initiative: number
           inventory: Json
+          is_archived: boolean
           languages: Json
           level: number
           max_hp: number
@@ -225,6 +226,7 @@ export type Database = {
           image_url?: string | null
           initiative?: number
           inventory?: Json
+          is_archived?: boolean
           languages?: Json
           level?: number
           max_hp?: number
@@ -265,6 +267,7 @@ export type Database = {
           image_url?: string | null
           initiative?: number
           inventory?: Json
+          is_archived?: boolean
           languages?: Json
           level?: number
           max_hp?: number

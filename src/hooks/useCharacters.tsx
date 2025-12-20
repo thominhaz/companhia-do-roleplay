@@ -47,11 +47,12 @@ export interface CharacterDB {
   proficiencies: any[];
   languages: string[];
   image_url: string | null;
+  is_archived: boolean;
   created_at: string;
   updated_at: string;
 }
 
-export type CharacterInsert = Omit<CharacterDB, 'id' | 'user_id' | 'created_at' | 'updated_at'>;
+export type CharacterInsert = Omit<CharacterDB, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'is_archived'>;
 
 export function useCharacters() {
   const { user } = useAuth();
@@ -179,6 +180,32 @@ export function useDeleteCharacter() {
     },
     onError: () => {
       toast.error('Erro ao remover personagem');
+    },
+  });
+}
+
+export function useArchiveCharacter() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, archive }: { id: string; archive: boolean }) => {
+      const { data, error } = await supabase
+        .from('characters')
+        .update({ is_archived: archive })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as CharacterDB;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['characters'] });
+      queryClient.invalidateQueries({ queryKey: ['character', data.id] });
+      toast.success(data.is_archived ? 'Personagem arquivado' : 'Personagem restaurado');
+    },
+    onError: () => {
+      toast.error('Erro ao arquivar personagem');
     },
   });
 }
