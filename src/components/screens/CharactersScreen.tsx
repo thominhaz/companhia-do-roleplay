@@ -19,6 +19,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { CharacterWizard } from "@/components/character/CharacterWizard";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { AppHeader } from "@/components/layout/AppHeader";
 
 type FilterTab = "all" | "active" | "archived";
 
@@ -89,21 +90,14 @@ export function CharactersScreen() {
 
   return (
     <div className="min-h-screen bg-darker pb-24">
-      {/* Header */}
-      <header className="px-5 pt-6 pb-4 bg-gradient-to-b from-dark to-darker sticky top-0 z-50">
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Personagens</h1>
-            {user && subscription && (
-              <p className="text-xs text-muted-foreground mt-1">
-                {subscription.characterCount}/{subscription.limits.maxCharacters === 'unlimited' ? '∞' : subscription.limits.maxCharacters} personagens
-              </p>
-            )}
-          </div>
+      <AppHeader
+        title="Personagens"
+        subtitle={user && subscription ? `${subscription.characterCount}/${subscription.limits.maxCharacters === 'unlimited' ? '∞' : subscription.limits.maxCharacters} personagens` : undefined}
+        rightContent={
           <button 
             onClick={handleCreateCharacter}
             disabled={!user || !canCreateCharacter}
-            className={`w-11 h-11 rounded-full flex items-center justify-center shadow-lg ${
+            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
               canCreateCharacter 
                 ? "bg-gradient-to-br from-primary to-purple-700" 
                 : "bg-muted"
@@ -111,7 +105,8 @@ export function CharactersScreen() {
           >
             {canCreateCharacter ? <Plus className="w-5 h-5" /> : <Lock className="w-5 h-5 text-muted-foreground" />}
           </button>
-        </div>
+        }
+      >
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {tabs.map((tab) => (
             <button
@@ -127,7 +122,7 @@ export function CharactersScreen() {
             </button>
           ))}
         </div>
-      </header>
+      </AppHeader>
 
       {/* Content */}
       <main className="px-5 mt-6">

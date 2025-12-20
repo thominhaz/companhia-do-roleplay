@@ -16,6 +16,7 @@ import { useAllCampaigns, CampaignDB } from "@/hooks/useCampaigns";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { AppHeader } from "@/components/layout/AppHeader";
 
 const quickActions = [
   { id: "create", label: "Criar Ficha", icon: Plus, gradient: "from-primary to-purple-700" },
@@ -134,17 +135,9 @@ export function HomeScreen() {
 
   return (
     <div className="min-h-screen bg-darker pb-24">
-      {/* Header */}
-      <header className="px-5 pt-6 pb-4 bg-gradient-to-b from-dark to-darker">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-muted-foreground text-sm">Bem-vindo de volta</p>
-            <h1 className="text-2xl font-bold mt-1">
-              Olá, {displayName} {user ? "🖐️" : ""}
-            </h1>
-          </div>
-          <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Go20" className="h-10 w-auto" />
+      <AppHeader
+        rightContent={
+          <div className="flex items-center gap-2">
             {!user && (
               <button 
                 onClick={() => navigate("/auth")}
@@ -154,32 +147,39 @@ export function HomeScreen() {
               </button>
             )}
             <div className="relative">
-              <button className="w-11 h-11 rounded-full bg-dark flex items-center justify-center relative">
+              <button className="w-10 h-10 rounded-full bg-dark flex items-center justify-center relative">
                 <Bell className="w-5 h-5 text-muted-foreground" />
                 <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-secondary rounded-full border-2 border-darker" />
               </button>
             </div>
           </div>
-        </div>
-        
-        {/* Subscription Badge */}
-        {user && (
-          <div className="mt-3 flex items-center gap-2">
-            <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-              isPremium 
-                ? "bg-gold/20 text-gold" 
-                : "bg-muted text-muted-foreground"
-            }`}>
-              {isPremium ? "Premium" : "Free"}
-            </span>
-            {!isPremium && characters && (
-              <span className="text-xs text-muted-foreground">
-                {characters.length}/3 personagens
-              </span>
-            )}
+        }
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-muted-foreground text-sm">Bem-vindo de volta</p>
+            <h1 className="text-xl font-bold mt-0.5">
+              Olá, {displayName} {user ? "🖐️" : ""}
+            </h1>
           </div>
-        )}
-      </header>
+          {user && (
+            <div className="flex items-center gap-2">
+              <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                isPremium 
+                  ? "bg-gold/20 text-gold" 
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {isPremium ? "Premium" : "Free"}
+              </span>
+              {!isPremium && characters && (
+                <span className="text-xs text-muted-foreground">
+                  {characters.length}/3
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+      </AppHeader>
 
       {/* Hero Grid */}
       <section className="px-5 mt-6">
