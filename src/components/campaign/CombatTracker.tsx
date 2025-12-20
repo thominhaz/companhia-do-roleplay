@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   useActiveEncounter, 
   useCombatants, 
@@ -16,7 +17,10 @@ import {
   useRemoveCombatant,
   Combatant
 } from "@/hooks/useCombat";
+import { useAddCombatLog } from "@/hooks/useCombatLogs";
 import { useCampaignPlayers } from "@/hooks/useSessions";
+import { useAuth } from "@/hooks/useAuth";
+import { CombatLogPanel } from "./CombatLogPanel";
 import { 
   Swords, 
   Plus, 
@@ -34,7 +38,8 @@ import {
   Zap,
   Minus,
   AlertTriangle,
-  RotateCcw
+  RotateCcw,
+  ScrollText
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -86,11 +91,13 @@ interface HpDialogState {
 }
 
 export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerProps) {
+  const { user } = useAuth();
   const [showAddCombatant, setShowAddCombatant] = useState(false);
   const [hpDialog, setHpDialog] = useState<HpDialogState>({ open: false, combatant: null, mode: 'damage' });
   const [hpAmount, setHpAmount] = useState("");
   const [combatantType, setCombatantType] = useState<'monster' | 'npc' | 'player'>('monster');
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
+  const [activeTab, setActiveTab] = useState<'combatants' | 'log'>('combatants');
   const [newCombatant, setNewCombatant] = useState({
     name: "",
     initiative: 10,
@@ -109,6 +116,9 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
     p => p.role === 'player' && p.character_id && p.character
   ) || [];
 
+  // Find current user's combatant (for players to edit their own HP)
+  const userCharacterId = campaignPlayers?.find(p => p.user_id === user?.id)?.character_id;
+
   const { data: encounter, isLoading: loadingEncounter } = useActiveEncounter(campaignId);
   const { data: combatants, isLoading: loadingCombatants } = useCombatants(encounter?.id || "");
   
@@ -118,20 +128,44 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
   const addCombatant = useAddCombatant();
   const updateCombatant = useUpdateCombatant();
   const removeCombatant = useRemoveCombatant();
+  const addCombatLog = useAddCombatLog();
 
   const isLoading = loadingEncounter || loadingCombatants;
   const sortedCombatants = [...(combatants || [])].sort((a, b) => b.initiative - a.initiative);
   const currentCombatant = sortedCombatants[encounter?.current_turn || 0];
+  
+  // Check if current user is the master
+  const isMaster = campaignPlayers?.some(p => p.user_id === user?.id && p.role === 'master') ?? false;
 
   const handleStartCombat = async () => {
-    await createEncounter.mutateAsync({
+    const newEncounter = await createEncounter.mutateAsync({
       campaignId,
       name: `Combate ${new Date().toLocaleDateString('pt-BR')}`,
+    });
+    
+    // Log combat start
+    await addCombatLog.mutateAsync({
+      encounter_id: newEncounter.id,
+      combatant_id: null,
+      action_type: 'combat_start',
+      value: null,
+      details: null,
+      combatant_name: null,
     });
   };
 
   const handleEndCombat = async () => {
     if (encounter) {
+      // Log combat end
+      await addCombatLog.mutateAsync({
+        encounter_id: encounter.id,
+        combatant_id: null,
+        action_type: 'combat_end',
+        value: null,
+        details: null,
+        combatant_name: null,
+      });
+      
       await endEncounter.mutateAsync(encounter.id);
     }
   };
@@ -139,7 +173,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
   const handleNextTurn = async () => {
     if (!encounter || !combatants?.length) return;
 
-    let nextTurn = (encounter.current_turn + 1) % combatants.length;
+    let nextTurn = (encounter.current_turn + 1) % sortedCombatants.length;
     let nextRound = encounter.round;
 
     if (nextTurn === 0) {
@@ -151,6 +185,19 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
       current_turn: nextTurn,
       round: nextRound,
     });
+    
+    // Log turn start for next combatant
+    const nextCombatant = sortedCombatants[nextTurn];
+    if (nextCombatant) {
+      await addCombatLog.mutateAsync({
+        encounter_id: encounter.id,
+        combatant_id: nextCombatant.id,
+        action_type: 'turn_start',
+        value: null,
+        details: `Rodada ${nextRound}`,
+        combatant_name: nextCombatant.name,
+      });
+    }
   };
 
   const handleAddCombatant = async () => {
@@ -206,20 +253,41 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
       current_hp: newHp,
     });
     
+    // Log the HP change
+    await addCombatLog.mutateAsync({
+      encounter_id: encounter.id,
+      combatant_id: hpDialog.combatant.id,
+      action_type: hpDialog.mode === 'damage' ? 'damage' : 'heal',
+      value: amount,
+      details: null,
+      combatant_name: hpDialog.combatant.name,
+    });
+    
     setHpDialog({ open: false, combatant: null, mode: 'damage' });
     setHpAmount("");
   };
 
   const toggleCondition = async (combatant: Combatant, condition: string) => {
     if (!encounter) return;
-    const conditions = combatant.conditions.includes(condition)
-      ? combatant.conditions.filter(c => c !== condition)
-      : [...combatant.conditions, condition];
+    const isAdding = !combatant.conditions.includes(condition);
+    const conditions = isAdding
+      ? [...combatant.conditions, condition]
+      : combatant.conditions.filter(c => c !== condition);
     
     await updateCombatant.mutateAsync({
       id: combatant.id,
       encounterId: encounter.id,
       conditions,
+    });
+    
+    // Log condition change
+    await addCombatLog.mutateAsync({
+      encounter_id: encounter.id,
+      combatant_id: combatant.id,
+      action_type: isAdding ? 'condition_add' : 'condition_remove',
+      value: null,
+      details: condition,
+      combatant_name: combatant.name,
     });
   };
 
@@ -305,61 +373,84 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
           </div>
         ) : (
           <>
-            {/* Action Bar */}
-            <div className="p-4 border-b border-border flex gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setShowAddCombatant(true)}
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Adicionar
-              </Button>
-              <Button 
-                variant="outline"
-                size="sm" 
-                onClick={handlePreviousTurn}
-                disabled={!combatants?.length || (encounter.round === 1 && encounter.current_turn === 0)}
-              >
-                <RotateCcw className="w-4 h-4" />
-              </Button>
-              <Button 
-                size="sm" 
-                onClick={handleNextTurn}
-                disabled={!combatants?.length}
-                className="flex-1"
-              >
-                <SkipForward className="w-4 h-4 mr-1" />
-                Próximo Turno
-              </Button>
-            </div>
+            {/* Action Bar - Only show for masters */}
+            {isMaster && (
+              <div className="p-4 border-b border-border flex gap-2">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowAddCombatant(true)}
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Adicionar
+                </Button>
+                <Button 
+                  variant="outline"
+                  size="sm" 
+                  onClick={handlePreviousTurn}
+                  disabled={!combatants?.length || (encounter.round === 1 && encounter.current_turn === 0)}
+                >
+                  <RotateCcw className="w-4 h-4" />
+                </Button>
+                <Button 
+                  size="sm" 
+                  onClick={handleNextTurn}
+                  disabled={!combatants?.length}
+                  className="flex-1"
+                >
+                  <SkipForward className="w-4 h-4 mr-1" />
+                  Próximo Turno
+                </Button>
+              </div>
+            )}
 
-            {/* Combatants List */}
-            <ScrollArea className="h-[calc(90vh-220px)]">
-              <div className="p-4 space-y-3">
-                {sortedCombatants.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    Adicione combatentes para iniciar
-                  </div>
-                ) : (
-                  sortedCombatants.map((combatant, index) => {
-                    const isCurrentTurn = index === encounter.current_turn;
-                    const isDead = combatant.current_hp === 0;
-                    const hpPercent = (combatant.current_hp / combatant.max_hp) * 100;
+            {/* Tabs for Combatants and Log */}
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'combatants' | 'log')} className="flex-1 flex flex-col">
+              <div className="px-4 pt-2">
+                <TabsList className="w-full">
+                  <TabsTrigger value="combatants" className="flex-1">
+                    <Swords className="w-4 h-4 mr-1" />
+                    Combatentes
+                  </TabsTrigger>
+                  <TabsTrigger value="log" className="flex-1">
+                    <ScrollText className="w-4 h-4 mr-1" />
+                    Histórico
+                  </TabsTrigger>
+                </TabsList>
+              </div>
 
-                    return (
-                      <div
-                        key={combatant.id}
-                        className={cn(
-                          "rounded-xl p-4 border transition-all",
-                          isCurrentTurn 
-                            ? "bg-primary/10 border-primary" 
-                            : "bg-card border-border",
-                          isDead && "opacity-50"
-                        )}
-                      >
-                        <div className="flex items-start gap-3">
-                          {/* Initiative Badge */}
+              <TabsContent value="combatants" className="flex-1 mt-0">
+                {/* Combatants List */}
+                <ScrollArea className="h-[calc(90vh-280px)]">
+                  <div className="p-4 space-y-3">
+                    {sortedCombatants.length === 0 ? (
+                      <div className="text-center py-8 text-muted-foreground">
+                        Adicione combatentes para iniciar
+                      </div>
+                    ) : (
+                      sortedCombatants.map((combatant, index) => {
+                        const isCurrentTurn = index === encounter.current_turn;
+                        const isDead = combatant.current_hp === 0;
+                        const hpPercent = (combatant.current_hp / combatant.max_hp) * 100;
+                        // Check if this combatant belongs to the current user
+                        const isOwnCombatant = combatant.character_id === userCharacterId;
+                        // Allow editing if master or own combatant
+                        const canEditHp = isMaster || isOwnCombatant;
+
+                        return (
+                          <div
+                            key={combatant.id}
+                            className={cn(
+                              "rounded-xl p-4 border transition-all",
+                              isCurrentTurn 
+                                ? "bg-primary/10 border-primary" 
+                                : "bg-card border-border",
+                              isDead && "opacity-50",
+                              isOwnCombatant && !isMaster && "ring-2 ring-blue-500/50"
+                            )}
+                          >
+                            <div className="flex items-start gap-3">
+                              {/* Initiative Badge */}
                           <div className={cn(
                             "w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg",
                             combatant.is_player 
@@ -455,49 +546,59 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                             </div>
                           </div>
 
-                          {/* Actions */}
-                          <div className="flex flex-col gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 bg-green-500/10 hover:bg-green-500/20"
-                              onClick={() => {
-                                setHpDialog({ open: true, combatant, mode: 'heal' });
-                                setHpAmount("");
-                              }}
-                            >
-                              <Plus className="w-4 h-4 text-green-500" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 bg-red-500/10 hover:bg-red-500/20"
-                              onClick={() => {
-                                setHpDialog({ open: true, combatant, mode: 'damage' });
-                                setHpAmount("");
-                              }}
-                            >
-                              <Minus className="w-4 h-4 text-red-500" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8"
-                              onClick={() => removeCombatant.mutate({ 
-                                id: combatant.id, 
-                                encounterId: encounter.id 
-                              })}
-                            >
-                              <Trash2 className="w-4 h-4 text-muted-foreground" />
-                            </Button>
+                              {/* Actions - Only show for masters or own combatant */}
+                              {canEditHp && (
+                                <div className="flex flex-col gap-1">
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 bg-green-500/10 hover:bg-green-500/20"
+                                    onClick={() => {
+                                      setHpDialog({ open: true, combatant, mode: 'heal' });
+                                      setHpAmount("");
+                                    }}
+                                  >
+                                    <Plus className="w-4 h-4 text-green-500" />
+                                  </Button>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 bg-red-500/10 hover:bg-red-500/20"
+                                    onClick={() => {
+                                      setHpDialog({ open: true, combatant, mode: 'damage' });
+                                      setHpAmount("");
+                                    }}
+                                  >
+                                    <Minus className="w-4 h-4 text-red-500" />
+                                  </Button>
+                                  {isMaster && (
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-8 w-8"
+                                      onClick={() => removeCombatant.mutate({ 
+                                        id: combatant.id, 
+                                        encounterId: encounter.id 
+                                      })}
+                                    >
+                                      <Trash2 className="w-4 h-4 text-muted-foreground" />
+                                    </Button>
+                                  )}
+                                </div>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                      </div>
-                    );
-                  })
-                )}
-              </div>
-            </ScrollArea>
+                        );
+                      })
+                    )}
+                  </div>
+                </ScrollArea>
+              </TabsContent>
+
+              <TabsContent value="log" className="flex-1 mt-0 p-4">
+                <CombatLogPanel encounterId={encounter.id} />
+              </TabsContent>
+            </Tabs>
 
             {/* Add Combatant Sheet */}
             <Sheet open={showAddCombatant} onOpenChange={(open) => {
