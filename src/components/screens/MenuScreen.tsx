@@ -1,9 +1,9 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
   User,
-  Settings,
   Bell,
   Moon,
   HelpCircle,
@@ -11,13 +11,15 @@ import {
   Crown,
   LogOut,
   ChevronRight,
-  Cloud,
   ExternalLink,
   LogIn,
+  History,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { toast } from "sonner";
+import { ProfileEditSheet } from "@/components/menu/ProfileEditSheet";
+import { ChangelogSheet } from "@/components/menu/ChangelogSheet";
 
 const menuSections = [
   {
@@ -36,13 +38,6 @@ const menuSections = [
         icon: Crown,
         hasArrow: true,
         dynamic: true,
-      },
-      {
-        id: "sync",
-        label: "Sincronização",
-        description: "Última sincronização: agora",
-        icon: Cloud,
-        hasArrow: true,
       },
     ],
   },
@@ -69,11 +64,19 @@ const menuSections = [
     title: "Suporte",
     items: [
       {
+        id: "changelog",
+        label: "Novidades",
+        description: "Histórico de atualizações",
+        icon: History,
+        hasArrow: true,
+      },
+      {
         id: "help",
         label: "Ajuda & FAQ",
         description: "Perguntas frequentes",
         icon: HelpCircle,
         hasArrow: true,
+        external: true,
       },
       {
         id: "privacy",
@@ -91,6 +94,9 @@ export function MenuScreen() {
   const { user, signOut } = useAuth();
   const { data: subscription } = useSubscription();
   const navigate = useNavigate();
+  
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [changelogOpen, setChangelogOpen] = useState(false);
 
   const handleLogout = async () => {
     await signOut();
@@ -100,6 +106,36 @@ export function MenuScreen() {
 
   const handleLogin = () => {
     navigate("/auth");
+  };
+
+  const handleMenuAction = (itemId: string) => {
+    switch (itemId) {
+      case "profile":
+        if (user) {
+          setProfileOpen(true);
+        } else {
+          navigate("/auth");
+        }
+        break;
+      case "subscription":
+        toast.info("Em breve: Gerenciamento de assinatura");
+        break;
+      case "notifications":
+        toast.info("Em breve: Configurações de notificações");
+        break;
+      case "appearance":
+        toast.info("Em breve: Configurações de aparência");
+        break;
+      case "changelog":
+        setChangelogOpen(true);
+        break;
+      case "help":
+        toast.info("Em breve: FAQ e ajuda");
+        break;
+      case "privacy":
+        toast.info("Em breve: Política de privacidade");
+        break;
+    }
   };
 
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Aventureiro";
@@ -120,7 +156,10 @@ export function MenuScreen() {
         {/* User Card */}
         <section className="animate-fade-in">
           {user ? (
-            <button className="w-full glass rounded-2xl p-4 flex items-center gap-4 hover:border-primary/50 transition-all">
+            <button 
+              onClick={() => setProfileOpen(true)}
+              className="w-full glass rounded-2xl p-4 flex items-center gap-4 hover:border-primary/50 transition-all"
+            >
               <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
                 <span className="text-xl font-bold text-foreground">
                   {displayName[0].toUpperCase()}
@@ -183,6 +222,7 @@ export function MenuScreen() {
                 return (
                   <button
                     key={item.id}
+                    onClick={() => handleMenuAction(item.id)}
                     className="w-full px-4 py-3 flex items-center gap-3 hover:bg-muted/30 transition-colors text-left"
                   >
                     <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
@@ -237,9 +277,13 @@ export function MenuScreen() {
 
         {/* Version */}
         <p className="text-center text-xs text-muted-foreground pt-4">
-          Ward RPG v1.0.0
+          Go20 v1.0.0
         </p>
       </main>
+
+      {/* Sheets */}
+      <ProfileEditSheet open={profileOpen} onOpenChange={setProfileOpen} />
+      <ChangelogSheet open={changelogOpen} onOpenChange={setChangelogOpen} />
     </div>
   );
 }
