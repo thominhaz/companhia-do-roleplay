@@ -11,15 +11,35 @@ import {
   Flame,
   Sparkles,
   Lock,
-  Loader2
+  Loader2,
+  Archive,
+  ArchiveRestore,
+  Trash2
 } from "lucide-react";
-import { useCharacters } from "@/hooks/useCharacters";
+import { useCharacters, useArchiveCharacter, useDeleteCharacter } from "@/hooks/useCharacters";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { CharacterWizard } from "@/components/character/CharacterWizard";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppHeader } from "@/components/layout/AppHeader";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type FilterTab = "all" | "active" | "archived";
 
@@ -58,9 +78,14 @@ export function CharactersScreen() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
   const [showWizard, setShowWizard] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [characterToDelete, setCharacterToDelete] = useState<string | null>(null);
+  
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
   const { data: characters, isLoading } = useCharacters();
+  const archiveCharacter = useArchiveCharacter();
+  const deleteCharacter = useDeleteCharacter();
 
   // Open wizard if ?create=true in URL
   useEffect(() => {
@@ -78,10 +103,38 @@ export function CharactersScreen() {
     setShowWizard(true);
   };
 
+  const handleArchive = (id: string, currentlyArchived: boolean) => {
+    archiveCharacter.mutate({ id, archive: !currentlyArchived });
+  };
+
+  const handleDeleteClick = (id: string) => {
+    setCharacterToDelete(id);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (characterToDelete) {
+      deleteCharacter.mutate(characterToDelete);
+      setDeleteDialogOpen(false);
+      setCharacterToDelete(null);
+    }
+  };
+
+  // Filter characters based on active tab
+  const allCharacters = characters || [];
+  const activeCharacters = allCharacters.filter(c => !c.is_archived);
+  const archivedCharacters = allCharacters.filter(c => c.is_archived);
+  
+  const filteredCharacters = activeTab === "archived" 
+    ? archivedCharacters 
+    : activeTab === "active" 
+      ? activeCharacters 
+      : allCharacters;
+
   const tabs = [
-    { id: "all" as FilterTab, label: `Todos (${characters?.length || 0})` },
-    { id: "active" as FilterTab, label: `Ativos (${characters?.length || 0})` },
-    { id: "archived" as FilterTab, label: `Arquivados (0)` },
+    { id: "all" as FilterTab, label: `Todos (${allCharacters.length})` },
+    { id: "active" as FilterTab, label: `Ativos (${activeCharacters.length})` },
+    { id: "archived" as FilterTab, label: `Arquivados (${archivedCharacters.length})` },
   ];
 
   if (showWizard) {
@@ -134,16 +187,24 @@ export function CharactersScreen() {
           <div className="text-center py-20">
             <p className="text-muted-foreground">Faça login para ver seus personagens</p>
           </div>
-        ) : characters?.length === 0 ? (
+        ) : filteredCharacters.length === 0 ? (
           <div className="text-center py-20">
             <div className="w-20 h-20 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
-              <Shield className="w-10 h-10 text-muted-foreground" />
+              {activeTab === "archived" ? (
+                <Archive className="w-10 h-10 text-muted-foreground" />
+              ) : (
+                <Shield className="w-10 h-10 text-muted-foreground" />
+              )}
             </div>
-            <h3 className="text-lg font-semibold mb-2">Nenhum personagem</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {activeTab === "archived" ? "Nenhum personagem arquivado" : "Nenhum personagem"}
+            </h3>
             <p className="text-muted-foreground text-sm mb-6">
-              Crie seu primeiro personagem para começar sua aventura!
+              {activeTab === "archived" 
+                ? "Personagens arquivados aparecerão aqui" 
+                : "Crie seu primeiro personagem para começar sua aventura!"}
             </p>
-            {canCreateCharacter && (
+            {activeTab !== "archived" && canCreateCharacter && (
               <button
                 onClick={handleCreateCharacter}
                 className="px-6 py-3 bg-gradient-primary rounded-xl font-medium"
@@ -154,71 +215,120 @@ export function CharactersScreen() {
           </div>
         ) : (
           <div className="space-y-4">
-            {characters?.map((character) => {
+            {filteredCharacters.map((character) => {
               const Icon = classIcons[character.class] || Shield;
               const gradient = classGradients[character.class] || 'from-purple-900 to-purple-700';
-              const hpPercent = (character.current_hp / character.max_hp) * 100;
+              const isArchived = character.is_archived;
 
               return (
                 <div
                   key={character.id}
-                  onClick={() => navigate(`/character/${character.id}`)}
-                  className={`bg-gradient-to-br ${gradient} rounded-2xl p-5 relative overflow-hidden cursor-pointer active:scale-[0.98] transition-transform`}
+                  className={`bg-gradient-to-br ${gradient} rounded-2xl p-5 relative overflow-hidden ${isArchived ? 'opacity-70' : ''}`}
                 >
                   <div className="absolute top-0 right-0 w-40 h-40 bg-foreground opacity-5 rounded-full -mr-16 -mt-16" />
                   
                   <div className="relative z-10">
                     <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
+                      <div 
+                        className="flex items-center gap-3 flex-1 cursor-pointer"
+                        onClick={() => navigate(`/character/${character.id}`)}
+                      >
                         <div className="w-14 h-14 rounded-xl bg-foreground/20 flex items-center justify-center">
                           <Icon className="w-6 h-6" />
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold">{character.name}</h3>
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-lg font-bold">{character.name}</h3>
+                            {isArchived && (
+                              <span className="px-2 py-0.5 bg-background/30 rounded-full text-[10px] font-medium">
+                                Arquivado
+                              </span>
+                            )}
+                          </div>
                           <p className="text-sm opacity-80">
                             {character.race} {character.class}
                           </p>
                         </div>
                       </div>
-                      <button 
-                        onClick={(e) => e.stopPropagation()}
-                        className="w-8 h-8 rounded-lg bg-background/20 flex items-center justify-center"
-                      >
-                        <MoreVertical className="w-4 h-4 opacity-80" />
-                      </button>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <button 
+                            onClick={(e) => e.stopPropagation()}
+                            className="w-8 h-8 rounded-lg bg-background/20 flex items-center justify-center hover:bg-background/30 transition-colors"
+                          >
+                            <MoreVertical className="w-4 h-4 opacity-80" />
+                          </button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end" className="w-48">
+                          <DropdownMenuItem 
+                            onClick={() => navigate(`/character/${character.id}`)}
+                          >
+                            <Shield className="w-4 h-4 mr-2" />
+                            Ver Ficha
+                          </DropdownMenuItem>
+                          <DropdownMenuItem 
+                            onClick={() => handleArchive(character.id, isArchived)}
+                          >
+                            {isArchived ? (
+                              <>
+                                <ArchiveRestore className="w-4 h-4 mr-2" />
+                                Restaurar
+                              </>
+                            ) : (
+                              <>
+                                <Archive className="w-4 h-4 mr-2" />
+                                Arquivar
+                              </>
+                            )}
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem 
+                            onClick={() => handleDeleteClick(character.id)}
+                            className="text-destructive focus:text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Excluir
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-2 mb-4">
-                      <div className="bg-background/20 rounded-lg p-2.5">
-                        <p className="text-xs opacity-80 mb-0.5">Nível</p>
-                        <p className="text-xl font-bold">{character.level}</p>
+                    <div 
+                      className="cursor-pointer"
+                      onClick={() => navigate(`/character/${character.id}`)}
+                    >
+                      <div className="grid grid-cols-3 gap-2 mb-4">
+                        <div className="bg-background/20 rounded-lg p-2.5">
+                          <p className="text-xs opacity-80 mb-0.5">Nível</p>
+                          <p className="text-xl font-bold">{character.level}</p>
+                        </div>
+                        <div className="bg-background/20 rounded-lg p-2.5">
+                          <p className="text-xs opacity-80 mb-0.5">HP</p>
+                          <p className="text-xl font-bold">{character.current_hp}/{character.max_hp}</p>
+                        </div>
+                        <div className="bg-background/20 rounded-lg p-2.5">
+                          <p className="text-xs opacity-80 mb-0.5">CA</p>
+                          <p className="text-xl font-bold">{character.armor_class}</p>
+                        </div>
                       </div>
-                      <div className="bg-background/20 rounded-lg p-2.5">
-                        <p className="text-xs opacity-80 mb-0.5">HP</p>
-                        <p className="text-xl font-bold">{character.current_hp}/{character.max_hp}</p>
-                      </div>
-                      <div className="bg-background/20 rounded-lg p-2.5">
-                        <p className="text-xs opacity-80 mb-0.5">CA</p>
-                        <p className="text-xl font-bold">{character.armor_class}</p>
-                      </div>
-                    </div>
 
-                    <div className="flex items-center justify-between pt-3 border-t border-foreground/20">
-                      <div className="flex items-center gap-2">
-                        <Calendar className="w-4 h-4 opacity-80" />
-                        <span className="text-xs opacity-80">
-                          Atualizado {formatDistanceToNow(new Date(character.updated_at), { locale: ptBR, addSuffix: true })}
-                        </span>
+                      <div className="flex items-center justify-between pt-3 border-t border-foreground/20">
+                        <div className="flex items-center gap-2">
+                          <Calendar className="w-4 h-4 opacity-80" />
+                          <span className="text-xs opacity-80">
+                            Atualizado {formatDistanceToNow(new Date(character.updated_at), { locale: ptBR, addSuffix: true })}
+                          </span>
+                        </div>
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/character/${character.id}`);
+                          }}
+                          className="px-3 py-1.5 bg-foreground text-background rounded-lg text-xs font-semibold"
+                        >
+                          Jogar
+                        </button>
                       </div>
-                      <button 
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/character/${character.id}`);
-                        }}
-                        className="px-3 py-1.5 bg-foreground text-background rounded-lg text-xs font-semibold"
-                      >
-                        Jogar
-                      </button>
                     </div>
                   </div>
                 </div>
@@ -227,6 +337,27 @@ export function CharactersScreen() {
           </div>
         )}
       </main>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir personagem?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O personagem será permanentemente removido.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

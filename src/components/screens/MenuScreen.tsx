@@ -21,6 +21,10 @@ import { toast } from "sonner";
 import { ProfileEditSheet } from "@/components/menu/ProfileEditSheet";
 import { ChangelogSheet } from "@/components/menu/ChangelogSheet";
 import { NotificationSettingsSheet } from "@/components/menu/NotificationSettingsSheet";
+import { SubscriptionSheet } from "@/components/menu/SubscriptionSheet";
+import { AppearanceSheet } from "@/components/menu/AppearanceSheet";
+import { HelpSheet } from "@/components/menu/HelpSheet";
+import { PrivacySheet } from "@/components/menu/PrivacySheet";
 
 const menuSections = [
   {
@@ -99,6 +103,10 @@ export function MenuScreen() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [changelogOpen, setChangelogOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
+  const [subscriptionOpen, setSubscriptionOpen] = useState(false);
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const [helpOpen, setHelpOpen] = useState(false);
+  const [privacyOpen, setPrivacyOpen] = useState(false);
 
   const handleLogout = async () => {
     await signOut();
@@ -120,7 +128,7 @@ export function MenuScreen() {
         }
         break;
       case "subscription":
-        toast.info("Em breve: Gerenciamento de assinatura");
+        setSubscriptionOpen(true);
         break;
       case "notifications":
         if (user) {
@@ -130,16 +138,16 @@ export function MenuScreen() {
         }
         break;
       case "appearance":
-        toast.info("Em breve: Configurações de aparência");
+        setAppearanceOpen(true);
         break;
       case "changelog":
         setChangelogOpen(true);
         break;
       case "help":
-        toast.info("Em breve: FAQ e ajuda");
+        setHelpOpen(true);
         break;
       case "privacy":
-        toast.info("Em breve: Política de privacidade");
+        setPrivacyOpen(true);
         break;
     }
   };
@@ -291,6 +299,10 @@ export function MenuScreen() {
       <ProfileEditSheet open={profileOpen} onOpenChange={setProfileOpen} />
       <ChangelogSheet open={changelogOpen} onOpenChange={setChangelogOpen} />
       <NotificationSettingsSheet open={notificationsOpen} onOpenChange={setNotificationsOpen} />
+      <SubscriptionSheet open={subscriptionOpen} onOpenChange={setSubscriptionOpen} />
+      <AppearanceSheet open={appearanceOpen} onOpenChange={setAppearanceOpen} />
+      <HelpSheet open={helpOpen} onOpenChange={setHelpOpen} />
+      <PrivacySheet open={privacyOpen} onOpenChange={setPrivacyOpen} />
     </div>
   );
 }
