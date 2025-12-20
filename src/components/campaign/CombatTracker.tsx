@@ -29,7 +29,10 @@ import {
   Skull,
   ChevronUp,
   ChevronDown,
-  Zap
+  Zap,
+  Minus,
+  AlertTriangle,
+  RotateCcw
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -38,6 +41,18 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 interface CombatTrackerProps {
   campaignId: string;
@@ -46,13 +61,32 @@ interface CombatTrackerProps {
 }
 
 const CONDITIONS = [
-  "Agarrado", "Amedrontado", "Atordoado", "Caído", "Cego",
-  "Encantado", "Envenenado", "Exausto", "Incapacitado", 
-  "Inconsciente", "Invisível", "Paralisado", "Petrificado", "Surdo"
+  { name: "Agarrado", icon: "🪢", color: "bg-orange-500/20 text-orange-400" },
+  { name: "Amedrontado", icon: "😨", color: "bg-purple-500/20 text-purple-400" },
+  { name: "Atordoado", icon: "💫", color: "bg-yellow-500/20 text-yellow-400" },
+  { name: "Caído", icon: "⬇️", color: "bg-gray-500/20 text-gray-400" },
+  { name: "Cego", icon: "👁️", color: "bg-slate-500/20 text-slate-400" },
+  { name: "Encantado", icon: "💕", color: "bg-pink-500/20 text-pink-400" },
+  { name: "Envenenado", icon: "☠️", color: "bg-green-500/20 text-green-400" },
+  { name: "Exausto", icon: "😫", color: "bg-amber-500/20 text-amber-400" },
+  { name: "Incapacitado", icon: "🚫", color: "bg-red-500/20 text-red-400" },
+  { name: "Inconsciente", icon: "💤", color: "bg-indigo-500/20 text-indigo-400" },
+  { name: "Invisível", icon: "👻", color: "bg-cyan-500/20 text-cyan-400" },
+  { name: "Paralisado", icon: "🧊", color: "bg-blue-500/20 text-blue-400" },
+  { name: "Petrificado", icon: "🗿", color: "bg-stone-500/20 text-stone-400" },
+  { name: "Surdo", icon: "🔇", color: "bg-rose-500/20 text-rose-400" },
 ];
+
+interface HpDialogState {
+  open: boolean;
+  combatant: Combatant | null;
+  mode: 'damage' | 'heal';
+}
 
 export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerProps) {
   const [showAddCombatant, setShowAddCombatant] = useState(false);
+  const [hpDialog, setHpDialog] = useState<HpDialogState>({ open: false, combatant: null, mode: 'damage' });
+  const [hpAmount, setHpAmount] = useState("");
   const [newCombatant, setNewCombatant] = useState({
     name: "",
     initiative: 10,
@@ -144,6 +178,22 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
     });
   };
 
+  const handleApplyHpChange = async () => {
+    if (!hpDialog.combatant || !encounter || !hpAmount) return;
+    const amount = parseInt(hpAmount) || 0;
+    const delta = hpDialog.mode === 'damage' ? -amount : amount;
+    const newHp = Math.max(0, Math.min(hpDialog.combatant.max_hp, hpDialog.combatant.current_hp + delta));
+    
+    await updateCombatant.mutateAsync({
+      id: hpDialog.combatant.id,
+      encounterId: encounter.id,
+      current_hp: newHp,
+    });
+    
+    setHpDialog({ open: false, combatant: null, mode: 'damage' });
+    setHpAmount("");
+  };
+
   const toggleCondition = async (combatant: Combatant, condition: string) => {
     if (!encounter) return;
     const conditions = combatant.conditions.includes(condition)
@@ -154,6 +204,28 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
       id: combatant.id,
       encounterId: encounter.id,
       conditions,
+    });
+  };
+
+  const handlePreviousTurn = async () => {
+    if (!encounter || !combatants?.length) return;
+
+    let prevTurn = encounter.current_turn - 1;
+    let prevRound = encounter.round;
+
+    if (prevTurn < 0) {
+      if (prevRound > 1) {
+        prevTurn = combatants.length - 1;
+        prevRound -= 1;
+      } else {
+        return; // Can't go back before round 1, turn 0
+      }
+    }
+
+    await updateEncounter.mutateAsync({
+      id: encounter.id,
+      current_turn: prevTurn,
+      round: prevRound,
     });
   };
 
@@ -223,10 +295,17 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                 variant="outline" 
                 size="sm" 
                 onClick={() => setShowAddCombatant(true)}
-                className="flex-1"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Adicionar
+              </Button>
+              <Button 
+                variant="outline"
+                size="sm" 
+                onClick={handlePreviousTurn}
+                disabled={!combatants?.length || (encounter.round === 1 && encounter.current_turn === 0)}
+              >
+                <RotateCcw className="w-4 h-4" />
               </Button>
               <Button 
                 size="sm" 
@@ -313,21 +392,51 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                             </div>
 
                             {/* Conditions */}
-                            {combatant.conditions.length > 0 && (
-                              <div className="flex flex-wrap gap-1 mt-2">
-                                {combatant.conditions.map(condition => (
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {combatant.conditions.map(condition => {
+                                const condData = CONDITIONS.find(c => c.name === condition);
+                                return (
                                   <Badge 
                                     key={condition} 
                                     variant="secondary"
-                                    className="text-[10px] cursor-pointer"
+                                    className={cn("text-[10px] cursor-pointer", condData?.color)}
                                     onClick={() => toggleCondition(combatant, condition)}
                                   >
-                                    <Zap className="w-2 h-2 mr-1" />
+                                    <span className="mr-1">{condData?.icon || "⚡"}</span>
                                     {condition}
                                   </Badge>
-                                ))}
-                              </div>
-                            )}
+                                );
+                              })}
+                              
+                              {/* Add Condition Popover */}
+                              <Popover>
+                                <PopoverTrigger asChild>
+                                  <Badge 
+                                    variant="outline" 
+                                    className="text-[10px] cursor-pointer hover:bg-muted"
+                                  >
+                                    <Plus className="w-2 h-2 mr-1" />
+                                    Condição
+                                  </Badge>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-64 p-2" align="start">
+                                  <div className="grid grid-cols-2 gap-1">
+                                    {CONDITIONS.map(cond => (
+                                      <Button
+                                        key={cond.name}
+                                        variant={combatant.conditions.includes(cond.name) ? "default" : "ghost"}
+                                        size="sm"
+                                        className="justify-start text-xs h-8"
+                                        onClick={() => toggleCondition(combatant, cond.name)}
+                                      >
+                                        <span className="mr-1">{cond.icon}</span>
+                                        {cond.name}
+                                      </Button>
+                                    ))}
+                                  </div>
+                                </PopoverContent>
+                              </Popover>
+                            </div>
                           </div>
 
                           {/* Actions */}
@@ -335,18 +444,24 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8"
-                              onClick={() => handleHpChange(combatant, 1)}
+                              className="h-8 w-8 bg-green-500/10 hover:bg-green-500/20"
+                              onClick={() => {
+                                setHpDialog({ open: true, combatant, mode: 'heal' });
+                                setHpAmount("");
+                              }}
                             >
-                              <ChevronUp className="w-4 h-4 text-green-500" />
+                              <Plus className="w-4 h-4 text-green-500" />
                             </Button>
                             <Button
                               variant="ghost"
                               size="icon"
-                              className="h-8 w-8"
-                              onClick={() => handleHpChange(combatant, -1)}
+                              className="h-8 w-8 bg-red-500/10 hover:bg-red-500/20"
+                              onClick={() => {
+                                setHpDialog({ open: true, combatant, mode: 'damage' });
+                                setHpAmount("");
+                              }}
                             >
-                              <ChevronDown className="w-4 h-4 text-red-500" />
+                              <Minus className="w-4 h-4 text-red-500" />
                             </Button>
                             <Button
                               variant="ghost"
@@ -464,6 +579,98 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                 </div>
               </SheetContent>
             </Sheet>
+
+            {/* HP Change Dialog */}
+            <Dialog open={hpDialog.open} onOpenChange={(open) => {
+              if (!open) {
+                setHpDialog({ open: false, combatant: null, mode: 'damage' });
+                setHpAmount("");
+              }
+            }}>
+              <DialogContent className="max-w-sm">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    {hpDialog.mode === 'damage' ? (
+                      <>
+                        <AlertTriangle className="w-5 h-5 text-red-500" />
+                        Aplicar Dano
+                      </>
+                    ) : (
+                      <>
+                        <Heart className="w-5 h-5 text-green-500" />
+                        Curar
+                      </>
+                    )}
+                  </DialogTitle>
+                </DialogHeader>
+                
+                {hpDialog.combatant && (
+                  <div className="space-y-4">
+                    <div className="text-center">
+                      <p className="text-sm text-muted-foreground mb-1">{hpDialog.combatant.name}</p>
+                      <p className="text-2xl font-bold">
+                        {hpDialog.combatant.current_hp}/{hpDialog.combatant.max_hp} HP
+                      </p>
+                    </div>
+                    
+                    <div className="space-y-2">
+                      <Label>Quantidade</Label>
+                      <Input
+                        type="number"
+                        value={hpAmount}
+                        onChange={(e) => setHpAmount(e.target.value)}
+                        placeholder="0"
+                        className="text-center text-2xl h-14"
+                        autoFocus
+                      />
+                    </div>
+
+                    {/* Quick amount buttons */}
+                    <div className="grid grid-cols-4 gap-2">
+                      {[1, 5, 10, 20].map((amount) => (
+                        <Button
+                          key={amount}
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setHpAmount(amount.toString())}
+                        >
+                          {amount}
+                        </Button>
+                      ))}
+                    </div>
+                    
+                    <DialogFooter className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        className="flex-1"
+                        onClick={() => {
+                          setHpDialog({ open: false, combatant: null, mode: 'damage' });
+                          setHpAmount("");
+                        }}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        className={cn(
+                          "flex-1",
+                          hpDialog.mode === 'damage' 
+                            ? "bg-red-600 hover:bg-red-700" 
+                            : "bg-green-600 hover:bg-green-700"
+                        )}
+                        onClick={handleApplyHpChange}
+                        disabled={!hpAmount || updateCombatant.isPending}
+                      >
+                        {updateCombatant.isPending ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          hpDialog.mode === 'damage' ? 'Aplicar Dano' : 'Curar'
+                        )}
+                      </Button>
+                    </DialogFooter>
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
           </>
         )}
       </SheetContent>

@@ -31,8 +31,34 @@ export interface Combatant {
   created_at: string;
 }
 
-// Fetch active encounter for a campaign
+// Fetch active encounter for a campaign with realtime updates
 export function useActiveEncounter(campaignId: string) {
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    if (!campaignId) return;
+
+    const channel = supabase
+      .channel(`encounter-${campaignId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'combat_encounters',
+          filter: `campaign_id=eq.${campaignId}`,
+        },
+        () => {
+          queryClient.invalidateQueries({ queryKey: ['combat-encounter', campaignId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [campaignId, queryClient]);
+
   return useQuery({
     queryKey: ['combat-encounter', campaignId],
     queryFn: async () => {
