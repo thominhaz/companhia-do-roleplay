@@ -9,7 +9,7 @@ import { useCampaignSessions, useCreateSession, useCampaignPlayers, useInvitePla
 import { 
   Crown, Users, Calendar, Settings, Plus, Trash2, 
   Copy, User, Loader2, ChevronRight, Clock, MapPin,
-  UserPlus, Share2
+  UserPlus, Share2, Swords
 } from "lucide-react";
 import { format, formatDistanceToNow, isFuture, isPast } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { CreateSessionSheet } from "./CreateSessionSheet";
 import { AddPlayerSheet } from "./AddPlayerSheet";
+import { CombatTracker } from "./CombatTracker";
 
 interface CampaignDetailSheetProps {
   campaign: CampaignDB | null;
@@ -39,6 +40,7 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
   const [activeTab, setActiveTab] = useState("sessoes");
   const [showCreateSession, setShowCreateSession] = useState(false);
   const [showAddPlayer, setShowAddPlayer] = useState(false);
+  const [showCombatTracker, setShowCombatTracker] = useState(false);
   
   const { data: sessions, isLoading: loadingSessions } = useCampaignSessions(campaign?.id || '');
   const { data: players, isLoading: loadingPlayers } = useCampaignPlayers(campaign?.id || '');
@@ -180,16 +182,25 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
             </TabsList>
 
             <ScrollArea className="h-[calc(90vh-380px)]">
-              {/* Sessions Tab */}
               <TabsContent value="sessoes" className="p-4 mt-0">
                 {isMaster && (
-                  <Button 
-                    onClick={() => setShowCreateSession(true)}
-                    className="w-full mb-4 gap-2"
-                  >
-                    <Plus className="w-4 h-4" />
-                    Agendar Sessão
-                  </Button>
+                  <div className="flex gap-2 mb-4">
+                    <Button 
+                      onClick={() => setShowCreateSession(true)}
+                      className="flex-1 gap-2"
+                    >
+                      <Plus className="w-4 h-4" />
+                      Agendar Sessão
+                    </Button>
+                    <Button 
+                      variant="destructive"
+                      onClick={() => setShowCombatTracker(true)}
+                      className="gap-2"
+                    >
+                      <Swords className="w-4 h-4" />
+                      Combate
+                    </Button>
+                  </div>
                 )}
 
                 {loadingSessions ? (
@@ -364,6 +375,14 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
         open={showAddPlayer}
         onOpenChange={setShowAddPlayer}
       />
+
+      {isMaster && (
+        <CombatTracker
+          campaignId={campaign.id}
+          open={showCombatTracker}
+          onOpenChange={setShowCombatTracker}
+        />
+      )}
     </>
   );
 }

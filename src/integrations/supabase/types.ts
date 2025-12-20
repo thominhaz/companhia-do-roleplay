@@ -212,6 +212,110 @@ export type Database = {
         }
         Relationships: []
       }
+      combat_encounters: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          current_turn: number
+          id: string
+          is_active: boolean
+          name: string
+          round: number
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          current_turn?: number
+          id?: string
+          is_active?: boolean
+          name: string
+          round?: number
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          current_turn?: number
+          id?: string
+          is_active?: boolean
+          name?: string
+          round?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combat_encounters_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      combatants: {
+        Row: {
+          armor_class: number
+          character_id: string | null
+          conditions: string[] | null
+          created_at: string
+          current_hp: number
+          encounter_id: string
+          id: string
+          initiative: number
+          is_player: boolean
+          max_hp: number
+          name: string
+          notes: string | null
+          sort_order: number
+        }
+        Insert: {
+          armor_class?: number
+          character_id?: string | null
+          conditions?: string[] | null
+          created_at?: string
+          current_hp?: number
+          encounter_id: string
+          id?: string
+          initiative?: number
+          is_player?: boolean
+          max_hp?: number
+          name: string
+          notes?: string | null
+          sort_order?: number
+        }
+        Update: {
+          armor_class?: number
+          character_id?: string | null
+          conditions?: string[] | null
+          created_at?: string
+          current_hp?: number
+          encounter_id?: string
+          id?: string
+          initiative?: number
+          is_player?: boolean
+          max_hp?: number
+          name?: string
+          notes?: string | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "combatants_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "combatants_encounter_id_fkey"
+            columns: ["encounter_id"]
+            isOneToOne: false
+            referencedRelation: "combat_encounters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
