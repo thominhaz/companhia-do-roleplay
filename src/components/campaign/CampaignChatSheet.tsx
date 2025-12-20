@@ -161,6 +161,11 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                                 : "bg-muted text-foreground rounded-bl-sm"
                             )}
                           >
+                            {!isOwn && (
+                              <p className="text-xs font-semibold mb-1 text-primary">
+                                {msg.profile?.display_name || 'Jogador'}
+                              </p>
+                            )}
                             <p className="text-sm whitespace-pre-wrap break-words">
                               {msg.content}
                             </p>
