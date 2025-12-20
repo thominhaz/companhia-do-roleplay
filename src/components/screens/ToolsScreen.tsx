@@ -19,6 +19,7 @@ import { ConditionsReference } from "@/components/tools/ConditionsReference";
 import { WeaponsArmorList } from "@/components/tools/WeaponsArmorList";
 import { BasicRules } from "@/components/tools/BasicRules";
 import { HealingRest } from "@/components/tools/HealingRest";
+import { AppHeader } from "@/components/layout/AppHeader";
 
 type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | null;
 
@@ -124,27 +125,19 @@ export function ToolsScreen() {
 
   return (
     <div className="min-h-screen bg-darker pb-24">
-      {/* Header */}
-      <header className="sticky top-0 z-40 glass border-b border-border/50">
-        <div className="px-4 py-3">
-          <h1 className="text-xl font-bold text-foreground">Ferramentas</h1>
-          <p className="text-xs text-muted-foreground">
-            Compêndio e utilitários
-          </p>
+      <AppHeader
+        title="Ferramentas"
+        subtitle="Compêndio e utilitários"
+      >
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input
+            type="text"
+            placeholder="Buscar magias, condições, regras..."
+            className="w-full h-10 pl-9 pr-4 bg-muted rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+          />
         </div>
-
-        {/* Search */}
-        <div className="px-4 pb-3">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-            <input
-              type="text"
-              placeholder="Buscar magias, condições, regras..."
-              className="w-full h-10 pl-9 pr-4 bg-muted rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
-            />
-          </div>
-        </div>
-      </header>
+      </AppHeader>
 
       {/* Content */}
       <main className="px-4 py-4 max-w-lg mx-auto space-y-6">

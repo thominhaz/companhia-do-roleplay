@@ -16,6 +16,7 @@ import {
   LogIn,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AppHeader } from "@/components/layout/AppHeader";
 import { toast } from "sonner";
 
 const menuSections = [
@@ -112,12 +113,7 @@ export function MenuScreen() {
 
   return (
     <div className="min-h-screen bg-darker pb-24">
-      {/* Header */}
-      <header className="sticky top-0 z-40 glass border-b border-border/50">
-        <div className="px-4 py-3">
-          <h1 className="text-xl font-bold text-foreground">Menu</h1>
-        </div>
-      </header>
+      <AppHeader title="Menu" />
 
       {/* Content */}
       <main className="px-4 py-4 max-w-lg mx-auto space-y-6">

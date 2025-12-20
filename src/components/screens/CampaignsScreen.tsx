@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { CreateCampaignSheet } from "@/components/campaign/CreateCampaignSheet";
 import { CampaignDetailSheet } from "@/components/campaign/CampaignDetailSheet";
 import { JoinCampaignSheet } from "@/components/campaign/JoinCampaignSheet";
+import { AppHeader } from "@/components/layout/AppHeader";
 
 type FilterType = 'all' | 'mastering' | 'playing';
 
@@ -327,18 +328,15 @@ export function CampaignsScreen() {
 
   return (
     <div className="min-h-screen bg-darker pb-24">
-      {/* Header */}
-      <header className="sticky top-0 z-40 bg-gradient-to-b from-dark to-darker px-5 pt-6 pb-4">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-bold text-foreground">Campanhas</h1>
+      <AppHeader
+        title="Campanhas"
+        rightContent={
+          <div className="flex items-center gap-2">
             {isPremium && (
               <div className="px-2 py-1 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full">
                 <Crown className="w-3 h-3 text-black" />
               </div>
             )}
-          </div>
-          <div className="flex gap-2">
             <Button
               variant="outline"
               size="sm"
@@ -350,13 +348,13 @@ export function CampaignsScreen() {
             </Button>
             <button 
               onClick={handleCreateCampaign}
-              className="w-11 h-11 rounded-full bg-gradient-to-br from-primary to-purple-700 flex items-center justify-center shadow-lg"
+              className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-purple-700 flex items-center justify-center shadow-lg"
             >
               <Plus className="w-5 h-5 text-foreground" />
             </button>
           </div>
-        </div>
-        
+        }
+      >
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           <button 
             onClick={() => setActiveFilter('all')}
@@ -386,7 +384,7 @@ export function CampaignsScreen() {
             Jogando ({playerCampaigns.length})
           </button>
         </div>
-      </header>
+      </AppHeader>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
