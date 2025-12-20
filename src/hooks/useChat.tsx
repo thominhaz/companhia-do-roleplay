@@ -10,6 +10,10 @@ export interface CampaignMessage {
   user_id: string;
   content: string;
   created_at: string;
+  profile?: {
+    display_name: string | null;
+    avatar_url: string | null;
+  };
 }
 
 // Fetch messages for a campaign with realtime updates
@@ -63,15 +67,37 @@ export function useCampaignMessages(campaignId: string) {
     queryFn: async () => {
       if (!campaignId) return [];
 
-      const { data, error } = await supabase
+      // Get messages
+      const { data: messages, error: messagesError } = await supabase
         .from('campaign_messages')
         .select('*')
         .eq('campaign_id', campaignId)
         .order('created_at', { ascending: true })
         .limit(100);
 
-      if (error) throw error;
-      return data as CampaignMessage[];
+      if (messagesError) throw messagesError;
+
+      if (!messages || messages.length === 0) return [];
+
+      // Get unique user IDs
+      const userIds = [...new Set(messages.map(m => m.user_id))];
+
+      // Get profiles for these users
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url')
+        .in('id', userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of user_id to profile
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+      // Combine messages with their profiles
+      return messages.map(msg => ({
+        ...msg,
+        profile: profileMap.get(msg.user_id) || null,
+      })) as CampaignMessage[];
     },
     enabled: !!campaignId,
   });
