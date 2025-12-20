@@ -437,6 +437,39 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string | null
+          data: Json | null
+          id: string
+          message: string
+          read: boolean | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          message: string
+          read?: boolean | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          data?: Json | null
+          id?: string
+          message?: string
+          read?: boolean | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -533,6 +566,16 @@ export type Database = {
     Functions: {
       can_create_character: { Args: { _user_id: string }; Returns: boolean }
       count_user_characters: { Args: { _user_id: string }; Returns: number }
+      create_notification: {
+        Args: {
+          _data?: Json
+          _message: string
+          _title: string
+          _type: Database["public"]["Enums"]["notification_type"]
+          _user_id: string
+        }
+        Returns: string
+      }
       generate_invite_code: { Args: never; Returns: string }
       is_campaign_master: {
         Args: { _campaign_id: string; _user_id: string }
@@ -549,6 +592,11 @@ export type Database = {
       }
     }
     Enums: {
+      notification_type:
+        | "campaign_invite"
+        | "session_reminder"
+        | "campaign_update"
+        | "chat_message"
       subscription_status: "free" | "premium"
     }
     CompositeTypes: {
@@ -677,6 +725,12 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      notification_type: [
+        "campaign_invite",
+        "session_reminder",
+        "campaign_update",
+        "chat_message",
+      ],
       subscription_status: ["free", "premium"],
     },
   },

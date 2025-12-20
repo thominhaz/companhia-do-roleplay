@@ -1,4 +1,4 @@
-import { Bell, Loader2, Calendar } from "lucide-react";
+import { Loader2, Calendar } from "lucide-react";
 import { 
   Plus, 
   Link, 
@@ -18,6 +18,7 @@ import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppHeader } from "@/components/layout/AppHeader";
+import { NotificationBell } from "@/components/notifications/NotificationBell";
 
 const quickActions = [
   { id: "create", label: "Criar Ficha", icon: Plus, gradient: "from-primary to-purple-700" },
@@ -149,12 +150,7 @@ export function HomeScreen() {
                 Entrar
               </button>
             )}
-            <div className="relative">
-              <button className="w-10 h-10 rounded-full bg-dark flex items-center justify-center relative">
-                <Bell className="w-5 h-5 text-muted-foreground" />
-                <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-secondary rounded-full border-2 border-darker" />
-              </button>
-            </div>
+            <NotificationBell />
           </div>
         }
       >
