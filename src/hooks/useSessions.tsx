@@ -208,7 +208,7 @@ export function useCampaignPlayers(campaignId: string) {
         .from('campaign_players')
         .select(`
           *,
-          character:characters(name, class, level)
+          character:characters(id, name, class, level, max_hp, current_hp, armor_class)
         `)
         .eq('campaign_id', campaignId)
         .order('joined_at', { ascending: true });
