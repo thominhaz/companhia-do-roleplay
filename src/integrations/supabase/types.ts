@@ -530,6 +530,39 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_tokens: {
+        Row: {
+          code: string
+          created_at: string | null
+          current_uses: number | null
+          days_premium: number
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          current_uses?: number | null
+          days_premium?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          current_uses?: number | null
+          days_premium?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+        }
+        Relationships: []
+      }
       sessions: {
         Row: {
           campaign_id: string
@@ -595,6 +628,35 @@ export type Database = {
         }
         Relationships: []
       }
+      token_redemptions: {
+        Row: {
+          id: string
+          redeemed_at: string | null
+          token_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          redeemed_at?: string | null
+          token_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          redeemed_at?: string | null
+          token_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "token_redemptions_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "promo_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
@@ -644,6 +706,10 @@ export type Database = {
       join_campaign_by_code: {
         Args: { _character_id?: string; _invite_code: string; _user_id: string }
         Returns: string
+      }
+      redeem_promo_token: {
+        Args: { _code: string; _user_id: string }
+        Returns: Json
       }
     }
     Enums: {

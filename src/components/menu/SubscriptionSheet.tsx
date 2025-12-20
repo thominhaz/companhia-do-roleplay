@@ -1,8 +1,13 @@
+import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useSubscription } from "@/hooks/useSubscription";
-import { Crown, Check, Sparkles, Users, Wand2, Shield } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { Crown, Check, Sparkles, Users, Wand2, Shield, Gift, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface SubscriptionSheetProps {
   open: boolean;
@@ -10,11 +15,52 @@ interface SubscriptionSheetProps {
 }
 
 export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps) {
+  const { user } = useAuth();
   const { data: subscription } = useSubscription();
+  const queryClient = useQueryClient();
   const isPremium = subscription?.status === "premium";
+  
+  const [redeemCode, setRedeemCode] = useState("");
+  const [isRedeeming, setIsRedeeming] = useState(false);
 
   const handleUpgrade = () => {
     toast.info("Integração com pagamentos em breve!");
+  };
+
+  const handleRedeemCode = async () => {
+    if (!redeemCode.trim()) {
+      toast.error("Digite um código");
+      return;
+    }
+    
+    if (!user) {
+      toast.error("Você precisa estar logado para resgatar um código");
+      return;
+    }
+
+    setIsRedeeming(true);
+    try {
+      const { data, error } = await supabase.rpc('redeem_promo_token', {
+        _code: redeemCode.trim(),
+        _user_id: user.id
+      });
+
+      if (error) throw error;
+
+      const result = data as { success: boolean; error?: string; message?: string; days?: number };
+      
+      if (result.success) {
+        toast.success(result.message || "Código resgatado com sucesso!");
+        setRedeemCode("");
+        queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      } else {
+        toast.error(result.error || "Erro ao resgatar código");
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao resgatar código");
+    } finally {
+      setIsRedeeming(false);
+    }
   };
 
   return (
@@ -112,6 +158,37 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
                   Fazer Upgrade
                 </Button>
               )}
+            </div>
+          </div>
+
+          {/* Redeem Code Section */}
+          <div className="p-4 rounded-xl border border-border bg-dark">
+            <div className="flex items-center gap-2 mb-3">
+              <Gift className="w-5 h-5 text-secondary" />
+              <h4 className="font-semibold text-foreground">Resgatar Código</h4>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3">
+              Possui um código promocional? Digite abaixo para ativar.
+            </p>
+            <div className="flex gap-2">
+              <Input
+                placeholder="Digite o código"
+                value={redeemCode}
+                onChange={(e) => setRedeemCode(e.target.value.toUpperCase())}
+                className="flex-1 uppercase"
+                disabled={isRedeeming}
+              />
+              <Button
+                onClick={handleRedeemCode}
+                disabled={isRedeeming || !redeemCode.trim()}
+                variant="secondary"
+              >
+                {isRedeeming ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  "Resgatar"
+                )}
+              </Button>
             </div>
           </div>
 
