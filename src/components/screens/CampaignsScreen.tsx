@@ -1,6 +1,7 @@
 import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Wand2, Skull, Check, Lock, Loader2, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { useMasterCampaigns, usePlayerCampaigns, CampaignDB } from "@/hooks/useCampaigns";
@@ -290,7 +291,8 @@ export function CampaignsScreen() {
   const [showDetailSheet, setShowDetailSheet] = useState(false);
   const [selectedIsMaster, setSelectedIsMaster] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
-  
+
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
   const isPremium = subscription?.status === 'premium';
@@ -337,15 +339,27 @@ export function CampaignsScreen() {
                 <Crown className="w-3 h-3 text-black" />
               </div>
             )}
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowJoinSheet(true)}
-              className="gap-1"
-            >
-              <LogIn className="w-4 h-4" />
-              Entrar
-            </Button>
+            {user ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowJoinSheet(true)}
+                className="gap-1"
+              >
+                <Users className="w-4 h-4" />
+                Participar
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/auth")}
+                className="gap-1"
+              >
+                <LogIn className="w-4 h-4" />
+                Entrar
+              </Button>
+            )}
             <button 
               onClick={handleCreateCampaign}
               className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-purple-700 flex items-center justify-center shadow-lg"
