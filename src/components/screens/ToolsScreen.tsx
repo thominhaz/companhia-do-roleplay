@@ -92,8 +92,15 @@ const tools = [
 export function ToolsScreen() {
   const navigate = useNavigate();
   const [activeTool, setActiveTool] = useState<ActiveTool>(null);
-  const featuredTools = tools.filter((t) => t.featured);
-  const otherTools = tools.filter((t) => !t.featured);
+  const [searchQuery, setSearchQuery] = useState("");
+  
+  const filteredTools = tools.filter((t) => 
+    t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    t.description.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+  const featuredTools = filteredTools.filter((t) => t.featured);
+  const otherTools = filteredTools.filter((t) => !t.featured);
 
   const handleToolClick = (tool: typeof tools[0]) => {
     if (tool.path) {
@@ -134,6 +141,8 @@ export function ToolsScreen() {
           <input
             type="text"
             placeholder="Buscar magias, condições, regras..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full h-10 pl-9 pr-4 bg-muted rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
           />
         </div>

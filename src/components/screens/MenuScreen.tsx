@@ -291,7 +291,6 @@ export function MenuScreen() {
       <ProfileEditSheet open={profileOpen} onOpenChange={setProfileOpen} />
       <ChangelogSheet open={changelogOpen} onOpenChange={setChangelogOpen} />
       <NotificationSettingsSheet open={notificationsOpen} onOpenChange={setNotificationsOpen} />
-      <ChangelogSheet open={changelogOpen} onOpenChange={setChangelogOpen} />
     </div>
   );
 }
