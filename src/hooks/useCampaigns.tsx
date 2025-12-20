@@ -9,6 +9,7 @@ export interface CampaignDB {
   name: string;
   description: string | null;
   image_url: string | null;
+  invite_code: string | null;
   created_at: string;
   updated_at: string;
 }
