@@ -25,7 +25,7 @@ export function JoinCampaignSheet({ open, onOpenChange }: JoinCampaignSheetProps
     
     try {
       await joinCampaign.mutateAsync({
-        campaignId: campaignCode.trim(),
+        inviteCode: campaignCode.trim(),
         characterId: selectedCharacter || undefined,
       });
       setCampaignCode("");
@@ -56,10 +56,11 @@ export function JoinCampaignSheet({ open, onOpenChange }: JoinCampaignSheetProps
             <Label htmlFor="code">Código da Campanha *</Label>
             <Input
               id="code"
-              placeholder="Cole o código aqui..."
+              placeholder="Ex: ABC123"
               value={campaignCode}
-              onChange={(e) => setCampaignCode(e.target.value)}
-              className="bg-muted/50 border-0 font-mono"
+              onChange={(e) => setCampaignCode(e.target.value.toUpperCase())}
+              className="bg-muted/50 border-0 font-mono text-center text-2xl tracking-widest uppercase"
+              maxLength={6}
             />
           </div>
 

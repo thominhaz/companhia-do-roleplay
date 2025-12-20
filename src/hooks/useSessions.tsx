@@ -13,6 +13,10 @@ export interface SessionDB {
   created_at: string;
 }
 
+export interface SessionWithCampaign extends SessionDB {
+  campaign_name?: string;
+}
+
 export interface CampaignPlayerDB {
   id: string;
   campaign_id: string;
@@ -39,6 +43,66 @@ export function useCampaignSessions(campaignId: string) {
       return data as SessionDB[];
     },
     enabled: !!campaignId,
+  });
+}
+
+// Fetch upcoming sessions for the current user (across all campaigns)
+export function useUpcomingSessions(limit = 5) {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['sessions', 'upcoming', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+
+      // Get campaign IDs where user is master
+      const { data: masterCampaigns } = await supabase
+        .from('campaigns')
+        .select('id, name')
+        .eq('master_id', user.id);
+
+      // Get campaign IDs where user is player
+      const { data: playerCampaigns } = await supabase
+        .from('campaign_players')
+        .select('campaign_id, campaigns(name)')
+        .eq('user_id', user.id);
+
+      // Combine campaign IDs
+      const campaignIds = [
+        ...(masterCampaigns?.map(c => c.id) || []),
+        ...(playerCampaigns?.map(p => p.campaign_id) || []),
+      ];
+
+      if (campaignIds.length === 0) return [];
+
+      // Build campaign name map
+      const campaignNames: Record<string, string> = {};
+      masterCampaigns?.forEach(c => { campaignNames[c.id] = c.name; });
+      playerCampaigns?.forEach(p => { 
+        if (p.campaigns) {
+          campaignNames[p.campaign_id] = (p.campaigns as any).name;
+        }
+      });
+
+      // Get upcoming sessions
+      const now = new Date().toISOString();
+      const { data: sessions, error } = await supabase
+        .from('sessions')
+        .select('*')
+        .in('campaign_id', campaignIds)
+        .gte('scheduled_at', now)
+        .order('scheduled_at', { ascending: true })
+        .limit(limit);
+
+      if (error) throw error;
+
+      // Add campaign names
+      return (sessions || []).map(session => ({
+        ...session,
+        campaign_name: campaignNames[session.campaign_id] || 'Campanha',
+      })) as SessionWithCampaign[];
+    },
+    enabled: !!user,
   });
 }
 
@@ -177,52 +241,41 @@ export function useInvitePlayer() {
   });
 }
 
-// Join a campaign (for players)
+// Join a campaign by invite code
 export function useJoinCampaign() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ campaignId, characterId }: {
-      campaignId: string;
+    mutationFn: async ({ inviteCode, characterId }: {
+      inviteCode: string;
       characterId?: string;
     }) => {
       if (!user) throw new Error('Usuário não autenticado');
 
-      // Check if campaign exists
-      const { data: campaign, error: campaignError } = await supabase
-        .from('campaigns')
-        .select('id')
-        .eq('id', campaignId)
-        .maybeSingle();
-
-      if (campaignError) throw campaignError;
-      if (!campaign) throw new Error('Campanha não encontrada');
-
-      // Check if already a member
-      const { data: existing } = await supabase
-        .from('campaign_players')
-        .select('id')
-        .eq('campaign_id', campaignId)
-        .eq('user_id', user.id)
-        .maybeSingle();
-
-      if (existing) throw new Error('Você já está nesta campanha');
-
-      // Join campaign
+      // Use the database function to join by code
       const { data, error } = await supabase
-        .from('campaign_players')
-        .insert({
-          campaign_id: campaignId,
-          user_id: user.id,
-          character_id: characterId || null,
-          role: 'player',
-        })
-        .select()
-        .single();
+        .rpc('join_campaign_by_code', {
+          _invite_code: inviteCode.toUpperCase().trim(),
+          _user_id: user.id,
+          _character_id: characterId || null,
+        });
 
-      if (error) throw error;
-      return data as CampaignPlayerDB;
+      if (error) {
+        // Parse PostgreSQL error message
+        if (error.message.includes('Código de convite inválido')) {
+          throw new Error('Código de convite inválido');
+        }
+        if (error.message.includes('Você já está nesta campanha')) {
+          throw new Error('Você já está nesta campanha');
+        }
+        if (error.message.includes('Você é o mestre desta campanha')) {
+          throw new Error('Você é o mestre desta campanha');
+        }
+        throw error;
+      }
+
+      return data as string; // Returns campaign_id
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['campaigns'] });

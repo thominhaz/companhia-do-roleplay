@@ -50,8 +50,10 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
   const pastSessions = sessions?.filter(s => isPast(new Date(s.scheduled_at))) || [];
 
   const handleCopyInviteCode = () => {
-    navigator.clipboard.writeText(campaign.id);
-    toast.success("Código copiado!");
+    if (campaign.invite_code) {
+      navigator.clipboard.writeText(campaign.invite_code);
+      toast.success("Código copiado: " + campaign.invite_code);
+    }
   };
 
   const handleDeleteCampaign = async () => {
@@ -133,13 +135,13 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
             </div>
 
             {/* Invite Code */}
-            {isMaster && (
+            {isMaster && campaign.invite_code && (
               <div className="mt-4 flex items-center gap-2">
                 <div className="flex-1 bg-card/50 rounded-xl p-3 flex items-center gap-3">
                   <Share2 className="w-4 h-4 text-muted-foreground" />
                   <div className="flex-1 min-w-0">
                     <p className="text-[10px] text-muted-foreground">Código de convite</p>
-                    <p className="text-sm font-mono truncate">{campaign.id.slice(0, 8)}...</p>
+                    <p className="text-lg font-mono font-bold tracking-widest">{campaign.invite_code}</p>
                   </div>
                   <Button variant="ghost" size="icon" onClick={handleCopyInviteCode}>
                     <Copy className="w-4 h-4" />

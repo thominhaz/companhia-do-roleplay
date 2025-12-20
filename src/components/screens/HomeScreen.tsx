@@ -1,4 +1,4 @@
-import { Bell, Loader2 } from "lucide-react";
+import { Bell, Loader2, Calendar } from "lucide-react";
 import { 
   Plus, 
   Link, 
@@ -13,8 +13,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useCharacters, CharacterDB } from "@/hooks/useCharacters";
 import { useAllCampaigns, CampaignDB } from "@/hooks/useCampaigns";
+import { useUpcomingSessions } from "@/hooks/useSessions";
 import { useNavigate } from "react-router-dom";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppHeader } from "@/components/layout/AppHeader";
 
@@ -117,12 +118,14 @@ export function HomeScreen() {
   const { data: subscription } = useSubscription();
   const { data: characters, isLoading: loadingChars } = useCharacters();
   const { data: campaignsData, isLoading: loadingCampaigns } = useAllCampaigns();
+  const { data: upcomingSessions, isLoading: loadingSessions } = useUpcomingSessions(1);
   const navigate = useNavigate();
 
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Aventureiro";
   const isPremium = subscription?.status === "premium";
 
   const isLoading = loadingChars || loadingCampaigns;
+  const nextSession = upcomingSessions?.[0];
 
   // Get most recent character as active
   const activeCharacter = characters?.[0];
@@ -233,19 +236,47 @@ export function HomeScreen() {
           <div className="col-span-1 bg-gradient-to-br from-pink-900 to-pink-700 rounded-2xl p-3 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-20 h-20 bg-foreground opacity-5 rounded-full -mr-8 -mt-8" />
             <div className="relative z-10 h-full flex flex-col">
-              <div className="flex-1 flex flex-col justify-center items-center text-center">
-                <div className="w-12 h-12 rounded-full bg-pink-500 flex items-center justify-center mb-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
+              {loadingSessions ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader2 className="w-5 h-5 animate-spin text-pink-300" />
                 </div>
-                <p className="text-xs text-pink-200 font-medium">PRÓXIMA</p>
-                <p className="text-lg font-bold mt-1">--</p>
-                <p className="text-xs text-pink-200">Sessão</p>
-              </div>
-              <div className="mt-2 pt-2 border-t border-pink-600 border-opacity-40">
-                <p className="text-xs font-medium leading-tight text-center text-pink-200">Sem sessões</p>
-              </div>
+              ) : nextSession ? (
+                <>
+                  <div className="flex-1 flex flex-col justify-center items-center text-center">
+                    <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center mb-2">
+                      <Calendar className="w-5 h-5" />
+                    </div>
+                    <p className="text-[10px] text-pink-200 font-medium uppercase">Próxima</p>
+                    <p className="text-lg font-bold mt-0.5">
+                      {format(new Date(nextSession.scheduled_at), "dd/MM", { locale: ptBR })}
+                    </p>
+                    <p className="text-xs text-pink-200">
+                      {format(new Date(nextSession.scheduled_at), "HH:mm", { locale: ptBR })}
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-pink-600 border-opacity-40">
+                    <p className="text-[10px] font-medium leading-tight text-center text-pink-200 truncate">
+                      {nextSession.campaign_name}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex-1 flex flex-col justify-center items-center text-center">
+                    <div className="w-10 h-10 rounded-full bg-pink-500/50 flex items-center justify-center mb-2">
+                      <Calendar className="w-5 h-5 text-pink-300" />
+                    </div>
+                    <p className="text-[10px] text-pink-200 font-medium uppercase">Próxima</p>
+                    <p className="text-lg font-bold mt-0.5">--</p>
+                    <p className="text-xs text-pink-200">Sessão</p>
+                  </div>
+                  <div className="pt-2 border-t border-pink-600 border-opacity-40">
+                    <p className="text-[10px] font-medium leading-tight text-center text-pink-200">
+                      Sem sessões
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
