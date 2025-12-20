@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { TabBar } from "@/components/layout/TabBar";
 import { HomeScreen } from "@/components/screens/HomeScreen";
 import { CharactersScreen } from "@/components/screens/CharactersScreen";
@@ -9,7 +10,20 @@ import type { TabRoute } from "@/types";
 import { Helmet } from "react-helmet";
 
 const Index = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabRoute>("home");
+
+  // Handle tab from URL query param
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['home', 'characters', 'campaigns', 'tools', 'menu'].includes(tabParam)) {
+      setActiveTab(tabParam as TabRoute);
+      // Remove tab param but keep others like create=true
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete('tab');
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const renderScreen = () => {
     switch (activeTab) {
