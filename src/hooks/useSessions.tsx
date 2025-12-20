@@ -24,6 +24,15 @@ export interface CampaignPlayerDB {
   character_id: string | null;
   role: string;
   joined_at: string;
+  profile?: {
+    display_name: string | null;
+    avatar_url: string | null;
+  };
+  character?: {
+    name: string;
+    class: string;
+    level: number;
+  };
 }
 
 // Fetch sessions for a campaign
@@ -187,21 +196,46 @@ export function useDeleteSession() {
   });
 }
 
-// Fetch players for a campaign
+// Fetch players for a campaign with profile information
 export function useCampaignPlayers(campaignId: string) {
   return useQuery({
     queryKey: ['campaign-players', campaignId],
     queryFn: async () => {
       if (!campaignId) return [];
 
-      const { data, error } = await supabase
+      // Get players
+      const { data: players, error: playersError } = await supabase
         .from('campaign_players')
-        .select('*')
+        .select(`
+          *,
+          character:characters(name, class, level)
+        `)
         .eq('campaign_id', campaignId)
         .order('joined_at', { ascending: true });
 
-      if (error) throw error;
-      return data as CampaignPlayerDB[];
+      if (playersError) throw playersError;
+
+      if (!players || players.length === 0) return [];
+
+      // Get unique user IDs
+      const userIds = [...new Set(players.map(p => p.user_id))];
+
+      // Get profiles for these users
+      const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url')
+        .in('id', userIds);
+
+      if (profilesError) throw profilesError;
+
+      // Create a map of user_id to profile
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+      // Combine players with their profiles
+      return players.map(player => ({
+        ...player,
+        profile: profileMap.get(player.user_id) || null,
+      })) as CampaignPlayerDB[];
     },
     enabled: !!campaignId,
   });
