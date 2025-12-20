@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      campaign_notes: {
+        Row: {
+          campaign_id: string
+          content: string | null
+          created_at: string
+          id: string
+          is_public: boolean
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          is_public?: boolean
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_notes_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign_players: {
         Row: {
           campaign_id: string
