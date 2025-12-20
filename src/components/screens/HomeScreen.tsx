@@ -291,7 +291,20 @@ export function HomeScreen() {
               key={action.id} 
               className="flex flex-col items-center gap-2"
               onClick={() => {
-                if (action.id === 'create') navigate('/characters?create=true');
+                switch (action.id) {
+                  case 'create':
+                    navigate('/characters?create=true');
+                    break;
+                  case 'join':
+                    navigate('/campaigns?join=true');
+                    break;
+                  case 'dice':
+                    navigate('/tools?tool=dice');
+                    break;
+                  case 'note':
+                    navigate('/campaigns');
+                    break;
+                }
               }}
             >
               <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-lg`}>
