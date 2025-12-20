@@ -19,6 +19,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { toast } from "sonner";
 import type { TabRoute } from "@/types";
 
 interface HomeScreenProps {
@@ -223,7 +224,18 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                   <Shield className="w-8 h-8 text-purple-300 mb-2" />
                   <p className="text-sm text-purple-200">Nenhum personagem</p>
                   <button 
-                    onClick={() => navigate("/characters")}
+                    onClick={() => {
+                      if (!user) {
+                        toast.error("Faça login para criar um personagem", {
+                          action: {
+                            label: "Entrar",
+                            onClick: () => navigate("/auth")
+                          }
+                        });
+                        return;
+                      }
+                      navigate("/characters?create=true");
+                    }}
                     className="mt-2 px-3 py-1 bg-purple-500 rounded-lg text-xs font-medium"
                   >
                     Criar
@@ -294,15 +306,42 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               onClick={() => {
                 switch (action.id) {
                   case 'create':
+                    if (!user) {
+                      toast.error("Faça login para criar um personagem", {
+                        action: {
+                          label: "Entrar",
+                          onClick: () => navigate("/auth")
+                        }
+                      });
+                      return;
+                    }
                     navigate('/characters?create=true');
                     break;
                   case 'join':
+                    if (!user) {
+                      toast.error("Faça login para entrar em uma campanha", {
+                        action: {
+                          label: "Entrar",
+                          onClick: () => navigate("/auth")
+                        }
+                      });
+                      return;
+                    }
                     navigate('/campaigns?join=true');
                     break;
                   case 'dice':
                     navigate('/tools?tool=dice');
                     break;
                   case 'note':
+                    if (!user) {
+                      toast.error("Faça login para acessar suas notas", {
+                        action: {
+                          label: "Entrar",
+                          onClick: () => navigate("/auth")
+                        }
+                      });
+                      return;
+                    }
                     navigate('/campaigns');
                     break;
                 }
