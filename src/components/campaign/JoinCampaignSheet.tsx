@@ -101,18 +101,19 @@ export function JoinCampaignSheet({ open, onOpenChange }: JoinCampaignSheetProps
                     <p className="text-xs text-muted-foreground">
                       Para entrar em uma campanha, você deve ter pelo menos um personagem criado e vinculá-lo.
                     </p>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="mt-2"
+                    <Link 
+                      to="/?tab=personagens" 
                       onClick={() => onOpenChange(false)}
-                      asChild
                     >
-                      <Link to="/?tab=personagens">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="mt-2"
+                      >
                         <Plus className="w-4 h-4 mr-1" />
                         Criar Personagem
-                      </Link>
-                    </Button>
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </div>
