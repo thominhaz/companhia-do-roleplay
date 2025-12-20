@@ -31,13 +31,14 @@ const authSchema = z.object({
 });
 
 export default function Auth() {
-  const [activeCard, setActiveCard] = useState<'login' | 'signup'>('login');
+  const [activeCard, setActiveCard] = useState<'login' | 'signup' | 'forgot'>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
+  const [resetEmailSent, setResetEmailSent] = useState(false);
 
   const { user, signIn, signUp } = useAuth();
   const navigate = useNavigate();
@@ -132,6 +133,33 @@ export default function Auth() {
     toast.info('Login com GitHub em desenvolvimento');
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !z.string().email().safeParse(email).success) {
+      setErrors({ email: 'Email inválido' });
+      return;
+    }
+    setLoading(true);
+    setErrors({});
+
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
+
+      if (error) {
+        toast.error(error.message);
+      } else {
+        setResetEmailSent(true);
+        toast.success('Email de recuperação enviado!');
+      }
+    } catch (error) {
+      toast.error('Ocorreu um erro. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Login Card Component
   const LoginCard = () => (
     <section className={`relative w-full max-w-md mx-auto bg-slate-900 rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-slate-800 transition-all duration-300 ${activeCard === 'login' ? 'ring-2 ring-primary/50' : ''}`}>
@@ -142,9 +170,12 @@ export default function Auth() {
         >
           <ArrowLeft className="w-5 h-5 text-slate-400" />
         </button>
-        <a href="#" className="text-sm font-medium text-slate-500 hover:text-primary transition-colors duration-200">
+        <button 
+          onClick={() => setActiveCard('forgot')}
+          className="text-sm font-medium text-slate-500 hover:text-primary transition-colors duration-200"
+        >
           Esqueceu a senha?
-        </a>
+        </button>
       </header>
       
       <div className="flex-1 flex flex-col px-6 pt-8 pb-8 gap-8">
@@ -266,6 +297,108 @@ export default function Auth() {
             className="font-semibold text-primary hover:text-primary/80 transition-colors"
           >
             Criar conta
+          </button>
+        </p>
+      </footer>
+    </section>
+  );
+
+  // Forgot Password Card Component
+  const ForgotPasswordCard = () => (
+    <section className="relative w-full max-w-md mx-auto bg-slate-900 rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-slate-800 transition-all duration-300 ring-2 ring-amber-500/50">
+      <header className="flex items-center px-6 pt-6">
+        <button 
+          onClick={() => {
+            setActiveCard('login');
+            setResetEmailSent(false);
+            setErrors({});
+          }}
+          className="p-2 rounded-xl hover:bg-slate-800 transition-colors duration-200"
+        >
+          <ArrowLeft className="w-5 h-5 text-slate-400" />
+        </button>
+      </header>
+      
+      <div className="flex-1 flex flex-col px-6 pt-8 pb-8 gap-8">
+        {/* Brand Logo */}
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-16 h-16 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/25">
+            <Lock className="w-8 h-8 text-white" />
+          </div>
+          <div className="text-center">
+            <h1 className="text-xl font-semibold text-slate-100 tracking-tight">Recuperar Senha</h1>
+            <p className="text-sm text-slate-500 mt-1">Enviaremos um link para redefinir sua senha</p>
+          </div>
+        </div>
+
+        {resetEmailSent ? (
+          <div className="flex flex-col items-center gap-4 py-8">
+            <div className="w-16 h-16 bg-emerald-500/20 rounded-full flex items-center justify-center">
+              <CheckCircle className="w-8 h-8 text-emerald-400" />
+            </div>
+            <div className="text-center space-y-2">
+              <h2 className="text-lg font-semibold text-slate-100">Email Enviado!</h2>
+              <p className="text-sm text-slate-400 max-w-xs">
+                Verifique sua caixa de entrada e clique no link para redefinir sua senha.
+              </p>
+            </div>
+            <Button 
+              onClick={() => {
+                setActiveCard('login');
+                setResetEmailSent(false);
+              }}
+              className="mt-4 bg-slate-800 hover:bg-slate-700 text-slate-300"
+            >
+              Voltar para Login
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleForgotPassword} className="flex flex-col gap-5">
+            <div className="space-y-2">
+              <Label htmlFor="forgot-email" className="text-sm font-semibold text-slate-300 flex items-center gap-2">
+                <Mail className="w-4 h-4" />
+                Endereço de Email
+              </Label>
+              <Input
+                id="forgot-email"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full rounded-xl border border-slate-700 bg-slate-800/50 px-4 py-3 text-sm placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all duration-200 text-slate-100"
+              />
+              {errors.email && (
+                <p className="text-sm text-red-400">{errors.email}</p>
+              )}
+            </div>
+
+            <Button 
+              type="submit" 
+              className="w-full bg-gradient-to-r from-amber-500 to-orange-600 text-white font-semibold py-3.5 rounded-xl hover:shadow-lg hover:shadow-amber-500/25 transition-all duration-300 flex items-center justify-center gap-2"
+              disabled={loading}
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Mail className="w-5 h-5" />
+              )}
+              Enviar Link de Recuperação
+            </Button>
+          </form>
+        )}
+      </div>
+      
+      <footer className="text-center text-sm pb-6 px-6 border-t border-slate-800 pt-6">
+        <p className="text-slate-500">
+          Lembrou a senha?{' '}
+          <button 
+            onClick={() => {
+              setActiveCard('login');
+              setResetEmailSent(false);
+            }}
+            className="font-semibold text-amber-500 hover:text-amber-400 transition-colors"
+          >
+            Fazer login
           </button>
         </p>
       </footer>
@@ -467,16 +600,26 @@ export default function Auth() {
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl" />
       </div>
 
-      {/* Desktop: Show all 3 cards */}
+      {/* Desktop: Show all 3 cards or forgot password */}
       <main className="relative z-10 w-full max-w-7xl mx-auto hidden xl:flex flex-row gap-6 lg:gap-8">
-        <LoginCard />
-        <HeroCard />
-        <SignupCard />
+        {activeCard === 'forgot' ? (
+          <div className="w-full flex justify-center">
+            <ForgotPasswordCard />
+          </div>
+        ) : (
+          <>
+            <LoginCard />
+            <HeroCard />
+            <SignupCard />
+          </>
+        )}
       </main>
 
       {/* Mobile/Tablet: Show only active card */}
       <main className="relative z-10 w-full max-w-md mx-auto xl:hidden">
-        {activeCard === 'login' ? <LoginCard /> : <SignupCard />}
+        {activeCard === 'login' && <LoginCard />}
+        {activeCard === 'signup' && <SignupCard />}
+        {activeCard === 'forgot' && <ForgotPasswordCard />}
       </main>
     </div>
   );
