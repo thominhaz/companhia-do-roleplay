@@ -9,7 +9,7 @@ import { useCampaignSessions, useCreateSession, useCampaignPlayers, useInvitePla
 import { 
   Crown, Users, Calendar, Settings, Plus, Trash2, 
   Copy, User, Loader2, ChevronRight, Clock, MapPin,
-  UserPlus, Share2, Swords
+  UserPlus, Share2, Swords, StickyNote
 } from "lucide-react";
 import { format, formatDistanceToNow, isFuture, isPast } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -28,6 +28,7 @@ import {
 import { CreateSessionSheet } from "./CreateSessionSheet";
 import { AddPlayerSheet } from "./AddPlayerSheet";
 import { CombatTracker } from "./CombatTracker";
+import { CampaignNotesSheet } from "./CampaignNotesSheet";
 
 interface CampaignDetailSheetProps {
   campaign: CampaignDB | null;
@@ -41,6 +42,7 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
   const [showCreateSession, setShowCreateSession] = useState(false);
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [showCombatTracker, setShowCombatTracker] = useState(false);
+  const [showNotes, setShowNotes] = useState(false);
   
   const { data: sessions, isLoading: loadingSessions } = useCampaignSessions(campaign?.id || '');
   const { data: players, isLoading: loadingPlayers } = useCampaignPlayers(campaign?.id || '');
@@ -129,11 +131,14 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
                 <p className="text-lg font-bold">{sessions?.length || 0}</p>
                 <p className="text-[10px] text-muted-foreground">Sessões</p>
               </div>
-              <div className="flex-1 bg-card/50 rounded-xl p-3 text-center">
-                <Clock className="w-4 h-4 mx-auto mb-1 text-primary" />
-                <p className="text-lg font-bold">{upcomingSessions.length}</p>
-                <p className="text-[10px] text-muted-foreground">Agendadas</p>
-              </div>
+              <button 
+                onClick={() => setShowNotes(true)}
+                className="flex-1 bg-card/50 rounded-xl p-3 text-center hover:bg-card/70 transition-colors"
+              >
+                <StickyNote className="w-4 h-4 mx-auto mb-1 text-amber-500" />
+                <p className="text-lg font-bold">Notas</p>
+                <p className="text-[10px] text-muted-foreground">Ver todas</p>
+              </button>
             </div>
 
             {/* Invite Code */}
@@ -383,6 +388,12 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
           onOpenChange={setShowCombatTracker}
         />
       )}
+
+      <CampaignNotesSheet
+        campaignId={campaign.id}
+        open={showNotes}
+        onOpenChange={setShowNotes}
+      />
     </>
   );
 }
