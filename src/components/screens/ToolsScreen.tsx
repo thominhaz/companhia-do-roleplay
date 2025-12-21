@@ -10,7 +10,8 @@ import {
   Search,
   ChevronRight,
   Zap,
-  Gem
+  Gem,
+  Sword
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DiceRoller } from "@/components/tools/DiceRoller";
@@ -19,9 +20,10 @@ import { ConditionsReference } from "@/components/tools/ConditionsReference";
 import { WeaponsArmorList } from "@/components/tools/WeaponsArmorList";
 import { BasicRules } from "@/components/tools/BasicRules";
 import { HealingRest } from "@/components/tools/HealingRest";
+import { HomebrewForge } from "@/components/homebrew/HomebrewForge";
 import { AppHeader } from "@/components/layout/AppHeader";
 
-type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | null;
+type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | "homebrew" | null;
 
 const tools = [
   {
@@ -87,6 +89,15 @@ const tools = [
     featured: false,
     toolKey: "healing" as ActiveTool,
   },
+  {
+    id: "homebrew",
+    name: "A Forja",
+    description: "Crie magias e itens homebrew",
+    icon: Sword,
+    color: "from-primary to-primary/70",
+    featured: true,
+    toolKey: "homebrew" as ActiveTool,
+  },
 ];
 
 export function ToolsScreen() {
@@ -128,6 +139,9 @@ export function ToolsScreen() {
   }
   if (activeTool === "healing") {
     return <HealingRest onBack={() => setActiveTool(null)} />;
+  }
+  if (activeTool === "homebrew") {
+    return <HomebrewForge onBack={() => setActiveTool(null)} />;
   }
 
   return (

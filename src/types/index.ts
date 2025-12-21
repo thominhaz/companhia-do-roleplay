@@ -292,3 +292,135 @@ export interface QuickAction {
   color: 'purple' | 'pink' | 'blue' | 'gold';
   route: string;
 }
+
+// ============================================
+// Homebrew Types
+// ============================================
+
+export type HomebrewContentType = 
+  | 'spell'
+  | 'item'
+  | 'race'
+  | 'class'
+  | 'subclass'
+  | 'monster'
+  | 'background'
+  | 'feat';
+
+export type HomebrewSource = 'user' | 'master_shared' | 'community';
+
+export interface HomebrewContent {
+  id: string;
+  user_id: string;
+  type: HomebrewContentType;
+  name: string;
+  description: string | null;
+  icon: string;
+  data: HomebrewData;
+  source: HomebrewSource;
+  is_public: boolean;
+  version: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface HomebrewShare {
+  id: string;
+  content_id: string;
+  campaign_id: string;
+  shared_at: string;
+}
+
+// Specific homebrew data structures
+export interface HomebrewData {
+  [key: string]: unknown;
+}
+
+export interface HomebrewSpellData extends HomebrewData {
+  level: number;
+  school: string;
+  casting_time: string;
+  range: string;
+  components: string;
+  duration: string;
+  classes: string[];
+  mechanics?: {
+    save_type?: string;
+    damage?: string;
+    damage_type?: string;
+    healing?: string;
+  };
+}
+
+export interface HomebrewItemData extends HomebrewData {
+  rarity: 'common' | 'uncommon' | 'rare' | 'very_rare' | 'legendary' | 'artifact';
+  type: 'weapon' | 'armor' | 'wondrous' | 'potion' | 'scroll' | 'wand' | 'ring' | 'other';
+  requires_attunement: boolean;
+  attunement_requirements?: string;
+  properties?: string[];
+  // Weapon specific
+  damage?: string;
+  damage_type?: string;
+  weapon_type?: string;
+  // Armor specific
+  ac_bonus?: number;
+  armor_type?: string;
+  // Other
+  charges?: number;
+  recharge?: string;
+}
+
+export interface HomebrewRaceData extends HomebrewData {
+  size: 'Small' | 'Medium' | 'Large';
+  speed: number;
+  ability_bonuses: Partial<CharacterAttributes>;
+  traits: string[];
+  languages: string[];
+  darkvision?: number;
+}
+
+export interface HomebrewMonsterData extends HomebrewData {
+  size: string;
+  type: string;
+  alignment: string;
+  armor_class: number;
+  hit_points: string;
+  speed: string;
+  attributes: CharacterAttributes;
+  saving_throws?: Partial<CharacterAttributes>;
+  skills?: Record<string, number>;
+  damage_resistances?: string[];
+  damage_immunities?: string[];
+  condition_immunities?: string[];
+  senses?: string;
+  languages?: string;
+  challenge_rating: string;
+  actions?: MonsterAction[];
+  legendary_actions?: MonsterAction[];
+}
+
+export interface MonsterAction {
+  name: string;
+  description: string;
+  attack_bonus?: number;
+  damage?: string;
+  damage_type?: string;
+}
+
+// Form types for creating homebrew
+export interface CreateHomebrewInput {
+  type: HomebrewContentType;
+  name: string;
+  description?: string;
+  icon?: string;
+  data: HomebrewData;
+  is_public?: boolean;
+}
+
+export interface UpdateHomebrewInput {
+  name?: string;
+  description?: string;
+  icon?: string;
+  data?: HomebrewData;
+  is_public?: boolean;
+}
