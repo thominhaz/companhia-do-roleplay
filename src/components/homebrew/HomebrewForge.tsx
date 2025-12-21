@@ -29,6 +29,8 @@ import { CreateRaceSheet } from "./CreateRaceSheet";
 import { CreateBackgroundSheet } from "./CreateBackgroundSheet";
 import { CreateFeatSheet } from "./CreateFeatSheet";
 import { CreateMonsterSheet } from "./CreateMonsterSheet";
+import { CreateClassSheet } from "./CreateClassSheet";
+import { CreateSubclassSheet } from "./CreateSubclassSheet";
 import { HomebrewCard } from "./HomebrewCard";
 import { ShareHomebrewSheet } from "./ShareHomebrewSheet";
 import {
@@ -50,9 +52,11 @@ const contentTypes: { type: HomebrewContentType; label: string; icon: React.Elem
   { type: 'spell', label: 'Magias', icon: Sparkles, color: 'from-purple-500 to-purple-700' },
   { type: 'item', label: 'Itens', icon: Gem, color: 'from-amber-500 to-amber-700' },
   { type: 'race', label: 'Raças', icon: Users, color: 'from-blue-500 to-blue-700' },
-  { type: 'monster', label: 'Monstros', icon: Skull, color: 'from-red-500 to-red-700' },
+  { type: 'class', label: 'Classes', icon: Sword, color: 'from-red-500 to-red-700' },
+  { type: 'subclass', label: 'Subclasses', icon: Star, color: 'from-pink-500 to-pink-700' },
+  { type: 'monster', label: 'Monstros', icon: Skull, color: 'from-gray-500 to-gray-700' },
   { type: 'background', label: 'Antecedentes', icon: BookOpen, color: 'from-green-500 to-green-700' },
-  { type: 'feat', label: 'Talentos', icon: Star, color: 'from-orange-500 to-orange-700' },
+  { type: 'feat', label: 'Talentos', icon: Crown, color: 'from-orange-500 to-orange-700' },
 ];
 
 export function HomebrewForge({ onBack }: HomebrewForgeProps) {
@@ -68,6 +72,8 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const [showCreateBackground, setShowCreateBackground] = useState(false);
   const [showCreateFeat, setShowCreateFeat] = useState(false);
   const [showCreateMonster, setShowCreateMonster] = useState(false);
+  const [showCreateClass, setShowCreateClass] = useState(false);
+  const [showCreateSubclass, setShowCreateSubclass] = useState(false);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [editingItem, setEditingItem] = useState<HomebrewContent | null>(null);
   const [sharingItem, setSharingItem] = useState<HomebrewContent | null>(null);
@@ -97,6 +103,8 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
       case 'background': setShowCreateBackground(true); break;
       case 'feat': setShowCreateFeat(true); break;
       case 'monster': setShowCreateMonster(true); break;
+      case 'class': setShowCreateClass(true); break;
+      case 'subclass': setShowCreateSubclass(true); break;
     }
   };
 
@@ -109,6 +117,8 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
       case 'background': setShowCreateBackground(true); break;
       case 'feat': setShowCreateFeat(true); break;
       case 'monster': setShowCreateMonster(true); break;
+      case 'class': setShowCreateClass(true); break;
+      case 'subclass': setShowCreateSubclass(true); break;
     }
   };
 
@@ -138,7 +148,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
     setEditingItem(null);
   };
 
-  const handleShareSheetClose = () => {
+  const selectedTypeInfo = contentTypes.find(t => t.type === selectedType);
     setShowShareSheet(false);
     setSharingItem(null);
   };
@@ -206,28 +216,20 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
         <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
           {contentTypes.map((type) => {
             const Icon = type.icon;
-            const isAvailable = ['spell', 'item', 'race', 'background', 'feat', 'monster'].includes(type.type);
             const isSelected = selectedType === type.type;
             return (
               <button
                 key={type.type}
                 onClick={() => setSelectedType(type.type)}
-                disabled={!isAvailable}
                 className={cn(
                   "flex items-center gap-2 px-4 py-2 rounded-xl transition-all flex-shrink-0",
                   isSelected 
                     ? `bg-gradient-to-r ${type.color} text-white` 
-                    : "bg-muted text-muted-foreground hover:bg-muted/80",
-                  !isAvailable && "opacity-50 cursor-not-allowed"
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
                 )}
               >
                 <Icon className="w-4 h-4" />
                 <span className="text-sm font-medium">{type.label}</span>
-                {!isAvailable && (
-                  <Badge variant="outline" className="text-[10px] px-1.5 py-0">
-                    Em breve
-                  </Badge>
-                )}
               </button>
             );
           })}
@@ -339,6 +341,16 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
         open={showCreateMonster}
         onOpenChange={handleSheetClose}
         editingMonster={editingItem?.type === 'monster' ? editingItem : undefined}
+      />
+      <CreateClassSheet
+        open={showCreateClass}
+        onOpenChange={handleSheetClose}
+        editingClass={editingItem?.type === 'class' ? editingItem : undefined}
+      />
+      <CreateSubclassSheet
+        open={showCreateSubclass}
+        onOpenChange={handleSheetClose}
+        editingSubclass={editingItem?.type === 'subclass' ? editingItem : undefined}
       />
 
       {/* Share Sheet */}

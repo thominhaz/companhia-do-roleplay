@@ -3,8 +3,10 @@ import { WizardData } from '../CharacterWizard';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Check } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useHomebrew } from '@/hooks/useHomebrew';
+import { Badge } from '@/components/ui/badge';
 
 interface BackgroundStepProps {
   data: WizardData;
@@ -12,6 +14,7 @@ interface BackgroundStepProps {
 }
 
 export function BackgroundStep({ data, updateData }: BackgroundStepProps) {
+  const { homebrewContent: homebrewBackgrounds } = useHomebrew('background');
   return (
     <div className="px-4 py-6 space-y-6">
       <div>
@@ -56,10 +59,36 @@ export function BackgroundStep({ data, updateData }: BackgroundStepProps) {
               </div>
             </button>
           ))}
+          {/* Homebrew Backgrounds */}
+          {homebrewBackgrounds.length > 0 && homebrewBackgrounds.map((bg) => (
+            <button
+              key={bg.id}
+              onClick={() => updateData({ background: bg.id })}
+              className={cn(
+                "p-3 rounded-xl border text-left transition-all",
+                data.background === bg.id
+                  ? "border-amber-500 bg-amber-500/10"
+                  : "border-border bg-card hover:border-amber-500/50"
+              )}
+            >
+              <div className="flex items-center gap-2 flex-wrap">
+                <span>{bg.icon}</span>
+                <span className="font-medium text-sm">{bg.name}</span>
+                <Badge variant="outline" className="text-[8px] bg-amber-500/10 text-amber-500 border-amber-500/30">
+                  HB
+                </Badge>
+                {data.background === bg.id && (
+                  <Check className="w-3 h-3 text-amber-500" />
+                )}
+              </div>
+            </button>
+          ))}
         </div>
         {data.background && (
           <p className="text-sm text-muted-foreground p-3 rounded-lg bg-muted/30">
-            {BACKGROUNDS.find(b => b.id === data.background)?.description}
+            {BACKGROUNDS.find(b => b.id === data.background)?.description ||
+             homebrewBackgrounds.find(b => b.id === data.background)?.description ||
+             'Antecedente personalizado'}
           </p>
         )}
       </div>

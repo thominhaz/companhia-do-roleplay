@@ -1,7 +1,9 @@
 import { RACES, getAttributeAbbr } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
-import { Check } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useHomebrew } from '@/hooks/useHomebrew';
+import { Badge } from '@/components/ui/badge';
 
 interface RaceStepProps {
   data: WizardData;
@@ -9,7 +11,17 @@ interface RaceStepProps {
 }
 
 export function RaceStep({ data, updateData }: RaceStepProps) {
+  const { homebrewContent: homebrewRaces } = useHomebrew('race');
   const selectedRace = RACES.find(r => r.id === data.race);
+  const selectedHomebrewRace = homebrewRaces.find(r => r.id === data.race);
+  const selectedRaceData = selectedRace || (selectedHomebrewRace ? {
+    ...selectedHomebrewRace,
+    id: selectedHomebrewRace.id,
+    name: selectedHomebrewRace.name,
+    traits: (selectedHomebrewRace.data as any)?.traits || [],
+    languages: (selectedHomebrewRace.data as any)?.languages?.split(',').map((l: string) => l.trim()) || [],
+    subraces: []
+  } : null);
 
   return (
     <div className="px-4 py-6 space-y-6">
@@ -21,6 +33,7 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
       </div>
 
       <div className="grid gap-3">
+        {/* SRD Races */}
         {RACES.map((race) => (
           <button
             key={race.id}
@@ -63,6 +76,68 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
             </div>
           </button>
         ))}
+
+        {/* Homebrew Races */}
+        {homebrewRaces.length > 0 && (
+          <>
+            <div className="col-span-full pt-2">
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Sparkles className="w-3 h-3" />
+                Raças Homebrew
+              </p>
+            </div>
+            {homebrewRaces.map((race) => {
+              const raceData = race.data as any;
+              const abilityBonuses = raceData?.ability_bonuses || {};
+              return (
+                <button
+                  key={race.id}
+                  onClick={() => updateData({ race: race.id, subrace: null })}
+                  className={cn(
+                    "w-full p-4 rounded-xl border text-left transition-all",
+                    data.race === race.id
+                      ? "border-amber-500 bg-amber-500/10"
+                      : "border-border bg-card hover:border-amber-500/50"
+                  )}
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{race.icon}</span>
+                        <h3 className="font-semibold">{race.name}</h3>
+                        <Badge variant="outline" className="text-[10px] bg-amber-500/10 text-amber-500 border-amber-500/30">
+                          Homebrew
+                        </Badge>
+                        {data.race === race.id && (
+                          <Check className="w-4 h-4 text-amber-500" />
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                        {race.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {Object.entries(abilityBonuses).map(([attr, bonus]) => (
+                          <span
+                            key={attr}
+                            className="px-2 py-0.5 text-xs font-medium rounded-full bg-amber-500/20 text-amber-500"
+                          >
+                            +{bonus as number} {getAttributeAbbr(attr)}
+                          </span>
+                        ))}
+                        <span className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground">
+                          {raceData?.speed || 9}m velocidade
+                        </span>
+                        <span className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground capitalize">
+                          {raceData?.size === 'small' ? 'Pequeno' : 'Médio'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+          </>
+        )}
       </div>
 
       {/* Subrace Selection */}
@@ -111,23 +186,23 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
       )}
 
       {/* Selected Race Details */}
-      {selectedRace && (
+      {selectedRaceData && (
         <div className="mt-6 p-4 rounded-xl bg-muted/30 border border-border">
-          <h3 className="font-semibold mb-3">Traços de {selectedRace.name}</h3>
+          <h3 className="font-semibold mb-3">Traços de {selectedRaceData.name}</h3>
           <ul className="space-y-3">
-            {selectedRace.traits.map((trait) => (
-              <li key={trait.id} className="text-sm">
+            {selectedRaceData.traits.map((trait: any, idx: number) => (
+              <li key={trait.id || idx} className="text-sm">
                 <span className="font-medium text-foreground">{trait.name}:</span>{' '}
                 <span className="text-muted-foreground">
-                  {trait.description_markdown.slice(0, 150)}
-                  {trait.description_markdown.length > 150 && '...'}
+                  {(trait.description_markdown || trait.description || '').slice(0, 150)}
+                  {(trait.description_markdown || trait.description || '').length > 150 && '...'}
                 </span>
               </li>
             ))}
           </ul>
           <div className="mt-3 pt-3 border-t border-border">
             <p className="text-xs text-muted-foreground">
-              <strong>Idiomas:</strong> {selectedRace.languages.join(', ')}
+              <strong>Idiomas:</strong> {selectedRaceData.languages.join(', ')}
             </p>
           </div>
         </div>
