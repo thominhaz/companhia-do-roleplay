@@ -2,11 +2,13 @@ import { useState, useEffect, useMemo } from 'react';
 import { WizardData } from '../CharacterWizard';
 import { CLASSES } from '@/data/srd';
 import { cn } from '@/lib/utils';
-import { Check, Sparkles, Search, Info, Wand2 } from 'lucide-react';
+import { Check, Sparkles, Search, Info, Wand2, Sword } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useHomebrew } from '@/hooks/useHomebrew';
+import { HomebrewSpellData } from '@/types';
 
 interface SpellsStepProps {
   data: WizardData;
@@ -71,6 +73,9 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
   const [search, setSearch] = useState('');
   const [selectedSpell, setSelectedSpell] = useState<Spell | null>(null);
 
+  // Fetch homebrew spells
+  const { homebrewContent: homebrewSpells, isLoading: loadingHomebrew } = useHomebrew('spell');
+
   const selectedClass = CLASSES.find(c => c.id === data.class);
   const spellcastingInfo = SPELLCASTING_CLASSES[data.class];
   
@@ -99,18 +104,65 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
     loadSpells();
   }, []);
 
-  // Filter spells by level (cantrips = 0, 1st level spells = 1)
+  // Convert homebrew spells to the same format
+  const convertedHomebrewSpells: Spell[] = useMemo(() => {
+    return homebrewSpells.map(hb => {
+      const spellData = hb.data as HomebrewSpellData;
+      return {
+        id: `homebrew-${hb.id}`,
+        name: `${hb.icon} ${hb.name}`,
+        name_en: hb.name,
+        level: spellData.level || 0,
+        school: spellData.school || 'evocation',
+        casting_time: spellData.casting_time || '1 ação',
+        range: parseInt(spellData.range?.replace(/\D/g, '') || '0') || 0,
+        range_type: spellData.range?.includes('Pessoal') ? 'self' : 
+                    spellData.range?.includes('Toque') ? 'touch' : 'ranged',
+        components: {
+          verbal: spellData.components?.includes('V') || false,
+          somatic: spellData.components?.includes('S') || false,
+          material: spellData.components?.includes('M') || false,
+        },
+        duration: spellData.duration || 'Instantânea',
+        concentration: spellData.duration?.toLowerCase().includes('concentração') || false,
+        ritual: false,
+        description_markdown: hb.description || '',
+        isHomebrew: true,
+      } as Spell & { isHomebrew?: boolean };
+    });
+  }, [homebrewSpells]);
+
+  // Filter spells by level (cantrips = 0, 1st level spells = 1) - include homebrew
   const cantrips = useMemo(() => {
-    return allSpells.filter(s => s.level === 0 && 
-      (search === '' || s.name.toLowerCase().includes(search.toLowerCase()))
-    ).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
-  }, [allSpells, search]);
+    const srdCantrips = allSpells.filter(s => s.level === 0);
+    const homebrewCantrips = convertedHomebrewSpells.filter(s => s.level === 0);
+    const combined = [...homebrewCantrips, ...srdCantrips]; // Homebrew first
+    return combined.filter(s => 
+      search === '' || s.name.toLowerCase().includes(search.toLowerCase())
+    ).sort((a, b) => {
+      // Homebrew first, then alphabetical
+      const aIsHomebrew = a.id.startsWith('homebrew-');
+      const bIsHomebrew = b.id.startsWith('homebrew-');
+      if (aIsHomebrew && !bIsHomebrew) return -1;
+      if (!aIsHomebrew && bIsHomebrew) return 1;
+      return a.name.localeCompare(b.name, 'pt-BR');
+    });
+  }, [allSpells, convertedHomebrewSpells, search]);
 
   const firstLevelSpells = useMemo(() => {
-    return allSpells.filter(s => s.level === 1 && 
-      (search === '' || s.name.toLowerCase().includes(search.toLowerCase()))
-    ).sort((a, b) => a.name.localeCompare(b.name, 'pt-BR'));
-  }, [allSpells, search]);
+    const srdSpells = allSpells.filter(s => s.level === 1);
+    const homebrewFirst = convertedHomebrewSpells.filter(s => s.level === 1);
+    const combined = [...homebrewFirst, ...srdSpells];
+    return combined.filter(s => 
+      search === '' || s.name.toLowerCase().includes(search.toLowerCase())
+    ).sort((a, b) => {
+      const aIsHomebrew = a.id.startsWith('homebrew-');
+      const bIsHomebrew = b.id.startsWith('homebrew-');
+      if (aIsHomebrew && !bIsHomebrew) return -1;
+      if (!aIsHomebrew && bIsHomebrew) return 1;
+      return a.name.localeCompare(b.name, 'pt-BR');
+    });
+  }, [allSpells, convertedHomebrewSpells, search]);
 
   if (!spellcastingInfo) {
     return (
@@ -150,7 +202,7 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
     updateData({ selectedSpells: current });
   };
 
-  if (loading) {
+  if (loading || loadingHomebrew) {
     return (
       <div className="p-4 text-center">
         <Sparkles className="w-12 h-12 mx-auto text-primary animate-pulse mb-3" />
@@ -219,6 +271,12 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                       <h4 className="text-sm font-semibold text-foreground truncate">
                         {spell.name}
                       </h4>
+                      {spell.id.startsWith('homebrew-') && (
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-primary/20 text-primary border-primary/30">
+                          <Sword className="w-2.5 h-2.5 mr-0.5" />
+                          Homebrew
+                        </Badge>
+                      )}
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help shrink-0" onClick={(e) => { e.stopPropagation(); setSelectedSpell(spell); }} />
@@ -277,6 +335,12 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                       <h4 className="text-sm font-semibold text-foreground truncate">
                         {spell.name}
                       </h4>
+                      {spell.id.startsWith('homebrew-') && (
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-primary/20 text-primary border-primary/30">
+                          <Sword className="w-2.5 h-2.5 mr-0.5" />
+                          Homebrew
+                        </Badge>
+                      )}
                       {spell.concentration && (
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400">C</span>
                       )}
