@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Package, Sword, Shield, ChevronDown, ChevronUp, Check } from 'lucide-react';
+import { Package, Sword, Shield, ChevronDown, ChevronUp, Check, Sparkles, Gem } from 'lucide-react';
 import { WizardData } from '../CharacterWizard';
 import { CLASSES } from '@/data/srd';
+import { useHomebrew } from '@/hooks/useHomebrew';
+import { Badge } from '@/components/ui/badge';
 import pacotesData from '@/data/equipment/pacotes-iniciais.json';
 import armasData from '@/data/equipment/armas.json';
 import armadurasData from '@/data/equipment/armaduras.json';
@@ -105,6 +107,7 @@ const CLASS_ARMOR: Record<string, string[]> = {
 
 export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
   const [expandedPack, setExpandedPack] = useState<string | null>(null);
+  const { homebrewContent, isLoading: homebrewLoading } = useHomebrew('item');
   
   const availablePacks = CLASS_PACKS[data.class] || ['explorers_pack'];
   const filteredPacks = PACKS.filter(p => availablePacks.includes(p.id));
@@ -112,13 +115,24 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
   const weapons = CLASS_WEAPONS[data.class] || { primary: [], secondary: [] };
   const armors = CLASS_ARMOR[data.class] || [];
 
+  // Get homebrew items categorized by type
+  const homebrewWeapons = homebrewContent.filter(item => {
+    const itemData = item.data as any;
+    return itemData?.type === 'weapon' || itemData?.tipo === 'arma';
+  });
+  
+  const homebrewArmors = homebrewContent.filter(item => {
+    const itemData = item.data as any;
+    return itemData?.type === 'armor' || itemData?.tipo === 'armadura';
+  });
+
   const handlePackSelect = (packId: string) => {
     updateData({ 
       equipmentPack: packId,
     });
   };
 
-  const handleWeaponSelect = (weapon: string, type: 'primary' | 'secondary') => {
+  const handleWeaponSelect = (weapon: string, type: 'primary' | 'secondary', isHomebrew: boolean = false) => {
     if (type === 'primary') {
       updateData({ primaryWeapon: weapon });
     } else {
@@ -212,7 +226,7 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
       </section>
 
       {/* Primary Weapon */}
-      {weapons.primary.length > 0 && (
+      {(weapons.primary.length > 0 || homebrewWeapons.length > 0) && (
         <section>
           <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
             <Sword className="w-5 h-5 text-primary" />
@@ -237,12 +251,36 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
                 </div>
               </button>
             ))}
+            {homebrewWeapons.map((weapon) => (
+              <button
+                key={weapon.id}
+                onClick={() => handleWeaponSelect(weapon.name, 'primary', true)}
+                className={`p-3 rounded-xl border text-left transition-all ${
+                  data.primaryWeapon === weapon.name
+                    ? 'border-amber-500 bg-amber-500/10'
+                    : 'border-amber-500/30 bg-dark'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Gem className="w-3 h-3 text-amber-500" />
+                    <span className="text-sm font-medium">{weapon.name}</span>
+                  </div>
+                  {data.primaryWeapon === weapon.name && (
+                    <Check className="w-4 h-4 text-amber-500" />
+                  )}
+                </div>
+                <Badge variant="outline" className="mt-1 text-[10px] border-amber-500/50 text-amber-500">
+                  Homebrew
+                </Badge>
+              </button>
+            ))}
           </div>
         </section>
       )}
 
       {/* Secondary Weapon */}
-      {weapons.secondary.length > 0 && (
+      {(weapons.secondary.length > 0 || homebrewWeapons.length > 0) && (
         <section>
           <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
             <Sword className="w-5 h-5 text-muted-foreground" />
@@ -267,12 +305,36 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
                 </div>
               </button>
             ))}
+            {homebrewWeapons.map((weapon) => (
+              <button
+                key={`secondary-${weapon.id}`}
+                onClick={() => handleWeaponSelect(weapon.name, 'secondary', true)}
+                className={`p-3 rounded-xl border text-left transition-all ${
+                  data.secondaryWeapon === weapon.name
+                    ? 'border-amber-500 bg-amber-500/10'
+                    : 'border-amber-500/30 bg-dark'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Gem className="w-3 h-3 text-amber-500" />
+                    <span className="text-sm font-medium">{weapon.name}</span>
+                  </div>
+                  {data.secondaryWeapon === weapon.name && (
+                    <Check className="w-4 h-4 text-amber-500" />
+                  )}
+                </div>
+                <Badge variant="outline" className="mt-1 text-[10px] border-amber-500/50 text-amber-500">
+                  Homebrew
+                </Badge>
+              </button>
+            ))}
           </div>
         </section>
       )}
 
       {/* Armor */}
-      {armors.length > 0 && (
+      {(armors.length > 0 || homebrewArmors.length > 0) && (
         <section>
           <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
             <Shield className="w-5 h-5 text-primary" />
@@ -297,12 +359,36 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
                 </div>
               </button>
             ))}
+            {homebrewArmors.map((armor) => (
+              <button
+                key={armor.id}
+                onClick={() => handleArmorSelect(armor.name)}
+                className={`p-3 rounded-xl border text-left transition-all ${
+                  data.armor === armor.name
+                    ? 'border-amber-500 bg-amber-500/10'
+                    : 'border-amber-500/30 bg-dark'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Gem className="w-3 h-3 text-amber-500" />
+                    <span className="text-sm font-medium">{armor.name}</span>
+                  </div>
+                  {data.armor === armor.name && (
+                    <Check className="w-4 h-4 text-amber-500" />
+                  )}
+                </div>
+                <Badge variant="outline" className="mt-1 text-[10px] border-amber-500/50 text-amber-500">
+                  Homebrew
+                </Badge>
+              </button>
+            ))}
           </div>
         </section>
       )}
 
       {/* No armor classes message */}
-      {armors.length === 0 && (
+      {armors.length === 0 && homebrewArmors.length === 0 && (
         <section className="bg-muted/30 rounded-xl p-4">
           <p className="text-sm text-muted-foreground">
             Sua classe não possui proficiência em armaduras ou prefere não usar armadura.

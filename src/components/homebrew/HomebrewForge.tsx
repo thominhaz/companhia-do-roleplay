@@ -206,7 +206,8 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
         <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
           {contentTypes.map((type) => {
             const Icon = type.icon;
-              const isAvailable = ['spell', 'item', 'race', 'background', 'feat', 'monster'].includes(type.type);
+            const isAvailable = ['spell', 'item', 'race', 'background', 'feat', 'monster'].includes(type.type);
+            const isSelected = selectedType === type.type;
             return (
               <button
                 key={type.type}
