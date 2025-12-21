@@ -30,6 +30,8 @@ import { AddPlayerSheet } from "./AddPlayerSheet";
 import { CombatTracker } from "./CombatTracker";
 import { CampaignNotesSheet } from "./CampaignNotesSheet";
 import { CampaignChatSheet } from "./CampaignChatSheet";
+import { CampaignCompendiumSheet } from "./CampaignCompendiumSheet";
+import { Library } from "lucide-react";
 
 interface CampaignDetailSheetProps {
   campaign: CampaignDB | null;
@@ -45,6 +47,7 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
   const [showCombatTracker, setShowCombatTracker] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [showCompendium, setShowCompendium] = useState(false);
   
   const { data: sessions, isLoading: loadingSessions } = useCampaignSessions(campaign?.id || '');
   const { data: players, isLoading: loadingPlayers } = useCampaignPlayers(campaign?.id || '');
@@ -148,6 +151,14 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
                 <MessageCircle className="w-4 h-4 mx-auto mb-1 text-blue-500" />
                 <p className="text-sm font-bold">Chat</p>
                 <p className="text-[10px] text-muted-foreground">Abrir</p>
+              </button>
+              <button 
+                onClick={() => setShowCompendium(true)}
+                className="bg-card/50 rounded-xl p-3 text-center hover:bg-card/70 transition-colors"
+              >
+                <Library className="w-4 h-4 mx-auto mb-1 text-purple-500" />
+                <p className="text-sm font-bold">Compêndio</p>
+                <p className="text-[10px] text-muted-foreground">Homebrew</p>
               </button>
             </div>
 
