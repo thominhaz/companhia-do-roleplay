@@ -26,6 +26,7 @@ import { HomebrewContentType, HomebrewContent } from "@/types";
 import { CreateSpellSheet } from "./CreateSpellSheet";
 import { CreateItemSheet } from "./CreateItemSheet";
 import { HomebrewCard } from "./HomebrewCard";
+import { ShareHomebrewSheet } from "./ShareHomebrewSheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -59,7 +60,9 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateSpell, setShowCreateSpell] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
+  const [showShareSheet, setShowShareSheet] = useState(false);
   const [editingItem, setEditingItem] = useState<HomebrewContent | null>(null);
+  const [sharingItem, setSharingItem] = useState<HomebrewContent | null>(null);
   const [deletingItem, setDeletingItem] = useState<HomebrewContent | null>(null);
   
   const { 
@@ -101,6 +104,11 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
     setDeletingItem(item);
   };
 
+  const handleShare = (item: HomebrewContent) => {
+    setSharingItem(item);
+    setShowShareSheet(true);
+  };
+
   const confirmDelete = () => {
     if (deletingItem) {
       deleteHomebrew(deletingItem.id);
@@ -112,6 +120,11 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
     setShowCreateSpell(false);
     setShowCreateItem(false);
     setEditingItem(null);
+  };
+
+  const handleShareSheetClose = () => {
+    setShowShareSheet(false);
+    setSharingItem(null);
   };
 
   const selectedTypeInfo = contentTypes.find(t => t.type === selectedType);
@@ -274,6 +287,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
                 item={item}
                 onEdit={() => handleEdit(item)}
                 onDelete={() => handleDelete(item)}
+                onShare={() => handleShare(item)}
               />
             ))}
           </div>
@@ -291,6 +305,13 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
         open={showCreateItem}
         onOpenChange={handleSheetClose}
         editingItem={editingItem?.type === 'item' ? editingItem : undefined}
+      />
+
+      {/* Share Sheet */}
+      <ShareHomebrewSheet
+        open={showShareSheet}
+        onOpenChange={handleShareSheetClose}
+        item={sharingItem}
       />
 
       {/* Delete Confirmation */}
