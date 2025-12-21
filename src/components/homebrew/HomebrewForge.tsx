@@ -145,16 +145,18 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
     setShowCreateBackground(false);
     setShowCreateFeat(false);
     setShowCreateMonster(false);
+    setShowCreateClass(false);
+    setShowCreateSubclass(false);
     setEditingItem(null);
   };
 
-  const selectedTypeInfo = contentTypes.find(t => t.type === selectedType);
+  const handleShareSheetClose = () => {
     setShowShareSheet(false);
     setSharingItem(null);
   };
 
   const selectedTypeInfo = contentTypes.find(t => t.type === selectedType);
-  const isAvailableType = ['spell', 'item', 'race', 'background', 'feat', 'monster'].includes(selectedType);
+  const isAvailableType = true;
 
   return (
     <div className="min-h-screen bg-darker pb-24">

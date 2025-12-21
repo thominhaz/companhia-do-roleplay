@@ -423,6 +423,12 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
         open={showChat}
         onOpenChange={setShowChat}
       />
+
+      <CampaignCompendiumSheet
+        campaignId={campaign.id}
+        open={showCompendium}
+        onOpenChange={setShowCompendium}
+      />
     </>
   );
 }
