@@ -25,6 +25,10 @@ import { Badge } from "@/components/ui/badge";
 import { HomebrewContentType, HomebrewContent } from "@/types";
 import { CreateSpellSheet } from "./CreateSpellSheet";
 import { CreateItemSheet } from "./CreateItemSheet";
+import { CreateRaceSheet } from "./CreateRaceSheet";
+import { CreateBackgroundSheet } from "./CreateBackgroundSheet";
+import { CreateFeatSheet } from "./CreateFeatSheet";
+import { CreateMonsterSheet } from "./CreateMonsterSheet";
 import { HomebrewCard } from "./HomebrewCard";
 import { ShareHomebrewSheet } from "./ShareHomebrewSheet";
 import {
@@ -60,6 +64,10 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateSpell, setShowCreateSpell] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
+  const [showCreateRace, setShowCreateRace] = useState(false);
+  const [showCreateBackground, setShowCreateBackground] = useState(false);
+  const [showCreateFeat, setShowCreateFeat] = useState(false);
+  const [showCreateMonster, setShowCreateMonster] = useState(false);
   const [showShareSheet, setShowShareSheet] = useState(false);
   const [editingItem, setEditingItem] = useState<HomebrewContent | null>(null);
   const [sharingItem, setSharingItem] = useState<HomebrewContent | null>(null);
@@ -80,23 +88,27 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   );
 
   const handleCreateClick = () => {
-    if (!isPremium) {
-      return; // Modal de upgrade será mostrado
-    }
+    if (!isPremium) return;
     
-    if (selectedType === 'spell') {
-      setShowCreateSpell(true);
-    } else if (selectedType === 'item') {
-      setShowCreateItem(true);
+    switch (selectedType) {
+      case 'spell': setShowCreateSpell(true); break;
+      case 'item': setShowCreateItem(true); break;
+      case 'race': setShowCreateRace(true); break;
+      case 'background': setShowCreateBackground(true); break;
+      case 'feat': setShowCreateFeat(true); break;
+      case 'monster': setShowCreateMonster(true); break;
     }
   };
 
   const handleEdit = (item: HomebrewContent) => {
     setEditingItem(item);
-    if (item.type === 'spell') {
-      setShowCreateSpell(true);
-    } else if (item.type === 'item') {
-      setShowCreateItem(true);
+    switch (item.type) {
+      case 'spell': setShowCreateSpell(true); break;
+      case 'item': setShowCreateItem(true); break;
+      case 'race': setShowCreateRace(true); break;
+      case 'background': setShowCreateBackground(true); break;
+      case 'feat': setShowCreateFeat(true); break;
+      case 'monster': setShowCreateMonster(true); break;
     }
   };
 
@@ -119,6 +131,10 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const handleSheetClose = () => {
     setShowCreateSpell(false);
     setShowCreateItem(false);
+    setShowCreateRace(false);
+    setShowCreateBackground(false);
+    setShowCreateFeat(false);
+    setShowCreateMonster(false);
     setEditingItem(null);
   };
 
@@ -128,7 +144,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   };
 
   const selectedTypeInfo = contentTypes.find(t => t.type === selectedType);
-  const isPhase1 = selectedType === 'spell' || selectedType === 'item';
+  const isAvailableType = ['spell', 'item', 'race', 'background', 'feat', 'monster'].includes(selectedType);
 
   return (
     <div className="min-h-screen bg-darker pb-24">
@@ -190,9 +206,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
         <div className="flex gap-2 overflow-x-auto pb-2 -mx-4 px-4 scrollbar-hide">
           {contentTypes.map((type) => {
             const Icon = type.icon;
-            const isSelected = selectedType === type.type;
-            const isAvailable = type.type === 'spell' || type.type === 'item';
-            
+              const isAvailable = ['spell', 'item', 'race', 'background', 'feat', 'monster'].includes(type.type);
             return (
               <button
                 key={type.type}
@@ -232,7 +246,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
           </div>
           <Button
             onClick={handleCreateClick}
-            disabled={!isPremium || !isPhase1}
+            disabled={!isPremium || !isAvailableType}
             className={cn(
               "h-10 px-4 gap-2",
               isPremium 
@@ -300,11 +314,30 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
         onOpenChange={handleSheetClose}
         editingSpell={editingItem?.type === 'spell' ? editingItem : undefined}
       />
-      
       <CreateItemSheet
         open={showCreateItem}
         onOpenChange={handleSheetClose}
         editingItem={editingItem?.type === 'item' ? editingItem : undefined}
+      />
+      <CreateRaceSheet
+        open={showCreateRace}
+        onOpenChange={handleSheetClose}
+        editingRace={editingItem?.type === 'race' ? editingItem : undefined}
+      />
+      <CreateBackgroundSheet
+        open={showCreateBackground}
+        onOpenChange={handleSheetClose}
+        editingBackground={editingItem?.type === 'background' ? editingItem : undefined}
+      />
+      <CreateFeatSheet
+        open={showCreateFeat}
+        onOpenChange={handleSheetClose}
+        editingFeat={editingItem?.type === 'feat' ? editingItem : undefined}
+      />
+      <CreateMonsterSheet
+        open={showCreateMonster}
+        onOpenChange={handleSheetClose}
+        editingMonster={editingItem?.type === 'monster' ? editingItem : undefined}
       />
 
       {/* Share Sheet */}
