@@ -440,6 +440,87 @@ export type Database = {
           },
         ]
       }
+      homebrew_content: {
+        Row: {
+          created_at: string
+          data: Json
+          description: string | null
+          icon: string | null
+          id: string
+          is_public: boolean
+          name: string
+          source: Database["public"]["Enums"]["homebrew_source"]
+          type: Database["public"]["Enums"]["homebrew_content_type"]
+          updated_at: string
+          user_id: string
+          version: number
+        }
+        Insert: {
+          created_at?: string
+          data?: Json
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_public?: boolean
+          name: string
+          source?: Database["public"]["Enums"]["homebrew_source"]
+          type: Database["public"]["Enums"]["homebrew_content_type"]
+          updated_at?: string
+          user_id: string
+          version?: number
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_public?: boolean
+          name?: string
+          source?: Database["public"]["Enums"]["homebrew_source"]
+          type?: Database["public"]["Enums"]["homebrew_content_type"]
+          updated_at?: string
+          user_id?: string
+          version?: number
+        }
+        Relationships: []
+      }
+      homebrew_shares: {
+        Row: {
+          campaign_id: string
+          content_id: string
+          id: string
+          shared_at: string
+        }
+        Insert: {
+          campaign_id: string
+          content_id: string
+          id?: string
+          shared_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          content_id?: string
+          id?: string
+          shared_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homebrew_shares_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "homebrew_shares_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "homebrew_content"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       notification_preferences: {
         Row: {
           campaign_invite: boolean | null
@@ -663,7 +744,13 @@ export type Database = {
     }
     Functions: {
       can_create_character: { Args: { _user_id: string }; Returns: boolean }
+      can_create_homebrew: { Args: { _user_id: string }; Returns: boolean }
+      can_create_homebrew_with_limit: {
+        Args: { _limit?: number; _user_id: string }
+        Returns: boolean
+      }
       count_user_characters: { Args: { _user_id: string }; Returns: number }
+      count_user_homebrew: { Args: { _user_id: string }; Returns: number }
       create_notification: {
         Args: {
           _data?: Json
@@ -694,6 +781,10 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      has_homebrew_access: {
+        Args: { _content_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_campaign_master: {
         Args: { _campaign_id: string; _user_id: string }
         Returns: boolean
@@ -713,6 +804,16 @@ export type Database = {
       }
     }
     Enums: {
+      homebrew_content_type:
+        | "spell"
+        | "item"
+        | "race"
+        | "class"
+        | "subclass"
+        | "monster"
+        | "background"
+        | "feat"
+      homebrew_source: "user" | "master_shared" | "community"
       notification_type:
         | "campaign_invite"
         | "session_reminder"
@@ -846,6 +947,17 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      homebrew_content_type: [
+        "spell",
+        "item",
+        "race",
+        "class",
+        "subclass",
+        "monster",
+        "background",
+        "feat",
+      ],
+      homebrew_source: ["user", "master_shared", "community"],
       notification_type: [
         "campaign_invite",
         "session_reminder",
