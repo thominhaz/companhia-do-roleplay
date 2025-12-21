@@ -1,8 +1,10 @@
-import { Edit, Trash2, Share2, Sparkles, Gem } from "lucide-react";
+import { Edit, Trash2, Share2, Sparkles, Gem, Users } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { HomebrewContent, HomebrewSpellData, HomebrewItemData } from "@/types";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface HomebrewCardProps {
   item: HomebrewContent;
@@ -46,6 +48,20 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare }: HomebrewCardPr
   
   const spellData = isSpell ? (item.data as HomebrewSpellData) : null;
   const itemData = isItem ? (item.data as HomebrewItemData) : null;
+
+  // Fetch share count for this item
+  const { data: shareCount = 0 } = useQuery({
+    queryKey: ['homebrew-share-count', item.id],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('homebrew_shares')
+        .select('*', { count: 'exact', head: true })
+        .eq('content_id', item.id);
+      
+      if (error) return 0;
+      return count || 0;
+    },
+  });
 
   const getTypeIcon = () => {
     if (isSpell) return <Sparkles className="w-4 h-4" />;
@@ -96,6 +112,15 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare }: HomebrewCardPr
                 className={cn("text-[10px]", rarityColors[itemData.rarity])}
               >
                 {rarityLabels[itemData.rarity]}
+              </Badge>
+            )}
+            {shareCount > 0 && (
+              <Badge 
+                variant="outline" 
+                className="text-[10px] bg-green-500/20 text-green-400 border-green-500/30"
+              >
+                <Users className="w-2.5 h-2.5 mr-0.5" />
+                {shareCount}
               </Badge>
             )}
           </div>
@@ -168,7 +193,10 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare }: HomebrewCardPr
             <Button
               variant="ghost"
               size="icon"
-              className="w-8 h-8"
+              className={cn(
+                "w-8 h-8",
+                shareCount > 0 && "text-green-400"
+              )}
               onClick={onShare}
             >
               <Share2 className="w-4 h-4" />
