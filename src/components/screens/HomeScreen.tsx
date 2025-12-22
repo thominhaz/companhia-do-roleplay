@@ -27,10 +27,10 @@ interface HomeScreenProps {
 }
 
 const quickActions = [
-  { id: "create", label: "Criar Ficha", icon: Plus, gradient: "from-primary to-purple-700" },
-  { id: "join", label: "Entrar em Mesa", icon: Link, gradient: "from-blue-600 to-blue-800" },
-  { id: "dice", label: "Rolar Dados", icon: Dices, gradient: "from-green-600 to-green-800" },
-  { id: "note", label: "Nota Rápida", icon: StickyNote, gradient: "from-amber-600 to-amber-800" },
+  { id: "create", label: "Criar Ficha", icon: Plus, gradient: "from-solar-orange to-solar-orange/70" },
+  { id: "join", label: "Entrar em Mesa", icon: Link, gradient: "from-cyan-blue to-cyan-blue/70" },
+  { id: "dice", label: "Rolar Dados", icon: Dices, gradient: "from-cosmic-purple to-cosmic-purple/70" },
+  { id: "note", label: "Nota Rápida", icon: StickyNote, gradient: "from-magenta-red to-magenta-red/70" },
 ];
 
 // Map class to icon
@@ -50,18 +50,18 @@ const classIcons: Record<string, typeof Shield> = {
 };
 
 const classGradients: Record<string, string> = {
-  Guerreiro: "from-red-600 to-red-800",
-  Mago: "from-blue-600 to-blue-800",
-  Paladino: "from-yellow-600 to-yellow-800",
-  Ladino: "from-gray-600 to-gray-800",
-  Clerigo: "from-white to-gray-300",
-  Barbaro: "from-orange-600 to-orange-800",
-  Bardo: "from-purple-600 to-purple-800",
-  Druida: "from-green-600 to-green-800",
-  Feiticeiro: "from-pink-600 to-pink-800",
-  Bruxo: "from-violet-600 to-violet-800",
-  Monge: "from-cyan-600 to-cyan-800",
-  Patrulheiro: "from-emerald-600 to-emerald-800",
+  Guerreiro: "from-magenta-red to-magenta-red/70",
+  Mago: "from-cyan-blue to-cyan-blue/70",
+  Paladino: "from-solar-orange to-solar-orange/70",
+  Ladino: "from-muted to-muted/70",
+  Clerigo: "from-foreground to-foreground/70",
+  Barbaro: "from-solar-orange to-magenta-red",
+  Bardo: "from-cosmic-purple to-cosmic-purple/70",
+  Druida: "from-cyan-blue to-cosmic-purple",
+  Feiticeiro: "from-magenta-red to-cosmic-purple",
+  Bruxo: "from-cosmic-purple to-magenta-red",
+  Monge: "from-cyan-blue to-cyan-blue/70",
+  Patrulheiro: "from-cyan-blue to-solar-orange",
 };
 
 interface RecentItem {
@@ -171,7 +171,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             <div className="flex items-center gap-2">
               <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
                 isPremium 
-                  ? "bg-gold/20 text-gold" 
+                  ? "bg-solar-orange/20 text-solar-orange" 
                   : "bg-muted text-muted-foreground"
               }`}>
                 {isPremium ? "Premium" : "Free"}
@@ -190,39 +190,39 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       <section className="px-5 mt-6">
         <div className="grid grid-cols-3 gap-3 h-48">
           {/* Active Character Card */}
-          <div className="col-span-2 bg-gradient-to-br from-purple-900 to-purple-700 rounded-2xl p-4 relative overflow-hidden">
+          <div className="col-span-2 bg-gradient-to-br from-cosmic-purple to-cosmic-purple/70 rounded-2xl p-4 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-32 h-32 bg-foreground opacity-5 rounded-full -mr-10 -mt-10" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-foreground opacity-5 rounded-full -ml-8 -mb-8" />
             <div className="relative z-10 h-full flex flex-col justify-between">
               {isLoading ? (
                 <div className="flex items-center justify-center h-full">
-                  <Loader2 className="w-6 h-6 animate-spin text-purple-300" />
+                  <Loader2 className="w-6 h-6 animate-spin text-foreground/70" />
                 </div>
               ) : activeCharacter ? (
                 <>
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
-                        <Shield className="w-4 h-4" />
+                      <div className="w-8 h-8 rounded-full bg-solar-orange/30 flex items-center justify-center">
+                        <Shield className="w-4 h-4 text-solar-orange" />
                       </div>
-                      <span className="text-xs font-medium text-purple-200">ATIVO</span>
+                      <span className="text-xs font-medium text-foreground/80">ATIVO</span>
                     </div>
                     <h3 className="text-lg font-bold leading-tight">{activeCharacter.name}</h3>
-                    <p className="text-xs text-purple-200 mt-1">
+                    <p className="text-xs text-foreground/70 mt-1">
                       {activeCharacter.race} {activeCharacter.class} • Nv {activeCharacter.level}
                     </p>
                   </div>
                   <div className="flex gap-2">
                     <div className="flex-1 bg-background/20 rounded-lg px-2 py-1.5">
-                      <p className="text-xs text-purple-200">HP</p>
+                      <p className="text-xs text-foreground/70">HP</p>
                       <p className="text-sm font-bold">{activeCharacter.current_hp}/{activeCharacter.max_hp}</p>
                     </div>
                   </div>
                 </>
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-center">
-                  <Shield className="w-8 h-8 text-purple-300 mb-2" />
-                  <p className="text-sm text-purple-200">Nenhum personagem</p>
+                  <Shield className="w-8 h-8 text-foreground/50 mb-2" />
+                  <p className="text-sm text-foreground/70">Nenhum personagem</p>
                   <button 
                     onClick={() => {
                       if (!user) {
@@ -236,7 +236,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                       }
                       navigate("/characters?create=true");
                     }}
-                    className="mt-2 px-3 py-1 bg-purple-500 rounded-lg text-xs font-medium"
+                    className="mt-2 px-3 py-1 bg-solar-orange rounded-lg text-xs font-medium text-background"
                   >
                     Criar
                   </button>
@@ -246,29 +246,29 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </div>
 
           {/* Next Session Card */}
-          <div className="col-span-1 bg-gradient-to-br from-pink-900 to-pink-700 rounded-2xl p-3 relative overflow-hidden">
+          <div className="col-span-1 bg-gradient-to-br from-magenta-red to-magenta-red/70 rounded-2xl p-3 relative overflow-hidden">
             <div className="absolute top-0 right-0 w-20 h-20 bg-foreground opacity-5 rounded-full -mr-8 -mt-8" />
             <div className="relative z-10 h-full flex flex-col">
               {loadingSessions ? (
                 <div className="flex items-center justify-center h-full">
-                  <Loader2 className="w-5 h-5 animate-spin text-pink-300" />
+                  <Loader2 className="w-5 h-5 animate-spin text-foreground/70" />
                 </div>
               ) : nextSession ? (
                 <>
                   <div className="flex-1 flex flex-col justify-center items-center text-center">
-                    <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center mb-2">
+                    <div className="w-10 h-10 rounded-full bg-solar-orange/30 flex items-center justify-center mb-2">
                       <Calendar className="w-5 h-5" />
                     </div>
-                    <p className="text-[10px] text-pink-200 font-medium uppercase">Próxima</p>
+                    <p className="text-[10px] text-foreground/80 font-medium uppercase">Próxima</p>
                     <p className="text-lg font-bold mt-0.5">
                       {format(new Date(nextSession.scheduled_at), "dd/MM", { locale: ptBR })}
                     </p>
-                    <p className="text-xs text-pink-200">
+                    <p className="text-xs text-foreground/70">
                       {format(new Date(nextSession.scheduled_at), "HH:mm", { locale: ptBR })}
                     </p>
                   </div>
-                  <div className="pt-2 border-t border-pink-600 border-opacity-40">
-                    <p className="text-[10px] font-medium leading-tight text-center text-pink-200 truncate">
+                  <div className="pt-2 border-t border-foreground/20">
+                    <p className="text-[10px] font-medium leading-tight text-center text-foreground/70 truncate">
                       {nextSession.campaign_name}
                     </p>
                   </div>
@@ -276,15 +276,15 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               ) : (
                 <>
                   <div className="flex-1 flex flex-col justify-center items-center text-center">
-                    <div className="w-10 h-10 rounded-full bg-pink-500/50 flex items-center justify-center mb-2">
-                      <Calendar className="w-5 h-5 text-pink-300" />
+                    <div className="w-10 h-10 rounded-full bg-foreground/20 flex items-center justify-center mb-2">
+                      <Calendar className="w-5 h-5 text-foreground/50" />
                     </div>
-                    <p className="text-[10px] text-pink-200 font-medium uppercase">Próxima</p>
+                    <p className="text-[10px] text-foreground/80 font-medium uppercase">Próxima</p>
                     <p className="text-lg font-bold mt-0.5">--</p>
-                    <p className="text-xs text-pink-200">Sessão</p>
+                    <p className="text-xs text-foreground/70">Sessão</p>
                   </div>
-                  <div className="pt-2 border-t border-pink-600 border-opacity-40">
-                    <p className="text-[10px] font-medium leading-tight text-center text-pink-200">
+                  <div className="pt-2 border-t border-foreground/20">
+                    <p className="text-[10px] font-medium leading-tight text-center text-foreground/70">
                       Sem sessões
                     </p>
                   </div>

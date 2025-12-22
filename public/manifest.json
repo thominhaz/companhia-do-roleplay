@@ -1,12 +1,13 @@
 {
-  "name": "Go20 - Companheiro D&D 5e",
+  "name": "Go20 - Seu Companheiro de RPG D&D 5e",
   "short_name": "Go20",
-  "description": "Gerencie seus personagens de D&D 5e, campanhas e ferramentas de RPG",
+  "description": "Crie personagens, gerencie campanhas, role dados e acesse o compêndio completo de D&D 5e",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#111827",
-  "theme_color": "#111827",
+  "background_color": "#1a1a1a",
+  "theme_color": "#FF9F55",
   "orientation": "portrait",
+  "categories": ["games", "entertainment", "utilities"],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -19,6 +20,12 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
     }
   ]
 }
