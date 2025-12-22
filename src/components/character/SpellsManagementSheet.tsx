@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Sparkles, Check, BookOpen, Save, Search } from "lucide-react";
+import { Sparkles, Check, BookOpen, Save, Search, Plus, Gem, Info } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,9 @@ import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useUpdateCharacter, CharacterDB } from "@/hooks/useCharacters";
+import { useHomebrew } from "@/hooks/useHomebrew";
 import { cn } from "@/lib/utils";
+import { HomebrewSpellData } from "@/types";
 
 interface SpellsManagementSheetProps {
   character: CharacterDB;
@@ -50,6 +52,26 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
   const [search, setSearch] = useState("");
   const [spells, setSpells] = useState<SpellData[]>([]);
   const [usedSlots, setUsedSlots] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0, 0]);
+  const [activeTab, setActiveTab] = useState("prepared");
+
+  // Fetch homebrew spells
+  const { homebrewContent: homebrewSpells, isLoading: loadingHomebrew } = useHomebrew('spell');
+
+  // Convert homebrew spells to internal format
+  const convertedHomebrewSpells = useMemo(() => {
+    return homebrewSpells.map(hb => {
+      const spellData = hb.data as HomebrewSpellData;
+      return {
+        name: `${hb.icon || '✨'} ${hb.name}`,
+        level: spellData.level || 0,
+        prepared: false,
+        isHomebrew: true,
+        id: hb.id,
+        description: hb.description,
+        school: spellData.school,
+      };
+    });
+  }, [homebrewSpells]);
 
   useEffect(() => {
     const charSpells = (character.spells as any[]) || [];
@@ -82,6 +104,23 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
 
     return groups;
   }, [spells, search]);
+
+  // Available homebrew spells that haven't been added yet
+  const availableHomebrewSpells = useMemo(() => {
+    const existingNames = spells.map(s => s.name.toLowerCase());
+    return convertedHomebrewSpells.filter(
+      hs => !existingNames.some(name => name.includes(hs.name.toLowerCase().split(' ').slice(1).join(' ')))
+    );
+  }, [convertedHomebrewSpells, spells]);
+
+  const addHomebrewSpell = (homebrewSpell: typeof convertedHomebrewSpells[0]) => {
+    const newSpell: SpellData = {
+      name: homebrewSpell.name,
+      level: homebrewSpell.level,
+      prepared: false,
+    };
+    setSpells(prev => [...prev, newSpell]);
+  };
 
   const togglePrepared = (spellName: string) => {
     setSpells(prev =>
@@ -133,10 +172,14 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
           </SheetTitle>
         </SheetHeader>
 
-        <Tabs defaultValue="prepared" className="h-full">
-          <TabsList className="grid grid-cols-2 mt-4">
-            <TabsTrigger value="prepared">Magias Preparadas</TabsTrigger>
-            <TabsTrigger value="slots">Espaços de Magia</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
+          <TabsList className="grid grid-cols-3 mt-4">
+            <TabsTrigger value="prepared">Preparadas</TabsTrigger>
+            <TabsTrigger value="slots">Espaços</TabsTrigger>
+            <TabsTrigger value="homebrew">
+              <Gem className="w-3 h-3 mr-1" />
+              Homebrew
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="prepared" className="mt-4 space-y-4">
@@ -236,6 +279,91 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                 })}
               </div>
             </ScrollArea>
+          </TabsContent>
+
+          {/* Homebrew Spells Tab */}
+          <TabsContent value="homebrew" className="mt-4 space-y-4">
+            <div className="glass rounded-xl p-4">
+              <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                <Gem className="w-4 h-4 text-amber-500" />
+                Adicionar Magias Homebrew
+              </h3>
+              <p className="text-xs text-muted-foreground mb-4">
+                Adicione magias homebrew ao grimório do seu personagem.
+              </p>
+
+              {availableHomebrewSpells.length === 0 ? (
+                <div className="text-center py-6">
+                  <Sparkles className="w-10 h-10 mx-auto text-muted-foreground opacity-50 mb-2" />
+                  <p className="text-sm text-muted-foreground">
+                    {homebrewSpells.length === 0 
+                      ? "Nenhuma magia homebrew criada"
+                      : "Todas as magias homebrew já foram adicionadas"}
+                  </p>
+                </div>
+              ) : (
+                <ScrollArea className="h-[300px]">
+                  <div className="space-y-2">
+                    {availableHomebrewSpells.map((spell) => (
+                      <div
+                        key={spell.id}
+                        className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-start justify-between gap-3"
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-sm">{spell.name}</span>
+                            <Badge variant="outline" className="text-[10px] border-amber-500/50 text-amber-500">
+                              {spell.level === 0 ? "Truque" : `${spell.level}º Nível`}
+                            </Badge>
+                          </div>
+                          {spell.description && (
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                              {spell.description}
+                            </p>
+                          )}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="shrink-0 text-amber-500 hover:text-amber-400 hover:bg-amber-500/20"
+                          onClick={() => addHomebrewSpell(spell)}
+                        >
+                          <Plus className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              )}
+            </div>
+
+            {/* Current homebrew spells in grimoire */}
+            <div className="glass rounded-xl p-4">
+              <h3 className="text-sm font-semibold mb-3">Magias Homebrew no Grimório</h3>
+              {spells.filter(s => s.name.includes('✨') || s.name.includes('🔥') || s.name.includes('💀')).length === 0 ? (
+                <p className="text-xs text-muted-foreground text-center py-4">
+                  Nenhuma magia homebrew adicionada ainda
+                </p>
+              ) : (
+                <div className="space-y-1">
+                  {spells.filter(s => 
+                    convertedHomebrewSpells.some(hs => 
+                      s.name.toLowerCase().includes(hs.name.split(' ').slice(1).join(' ').toLowerCase())
+                    )
+                  ).map((spell) => (
+                    <div
+                      key={spell.name}
+                      className="p-2 rounded-lg bg-muted/50 flex items-center justify-between"
+                    >
+                      <span className="text-sm">{spell.name}</span>
+                      <Badge variant="outline" className="text-[10px]">
+                        {spell.level === 0 ? "Truque" : `${spell.level}º`}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </TabsContent>
         </Tabs>
 

@@ -1,9 +1,11 @@
+import { useState, useMemo } from 'react';
 import { CLASSES, getAttributeName } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
-import { Check, Heart, Sword, Shield, Wand2, Music, Cross, Leaf, Flame, Skull, Moon, BookOpen, Sparkles } from 'lucide-react';
+import { Check, Heart, Sword, Shield, Wand2, Music, Cross, Leaf, Flame, Skull, Moon, BookOpen, Sparkles, ChevronDown, ChevronUp, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHomebrew } from '@/hooks/useHomebrew';
 import { Badge } from '@/components/ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 interface ClassStepProps {
   data: WizardData;
@@ -27,9 +29,23 @@ const classIcons: Record<string, typeof Sword> = {
 
 export function ClassStep({ data, updateData }: ClassStepProps) {
   const { homebrewContent: homebrewClasses, isLoading: isLoadingHomebrew } = useHomebrew('class');
+  const { homebrewContent: homebrewSubclasses, isLoading: isLoadingSubclasses } = useHomebrew('subclass');
+  const [showSubclasses, setShowSubclasses] = useState(false);
   
   const selectedClass = CLASSES.find(c => c.id === data.class);
   const selectedHomebrewClass = homebrewClasses.find(c => c.id === data.class);
+  
+  // Get available subclasses for the selected class
+  const availableSubclasses = useMemo(() => {
+    if (!data.class) return [];
+    
+    // Filter homebrew subclasses that match the selected class
+    return homebrewSubclasses.filter(sub => {
+      const subData = sub.data as any;
+      return subData?.parent_class?.toLowerCase() === data.class.toLowerCase() ||
+             subData?.parentClass?.toLowerCase() === data.class.toLowerCase();
+    });
+  }, [data.class, homebrewSubclasses]);
 
   const getSkillsDisplay = (skills: { choose: number; from: string | string[] }) => {
     if (skills.from === 'any') return 'Qualquer';
@@ -253,6 +269,74 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
               }}
             />
           </div>
+
+          {/* Subclass Selection */}
+          {availableSubclasses.length > 0 && (
+            <Collapsible open={showSubclasses} onOpenChange={setShowSubclasses}>
+              <CollapsibleTrigger className="w-full">
+                <div className="flex items-center justify-between p-3 rounded-lg bg-primary/10 border border-primary/30 mt-4">
+                  <div className="flex items-center gap-2">
+                    <Layers className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium">
+                      Subclasses Homebrew Disponíveis ({availableSubclasses.length})
+                    </span>
+                  </div>
+                  {showSubclasses ? (
+                    <ChevronUp className="w-4 h-4 text-primary" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-primary" />
+                  )}
+                </div>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="pt-3 space-y-2">
+                <p className="text-xs text-muted-foreground mb-2">
+                  Subclasses são desbloqueadas no nível 3. Você pode pré-selecionar uma agora.
+                </p>
+                {availableSubclasses.map((subclass) => {
+                  const subData = subclass.data as any;
+                  return (
+                    <button
+                      key={subclass.id}
+                      onClick={() => updateData({ subclass: subclass.id })}
+                      className={cn(
+                        "w-full p-3 rounded-lg border text-left transition-all",
+                        data.subclass === subclass.id
+                          ? "border-primary bg-primary/10"
+                          : "border-border bg-card hover:border-primary/50"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "w-8 h-8 rounded-lg flex items-center justify-center text-lg",
+                          data.subclass === subclass.id
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted"
+                        )}>
+                          {subclass.icon || '⚔️'}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium text-sm">{subclass.name}</span>
+                            <Badge variant="outline" className="text-[10px] bg-primary/20 text-primary border-primary/30">
+                              Homebrew
+                            </Badge>
+                            {data.subclass === subclass.id && (
+                              <Check className="w-4 h-4 text-primary" />
+                            )}
+                          </div>
+                          {subclass.description && (
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                              {subclass.description}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </CollapsibleContent>
+            </Collapsible>
+          )}
         </div>
       )}
 

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +20,7 @@ import {
 import { useAddCombatLog } from "@/hooks/useCombatLogs";
 import { useCampaignPlayers } from "@/hooks/useSessions";
 import { useAuth } from "@/hooks/useAuth";
+import { useCampaignHomebrew } from "@/hooks/useHomebrew";
 import { CombatLogPanel } from "./CombatLogPanel";
 import { 
   Swords, 
@@ -39,7 +40,8 @@ import {
   Minus,
   AlertTriangle,
   RotateCcw,
-  ScrollText
+  ScrollText,
+  Gem
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
@@ -95,8 +97,9 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
   const [showAddCombatant, setShowAddCombatant] = useState(false);
   const [hpDialog, setHpDialog] = useState<HpDialogState>({ open: false, combatant: null, mode: 'damage' });
   const [hpAmount, setHpAmount] = useState("");
-  const [combatantType, setCombatantType] = useState<'monster' | 'npc' | 'player'>('monster');
+  const [combatantType, setCombatantType] = useState<'monster' | 'npc' | 'player' | 'homebrew'>('monster');
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
+  const [selectedHomebrewMonster, setSelectedHomebrewMonster] = useState("");
   const [activeTab, setActiveTab] = useState<'combatants' | 'log'>('combatants');
   const [newCombatant, setNewCombatant] = useState({
     name: "",
@@ -107,6 +110,16 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
     is_player: false,
     character_id: null as string | null,
   });
+
+  // Fetch campaign players for the player selection
+  const { data: campaignPlayers } = useCampaignPlayers(campaignId);
+  
+  // Fetch homebrew monsters shared with this campaign
+  const { data: campaignHomebrew } = useCampaignHomebrew(campaignId);
+  const homebrewMonsters = useMemo(() => 
+    campaignHomebrew?.filter(h => h.type === 'monster') || [], 
+    [campaignHomebrew]
+  );
 
   // Fetch campaign players for the player selection
   const { data: campaignPlayers } = useCampaignPlayers(campaignId);
@@ -626,13 +639,14 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                   {/* Combatant Type Selection */}
                   <div className="space-y-2">
                     <Label>Tipo de Combatente</Label>
-                    <div className="grid grid-cols-3 gap-2">
+                    <div className="grid grid-cols-2 gap-2">
                       <Button
                         variant={combatantType === 'monster' ? "default" : "outline"}
                         className="flex-1"
                         onClick={() => {
                           setCombatantType('monster');
                           setSelectedPlayerId("");
+                          setSelectedHomebrewMonster("");
                           setNewCombatant(prev => ({ 
                             ...prev, 
                             is_player: false, 
@@ -649,20 +663,30 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                         Monstro
                       </Button>
                       <Button
+                        variant={combatantType === 'homebrew' ? "default" : "outline"}
+                        className="flex-1"
+                        onClick={() => {
+                          setCombatantType('homebrew');
+                          setSelectedPlayerId("");
+                          setSelectedHomebrewMonster("");
+                        }}
+                        disabled={homebrewMonsters.length === 0}
+                      >
+                        <Gem className="w-4 h-4 mr-1" />
+                        Homebrew
+                      </Button>
+                      <Button
                         variant={combatantType === 'npc' ? "default" : "outline"}
                         className="flex-1"
                         onClick={() => {
                           setCombatantType('npc');
                           setSelectedPlayerId("");
+                          setSelectedHomebrewMonster("");
                           setNewCombatant(prev => ({ 
                             ...prev, 
                             is_player: false, 
                             character_id: null,
                             name: "",
-                            initiative: 10,
-                            current_hp: 10,
-                            max_hp: 10,
-                            armor_class: 10,
                           }));
                         }}
                       >
@@ -675,15 +699,12 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                         onClick={() => {
                           setCombatantType('player');
                           setSelectedPlayerId("");
+                          setSelectedHomebrewMonster("");
                           setNewCombatant(prev => ({ 
                             ...prev, 
                             is_player: true, 
                             character_id: null,
                             name: "",
-                            initiative: 10,
-                            current_hp: 10,
-                            max_hp: 10,
-                            armor_class: 10,
                           }));
                         }}
                       >
@@ -693,8 +714,78 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                     </div>
                   </div>
 
-                  {/* Player Selection - Only shown when type is player */}
-                  {combatantType === 'player' && (
+                  {/* Homebrew Monster Selection */}
+                  {combatantType === 'homebrew' && (
+                    <div className="space-y-2">
+                      <Label>Selecionar Monstro Homebrew</Label>
+                      <Select 
+                        value={selectedHomebrewMonster} 
+                        onValueChange={(value) => {
+                          setSelectedHomebrewMonster(value);
+                          const monster = homebrewMonsters.find(m => m.id === value);
+                          if (monster) {
+                            const monsterData = monster.data as any;
+                            setNewCombatant({
+                              name: `${monster.icon || '👹'} ${monster.name}`,
+                              initiative: 10,
+                              current_hp: monsterData?.hp || monsterData?.hit_points || 10,
+                              max_hp: monsterData?.hp || monsterData?.hit_points || 10,
+                              armor_class: monsterData?.ac || monsterData?.armor_class || 10,
+                              is_player: false,
+                              character_id: null,
+                            });
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="bg-muted/50 border-0">
+                          <SelectValue placeholder="Selecione um monstro" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {homebrewMonsters.map(monster => {
+                            const monsterData = monster.data as any;
+                            return (
+                              <SelectItem key={monster.id} value={monster.id}>
+                                <div className="flex items-center gap-2">
+                                  <span>{monster.icon || '👹'}</span>
+                                  <span className="font-medium">{monster.name}</span>
+                                  <span className="text-muted-foreground text-sm">
+                                    - CR {monsterData?.cr || monsterData?.challenge_rating || '?'}
+                                  </span>
+                                </div>
+                              </SelectItem>
+                            );
+                          })}
+                        </SelectContent>
+                      </Select>
+                      
+                      {selectedHomebrewMonster && (
+                        <div className="bg-amber-500/10 rounded-xl p-3 border border-amber-500/30">
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div className="flex items-center gap-2">
+                              <Heart className="w-4 h-4 text-red-500" />
+                              <span>{newCombatant.max_hp} HP</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Shield className="w-4 h-4 text-blue-500" />
+                              <span>CA {newCombatant.armor_class}</span>
+                            </div>
+                          </div>
+                          <div className="mt-2 space-y-2">
+                            <Label>Iniciativa</Label>
+                            <Input
+                              type="number"
+                              value={newCombatant.initiative}
+                              onChange={(e) => setNewCombatant(prev => ({ ...prev, initiative: parseInt(e.target.value) || 0 }))}
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )
+
+                  }
+
+                  {/* Manual fields for Monster/NPC */}
                     <div className="space-y-2">
                       <Label>Selecionar Jogador da Campanha</Label>
                       {playersWithCharacters.length === 0 ? (

@@ -21,6 +21,7 @@ export type WizardData = {
   race: string;
   subrace: string | null;
   class: string;
+  subclass: string | null;
   attributes: Record<Attribute, number>;
   background: string;
   alignment: string;
@@ -55,6 +56,7 @@ const initialData: WizardData = {
   race: '',
   subrace: null,
   class: '',
+  subclass: null,
   attributes: {
     strength: 10,
     dexterity: 10,
