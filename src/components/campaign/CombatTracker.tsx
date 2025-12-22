@@ -21,7 +21,9 @@ import { useAddCombatLog } from "@/hooks/useCombatLogs";
 import { useCampaignPlayers } from "@/hooks/useSessions";
 import { useAuth } from "@/hooks/useAuth";
 import { useCampaignHomebrew } from "@/hooks/useHomebrew";
+import { useSubscription } from "@/hooks/useSubscription";
 import { CombatLogPanel } from "./CombatLogPanel";
+import { ProCombatantCard, RealTimeStatusIndicator } from "./CombatTrackerPro";
 import { 
   Swords, 
   Plus, 
@@ -41,9 +43,11 @@ import {
   AlertTriangle,
   RotateCcw,
   ScrollText,
-  Gem
+  Gem,
+  Crown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { AnimatePresence } from "framer-motion";
 import {
   Sheet,
   SheetContent,
@@ -94,6 +98,7 @@ interface HpDialogState {
 
 export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerProps) {
   const { user } = useAuth();
+  const { data: subscription } = useSubscription();
   const [showAddCombatant, setShowAddCombatant] = useState(false);
   const [hpDialog, setHpDialog] = useState<HpDialogState>({ open: false, combatant: null, mode: 'damage' });
   const [hpAmount, setHpAmount] = useState("");
@@ -101,6 +106,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
   const [selectedHomebrewMonster, setSelectedHomebrewMonster] = useState("");
   const [activeTab, setActiveTab] = useState<'combatants' | 'log'>('combatants');
+  const [realtimeConnected, setRealtimeConnected] = useState(true);
   const [newCombatant, setNewCombatant] = useState({
     name: "",
     initiative: 10,
@@ -110,6 +116,9 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
     is_player: false,
     character_id: null as string | null,
   });
+
+  // Check if user has Pro features
+  const hasProFeatures = subscription?.limits.hasCombatTracker ?? false;
 
   // Fetch campaign players for the player selection
   const { data: campaignPlayers } = useCampaignPlayers(campaignId);
@@ -329,16 +338,34 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
         <SheetHeader className="p-6 pb-4 border-b border-border">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-red-500/20 flex items-center justify-center">
-                <Swords className="w-6 h-6 text-red-500" />
+              <div className={cn(
+                "w-12 h-12 rounded-xl flex items-center justify-center",
+                hasProFeatures 
+                  ? "bg-gradient-to-br from-gold/30 to-red-500/20" 
+                  : "bg-red-500/20"
+              )}>
+                <Swords className={cn("w-6 h-6", hasProFeatures ? "text-gold" : "text-red-500")} />
               </div>
               <div>
-                <SheetTitle className="text-xl">Combat Tracker</SheetTitle>
-                {encounter && (
-                  <p className="text-sm text-muted-foreground">
-                    Rodada {encounter.round} • Turno {(encounter.current_turn || 0) + 1}
-                  </p>
-                )}
+                <div className="flex items-center gap-2">
+                  <SheetTitle className="text-xl">Combat Tracker</SheetTitle>
+                  {hasProFeatures && (
+                    <Badge className="bg-gold/20 text-gold border-gold/30 text-[10px]">
+                      <Crown className="w-3 h-3 mr-1" />
+                      PRO
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  {encounter && (
+                    <p className="text-sm text-muted-foreground">
+                      Rodada {encounter.round} • Turno {(encounter.current_turn || 0) + 1}
+                    </p>
+                  )}
+                  {hasProFeatures && encounter && (
+                    <RealTimeStatusIndicator isConnected={realtimeConnected} />
+                  )}
+                </div>
               </div>
             </div>
             
@@ -437,7 +464,31 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                       <div className="text-center py-8 text-muted-foreground">
                         Adicione combatentes para iniciar
                       </div>
+                    ) : hasProFeatures ? (
+                      /* PRO Version with animated cards */
+                      <AnimatePresence mode="popLayout">
+                        {sortedCombatants.map((combatant, index) => {
+                          const isCurrentTurn = index === encounter.current_turn;
+                          const isOwnCombatant = combatant.character_id === userCharacterId;
+                          
+                          return (
+                            <ProCombatantCard
+                              key={combatant.id}
+                              combatant={combatant}
+                              index={index}
+                              isCurrentTurn={isCurrentTurn}
+                              isMaster={isMaster}
+                              isOwnCombatant={isOwnCombatant}
+                              onHpChange={(c, mode) => setHpDialog({ open: true, combatant: c, mode })}
+                              onConditionToggle={toggleCondition}
+                              onRemove={(c) => removeCombatant.mutate({ id: c.id, encounterId: encounter.id })}
+                              conditions={CONDITIONS}
+                            />
+                          );
+                        })}
+                      </AnimatePresence>
                     ) : (
+                      /* Standard Version */
                       sortedCombatants.map((combatant, index) => {
                         const isCurrentTurn = index === encounter.current_turn;
                         const isDead = combatant.current_hp === 0;
