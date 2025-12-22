@@ -817,6 +817,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      get_subscription_tier: { Args: { _user_id: string }; Returns: string }
       has_homebrew_access: {
         Args: { _content_id: string; _user_id: string }
         Returns: boolean
@@ -829,6 +830,7 @@ export type Database = {
         Args: { _campaign_id: string; _user_id: string }
         Returns: boolean
       }
+      is_mestre: { Args: { _user_id: string }; Returns: boolean }
       is_premium: { Args: { _user_id: string }; Returns: boolean }
       join_campaign_by_code: {
         Args: { _character_id?: string; _invite_code: string; _user_id: string }
@@ -855,7 +857,7 @@ export type Database = {
         | "session_reminder"
         | "campaign_update"
         | "chat_message"
-      subscription_status: "free" | "premium"
+      subscription_status: "free" | "premium" | "aldeao" | "heroi" | "mestre"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1000,7 +1002,7 @@ export const Constants = {
         "campaign_update",
         "chat_message",
       ],
-      subscription_status: ["free", "premium"],
+      subscription_status: ["free", "premium", "aldeao", "heroi", "mestre"],
     },
   },
 } as const
