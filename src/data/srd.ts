@@ -140,21 +140,102 @@ export const CLASSES: CharacterClass[] = [
   patrulheiroData as CharacterClass,
 ];
 
-// Backgrounds
+// Backgrounds - Only Acolyte is official in SRD 5.1
 export const BACKGROUNDS = [
-  { id: 'acolyte', name: 'Acólito', description: 'Você passou a vida a serviço de um templo.' },
-  { id: 'charlatan', name: 'Charlatão', description: 'Você sempre teve facilidade com as pessoas.' },
-  { id: 'criminal', name: 'Criminoso', description: 'Você é um criminoso experiente com histórico de infringir a lei.' },
-  { id: 'entertainer', name: 'Artista', description: 'Você prospera diante de um público.' },
-  { id: 'folk-hero', name: 'Herói do Povo', description: 'Você vem de uma origem humilde.' },
-  { id: 'guild-artisan', name: 'Artesão de Guilda', description: 'Você é membro de uma guilda de artesãos.' },
-  { id: 'hermit', name: 'Eremita', description: 'Você viveu em reclusão.' },
-  { id: 'noble', name: 'Nobre', description: 'Você nasceu nas graças de uma família nobre.' },
-  { id: 'outlander', name: 'Forasteiro', description: 'Você cresceu na natureza selvagem.' },
-  { id: 'sage', name: 'Sábio', description: 'Você passou anos estudando o multiverso.' },
-  { id: 'sailor', name: 'Marinheiro', description: 'Você navegou por anos em navios.' },
-  { id: 'soldier', name: 'Soldado', description: 'Você é um veterano de guerra.' },
-  { id: 'urchin', name: 'Órfão', description: 'Você cresceu nas ruas, pobre e órfão.' },
+  { 
+    id: 'acolyte', 
+    name: 'Acólito', 
+    description: 'Você passou a vida a serviço de um templo dedicado a um deus ou panteão específico.',
+    skills: ['insight', 'religion'],
+    languages: 2,
+    tools: [],
+    equipment: 'Um símbolo sagrado, um livro de orações, 5 varetas de incenso, vestimentas, roupas comuns e uma algibeira com 15 po.',
+    feature: 'Abrigo dos Fiéis - Você e seus companheiros podem receber cura e abrigo gratuitos em templos de sua fé.',
+    isOfficial: true
+  },
+  { 
+    id: 'custom', 
+    name: 'Antecedente Customizado', 
+    description: 'Crie seu próprio antecedente escolhendo 2 perícias e 2 idiomas ou ferramentas.',
+    skills: [], // User will choose
+    languages: 0, // User will choose
+    tools: [],
+    equipment: 'Use o equipamento do Acólito ou compre itens com o dinheiro inicial da sua classe.',
+    feature: 'Defina uma característica única para seu personagem.',
+    isOfficial: false,
+    isCustom: true
+  },
+];
+
+// All available skills for custom background
+export const ALL_SKILLS = [
+  { id: 'acrobatics', name: 'Acrobacia', attribute: 'dexterity' },
+  { id: 'animal-handling', name: 'Adestrar Animais', attribute: 'wisdom' },
+  { id: 'arcana', name: 'Arcanismo', attribute: 'intelligence' },
+  { id: 'athletics', name: 'Atletismo', attribute: 'strength' },
+  { id: 'deception', name: 'Enganação', attribute: 'charisma' },
+  { id: 'history', name: 'História', attribute: 'intelligence' },
+  { id: 'insight', name: 'Intuição', attribute: 'wisdom' },
+  { id: 'intimidation', name: 'Intimidação', attribute: 'charisma' },
+  { id: 'investigation', name: 'Investigação', attribute: 'intelligence' },
+  { id: 'medicine', name: 'Medicina', attribute: 'wisdom' },
+  { id: 'nature', name: 'Natureza', attribute: 'intelligence' },
+  { id: 'perception', name: 'Percepção', attribute: 'wisdom' },
+  { id: 'performance', name: 'Atuação', attribute: 'charisma' },
+  { id: 'persuasion', name: 'Persuasão', attribute: 'charisma' },
+  { id: 'religion', name: 'Religião', attribute: 'intelligence' },
+  { id: 'sleight-of-hand', name: 'Prestidigitação', attribute: 'dexterity' },
+  { id: 'stealth', name: 'Furtividade', attribute: 'dexterity' },
+  { id: 'survival', name: 'Sobrevivência', attribute: 'wisdom' },
+];
+
+// All available tools for custom background
+export const ALL_TOOLS = [
+  { id: 'alchemist', name: 'Suprimentos de Alquimista' },
+  { id: 'brewer', name: 'Suprimentos de Cervejeiro' },
+  { id: 'calligrapher', name: 'Suprimentos de Calígrafo' },
+  { id: 'carpenter', name: 'Ferramentas de Carpinteiro' },
+  { id: 'cartographer', name: 'Ferramentas de Cartógrafo' },
+  { id: 'cobbler', name: 'Ferramentas de Sapateiro' },
+  { id: 'cook', name: 'Utensílios de Cozinheiro' },
+  { id: 'glassblower', name: 'Ferramentas de Vidreiro' },
+  { id: 'jeweler', name: 'Ferramentas de Joalheiro' },
+  { id: 'leatherworker', name: 'Ferramentas de Coureiro' },
+  { id: 'mason', name: 'Ferramentas de Pedreiro' },
+  { id: 'painter', name: 'Suprimentos de Pintor' },
+  { id: 'potter', name: 'Ferramentas de Oleiro' },
+  { id: 'smith', name: 'Ferramentas de Ferreiro' },
+  { id: 'tinker', name: 'Ferramentas de Funileiro' },
+  { id: 'weaver', name: 'Ferramentas de Tecelão' },
+  { id: 'woodcarver', name: 'Ferramentas de Entalhador' },
+  { id: 'disguise', name: 'Kit de Disfarce' },
+  { id: 'forgery', name: 'Kit de Falsificação' },
+  { id: 'herbalism', name: 'Kit de Herbalismo' },
+  { id: 'navigator', name: 'Ferramentas de Navegador' },
+  { id: 'poisoner', name: 'Kit de Venenos' },
+  { id: 'thieves', name: 'Ferramentas de Ladrão' },
+  { id: 'gaming-dice', name: 'Conjunto de Dados' },
+  { id: 'gaming-cards', name: 'Baralho de Cartas' },
+];
+
+// All available languages
+export const ALL_LANGUAGES = [
+  { id: 'common', name: 'Comum' },
+  { id: 'dwarvish', name: 'Anão' },
+  { id: 'elvish', name: 'Élfico' },
+  { id: 'giant', name: 'Gigante' },
+  { id: 'gnomish', name: 'Gnômico' },
+  { id: 'goblin', name: 'Goblin' },
+  { id: 'halfling', name: 'Halfling' },
+  { id: 'orc', name: 'Orc' },
+  { id: 'abyssal', name: 'Abissal' },
+  { id: 'celestial', name: 'Celestial' },
+  { id: 'draconic', name: 'Dracônico' },
+  { id: 'deep-speech', name: 'Dialeto Profundo' },
+  { id: 'infernal', name: 'Infernal' },
+  { id: 'primordial', name: 'Primordial' },
+  { id: 'sylvan', name: 'Silvestre' },
+  { id: 'undercommon', name: 'Subcomum' },
 ];
 
 export const ALIGNMENTS = [
