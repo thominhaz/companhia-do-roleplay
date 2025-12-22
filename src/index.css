@@ -84,6 +84,114 @@
     --background: 0 0% 7%;
     --foreground: 210 40% 98%;
   }
+
+  .light {
+    --background: 210 40% 98%;
+    --foreground: 0 0% 10%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 10%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 10%;
+    --muted: 0 0% 92%;
+    --muted-foreground: 0 0% 40%;
+    --border: 0 0% 85%;
+    --input: 0 0% 85%;
+  }
+
+  /* ========== PREMIUM THEMES ========== */
+  
+  /* Neon Theme - Cyberpunk vibes */
+  .theme-neon {
+    --primary: 280 100% 65%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 180 100% 50%;
+    --secondary-foreground: 0 0% 10%;
+    --accent: 320 100% 60%;
+    --accent-foreground: 0 0% 100%;
+    --background: 260 30% 8%;
+    --foreground: 180 100% 90%;
+    --card: 260 30% 12%;
+    --card-foreground: 180 100% 90%;
+    --muted: 260 30% 18%;
+    --muted-foreground: 260 20% 60%;
+    --border: 280 50% 30%;
+    --ring: 280 100% 65%;
+    --gold: 280 100% 65%;
+    --solar-orange: 280 100% 65%;
+    --cosmic-purple: 320 100% 60%;
+    --cyan-blue: 180 100% 50%;
+    --gradient-primary: linear-gradient(135deg, hsl(180 100% 50%), hsl(280 100% 65%), hsl(320 100% 60%));
+    --shadow-neon: 0 0 30px hsl(280 100% 65% / 0.6), 0 0 60px hsl(180 100% 50% / 0.3);
+  }
+
+  .theme-neon.dark {
+    --background: 260 30% 5%;
+    --card: 260 30% 10%;
+  }
+
+  /* Vintage Theme - Old parchment feel */
+  .theme-vintage {
+    --primary: 35 80% 45%;
+    --primary-foreground: 30 30% 10%;
+    --secondary: 25 60% 35%;
+    --secondary-foreground: 40 30% 95%;
+    --accent: 45 90% 55%;
+    --accent-foreground: 30 30% 10%;
+    --background: 40 30% 12%;
+    --foreground: 40 25% 85%;
+    --card: 35 25% 16%;
+    --card-foreground: 40 25% 85%;
+    --muted: 35 20% 22%;
+    --muted-foreground: 35 15% 55%;
+    --border: 35 30% 28%;
+    --ring: 35 80% 45%;
+    --gold: 45 90% 55%;
+    --solar-orange: 35 80% 45%;
+    --cosmic-purple: 25 60% 35%;
+    --cyan-blue: 45 90% 55%;
+    --gradient-primary: linear-gradient(135deg, hsl(45 90% 55%), hsl(35 80% 45%), hsl(25 60% 35%));
+    --shadow-neon: 0 0 20px hsl(35 80% 45% / 0.4);
+  }
+
+  .theme-vintage.light {
+    --background: 40 40% 92%;
+    --foreground: 30 30% 15%;
+    --card: 40 35% 88%;
+    --card-foreground: 30 30% 15%;
+    --muted: 40 25% 82%;
+    --muted-foreground: 30 20% 40%;
+    --border: 35 25% 75%;
+  }
+
+  /* Dark Elf Theme - Drow/Underdark inspired */
+  .theme-dark-elf {
+    --primary: 270 80% 60%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 300 70% 45%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 200 80% 55%;
+    --accent-foreground: 0 0% 100%;
+    --background: 270 25% 6%;
+    --foreground: 270 30% 90%;
+    --card: 270 25% 10%;
+    --card-foreground: 270 30% 90%;
+    --muted: 270 20% 16%;
+    --muted-foreground: 270 15% 55%;
+    --border: 270 30% 22%;
+    --ring: 270 80% 60%;
+    --gold: 270 80% 60%;
+    --solar-orange: 270 80% 60%;
+    --cosmic-purple: 300 70% 45%;
+    --cyan-blue: 200 80% 55%;
+    --magenta-red: 300 70% 45%;
+    --gradient-primary: linear-gradient(135deg, hsl(200 80% 55%), hsl(270 80% 60%), hsl(300 70% 45%));
+    --shadow-neon: 0 0 25px hsl(270 80% 60% / 0.5), 0 0 50px hsl(300 70% 45% / 0.3);
+  }
+
+  .theme-dark-elf.dark {
+    --background: 270 30% 4%;
+    --card: 270 25% 8%;
+  }
 }
 
 @layer base {
