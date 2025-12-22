@@ -223,7 +223,7 @@ export function CharactersScreen() {
               return (
                 <div
                   key={character.id}
-                  className={`gradient-border bg-gradient-to-br ${gradient} rounded-2xl p-5 relative overflow-hidden ${isArchived ? 'opacity-70' : 'animate-border-glow'}`}
+                  className={`bg-gradient-to-br ${gradient} rounded-2xl p-5 relative overflow-hidden ${isArchived ? 'opacity-70' : ''}`}
                 >
                   <div className="absolute top-0 right-0 w-40 h-40 bg-foreground opacity-5 rounded-full -mr-16 -mt-16" />
                   

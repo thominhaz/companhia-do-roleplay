@@ -172,7 +172,7 @@ export function MenuScreen() {
           {user ? (
             <button 
               onClick={() => setProfileOpen(true)}
-              className="w-full gradient-border animate-border-glow glass rounded-2xl p-4 flex items-center gap-4 hover:border-primary/50 transition-all"
+              className="w-full glass rounded-2xl p-4 flex items-center gap-4 hover:border-primary/50 transition-all"
             >
               <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
                 <span className="text-xl font-bold text-foreground">
