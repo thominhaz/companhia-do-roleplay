@@ -10,6 +10,7 @@ export interface PersonalNote {
   content: string | null;
   color: string;
   is_pinned: boolean;
+  tags: string[];
   created_at: string;
   updated_at: string;
 }
@@ -31,7 +32,10 @@ export function usePersonalNotes() {
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
-      return data as PersonalNote[];
+      return (data || []).map(note => ({
+        ...note,
+        tags: note.tags || []
+      })) as PersonalNote[];
     },
     enabled: !!user,
   });
@@ -43,7 +47,7 @@ export function useCreatePersonalNote() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (note: { title: string; content?: string; color?: string }) => {
+    mutationFn: async (note: { title: string; content?: string; color?: string; tags?: string[] }) => {
       if (!user) throw new Error('Usuário não autenticado');
 
       const { data, error } = await supabase
@@ -52,12 +56,13 @@ export function useCreatePersonalNote() {
           ...note,
           user_id: user.id,
           color: note.color ?? 'default',
+          tags: note.tags ?? [],
         })
         .select()
         .single();
 
       if (error) throw error;
-      return data as PersonalNote;
+      return { ...data, tags: data.tags || [] } as PersonalNote;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['personal-notes'] });
@@ -83,7 +88,7 @@ export function useUpdatePersonalNote() {
         .single();
 
       if (error) throw error;
-      return data as PersonalNote;
+      return { ...data, tags: data.tags || [] } as PersonalNote;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['personal-notes'] });
@@ -132,7 +137,7 @@ export function useTogglePinNote() {
         .single();
 
       if (error) throw error;
-      return data as PersonalNote;
+      return { ...data, tags: data.tags || [] } as PersonalNote;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['personal-notes'] });
