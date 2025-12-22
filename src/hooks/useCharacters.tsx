@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
+import { detectChanges, getFieldLabel } from './useCharacterHistory';
 
 export interface CharacterDB {
   id: string;
@@ -136,9 +137,17 @@ export function useCreateCharacter() {
 
 export function useUpdateCharacter() {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   return useMutation({
     mutationFn: async ({ id, ...updates }: Partial<CharacterDB> & { id: string }) => {
+      // Get current character data for comparison
+      const { data: currentChar } = await supabase
+        .from('characters')
+        .select('*')
+        .eq('id', id)
+        .single();
+
       const { data, error } = await supabase
         .from('characters')
         .update(updates)
@@ -147,11 +156,45 @@ export function useUpdateCharacter() {
         .single();
 
       if (error) throw error;
+
+      // Log changes if user is authenticated and we have previous data
+      if (user && currentChar) {
+        const fieldsToTrack = Object.keys(updates);
+        const changes = detectChanges(currentChar, updates, fieldsToTrack);
+        
+        if (changes.length > 0) {
+          const historyEntries = changes.map(change => ({
+            character_id: id,
+            user_id: user.id,
+            field_name: change.field_name,
+            field_label: getFieldLabel(change.field_name),
+            old_value: typeof change.old_value === 'object' 
+              ? JSON.stringify(change.old_value) 
+              : String(change.old_value ?? ''),
+            new_value: typeof change.new_value === 'object' 
+              ? JSON.stringify(change.new_value) 
+              : String(change.new_value ?? ''),
+            change_type: 'update',
+          }));
+
+          // Insert history in background (don't block the update)
+          supabase
+            .from('character_history')
+            .insert(historyEntries)
+            .then(({ error: historyError }) => {
+              if (historyError) {
+                console.error('Error logging character history:', historyError);
+              }
+            });
+        }
+      }
+
       return data as CharacterDB;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['characters'] });
       queryClient.invalidateQueries({ queryKey: ['character', data.id] });
+      queryClient.invalidateQueries({ queryKey: ['character-history', data.id] });
       toast.success('Personagem atualizado!');
     },
     onError: () => {
