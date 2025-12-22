@@ -5,7 +5,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Bug, Wrench, Zap } from "lucide-react";
+import { Sparkles, Bug, Wrench, Zap, Rocket, Brain, FileText, Store, Users } from "lucide-react";
 
 interface ChangelogEntry {
   version: string;
@@ -14,6 +14,12 @@ interface ChangelogEntry {
     type: "feature" | "fix" | "improvement" | "breaking";
     description: string;
   }[];
+}
+
+interface UpcomingFeature {
+  icon: React.ElementType;
+  title: string;
+  description: string;
 }
 
 const changelog: ChangelogEntry[] = [
@@ -30,6 +36,29 @@ const changelog: ChangelogEntry[] = [
       { type: "feature", description: "Grimório de magias e compêndio de itens mágicos" },
       { type: "feature", description: "Rolador de dados integrado" },
     ],
+  },
+];
+
+const upcomingFeatures: UpcomingFeature[] = [
+  {
+    icon: Brain,
+    title: "Sistema de Stress e Sanidade",
+    description: "Mecânicas completas para campanhas de horror, incluindo sistema de medo, traumas e loucura inspirado em Call of Cthulhu.",
+  },
+  {
+    icon: FileText,
+    title: "Oficina de Documentos",
+    description: "Crie contratos, cartas, mapas de tesouro, pergaminhos e outros documentos personalizados para enriquecer suas campanhas.",
+  },
+  {
+    icon: Store,
+    title: "Oficina de Lojas",
+    description: "Ferramenta para mestres criarem mercadores completos com inventário, preços, reputação e negociação dinâmica.",
+  },
+  {
+    icon: Users,
+    title: "Oficina de NPCs",
+    description: "Gerador e gerenciador de NPCs com personalidade, motivações, segredos e relacionamentos para dar vida ao seu mundo.",
   },
 ];
 
@@ -72,45 +101,84 @@ export function ChangelogSheet({ open, onOpenChange }: ChangelogSheetProps) {
         </SheetHeader>
 
         <ScrollArea className="h-[calc(85vh-8rem)] py-4">
-          <div className="space-y-6">
-            {changelog.map((entry) => (
-              <div key={entry.version} className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <span className="px-3 py-1 text-sm font-bold rounded-full bg-primary/20 text-primary">
-                    v{entry.version}
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    {new Date(entry.date).toLocaleDateString("pt-BR", {
-                      day: "numeric",
-                      month: "long",
-                      year: "numeric",
-                    })}
-                  </span>
-                </div>
-
-                <div className="space-y-2 pl-2">
-                  {entry.changes.map((change, index) => {
-                    const config = typeConfig[change.type];
-                    const Icon = config.icon;
-                    
-                    return (
-                      <div
-                        key={index}
-                        className="flex items-start gap-3 py-2 px-3 rounded-xl bg-dark/50"
-                      >
-                        <div className={`px-2 py-0.5 text-xs font-semibold rounded-full flex items-center gap-1 ${config.className}`}>
-                          <Icon className="w-3 h-3" />
-                          {config.label}
-                        </div>
-                        <p className="text-sm text-foreground flex-1">
-                          {change.description}
-                        </p>
-                      </div>
-                    );
-                  })}
-                </div>
+          <div className="space-y-8">
+            {/* Próximas Atualizações */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+                <Rocket className="w-5 h-5 text-primary" />
+                <h3 className="text-base font-bold text-foreground">Próximas Atualizações</h3>
               </div>
-            ))}
+              
+              <div className="grid gap-3">
+                {upcomingFeatures.map((feature, index) => {
+                  const Icon = feature.icon;
+                  return (
+                    <div
+                      key={index}
+                      className="p-4 rounded-xl bg-primary/5 border border-primary/20"
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 rounded-lg bg-primary/20">
+                          <Icon className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1">
+                          <h4 className="font-semibold text-foreground text-sm">
+                            {feature.title}
+                          </h4>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {feature.description}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Histórico de Versões */}
+            <div className="space-y-4">
+              <h3 className="text-base font-bold text-foreground">Histórico de Versões</h3>
+              
+              {changelog.map((entry) => (
+                <div key={entry.version} className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <span className="px-3 py-1 text-sm font-bold rounded-full bg-primary/20 text-primary">
+                      v{entry.version}
+                    </span>
+                    <span className="text-sm text-muted-foreground">
+                      {new Date(entry.date).toLocaleDateString("pt-BR", {
+                        day: "numeric",
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </span>
+                  </div>
+
+                  <div className="space-y-2 pl-2">
+                    {entry.changes.map((change, index) => {
+                      const config = typeConfig[change.type];
+                      const Icon = config.icon;
+                      
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-start gap-3 py-2 px-3 rounded-xl bg-dark/50"
+                        >
+                          <div className={`px-2 py-0.5 text-xs font-semibold rounded-full flex items-center gap-1 ${config.className}`}>
+                            <Icon className="w-3 h-3" />
+                            {config.label}
+                          </div>
+                          <p className="text-sm text-foreground flex-1">
+                            {change.description}
+                          </p>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </ScrollArea>
       </SheetContent>
