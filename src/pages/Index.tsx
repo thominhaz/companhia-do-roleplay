@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import { TabBar } from "@/components/layout/TabBar";
 import { HomeScreen } from "@/components/screens/HomeScreen";
@@ -10,41 +10,49 @@ import type { TabRoute } from "@/types";
 import { Helmet } from "react-helmet";
 import { cn } from "@/lib/utils";
 
+const TAB_ORDER: TabRoute[] = ["home", "characters", "campaigns", "tools", "menu"];
+
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabRoute>("home");
-  const [isTransitioning, setIsTransitioning] = useState(false);
   const [displayedTab, setDisplayedTab] = useState<TabRoute>("home");
-  const prevTabRef = useRef<TabRoute>("home");
+  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(null);
+  const [isAnimating, setIsAnimating] = useState(false);
 
   // Handle tab from URL query param
   useEffect(() => {
     const tabParam = searchParams.get('tab');
     if (tabParam && ['home', 'characters', 'campaigns', 'tools', 'menu'].includes(tabParam)) {
       setActiveTab(tabParam as TabRoute);
-      // Remove tab param but keep others like create=true
+      setDisplayedTab(tabParam as TabRoute);
       const newParams = new URLSearchParams(searchParams);
       newParams.delete('tab');
       setSearchParams(newParams, { replace: true });
     }
   }, [searchParams, setSearchParams]);
 
-  // Handle tab transitions
+  // Handle tab transitions with slide animation
   const handleTabChange = (newTab: TabRoute) => {
-    if (newTab === activeTab) return;
+    if (newTab === activeTab || isAnimating) return;
     
-    prevTabRef.current = activeTab;
-    setIsTransitioning(true);
+    const currentIndex = TAB_ORDER.indexOf(activeTab);
+    const newIndex = TAB_ORDER.indexOf(newTab);
+    const direction = newIndex > currentIndex ? "left" : "right";
     
-    // Short delay before changing content
+    setSlideDirection(direction);
+    setIsAnimating(true);
+    
+    // Wait for exit animation, then switch content
     setTimeout(() => {
       setActiveTab(newTab);
       setDisplayedTab(newTab);
-      // Small delay to allow content to mount before animating in
+      
+      // Allow enter animation to complete
       setTimeout(() => {
-        setIsTransitioning(false);
-      }, 50);
-    }, 150);
+        setIsAnimating(false);
+        setSlideDirection(null);
+      }, 350);
+    }, 200);
   };
 
   // Sync displayedTab with activeTab on initial load
@@ -69,6 +77,18 @@ const Index = () => {
     }
   };
 
+  const getAnimationClass = () => {
+    if (!slideDirection) return "";
+    
+    if (isAnimating && displayedTab !== activeTab) {
+      // Exiting: slide out in opposite direction
+      return slideDirection === "left" ? "slide-exit-left" : "slide-exit-right";
+    }
+    
+    // Entering: slide in from direction
+    return slideDirection === "left" ? "slide-enter-left" : "slide-enter-right";
+  };
+
   return (
     <>
       <Helmet>
@@ -81,15 +101,8 @@ const Index = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Helmet>
 
-      <div className="min-h-screen bg-darker">
-        <div 
-          className={cn(
-            "transition-all duration-300 ease-out",
-            isTransitioning 
-              ? "opacity-0 translate-y-2" 
-              : "opacity-100 translate-y-0"
-          )}
-        >
+      <div className="min-h-screen bg-darker overflow-hidden">
+        <div className={cn("min-h-screen", getAnimationClass())}>
           {renderScreen()}
         </div>
         <TabBar activeTab={activeTab} onTabChange={handleTabChange} />

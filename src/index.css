@@ -283,35 +283,69 @@
   }
 }
 
-/* Page transition animations */
-@keyframes page-fade-in {
+/* Page slide transition animations */
+@keyframes slide-in-from-right {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateX(100%);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
 }
 
-@keyframes page-fade-out {
+@keyframes slide-in-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slide-out-to-left {
   from {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateX(0);
   }
   to {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateX(-100%);
   }
 }
 
-.animate-page-enter {
-  animation: page-fade-in 0.3s ease-out forwards;
+@keyframes slide-out-to-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(100%);
+  }
 }
 
-.animate-page-exit {
-  animation: page-fade-out 0.2s ease-in forwards;
+/* Slide enter from right (going left/forward) */
+.slide-enter-left {
+  animation: slide-in-from-right 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Slide enter from left (going right/backward) */
+.slide-enter-right {
+  animation: slide-in-from-left 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+/* Slide exit to left (going forward) */
+.slide-exit-left {
+  animation: slide-out-to-left 0.2s ease-out forwards;
+}
+
+/* Slide exit to right (going backward) */
+.slide-exit-right {
+  animation: slide-out-to-right 0.2s ease-out forwards;
 }
 
 /* Go20 Skeleton with gradient */
