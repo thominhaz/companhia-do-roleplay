@@ -3,7 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Crown, Sparkles, Users, Wand2, Shield, Gift, Loader2, Sword, ScrollText, Palette, History, MessageSquare, Swords, Share2, Heart, Settings } from "lucide-react";
+import { Crown, Sparkles, Users, Wand2, Shield, Gift, Loader2, Sword, ScrollText, Palette, History, MessageSquare, Swords, Share2, Heart, Settings, ArrowUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -26,6 +26,7 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
   const [redeemCode, setRedeemCode] = useState("");
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isUpgrading, setIsUpgrading] = useState(false);
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "quarterly" | "annual">("monthly");
 
@@ -77,6 +78,45 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
       toast.error(error.message || "Erro ao iniciar checkout");
     } finally {
       setIsCheckingOut(false);
+    }
+  };
+
+  // Upgrade with proration (for existing subscribers)
+  const handleUpgradeWithProration = async (newPlan: "mestre") => {
+    if (!user) {
+      toast.error("Você precisa estar logado");
+      return;
+    }
+
+    const periodMap = {
+      monthly: "mensal",
+      quarterly: "trimestral",
+      annual: "anual"
+    };
+
+    setIsUpgrading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("upgrade-subscription", {
+        body: { 
+          newPlan, 
+          period: periodMap[billingPeriod] 
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data?.success) {
+        toast.success(data.message || "Upgrade realizado com sucesso!");
+        queryClient.invalidateQueries({ queryKey: ["subscription"] });
+        refetchSubscription();
+      } else {
+        throw new Error(data?.error || "Erro ao fazer upgrade");
+      }
+    } catch (error: any) {
+      console.error("Upgrade error:", error);
+      toast.error(error.message || "Erro ao fazer upgrade");
+    } finally {
+      setIsUpgrading(false);
     }
   };
 
@@ -331,16 +371,18 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
               
               {currentTier !== "mestre" && (
                 <Button 
-                  onClick={() => handleUpgrade("mestre")}
-                  disabled={isCheckingOut}
+                  onClick={() => currentTier === "heroi" ? handleUpgradeWithProration("mestre") : handleUpgrade("mestre")}
+                  disabled={isCheckingOut || isUpgrading}
                   className="w-full mt-4 bg-gradient-to-r from-gold to-amber-500 text-black font-semibold hover:opacity-90"
                 >
-                  {isCheckingOut ? (
+                  {isCheckingOut || isUpgrading ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : currentTier === "heroi" ? (
+                    <ArrowUp className="w-4 h-4 mr-2" />
                   ) : (
                     <Crown className="w-4 h-4 mr-2" />
                   )}
-                  Assinar Mestre
+                  {currentTier === "heroi" ? "Fazer Upgrade (pagar diferença)" : "Assinar Mestre"}
                 </Button>
               )}
             </div>
