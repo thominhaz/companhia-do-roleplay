@@ -6,61 +6,82 @@
 
 @layer base {
   :root {
-    /* Go20 Dark Theme */
-    --background: 222 47% 7%;
+    /* Go20 Dark Theme - Nova Paleta do Logo */
+    --background: 0 0% 10%;
     --foreground: 210 40% 98%;
 
-    --card: 220 47% 11%;
+    --card: 0 0% 13%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 220 47% 11%;
+    --popover: 0 0% 13%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 263 70% 66%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Laranja Solar - CTAs, títulos principais, ícones ativos */
+    --primary: 27 100% 67%;
+    --primary-foreground: 0 0% 10%;
 
-    --secondary: 330 81% 60%;
+    /* Secondary: Roxo Cósmico - Elementos secundários, fundos de seções escuras */
+    --secondary: 271 76% 53%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 220 30% 18%;
-    --muted-foreground: 215 20% 65%;
+    --muted: 0 0% 18%;
+    --muted-foreground: 0 0% 65%;
 
-    --accent: 263 70% 66%;
-    --accent-foreground: 210 40% 98%;
+    /* Accent: Azul Ciano - Fundos claros, detalhes sutis, estados de hover */
+    --accent: 195 93% 70%;
+    --accent-foreground: 0 0% 10%;
 
-    --destructive: 0 84% 60%;
+    /* Destructive: Vermelho Magenta - Alertas, notificações */
+    --destructive: 359 100% 65%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 30% 20%;
-    --input: 220 30% 20%;
-    --ring: 263 70% 66%;
+    --border: 0 0% 22%;
+    --input: 0 0% 22%;
+    --ring: 27 100% 67%;
 
     --radius: 0.75rem;
 
-    /* Custom Go20 tokens */
-    --darker: 222 47% 7%;
-    --dark: 220 47% 11%;
+    /* Custom Go20 tokens - Cores do Logo */
+    --darker: 0 0% 7%;
+    --dark: 0 0% 13%;
     --dark-panel: 0 0% 15%;
-    --neon-purple: 263 70% 66%;
-    --neon-pink: 330 81% 60%;
-    --neon-blue: 217 91% 60%;
-    --gold: 45 93% 47%;
-    --crimson: 0 72% 51%;
-    --crimson-dark: 0 72% 35%;
     
-    /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(263 70% 66%), hsl(330 81% 60%));
-    --gradient-card: linear-gradient(180deg, hsl(220 47% 13%), hsl(220 47% 9%));
-    --gradient-glow: radial-gradient(circle at center, hsl(263 70% 66% / 0.3), transparent 70%);
+    /* Laranja Solar - Bordas e texto principal */
+    --solar-orange: 27 100% 67%;
+    
+    /* Azul Ciano - Topo do gradiente */
+    --cyan-blue: 195 93% 70%;
+    
+    /* Roxo Cósmico - Meio do gradiente */
+    --cosmic-purple: 271 76% 53%;
+    
+    /* Vermelho Magenta - Base do gradiente */
+    --magenta-red: 359 100% 65%;
+    
+    /* Cores legadas mantidas para compatibilidade */
+    --neon-purple: 271 76% 53%;
+    --neon-pink: 359 100% 65%;
+    --neon-blue: 195 93% 70%;
+    --gold: 27 100% 67%;
+    --crimson: 359 100% 65%;
+    --crimson-dark: 359 100% 45%;
+    
+    /* Gradients - Inspirados no dado do logo */
+    --gradient-primary: linear-gradient(135deg, hsl(195 93% 70%), hsl(271 76% 53%), hsl(359 100% 65%));
+    --gradient-dice: linear-gradient(180deg, hsl(195 93% 70%), hsl(271 76% 53%), hsl(359 100% 65%), hsl(27 100% 67%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 15%), hsl(0 0% 10%));
+    --gradient-glow: radial-gradient(circle at center, hsl(27 100% 67% / 0.3), transparent 70%);
+    --gradient-accent: linear-gradient(135deg, hsl(27 100% 67%), hsl(359 100% 65%));
     
     /* Shadows */
-    --shadow-neon: 0 0 20px hsl(263 70% 66% / 0.4);
-    --shadow-card: 0 8px 32px hsl(222 47% 4% / 0.6);
-    --shadow-elevated: 0 20px 40px hsl(222 47% 4% / 0.8);
+    --shadow-neon: 0 0 20px hsl(27 100% 67% / 0.4);
+    --shadow-card: 0 8px 32px hsl(0 0% 4% / 0.6);
+    --shadow-elevated: 0 20px 40px hsl(0 0% 4% / 0.8);
+    --shadow-solar: 0 0 30px hsl(27 100% 67% / 0.5);
   }
 
   .dark {
-    --background: 222 47% 7%;
+    --background: 0 0% 7%;
     --foreground: 210 40% 98%;
   }
 }
@@ -93,6 +114,44 @@
     background-color: hsl(var(--dark-panel));
   }
   
+  /* Cores do Logo */
+  .text-solar-orange {
+    color: hsl(var(--solar-orange));
+  }
+  
+  .text-cyan-blue {
+    color: hsl(var(--cyan-blue));
+  }
+  
+  .text-cosmic-purple {
+    color: hsl(var(--cosmic-purple));
+  }
+  
+  .text-magenta-red {
+    color: hsl(var(--magenta-red));
+  }
+  
+  .bg-solar-orange {
+    background-color: hsl(var(--solar-orange));
+  }
+  
+  .bg-cyan-blue {
+    background-color: hsl(var(--cyan-blue));
+  }
+  
+  .bg-cosmic-purple {
+    background-color: hsl(var(--cosmic-purple));
+  }
+  
+  .bg-magenta-red {
+    background-color: hsl(var(--magenta-red));
+  }
+  
+  .border-solar-orange {
+    border-color: hsl(var(--solar-orange));
+  }
+  
+  /* Cores legadas para compatibilidade */
   .text-neon-purple {
     color: hsl(var(--neon-purple));
   }
@@ -121,8 +180,16 @@
     background: var(--gradient-primary);
   }
   
+  .bg-gradient-dice {
+    background: var(--gradient-dice);
+  }
+  
   .bg-gradient-card {
     background: var(--gradient-card);
+  }
+  
+  .bg-gradient-accent {
+    background: var(--gradient-accent);
   }
   
   .shadow-neon {
@@ -133,21 +200,33 @@
     box-shadow: var(--shadow-card);
   }
   
+  .shadow-solar {
+    box-shadow: var(--shadow-solar);
+  }
+  
+  .glow-solar {
+    box-shadow: 0 0 30px hsl(27 100% 67% / 0.5), 0 0 60px hsl(27 100% 67% / 0.2);
+  }
+  
   .glow-purple {
-    box-shadow: 0 0 30px hsl(263 70% 66% / 0.5), 0 0 60px hsl(263 70% 66% / 0.2);
+    box-shadow: 0 0 30px hsl(271 76% 53% / 0.5), 0 0 60px hsl(271 76% 53% / 0.2);
   }
   
   .glow-pink {
-    box-shadow: 0 0 30px hsl(330 81% 60% / 0.5), 0 0 60px hsl(330 81% 60% / 0.2);
+    box-shadow: 0 0 30px hsl(359 100% 65% / 0.5), 0 0 60px hsl(359 100% 65% / 0.2);
+  }
+  
+  .glow-cyan {
+    box-shadow: 0 0 30px hsl(195 93% 70% / 0.5), 0 0 60px hsl(195 93% 70% / 0.2);
   }
 
   .glow-crimson {
-    box-shadow: 0 0 20px hsl(0 72% 51% / 0.4);
+    box-shadow: 0 0 20px hsl(359 100% 65% / 0.4);
   }
 
   .sheet-panel {
     background: hsl(0 0% 12%);
-    border: 2px solid hsl(0 72% 40%);
+    border: 2px solid hsl(27 100% 67% / 0.6);
   }
 
   .sheet-hexagon {
@@ -155,9 +234,9 @@
   }
   
   .glass {
-    background: hsl(220 47% 11% / 0.8);
+    background: hsl(0 0% 13% / 0.8);
     backdrop-filter: blur(12px);
-    border: 1px solid hsl(220 30% 25% / 0.5);
+    border: 1px solid hsl(0 0% 25% / 0.5);
   }
   
   .animate-float {

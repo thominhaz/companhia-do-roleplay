@@ -52,12 +52,19 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Go20 Logo Colors
+        "solar-orange": "hsl(var(--solar-orange))",
+        "cyan-blue": "hsl(var(--cyan-blue))",
+        "cosmic-purple": "hsl(var(--cosmic-purple))",
+        "magenta-red": "hsl(var(--magenta-red))",
+        // Legacy colors for compatibility
         darker: "hsl(var(--darker))",
         dark: "hsl(var(--dark))",
         "neon-purple": "hsl(var(--neon-purple))",
         "neon-pink": "hsl(var(--neon-pink))",
         "neon-blue": "hsl(var(--neon-blue))",
         gold: "hsl(var(--gold))",
+        crimson: "hsl(var(--crimson))",
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -93,7 +100,9 @@ export default {
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-primary": "linear-gradient(135deg, hsl(var(--neon-purple)), hsl(var(--neon-pink)))",
+        "gradient-primary": "linear-gradient(135deg, hsl(var(--cyan-blue)), hsl(var(--cosmic-purple)), hsl(var(--magenta-red)))",
+        "gradient-dice": "linear-gradient(180deg, hsl(var(--cyan-blue)), hsl(var(--cosmic-purple)), hsl(var(--magenta-red)), hsl(var(--solar-orange)))",
+        "gradient-accent": "linear-gradient(135deg, hsl(var(--solar-orange)), hsl(var(--magenta-red)))",
       },
     },
   },
