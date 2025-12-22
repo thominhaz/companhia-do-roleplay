@@ -3,11 +3,13 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Crown, Check, Sparkles, Users, Wand2, Shield, Gift, Loader2 } from "lucide-react";
+import { Crown, Check, Sparkles, Users, Wand2, Shield, Gift, Loader2, Sword, ScrollText, Palette, History, MessageSquare, Swords, Share2, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface SubscriptionSheetProps {
   open: boolean;
@@ -22,8 +24,9 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
   
   const [redeemCode, setRedeemCode] = useState("");
   const [isRedeeming, setIsRedeeming] = useState(false);
+  const [billingPeriod, setBillingPeriod] = useState<"monthly" | "quarterly" | "annual">("monthly");
 
-  const handleUpgrade = () => {
+  const handleUpgrade = (plan: string) => {
     toast.info("Integração com pagamentos em breve!");
   };
 
@@ -63,9 +66,25 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
     }
   };
 
+  const getPricing = (plan: "hero" | "master") => {
+    const prices = {
+      hero: {
+        monthly: { price: "8,90", period: "mês", savings: "", equivalent: "" },
+        quarterly: { price: "22,90", period: "trimestre", savings: "~15%", equivalent: "" },
+        annual: { price: "79,90", period: "ano", savings: "", equivalent: "6,65/mês" }
+      },
+      master: {
+        monthly: { price: "18,90", period: "mês", savings: "", equivalent: "" },
+        quarterly: { price: "49,90", period: "trimestre", savings: "~12%", equivalent: "" },
+        annual: { price: "179,90", period: "ano", savings: "", equivalent: "15,00/mês" }
+      }
+    };
+    return prices[plan][billingPeriod];
+  };
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
+      <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl">
         <SheetHeader className="text-left pb-4">
           <SheetTitle className="flex items-center gap-2">
             <Crown className="w-5 h-5 text-gold" />
@@ -73,8 +92,8 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
           </SheetTitle>
         </SheetHeader>
 
-        <div className="space-y-6 overflow-y-auto max-h-[calc(85vh-8rem)] pb-8">
-          {/* Current Plan */}
+        <div className="space-y-5 overflow-y-auto max-h-[calc(90vh-8rem)] pb-8">
+          {/* Current Plan Status */}
           <div className={`p-4 rounded-2xl ${isPremium ? 'bg-gradient-to-br from-gold/20 to-amber-500/10 border border-gold/30' : 'bg-muted'}`}>
             <div className="flex items-center gap-3 mb-2">
               {isPremium ? (
@@ -84,66 +103,95 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
               )}
               <div>
                 <h3 className="font-semibold text-foreground">
-                  {isPremium ? "Plano Premium" : "Plano Gratuito"}
+                  {isPremium ? "Plano Ativo" : "Plano Aldeão"}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  {isPremium ? "Acesso completo a todos os recursos" : "Recursos básicos"}
+                  {isPremium ? "Você possui acesso premium!" : "Plano gratuito - Sem anúncios"}
                 </p>
               </div>
             </div>
             {!isPremium && subscription && (
               <p className="text-sm text-muted-foreground mt-2">
-                {subscription.characterCount}/{subscription.limits.maxCharacters} personagens usados
+                {subscription.characterCount}/{subscription.limits.maxCharacters} personagens ativos
               </p>
             )}
           </div>
 
-          {/* Plans Comparison */}
+          {/* Billing Period Selector */}
+          <Tabs value={billingPeriod} onValueChange={(v) => setBillingPeriod(v as any)} className="w-full">
+            <TabsList className="w-full grid grid-cols-3">
+              <TabsTrigger value="monthly" className="text-xs">Mensal</TabsTrigger>
+              <TabsTrigger value="quarterly" className="text-xs">Trimestral</TabsTrigger>
+              <TabsTrigger value="annual" className="text-xs relative">
+                Anual
+                <Badge className="absolute -top-2 -right-1 text-[8px] px-1 py-0 bg-green-500 text-white">
+                  Melhor
+                </Badge>
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+
+          {/* Plans */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-foreground">Comparativo de Planos</h4>
-            
-            {/* Free Plan */}
-            <div className="p-4 rounded-xl border border-border bg-dark">
+            {/* Aldeão (Free) */}
+            <div className="p-4 rounded-xl border border-border bg-card">
               <div className="flex items-center justify-between mb-3">
-                <h5 className="font-semibold text-foreground">Gratuito</h5>
-                <span className="text-sm text-muted-foreground">R$ 0/mês</span>
+                <div className="flex items-center gap-2">
+                  <Shield className="w-5 h-5 text-muted-foreground" />
+                  <h5 className="font-semibold text-foreground">Aldeão</h5>
+                </div>
+                <span className="text-sm text-muted-foreground">Gratuito</span>
               </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Onde tudo começa. Ideal para jogadores casuais.
+              </p>
               <ul className="space-y-2">
                 {[
-                  "Até 3 personagens",
-                  "Acesso às ferramentas básicas",
-                  "Rolador de dados",
-                  "Compêndio de magias",
+                  { icon: ScrollText, text: "Até 3 personagens simultâneos" },
+                  { icon: Sword, text: "Compêndio SRD 5.1 completo" },
+                  { icon: Users, text: "Entrar em campanhas de amigos" },
+                  { icon: Shield, text: "Backup básico na nuvem" },
                 ].map((feature, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Check className="w-4 h-4 text-primary" />
-                    {feature}
+                    <feature.icon className="w-4 h-4 text-primary shrink-0" />
+                    {feature.text}
                   </li>
                 ))}
               </ul>
             </div>
 
-            {/* Premium Plan */}
-            <div className="p-4 rounded-xl border-2 border-gold bg-gradient-to-br from-gold/10 to-transparent">
+            {/* Herói (Player) */}
+            <div className="p-4 rounded-xl border-2 border-secondary bg-gradient-to-br from-secondary/10 to-transparent">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <h5 className="font-semibold text-foreground">Premium</h5>
-                  <span className="px-2 py-0.5 bg-gold text-black text-[10px] font-bold rounded-full">
-                    RECOMENDADO
-                  </span>
+                  <Sword className="w-5 h-5 text-secondary" />
+                  <h5 className="font-semibold text-foreground">Herói</h5>
+                  <Badge variant="secondary" className="text-[10px]">PLAYER</Badge>
                 </div>
-                <span className="text-sm font-semibold text-gold">R$ 19,90/mês</span>
+                <div className="text-right">
+                  <span className="text-sm font-semibold text-secondary">R$ {getPricing("hero").price}</span>
+                  <span className="text-xs text-muted-foreground">/{getPricing("hero").period}</span>
+                  {billingPeriod === "quarterly" && (
+                    <p className="text-[10px] text-green-500">Economize {getPricing("hero").savings}</p>
+                  )}
+                  {billingPeriod === "annual" && (
+                    <p className="text-[10px] text-green-500">≈ R$ {getPricing("hero").equivalent}</p>
+                  )}
+                </div>
               </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                Para aventureiros dedicados. Personalização e segurança.
+              </p>
               <ul className="space-y-2">
                 {[
-                  { icon: Sparkles, text: "Personagens ilimitados" },
-                  { icon: Users, text: "Criar e gerenciar campanhas" },
-                  { icon: Wand2, text: "Combat Tracker completo" },
-                  { icon: Shield, text: "Backup automático na nuvem" },
-                  { icon: Crown, text: "Suporte prioritário" },
+                  { icon: ScrollText, text: "Até 20 personagens ativos" },
+                  { icon: Palette, text: "Temas exclusivos e avatares HD" },
+                  { icon: Wand2, text: "Módulo Homebrew completo" },
+                  { icon: History, text: "Histórico de alterações nas fichas" },
+                  { icon: MessageSquare, text: "Suporte prioritário" },
                 ].map((feature, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm text-foreground">
-                    <feature.icon className="w-4 h-4 text-gold" />
+                    <feature.icon className="w-4 h-4 text-secondary shrink-0" />
                     {feature.text}
                   </li>
                 ))}
@@ -151,18 +199,70 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
               
               {!isPremium && (
                 <Button 
-                  onClick={handleUpgrade}
+                  onClick={() => handleUpgrade("hero")}
+                  className="w-full mt-4 bg-secondary text-secondary-foreground font-semibold hover:bg-secondary/90"
+                >
+                  <Sword className="w-4 h-4 mr-2" />
+                  Assinar Herói
+                </Button>
+              )}
+            </div>
+
+            {/* Mestre (Master) */}
+            <div className="p-4 rounded-xl border-2 border-gold bg-gradient-to-br from-gold/15 to-amber-500/5 relative overflow-hidden">
+              <div className="absolute top-0 right-0 bg-gold text-black text-[10px] font-bold px-3 py-1 rounded-bl-lg">
+                RECOMENDADO
+              </div>
+              <div className="flex items-center justify-between mb-3 mt-2">
+                <div className="flex items-center gap-2">
+                  <Crown className="w-5 h-5 text-gold" />
+                  <h5 className="font-semibold text-foreground">Mestre</h5>
+                  <Badge className="text-[10px] bg-gold/20 text-gold border-gold/30">MASTER</Badge>
+                </div>
+                <div className="text-right">
+                  <span className="text-sm font-semibold text-gold">R$ {getPricing("master").price}</span>
+                  <span className="text-xs text-muted-foreground">/{getPricing("master").period}</span>
+                  {billingPeriod === "quarterly" && (
+                    <p className="text-[10px] text-green-500">Economize {getPricing("master").savings}</p>
+                  )}
+                  {billingPeriod === "annual" && (
+                    <p className="text-[10px] text-green-500">≈ R$ {getPricing("master").equivalent}</p>
+                  )}
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground mb-3">
+                O poder total da mesa. Ferramentas de automação para quem comanda.
+              </p>
+              <ul className="space-y-2">
+                {[
+                  { icon: Sparkles, text: "Personagens ilimitados" },
+                  { icon: Users, text: "Campanhas ilimitadas como Mestre" },
+                  { icon: Swords, text: "Combat Tracker Pro com HP em tempo real" },
+                  { icon: MessageSquare, text: "Integração Discord (rolagens e alertas)" },
+                  { icon: Share2, text: "Partilha de Homebrew nas campanhas" },
+                  { icon: Heart, text: "Gestão de Stress/Sanidade" },
+                ].map((feature, i) => (
+                  <li key={i} className="flex items-center gap-2 text-sm text-foreground">
+                    <feature.icon className="w-4 h-4 text-gold shrink-0" />
+                    {feature.text}
+                  </li>
+                ))}
+              </ul>
+              
+              {!isPremium && (
+                <Button 
+                  onClick={() => handleUpgrade("master")}
                   className="w-full mt-4 bg-gradient-to-r from-gold to-amber-500 text-black font-semibold hover:opacity-90"
                 >
                   <Crown className="w-4 h-4 mr-2" />
-                  Fazer Upgrade
+                  Assinar Mestre
                 </Button>
               )}
             </div>
           </div>
 
           {/* Redeem Code Section */}
-          <div className="p-4 rounded-xl border border-border bg-dark">
+          <div className="p-4 rounded-xl border border-border bg-card">
             <div className="flex items-center gap-2 mb-3">
               <Gift className="w-5 h-5 text-secondary" />
               <h4 className="font-semibold text-foreground">Resgatar Código</h4>
@@ -195,10 +295,15 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
           {isPremium && (
             <div className="p-4 rounded-xl bg-muted">
               <p className="text-sm text-muted-foreground text-center">
-                Você já possui o plano Premium! Obrigado por apoiar o Go20.
+                Você já possui uma assinatura ativa! Obrigado por apoiar o Go20.
               </p>
             </div>
           )}
+
+          {/* No Ads Notice */}
+          <p className="text-center text-xs text-muted-foreground">
+            🎮 Go20 é livre de anúncios em todos os planos
+          </p>
         </div>
       </SheetContent>
     </Sheet>
