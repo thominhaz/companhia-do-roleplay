@@ -172,7 +172,7 @@ export function MenuScreen() {
           {user ? (
             <button 
               onClick={() => setProfileOpen(true)}
-              className="w-full glass rounded-2xl p-4 flex items-center gap-4 hover:border-primary/50 transition-all"
+              className="w-full glass-card-solar rounded-2xl p-4 flex items-center gap-4 card-hover-subtle"
             >
               <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
                 <span className="text-xl font-bold text-foreground">
@@ -195,7 +195,7 @@ export function MenuScreen() {
           ) : (
             <button 
               onClick={handleLogin}
-              className="w-full glass rounded-2xl p-4 flex items-center gap-4 hover:border-primary/50 transition-all"
+              className="w-full glass-card rounded-2xl p-4 flex items-center gap-4 card-hover-subtle"
             >
               <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                 <LogIn className="w-6 h-6 text-muted-foreground" />
@@ -223,7 +223,7 @@ export function MenuScreen() {
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               {section.title}
             </h2>
-            <div className="glass rounded-2xl overflow-hidden divide-y divide-border/50 stagger-fast">
+            <div className="glass-card rounded-2xl overflow-hidden divide-y divide-border/30 stagger-fast">
               {section.items.map((item) => {
                 const Icon = item.icon;
                 const description = item.id === "subscription" 
