@@ -654,42 +654,42 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
       {/* Create/Edit Sheets */}
       <CreateSpellSheet
         open={showCreateSpell}
-        onOpenChange={handleSheetClose}
+        onOpenChange={(open) => !open && handleSheetClose()}
         editingSpell={editingItem?.type === 'spell' ? editingItem : undefined}
       />
       <CreateItemSheet
         open={showCreateItem}
-        onOpenChange={handleSheetClose}
+        onOpenChange={(open) => !open && handleSheetClose()}
         editingItem={editingItem?.type === 'item' ? editingItem : undefined}
       />
       <CreateRaceSheet
         open={showCreateRace}
-        onOpenChange={handleSheetClose}
+        onOpenChange={(open) => !open && handleSheetClose()}
         editingRace={editingItem?.type === 'race' ? editingItem : undefined}
       />
       <CreateBackgroundSheet
         open={showCreateBackground}
-        onOpenChange={handleSheetClose}
+        onOpenChange={(open) => !open && handleSheetClose()}
         editingBackground={editingItem?.type === 'background' ? editingItem : undefined}
       />
       <CreateFeatSheet
         open={showCreateFeat}
-        onOpenChange={handleSheetClose}
+        onOpenChange={(open) => !open && handleSheetClose()}
         editingFeat={editingItem?.type === 'feat' ? editingItem : undefined}
       />
       <CreateMonsterSheet
         open={showCreateMonster}
-        onOpenChange={handleSheetClose}
+        onOpenChange={(open) => !open && handleSheetClose()}
         editingMonster={editingItem?.type === 'monster' ? editingItem : undefined}
       />
       <CreateClassSheet
         open={showCreateClass}
-        onOpenChange={handleSheetClose}
+        onOpenChange={(open) => !open && handleSheetClose()}
         editingClass={editingItem?.type === 'class' ? editingItem : undefined}
       />
       <CreateSubclassSheet
         open={showCreateSubclass}
-        onOpenChange={handleSheetClose}
+        onOpenChange={(open) => !open && handleSheetClose()}
         editingSubclass={editingItem?.type === 'subclass' ? editingItem : undefined}
       />
 
