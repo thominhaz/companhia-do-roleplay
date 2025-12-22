@@ -1,7 +1,9 @@
 import { CLASSES, getAttributeName } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
-import { Check, Heart, Sword, Shield, Wand2, Music, Cross, Leaf, Flame, Skull, Moon, BookOpen } from 'lucide-react';
+import { Check, Heart, Sword, Shield, Wand2, Music, Cross, Leaf, Flame, Skull, Moon, BookOpen, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useHomebrew } from '@/hooks/useHomebrew';
+import { Badge } from '@/components/ui/badge';
 
 interface ClassStepProps {
   data: WizardData;
@@ -24,7 +26,10 @@ const classIcons: Record<string, typeof Sword> = {
 };
 
 export function ClassStep({ data, updateData }: ClassStepProps) {
+  const { homebrewContent: homebrewClasses, isLoading: isLoadingHomebrew } = useHomebrew('class');
+  
   const selectedClass = CLASSES.find(c => c.id === data.class);
+  const selectedHomebrewClass = homebrewClasses.find(c => c.id === data.class);
 
   const getSkillsDisplay = (skills: { choose: number; from: string | string[] }) => {
     if (skills.from === 'any') return 'Qualquer';
@@ -67,6 +72,75 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
       </div>
 
       <div className="grid gap-3">
+        {/* Homebrew Classes */}
+        {homebrewClasses.length > 0 && (
+          <>
+            <div className="flex items-center gap-2 mt-2">
+              <Sparkles className="w-4 h-4 text-primary" />
+              <span className="text-sm font-medium text-primary">Classes Homebrew</span>
+            </div>
+            {homebrewClasses.map((homebrewClass) => {
+              const classData = homebrewClass.data as any;
+              return (
+                <button
+                  key={homebrewClass.id}
+                  onClick={() => updateData({ class: homebrewClass.id })}
+                  className={cn(
+                    "w-full p-4 rounded-xl border text-left transition-all",
+                    data.class === homebrewClass.id
+                      ? "border-primary bg-primary/10"
+                      : "border-border bg-card hover:border-primary/50"
+                  )}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className={cn(
+                      "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0 text-xl",
+                      data.class === homebrewClass.id
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-muted"
+                    )}>
+                      {homebrewClass.icon || '⚔️'}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold">{homebrewClass.name}</h3>
+                        <Badge variant="outline" className="text-[10px] bg-primary/20 text-primary border-primary/30">
+                          Homebrew
+                        </Badge>
+                        {data.class === homebrewClass.id && (
+                          <Check className="w-4 h-4 text-primary" />
+                        )}
+                      </div>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {classData?.hit_die && (
+                          <span className="px-2 py-0.5 text-xs font-medium rounded-full bg-destructive/20 text-destructive">
+                            d{classData.hit_die}
+                          </span>
+                        )}
+                        {classData?.primary_ability && (
+                          <span className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground">
+                            {classData.primary_ability}
+                          </span>
+                        )}
+                      </div>
+                      {homebrewClass.description && (
+                        <p className="text-xs text-muted-foreground mt-2 line-clamp-2">
+                          {homebrewClass.description}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </button>
+              );
+            })}
+            
+            <div className="flex items-center gap-2 mt-4">
+              <span className="text-sm font-medium text-muted-foreground">Classes Oficiais</span>
+            </div>
+          </>
+        )}
+
+        {/* Official Classes */}
         {CLASSES.map((charClass) => {
           const Icon = classIcons[charClass.id] || Sword;
           return (
@@ -116,7 +190,7 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
         })}
       </div>
 
-      {/* Selected Class Details */}
+      {/* Selected Official Class Details */}
       {selectedClass && (
         <div className="mt-6 p-4 rounded-xl bg-muted/30 border border-border space-y-4">
           <h3 className="font-semibold">Detalhes de {selectedClass.name}</h3>
@@ -179,6 +253,81 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
               }}
             />
           </div>
+        </div>
+      )}
+
+      {/* Selected Homebrew Class Details */}
+      {selectedHomebrewClass && (
+        <div className="mt-6 p-4 rounded-xl bg-primary/10 border border-primary/30 space-y-4">
+          <div className="flex items-center gap-2">
+            <h3 className="font-semibold">{selectedHomebrewClass.name}</h3>
+            <Badge variant="outline" className="text-[10px] bg-primary/20 text-primary border-primary/30">
+              Homebrew
+            </Badge>
+          </div>
+          
+          {(() => {
+            const classData = selectedHomebrewClass.data as any;
+            return (
+              <>
+                <div className="grid grid-cols-2 gap-3">
+                  {classData?.hit_die && (
+                    <div className="p-3 rounded-lg bg-card">
+                      <p className="text-xs text-muted-foreground">Dado de Vida</p>
+                      <p className="font-bold text-lg text-destructive">d{classData.hit_die}</p>
+                    </div>
+                  )}
+                  {classData?.primary_ability && (
+                    <div className="p-3 rounded-lg bg-card">
+                      <p className="text-xs text-muted-foreground">Atributo Principal</p>
+                      <p className="font-bold text-lg capitalize">{classData.primary_ability}</p>
+                    </div>
+                  )}
+                </div>
+
+                {classData?.saving_throws && (
+                  <div>
+                    <p className="text-sm font-medium mb-2">Salvaguardas</p>
+                    <div className="flex flex-wrap gap-2">
+                      {classData.saving_throws.map((save: string) => (
+                        <span key={save} className="px-2 py-1 text-xs rounded-full bg-primary/20 text-primary capitalize">
+                          {save}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {classData?.features && classData.features.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium mb-2">Características</p>
+                    <div className="space-y-2">
+                      {classData.features.slice(0, 3).map((feature: any, idx: number) => (
+                        <div key={idx} className="text-sm text-muted-foreground">
+                          <span className="font-medium text-foreground">{feature.name}</span>
+                          {feature.level && <span className="text-xs ml-1">(Nível {feature.level})</span>}
+                        </div>
+                      ))}
+                      {classData.features.length > 3 && (
+                        <p className="text-xs text-muted-foreground">
+                          +{classData.features.length - 3} características...
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+
+                {selectedHomebrewClass.description && (
+                  <div className="pt-3 border-t border-border">
+                    <p className="text-sm font-medium mb-2">Descrição</p>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedHomebrewClass.description}
+                    </p>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
       )}
     </div>

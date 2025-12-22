@@ -14,7 +14,12 @@ import {
   Loader2,
   Trash2,
   Edit,
-  Share2
+  Share2,
+  Copy,
+  Download,
+  Upload,
+  Filter,
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useHomebrew } from "@/hooks/useHomebrew";
@@ -22,7 +27,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { HomebrewContentType, HomebrewContent } from "@/types";
+import { HomebrewContentType, HomebrewContent, HomebrewSpellData, HomebrewItemData } from "@/types";
 import { CreateSpellSheet } from "./CreateSpellSheet";
 import { CreateItemSheet } from "./CreateItemSheet";
 import { CreateRaceSheet } from "./CreateRaceSheet";
@@ -33,6 +38,7 @@ import { CreateClassSheet } from "./CreateClassSheet";
 import { CreateSubclassSheet } from "./CreateSubclassSheet";
 import { HomebrewCard } from "./HomebrewCard";
 import { ShareHomebrewSheet } from "./ShareHomebrewSheet";
+import { toast } from "sonner";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,6 +49,13 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 interface HomebrewForgeProps {
   onBack: () => void;
@@ -57,6 +70,42 @@ const contentTypes: { type: HomebrewContentType; label: string; icon: React.Elem
   { type: 'monster', label: 'Monstros', icon: Skull, color: 'from-gray-500 to-gray-700' },
   { type: 'background', label: 'Antecedentes', icon: BookOpen, color: 'from-green-500 to-green-700' },
   { type: 'feat', label: 'Talentos', icon: Crown, color: 'from-orange-500 to-orange-700' },
+];
+
+const spellLevelOptions = [
+  { value: 'all', label: 'Todos os níveis' },
+  { value: '0', label: 'Truque' },
+  { value: '1', label: '1º Nível' },
+  { value: '2', label: '2º Nível' },
+  { value: '3', label: '3º Nível' },
+  { value: '4', label: '4º Nível' },
+  { value: '5', label: '5º Nível' },
+  { value: '6', label: '6º Nível' },
+  { value: '7', label: '7º Nível' },
+  { value: '8', label: '8º Nível' },
+  { value: '9', label: '9º Nível' },
+];
+
+const spellSchoolOptions = [
+  { value: 'all', label: 'Todas as escolas' },
+  { value: 'abjuration', label: 'Abjuração' },
+  { value: 'conjuration', label: 'Conjuração' },
+  { value: 'divination', label: 'Adivinhação' },
+  { value: 'enchantment', label: 'Encantamento' },
+  { value: 'evocation', label: 'Evocação' },
+  { value: 'illusion', label: 'Ilusão' },
+  { value: 'necromancy', label: 'Necromancia' },
+  { value: 'transmutation', label: 'Transmutação' },
+];
+
+const itemRarityOptions = [
+  { value: 'all', label: 'Todas as raridades' },
+  { value: 'common', label: 'Comum' },
+  { value: 'uncommon', label: 'Incomum' },
+  { value: 'rare', label: 'Raro' },
+  { value: 'very_rare', label: 'Muito Raro' },
+  { value: 'legendary', label: 'Lendário' },
+  { value: 'artifact', label: 'Artefato' },
 ];
 
 export function HomebrewForge({ onBack }: HomebrewForgeProps) {
@@ -78,6 +127,13 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const [editingItem, setEditingItem] = useState<HomebrewContent | null>(null);
   const [sharingItem, setSharingItem] = useState<HomebrewContent | null>(null);
   const [deletingItem, setDeletingItem] = useState<HomebrewContent | null>(null);
+  const [duplicatingItem, setDuplicatingItem] = useState<HomebrewContent | null>(null);
+  
+  // Advanced filters
+  const [showFilters, setShowFilters] = useState(false);
+  const [spellLevelFilter, setSpellLevelFilter] = useState('all');
+  const [spellSchoolFilter, setSpellSchoolFilter] = useState('all');
+  const [itemRarityFilter, setItemRarityFilter] = useState('all');
   
   const { 
     homebrewContent, 
@@ -85,13 +141,47 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
     canCreate, 
     isLoading,
     deleteHomebrew,
-    isDeleting
+    createHomebrew,
+    isDeleting,
+    isCreating
   } = useHomebrew(selectedType);
 
-  const filteredContent = homebrewContent.filter(item =>
-    item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (item.description?.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  // Apply filters
+  const filteredContent = homebrewContent.filter(item => {
+    // Text search
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (item.description?.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    if (!matchesSearch) return false;
+    
+    // Type-specific filters
+    if (selectedType === 'spell' && item.data) {
+      const spellData = item.data as HomebrewSpellData;
+      if (spellLevelFilter !== 'all' && spellData.level?.toString() !== spellLevelFilter) {
+        return false;
+      }
+      if (spellSchoolFilter !== 'all' && spellData.school !== spellSchoolFilter) {
+        return false;
+      }
+    }
+    
+    if (selectedType === 'item' && item.data) {
+      const itemData = item.data as HomebrewItemData;
+      if (itemRarityFilter !== 'all' && itemData.rarity !== itemRarityFilter) {
+        return false;
+      }
+    }
+    
+    return true;
+  });
+
+  const hasActiveFilters = spellLevelFilter !== 'all' || spellSchoolFilter !== 'all' || itemRarityFilter !== 'all';
+
+  const clearFilters = () => {
+    setSpellLevelFilter('all');
+    setSpellSchoolFilter('all');
+    setItemRarityFilter('all');
+  };
 
   const handleCreateClick = () => {
     if (!isPremium) return;
@@ -148,11 +238,124 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
     setShowCreateClass(false);
     setShowCreateSubclass(false);
     setEditingItem(null);
+    setDuplicatingItem(null);
   };
 
   const handleShareSheetClose = () => {
     setShowShareSheet(false);
     setSharingItem(null);
+  };
+
+  // Duplicate functionality
+  const handleDuplicate = (item: HomebrewContent) => {
+    const duplicatedItem = {
+      ...item,
+      name: `${item.name} (Cópia)`,
+    };
+    setDuplicatingItem(duplicatedItem);
+    setEditingItem(duplicatedItem);
+    switch (item.type) {
+      case 'spell': setShowCreateSpell(true); break;
+      case 'item': setShowCreateItem(true); break;
+      case 'race': setShowCreateRace(true); break;
+      case 'background': setShowCreateBackground(true); break;
+      case 'feat': setShowCreateFeat(true); break;
+      case 'monster': setShowCreateMonster(true); break;
+      case 'class': setShowCreateClass(true); break;
+      case 'subclass': setShowCreateSubclass(true); break;
+    }
+  };
+
+  // Export functionality
+  const handleExport = (item: HomebrewContent) => {
+    const exportData = {
+      name: item.name,
+      type: item.type,
+      description: item.description,
+      icon: item.icon,
+      data: item.data,
+      version: item.version,
+      exportedAt: new Date().toISOString(),
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${item.name.toLowerCase().replace(/\s+/g, '-')}.homebrew.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast.success('Conteúdo exportado!');
+  };
+
+  // Export all functionality
+  const handleExportAll = () => {
+    const exportData = {
+      contents: homebrewContent.map(item => ({
+        name: item.name,
+        type: item.type,
+        description: item.description,
+        icon: item.icon,
+        data: item.data,
+        version: item.version,
+      })),
+      exportedAt: new Date().toISOString(),
+      count: homebrewContent.length,
+    };
+    
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `homebrew-${selectedType}-export.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast.success(`${homebrewContent.length} itens exportados!`);
+  };
+
+  // Import functionality
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.json';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) return;
+      
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+        
+        // Handle single item or multiple items
+        const items = data.contents || [data];
+        
+        for (const item of items) {
+          if (!item.name || !item.type) {
+            toast.error('Formato de arquivo inválido');
+            return;
+          }
+          
+          createHomebrew({
+            type: item.type,
+            name: item.name,
+            description: item.description,
+            icon: item.icon,
+            data: item.data,
+          });
+        }
+        
+        toast.success(`${items.length} item(s) importado(s)!`);
+      } catch (error) {
+        toast.error('Erro ao importar arquivo');
+      }
+    };
+    input.click();
   };
 
   const selectedTypeInfo = contentTypes.find(t => t.type === selectedType);
@@ -237,7 +440,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
           })}
         </div>
 
-        {/* Search & Create */}
+        {/* Search & Actions */}
         <div className="flex gap-2">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -249,6 +452,14 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
               className="w-full h-10 pl-9 pr-4 bg-muted rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
             />
           </div>
+          <Button
+            variant="outline"
+            size="icon"
+            className={cn("h-10 w-10", hasActiveFilters && "border-primary text-primary")}
+            onClick={() => setShowFilters(!showFilters)}
+          >
+            <Filter className="w-4 h-4" />
+          </Button>
           <Button
             onClick={handleCreateClick}
             disabled={!isPremium || !isAvailableType}
@@ -264,10 +475,100 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
           </Button>
         </div>
 
-        {/* Stats */}
+        {/* Advanced Filters */}
+        {showFilters && (
+          <div className="glass rounded-xl p-4 border border-border space-y-3">
+            <div className="flex items-center justify-between">
+              <h4 className="text-sm font-medium">Filtros Avançados</h4>
+              {hasActiveFilters && (
+                <Button variant="ghost" size="sm" onClick={clearFilters} className="h-7 text-xs">
+                  <X className="w-3 h-3 mr-1" />
+                  Limpar
+                </Button>
+              )}
+            </div>
+            
+            {selectedType === 'spell' && (
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Nível</label>
+                  <Select value={spellLevelFilter} onValueChange={setSpellLevelFilter}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {spellLevelOptions.map(opt => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Escola</label>
+                  <Select value={spellSchoolFilter} onValueChange={setSpellSchoolFilter}>
+                    <SelectTrigger className="h-9">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {spellSchoolOptions.map(opt => (
+                        <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            )}
+            
+            {selectedType === 'item' && (
+              <div>
+                <label className="text-xs text-muted-foreground mb-1 block">Raridade</label>
+                <Select value={itemRarityFilter} onValueChange={setItemRarityFilter}>
+                  <SelectTrigger className="h-9">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {itemRarityOptions.map(opt => (
+                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            
+            {selectedType !== 'spell' && selectedType !== 'item' && (
+              <p className="text-xs text-muted-foreground">
+                Filtros específicos disponíveis para Magias e Itens.
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Stats & Actions */}
         {isPremium && (
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <span>{homebrewCount} conteúdos criados</span>
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-muted-foreground">{homebrewCount} conteúdos criados</span>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleImport}
+                className="h-8 text-xs gap-1"
+              >
+                <Upload className="w-3 h-3" />
+                Importar
+              </Button>
+              {homebrewContent.length > 0 && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportAll}
+                  className="h-8 text-xs gap-1"
+                >
+                  <Download className="w-3 h-3" />
+                  Exportar Tudo
+                </Button>
+              )}
+            </div>
           </div>
         )}
 
@@ -307,6 +608,8 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
                 onEdit={() => handleEdit(item)}
                 onDelete={() => handleDelete(item)}
                 onShare={() => handleShare(item)}
+                onDuplicate={() => handleDuplicate(item)}
+                onExport={() => handleExport(item)}
               />
             ))}
           </div>

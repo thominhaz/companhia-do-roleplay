@@ -1,4 +1,4 @@
-import { Edit, Trash2, Share2, Sparkles, Gem, Users } from "lucide-react";
+import { Edit, Trash2, Share2, Sparkles, Gem, Users, Copy, Download, Sword, Star, Skull, BookOpen, Crown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -11,6 +11,8 @@ interface HomebrewCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onShare?: () => void;
+  onDuplicate?: () => void;
+  onExport?: () => void;
 }
 
 const rarityColors: Record<string, string> = {
@@ -42,9 +44,15 @@ const schoolLabels: Record<string, string> = {
   transmutation: "Transmutação",
 };
 
-export function HomebrewCard({ item, onEdit, onDelete, onShare }: HomebrewCardProps) {
+export function HomebrewCard({ item, onEdit, onDelete, onShare, onDuplicate, onExport }: HomebrewCardProps) {
   const isSpell = item.type === 'spell';
   const isItem = item.type === 'item';
+  const isRace = item.type === 'race';
+  const isClass = item.type === 'class';
+  const isSubclass = item.type === 'subclass';
+  const isMonster = item.type === 'monster';
+  const isBackground = item.type === 'background';
+  const isFeat = item.type === 'feat';
   
   const spellData = isSpell ? (item.data as HomebrewSpellData) : null;
   const itemData = isItem ? (item.data as HomebrewItemData) : null;
@@ -66,12 +74,24 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare }: HomebrewCardPr
   const getTypeIcon = () => {
     if (isSpell) return <Sparkles className="w-4 h-4" />;
     if (isItem) return <Gem className="w-4 h-4" />;
+    if (isRace) return <Users className="w-4 h-4" />;
+    if (isClass) return <Sword className="w-4 h-4" />;
+    if (isSubclass) return <Star className="w-4 h-4" />;
+    if (isMonster) return <Skull className="w-4 h-4" />;
+    if (isBackground) return <BookOpen className="w-4 h-4" />;
+    if (isFeat) return <Crown className="w-4 h-4" />;
     return null;
   };
 
   const getTypeColor = () => {
     if (isSpell) return "from-purple-500/20 to-purple-700/20 border-purple-500/30";
     if (isItem) return "from-amber-500/20 to-amber-700/20 border-amber-500/30";
+    if (isRace) return "from-blue-500/20 to-blue-700/20 border-blue-500/30";
+    if (isClass) return "from-red-500/20 to-red-700/20 border-red-500/30";
+    if (isSubclass) return "from-pink-500/20 to-pink-700/20 border-pink-500/30";
+    if (isMonster) return "from-gray-500/20 to-gray-700/20 border-gray-500/30";
+    if (isBackground) return "from-green-500/20 to-green-700/20 border-green-500/30";
+    if (isFeat) return "from-orange-500/20 to-orange-700/20 border-orange-500/30";
     return "from-muted to-muted border-border";
   };
 
@@ -84,6 +104,24 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare }: HomebrewCardPr
     if (isItem && itemData) {
       return rarityLabels[itemData.rarity] || itemData.rarity;
     }
+    if (isRace) {
+      const raceData = item.data as any;
+      return raceData?.size ? `${raceData.size} • ${raceData.speed || 30}ft` : 'Raça';
+    }
+    if (isClass) {
+      const classData = item.data as any;
+      return classData?.hit_die ? `d${classData.hit_die}` : 'Classe';
+    }
+    if (isSubclass) {
+      const subclassData = item.data as any;
+      return subclassData?.parent_class || 'Subclasse';
+    }
+    if (isMonster) {
+      const monsterData = item.data as any;
+      return monsterData?.challenge_rating ? `ND ${monsterData.challenge_rating}` : 'Monstro';
+    }
+    if (isBackground) return 'Antecedente';
+    if (isFeat) return 'Talento';
     return "";
   };
 
@@ -186,9 +224,32 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare }: HomebrewCardPr
             size="icon"
             className="w-8 h-8"
             onClick={onEdit}
+            title="Editar"
           >
             <Edit className="w-4 h-4" />
           </Button>
+          {onDuplicate && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-8 h-8"
+              onClick={onDuplicate}
+              title="Duplicar"
+            >
+              <Copy className="w-4 h-4" />
+            </Button>
+          )}
+          {onExport && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-8 h-8"
+              onClick={onExport}
+              title="Exportar"
+            >
+              <Download className="w-4 h-4" />
+            </Button>
+          )}
           {onShare && (
             <Button
               variant="ghost"
@@ -198,6 +259,7 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare }: HomebrewCardPr
                 shareCount > 0 && "text-green-400"
               )}
               onClick={onShare}
+              title="Compartilhar"
             >
               <Share2 className="w-4 h-4" />
             </Button>
@@ -207,6 +269,7 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare }: HomebrewCardPr
             size="icon"
             className="w-8 h-8 text-destructive hover:text-destructive"
             onClick={onDelete}
+            title="Excluir"
           >
             <Trash2 className="w-4 h-4" />
           </Button>
