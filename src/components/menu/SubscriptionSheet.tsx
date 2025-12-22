@@ -20,7 +20,8 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
   const queryClient = useQueryClient();
-  const isPremium = subscription?.status === "premium";
+  const currentTier = subscription?.tier ?? "aldeao";
+  const isPaidTier = currentTier === "heroi" || currentTier === "mestre";
   
   const [redeemCode, setRedeemCode] = useState("");
   const [isRedeeming, setIsRedeeming] = useState(false);
@@ -94,23 +95,25 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
 
         <div className="space-y-5 overflow-y-auto max-h-[calc(90vh-8rem)] pb-8">
           {/* Current Plan Status */}
-          <div className={`p-4 rounded-2xl ${isPremium ? 'bg-gradient-to-br from-gold/20 to-amber-500/10 border border-gold/30' : 'bg-muted'}`}>
+          <div className={`p-4 rounded-2xl ${isPaidTier ? 'bg-gradient-to-br from-gold/20 to-amber-500/10 border border-gold/30' : 'bg-muted'}`}>
             <div className="flex items-center gap-3 mb-2">
-              {isPremium ? (
+              {currentTier === "mestre" ? (
                 <Crown className="w-6 h-6 text-gold" />
+              ) : currentTier === "heroi" ? (
+                <Sword className="w-6 h-6 text-secondary" />
               ) : (
                 <Shield className="w-6 h-6 text-muted-foreground" />
               )}
               <div>
                 <h3 className="font-semibold text-foreground">
-                  {isPremium ? "Plano Ativo" : "Plano Aldeão"}
+                  {currentTier === "mestre" ? "Plano Mestre" : currentTier === "heroi" ? "Plano Herói" : "Plano Aldeão"}
                 </h3>
                 <p className="text-xs text-muted-foreground">
-                  {isPremium ? "Você possui acesso premium!" : "Plano gratuito - Sem anúncios"}
+                  {currentTier === "mestre" ? "Acesso total às ferramentas de Mestre!" : currentTier === "heroi" ? "Acesso a recursos exclusivos de jogador!" : "Plano gratuito - Sem anúncios"}
                 </p>
               </div>
             </div>
-            {!isPremium && subscription && (
+            {currentTier === "aldeao" && subscription && (
               <p className="text-sm text-muted-foreground mt-2">
                 {subscription.characterCount}/{subscription.limits.maxCharacters} personagens ativos
               </p>
@@ -197,7 +200,7 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
                 ))}
               </ul>
               
-              {!isPremium && (
+              {currentTier !== "heroi" && currentTier !== "mestre" && (
                 <Button 
                   onClick={() => handleUpgrade("hero")}
                   className="w-full mt-4 bg-secondary text-secondary-foreground font-semibold hover:bg-secondary/90"
@@ -249,7 +252,7 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
                 ))}
               </ul>
               
-              {!isPremium && (
+              {currentTier !== "mestre" && (
                 <Button 
                   onClick={() => handleUpgrade("master")}
                   className="w-full mt-4 bg-gradient-to-r from-gold to-amber-500 text-black font-semibold hover:opacity-90"
@@ -292,10 +295,10 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
             </div>
           </div>
 
-          {isPremium && (
+          {isPaidTier && (
             <div className="p-4 rounded-xl bg-muted">
               <p className="text-sm text-muted-foreground text-center">
-                Você já possui uma assinatura ativa! Obrigado por apoiar o Go20.
+                Você possui o plano {currentTier === "mestre" ? "Mestre" : "Herói"}! Obrigado por apoiar o Go20.
               </p>
             </div>
           )}
