@@ -1,4 +1,4 @@
-// Ward RPG Type Definitions
+// Go20 Type Definitions
 
 export interface Character {
   id: string;
