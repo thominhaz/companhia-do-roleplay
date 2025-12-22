@@ -52,7 +52,7 @@ const spellLevels = [
 ];
 
 const saveTypes = [
-  { value: "", label: "Nenhum" },
+  { value: "none", label: "Nenhum" },
   { value: "STR", label: "Força" },
   { value: "DEX", label: "Destreza" },
   { value: "CON", label: "Constituição" },
@@ -62,7 +62,7 @@ const saveTypes = [
 ];
 
 const damageTypes = [
-  { value: "", label: "Nenhum" },
+  { value: "none", label: "Nenhum" },
   { value: "acid", label: "Ácido" },
   { value: "bludgeoning", label: "Concussão" },
   { value: "cold", label: "Frio" },
@@ -89,9 +89,9 @@ const defaultFormState = {
   components: "V, S",
   duration: "Instantânea",
   classes: "",
-  save_type: "",
+  save_type: "none",
   damage: "",
-  damage_type: "",
+  damage_type: "none",
 };
 
 export function CreateSpellSheet({ open, onOpenChange, editingSpell }: CreateSpellSheetProps) {
@@ -136,9 +136,9 @@ export function CreateSpellSheet({ open, onOpenChange, editingSpell }: CreateSpe
       duration: form.duration,
       classes: form.classes.split(",").map(c => c.trim()).filter(Boolean),
       mechanics: {
-        save_type: form.save_type || undefined,
+        save_type: form.save_type !== "none" ? form.save_type : undefined,
         damage: form.damage || undefined,
-        damage_type: form.damage_type || undefined,
+        damage_type: form.damage_type !== "none" ? form.damage_type : undefined,
       },
     };
 

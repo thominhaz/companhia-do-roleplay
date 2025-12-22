@@ -126,15 +126,18 @@ serve(async (req) => {
       .filter((line: { amount: number }) => line.amount > 0)
       .reduce((sum: number, line: { amount: number }) => sum + line.amount, 0) / 100;
 
+    // Get next billing date
+    const periodEndMs = subscription.current_period_end * 1000;
+    const nextBillingDate = new Date(periodEndMs);
+    const daysRemaining = Math.ceil((periodEndMs - Date.now()) / (1000 * 60 * 60 * 24));
+
     logStep("Preview calculated", { 
       prorationAmount, 
       creditAmount, 
       chargeAmount,
-      linesCount: previewInvoice.lines.data.length 
+      linesCount: previewInvoice.lines.data.length,
+      daysRemaining
     });
-
-    // Get next billing date
-    const nextBillingDate = new Date(subscription.current_period_end * 1000);
 
     return new Response(
       JSON.stringify({
@@ -146,7 +149,7 @@ serve(async (req) => {
         chargeAmount,
         currency: "BRL",
         nextBillingDate: nextBillingDate.toISOString(),
-        daysRemaining: Math.ceil((subscription.current_period_end * 1000 - Date.now()) / (1000 * 60 * 60 * 24)),
+        daysRemaining,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
