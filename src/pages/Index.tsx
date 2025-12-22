@@ -41,18 +41,14 @@ const Index = () => {
     
     setSlideDirection(direction);
     setIsAnimating(true);
+    setActiveTab(newTab);
     
-    // Wait for exit animation, then switch content
+    // Wait for animation to complete
     setTimeout(() => {
-      setActiveTab(newTab);
       setDisplayedTab(newTab);
-      
-      // Allow enter animation to complete
-      setTimeout(() => {
-        setIsAnimating(false);
-        setSlideDirection(null);
-      }, 350);
-    }, 200);
+      setIsAnimating(false);
+      setSlideDirection(null);
+    }, 300);
   };
 
   // Sync displayedTab with activeTab on initial load
@@ -77,15 +73,8 @@ const Index = () => {
     }
   };
 
-  const getAnimationClass = () => {
-    if (!slideDirection) return "";
-    
-    if (isAnimating && displayedTab !== activeTab) {
-      // Exiting: slide out in opposite direction
-      return slideDirection === "left" ? "slide-exit-left" : "slide-exit-right";
-    }
-    
-    // Entering: slide in from direction
+  const getContentAnimationClass = () => {
+    if (!slideDirection || !isAnimating) return "";
     return slideDirection === "left" ? "slide-enter-left" : "slide-enter-right";
   };
 
@@ -101,8 +90,8 @@ const Index = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Helmet>
 
-      <div className="min-h-screen bg-darker overflow-hidden">
-        <div className={cn("min-h-screen", getAnimationClass())}>
+      <div className="min-h-screen bg-darker overflow-x-hidden">
+        <div className={cn("min-h-screen", getContentAnimationClass())}>
           {renderScreen()}
         </div>
         <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
