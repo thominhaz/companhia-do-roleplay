@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import DOMPurify from 'dompurify';
 import { CLASSES, getAttributeName } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
 import { Check, Heart, Sword, Shield, Wand2, Music, Cross, Leaf, Flame, Skull, Moon, BookOpen, Sparkles, ChevronDown, ChevronUp, Layers } from 'lucide-react';
@@ -263,9 +264,12 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
             <div 
               className="text-sm text-muted-foreground prose prose-sm prose-invert max-w-none"
               dangerouslySetInnerHTML={{ 
-                __html: selectedClass.equipment_markdown
-                  .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                  .replace(/\n/g, '<br/>') 
+                __html: DOMPurify.sanitize(
+                  selectedClass.equipment_markdown
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                    .replace(/\n/g, '<br/>'),
+                  { ALLOWED_TAGS: ['strong', 'br'], ALLOWED_ATTR: [] }
+                )
               }}
             />
           </div>
