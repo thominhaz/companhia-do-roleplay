@@ -52,7 +52,7 @@
       "id": "high_elf",
       "name": "Alto Elfo",
       "name_en": "High Elf",
-      "description": "Como um alto elfo, você tem uma mente aguçada e domínio de pelo menos o básico da magia. Em muitos mundos de fantasia, existem dois tipos de altos elfos. Um tipo é altivo e recluso, acreditando ser superior aos não-elfos e até mesmo a outros elfos. O outro tipo é mais comum e amigável, e frequentemente encontrado entre humanos e outras raças.",
+      "description": "Como um alto elfo, você tem uma mente aguçada e domínio de pelo menos o básico da magia. (Única sub-raça oficial no SRD 5.1)",
       "ability_bonuses": {
         "intelligence": 1
       },
@@ -83,103 +83,6 @@
           "description_markdown": "Você pode falar, ler e escrever um idioma extra de sua escolha.",
           "mechanical": {
             "extra_languages": 1
-          }
-        }
-      ]
-    },
-    {
-      "id": "wood_elf",
-      "name": "Elfo da Floresta",
-      "name_en": "Wood Elf",
-      "description": "Como um elfo da floresta, você tem sentidos aguçados e intuição profunda, e seus pés ágeis o levam rapidamente através de suas florestas natais.",
-      "ability_bonuses": {
-        "wisdom": 1
-      },
-      "traits": [
-        {
-          "id": "elf_weapon_training",
-          "name": "Treinamento Élfico com Armas",
-          "description_markdown": "Você tem proficiência com **espada longa**, **espada curta**, **arco curto** e **arco longo**.",
-          "mechanical": {
-            "weapon_proficiencies": ["longsword", "shortsword", "shortbow", "longbow"]
-          }
-        },
-        {
-          "id": "fleet_of_foot",
-          "name": "Pés Velozes",
-          "description_markdown": "Seu deslocamento base de caminhada aumenta para **10,5 metros**.",
-          "mechanical": {
-            "speed_bonus": 1.5
-          }
-        },
-        {
-          "id": "mask_of_the_wild",
-          "name": "Máscara da Natureza",
-          "description_markdown": "Você pode tentar se esconder mesmo quando estiver apenas levemente obscurecido por folhagem, chuva forte, neve caindo, névoa e outros fenômenos naturais.",
-          "mechanical": {
-            "special_hide_condition": "lightly_obscured_by_nature"
-          }
-        }
-      ]
-    },
-    {
-      "id": "dark_elf",
-      "name": "Elfo Negro (Drow)",
-      "name_en": "Dark Elf (Drow)",
-      "description": "Descendentes de uma sub-raça élfica anterior de pele escura, os drow foram banidos da superfície do mundo por seguirem a deusa Lolth pelo caminho do mal e da corrupção.",
-      "ability_bonuses": {
-        "charisma": 1
-      },
-      "traits": [
-        {
-          "id": "superior_darkvision",
-          "name": "Visão no Escuro Superior",
-          "description_markdown": "Sua visão no escuro tem alcance de **36 metros**.",
-          "mechanical": {
-            "darkvision_range": 36
-          }
-        },
-        {
-          "id": "sunlight_sensitivity",
-          "name": "Sensibilidade à Luz Solar",
-          "description_markdown": "Você tem **desvantagem** em jogadas de ataque e testes de Sabedoria (Percepção) que dependam de visão quando você, o alvo do seu ataque, ou o que quer que você esteja tentando perceber estiver sob luz solar direta.",
-          "mechanical": {
-            "disadvantage_in_sunlight": ["attack_rolls", "perception_checks"]
-          }
-        },
-        {
-          "id": "drow_magic",
-          "name": "Magia Drow",
-          "description_markdown": "Você conhece o truque **globos de luz**. Quando alcançar o 3º nível, você pode conjurar a magia **fogo das fadas** uma vez com este traço e recupera a habilidade de fazê-lo quando terminar um descanso longo. Quando alcançar o 5º nível, você pode conjurar a magia **escuridão** uma vez com este traço e recupera a habilidade de fazê-lo quando terminar um descanso longo.\n\n**Carisma** é seu atributo de conjuração para essas magias.",
-          "mechanical": {
-            "innate_spellcasting": {
-              "ability": "charisma",
-              "spells": [
-                {
-                  "name": "dancing_lights",
-                  "level_available": 1,
-                  "frequency": "at_will"
-                },
-                {
-                  "name": "faerie_fire",
-                  "level_available": 3,
-                  "frequency": "once_per_long_rest"
-                },
-                {
-                  "name": "darkness",
-                  "level_available": 5,
-                  "frequency": "once_per_long_rest"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "id": "drow_weapon_training",
-          "name": "Treinamento Drow com Armas",
-          "description_markdown": "Você tem proficiência com **rapieiras**, **espadas curtas** e **bestas de mão**.",
-          "mechanical": {
-            "weapon_proficiencies": ["rapier", "shortsword", "hand_crossbow"]
           }
         }
       ]

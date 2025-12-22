@@ -43,7 +43,7 @@
       "id": "lightfoot",
       "name": "Halfling Pés Leves",
       "name_en": "Lightfoot Halfling",
-      "description": "Como um halfling pés leves, você pode facilmente se esconder da vista, até mesmo usando outras pessoas como cobertura. Você é inclinado a ser afável e se dá bem com os outros. Halflings pés leves são mais propensos à vontade de viajar do que outros halflings, e frequentemente vivem ao lado de outras raças ou adotam uma vida nômade.",
+      "description": "Como um halfling pés leves, você pode facilmente se esconder da vista, até mesmo usando outras pessoas como cobertura. (Única sub-raça oficial no SRD 5.1)",
       "ability_bonuses": {
         "charisma": 1
       },
@@ -54,26 +54,6 @@
           "description_markdown": "Você pode tentar se esconder mesmo quando estiver obscurecido apenas por uma criatura que seja pelo menos um tamanho maior que você.",
           "mechanical": {
             "can_hide_behind_larger_creatures": true
-          }
-        }
-      ]
-    },
-    {
-      "id": "stout",
-      "name": "Halfling Robusto",
-      "name_en": "Stout Halfling",
-      "description": "Como um halfling robusto, você é mais resistente que a média e tem alguma resistência a veneno. Alguns dizem que halflings robustos têm sangue anão neles.",
-      "ability_bonuses": {
-        "constitution": 1
-      },
-      "traits": [
-        {
-          "id": "stout_resilience",
-          "name": "Resiliência Robusta",
-          "description_markdown": "Você tem **vantagem** em testes de resistência contra veneno, e você tem **resistência** a dano de veneno.",
-          "mechanical": {
-            "saving_throw_advantage": ["poison"],
-            "damage_resistance": ["poison"]
           }
         }
       ]
