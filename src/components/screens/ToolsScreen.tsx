@@ -177,11 +177,10 @@ export function ToolsScreen() {
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className={cn(
-                    "p-4 rounded-2xl bg-gradient-to-br text-left",
+                    "p-4 rounded-2xl bg-gradient-to-br text-left card-shine",
                     tool.color,
-                    "hover:scale-[1.02] active:scale-[0.98] transition-transform animate-fade-in"
+                    "hover:scale-[1.02] hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.4),0_0_20px_rgba(255,159,85,0.15)] active:scale-[0.98] transition-all duration-300"
                   )}
-                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
                   <Icon className="w-8 h-8 text-foreground mb-3" />
                   <h3 className="text-sm font-semibold text-foreground">
@@ -209,10 +208,9 @@ export function ToolsScreen() {
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className={cn(
-                    "w-full glass rounded-xl p-3 flex items-center gap-3",
-                    "hover:border-primary/50 transition-all text-left animate-fade-in"
+                    "w-full glass rounded-xl p-3 flex items-center gap-3 card-hover-subtle",
+                    "hover:border-primary/50 text-left"
                   )}
-                  style={{ animationDelay: `${(featuredTools.length + index) * 0.05}s` }}
                 >
                   <div
                     className={cn(
@@ -230,7 +228,7 @@ export function ToolsScreen() {
                       {tool.description}
                     </p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0" />
+                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform group-hover:translate-x-1" />
                 </button>
               );
             })}
