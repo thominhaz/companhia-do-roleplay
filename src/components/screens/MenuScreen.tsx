@@ -153,12 +153,14 @@ export function MenuScreen() {
   };
 
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Aventureiro";
-  const isPremium = subscription?.status === "premium";
+  const currentTier = subscription?.tier || 'aldeao';
+  const isPremium = currentTier === 'heroi' || currentTier === 'mestre';
 
   const getSubscriptionDescription = () => {
     if (!subscription) return "Carregando...";
-    if (isPremium) return "Plano Premium";
-    return `Plano Gratuito • ${subscription.characterCount}/3 personagens`;
+    if (currentTier === 'mestre') return "Plano Mestre";
+    if (currentTier === 'heroi') return "Plano Herói";
+    return `Plano Aldeão • ${subscription.characterCount}/3 personagens`;
   };
 
   return (
