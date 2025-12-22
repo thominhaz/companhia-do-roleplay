@@ -177,9 +177,10 @@ export function ToolsScreen() {
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className={cn(
-                    "p-4 rounded-2xl bg-gradient-to-br text-left",
+                    "gradient-border p-4 rounded-2xl bg-gradient-to-br text-left",
                     tool.color,
-                    "hover:scale-[1.02] active:scale-[0.98] transition-transform animate-fade-in"
+                    "hover:scale-[1.02] active:scale-[0.98] transition-transform animate-fade-in",
+                    index === 0 && "animate-border-glow"
                   )}
                   style={{ animationDelay: `${index * 0.05}s` }}
                 >
