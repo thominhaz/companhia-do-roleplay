@@ -1,8 +1,18 @@
-import { Loader2, Calendar, Plus, ChevronRight, Hexagon, Play } from "lucide-react";
+import { Loader2, Calendar } from "lucide-react";
+import { 
+  Plus, 
+  Link, 
+  Dices, 
+  StickyNote,
+  Wand2,
+  Shield,
+  Castle,
+  Flame
+} from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
-import { useCharacters } from "@/hooks/useCharacters";
-import { useAllCampaigns } from "@/hooks/useCampaigns";
+import { useCharacters, CharacterDB } from "@/hooks/useCharacters";
+import { useAllCampaigns, CampaignDB } from "@/hooks/useCampaigns";
 import { useUpcomingSessions } from "@/hooks/useSessions";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow, format } from "date-fns";
@@ -16,253 +26,377 @@ interface HomeScreenProps {
   onNavigate?: (tab: TabRoute) => void;
 }
 
-const diceTypes = ["d20", "d12", "d10", "d8", "d6", "d4"];
+const quickActions = [
+  { id: "create", label: "Criar Ficha", icon: Plus, gradient: "from-primary to-purple-700" },
+  { id: "join", label: "Entrar em Mesa", icon: Link, gradient: "from-blue-600 to-blue-800" },
+  { id: "dice", label: "Rolar Dados", icon: Dices, gradient: "from-green-600 to-green-800" },
+  { id: "note", label: "Nota Rápida", icon: StickyNote, gradient: "from-amber-600 to-amber-800" },
+];
+
+// Map class to icon
+const classIcons: Record<string, typeof Shield> = {
+  Guerreiro: Shield,
+  Mago: Wand2,
+  Paladino: Shield,
+  Ladino: Flame,
+  Clerigo: Shield,
+  Barbaro: Flame,
+  Bardo: Wand2,
+  Druida: Wand2,
+  Feiticeiro: Wand2,
+  Bruxo: Flame,
+  Monge: Shield,
+  Patrulheiro: Shield,
+};
+
+const classGradients: Record<string, string> = {
+  Guerreiro: "from-red-600 to-red-800",
+  Mago: "from-blue-600 to-blue-800",
+  Paladino: "from-yellow-600 to-yellow-800",
+  Ladino: "from-gray-600 to-gray-800",
+  Clerigo: "from-white to-gray-300",
+  Barbaro: "from-orange-600 to-orange-800",
+  Bardo: "from-purple-600 to-purple-800",
+  Druida: "from-green-600 to-green-800",
+  Feiticeiro: "from-pink-600 to-pink-800",
+  Bruxo: "from-violet-600 to-violet-800",
+  Monge: "from-cyan-600 to-cyan-800",
+  Patrulheiro: "from-emerald-600 to-emerald-800",
+};
+
+interface RecentItem {
+  id: string;
+  name: string;
+  description: string;
+  icon: typeof Shield;
+  gradient: string;
+  time: string;
+  type: 'character' | 'campaign';
+}
+
+function buildRecentItems(characters: CharacterDB[], campaigns: { master: CampaignDB[]; player: CampaignDB[] }): RecentItem[] {
+  const items: RecentItem[] = [];
+
+  // Add characters
+  characters.forEach(char => {
+    items.push({
+      id: char.id,
+      name: char.name,
+      description: `${char.race} ${char.class} • Nv ${char.level}`,
+      icon: classIcons[char.class] || Shield,
+      gradient: classGradients[char.class] || "from-purple-600 to-purple-800",
+      time: `Atualizado ${formatDistanceToNow(new Date(char.updated_at), { locale: ptBR, addSuffix: false })}`,
+      type: 'character',
+    });
+  });
+
+  // Add master campaigns
+  campaigns.master.forEach(campaign => {
+    items.push({
+      id: campaign.id,
+      name: campaign.name,
+      description: "Campanha • Mestre",
+      icon: Castle,
+      gradient: "from-emerald-600 to-emerald-800",
+      time: `Atualizado ${formatDistanceToNow(new Date(campaign.updated_at), { locale: ptBR, addSuffix: false })}`,
+      type: 'campaign',
+    });
+  });
+
+  // Add player campaigns
+  campaigns.player.forEach(campaign => {
+    items.push({
+      id: campaign.id,
+      name: campaign.name,
+      description: "Campanha • Jogador",
+      icon: Flame,
+      gradient: "from-red-600 to-red-800",
+      time: `Atualizado ${formatDistanceToNow(new Date(campaign.updated_at), { locale: ptBR, addSuffix: false })}`,
+      type: 'campaign',
+    });
+  });
+
+  // Sort by most recent (approximation - we use the time string)
+  return items.slice(0, 6);
+}
 
 export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
   const { data: characters, isLoading: loadingChars } = useCharacters();
   const { data: campaignsData, isLoading: loadingCampaigns } = useAllCampaigns();
-  const { data: upcomingSessions } = useUpcomingSessions(1);
+  const { data: upcomingSessions, isLoading: loadingSessions } = useUpcomingSessions(1);
   const navigate = useNavigate();
 
+  const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Aventureiro";
   const isPremium = subscription?.status === "premium";
+
   const isLoading = loadingChars || loadingCampaigns;
-  
-  // Get most recent campaign
-  const activeCampaign = campaignsData?.master[0] || campaignsData?.player[0];
-  
-  // Get recent characters (limit 2)
-  const recentCharacters = characters?.slice(0, 2) || [];
+  const nextSession = upcomingSessions?.[0];
 
-  const handleCreateCharacter = () => {
-    if (!user) {
-      toast.error("Faça login para criar um personagem", {
-        action: { label: "Entrar", onClick: () => navigate("/auth") }
-      });
-      return;
-    }
-    navigate('/characters?create=true');
-  };
-
-  const handleRollDice = (dice: string) => {
-    const sides = parseInt(dice.replace('d', ''));
-    const result = Math.floor(Math.random() * sides) + 1;
-    toast.success(`🎲 ${dice}: ${result}`, { duration: 3000 });
-  };
+  // Get most recent character as active
+  const activeCharacter = characters?.[0];
+  
+  // Build recent items
+  const recentItems = buildRecentItems(
+    characters || [], 
+    campaignsData || { master: [], player: [] }
+  );
 
   return (
-    <div className="min-h-screen bg-slate-950 pb-24 relative overflow-hidden">
-      {/* Ambient Background Glow */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none -z-10">
-        <div className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-arcane-900/20 rounded-full blur-[100px]" />
-        <div className="absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-[100px]" />
-      </div>
-
-      {/* Header */}
+    <div className="min-h-screen bg-darker pb-24">
       <AppHeader
         rightContent={
-          <div className="flex items-center gap-4">
-            {!user ? (
+          <div className="flex items-center gap-2">
+            {!user && (
               <button 
                 onClick={() => navigate("/auth")}
-                className="px-4 py-2 text-sm font-medium bg-arcane-600 hover:bg-arcane-500 rounded-lg text-white transition-colors"
+                className="px-4 py-2 text-sm font-medium bg-gradient-primary rounded-xl text-foreground"
               >
                 Entrar
               </button>
-            ) : (
-              <>
-                <NotificationBell />
-                <button className="w-10 h-10 rounded-full bg-slate-800 border border-white/20 overflow-hidden hover:border-arcane-500 transition-all">
-                  <img 
-                    src={`https://api.dicebear.com/7.x/adventurer/svg?seed=${user.id}`} 
-                    alt="Avatar" 
-                    className="w-full h-full object-cover"
-                  />
-                </button>
-              </>
             )}
+            <NotificationBell />
           </div>
         }
-      />
-
-      {/* Main Content */}
-      <main className="px-4 md:px-8 pb-8 max-w-7xl mx-auto">
-        {/* Portal Title */}
-        <div className="mb-8 mt-2">
-          <h1 className="font-serif text-3xl lg:text-4xl text-white font-bold tracking-tight mb-1">
-            Portal do Aventureiro
-          </h1>
-          <p className="text-slate-400 text-sm">Sua jornada continua aqui.</p>
+      >
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-muted-foreground text-sm">Bem-vindo de volta</p>
+            <h1 className="text-xl font-bold mt-0.5">
+              Olá, {displayName} {user ? "🖐️" : ""}
+            </h1>
+          </div>
+          {user && (
+            <div className="flex items-center gap-2">
+              <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                isPremium 
+                  ? "bg-gold/20 text-gold" 
+                  : "bg-muted text-muted-foreground"
+              }`}>
+                {isPremium ? "Premium" : "Free"}
+              </span>
+              {!isPremium && characters && (
+                <span className="text-xs text-muted-foreground">
+                  {characters.length}/3
+                </span>
+              )}
+            </div>
+          )}
         </div>
+      </AppHeader>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          
-          {/* Active Campaign Hero Banner */}
-          <div className="col-span-1 lg:col-span-8 relative h-64 rounded-2xl overflow-hidden group border border-white/10 shadow-2xl">
-            {activeCampaign ? (
-              <>
-                {/* Background Image */}
-                <div 
-                  className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
-                  style={{ 
-                    backgroundImage: activeCampaign.image_url 
-                      ? `url(${activeCampaign.image_url})` 
-                      : "url('https://images.unsplash.com/photo-1519074069444-1ba4fff66d16?q=80&w=2000&auto=format&fit=crop')" 
-                  }}
-                />
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/60 to-transparent" />
-                
-                <div className="absolute bottom-0 left-0 p-6 md:p-8 w-full">
-                  <div className="flex items-end justify-between">
-                    <div>
-                      <span className="px-3 py-1 rounded-full text-[10px] uppercase font-bold bg-arcane-600/90 text-white backdrop-blur border border-white/10 mb-3 inline-block shadow-arcane">
-                        Campanha Ativa
-                      </span>
-                      <h2 className="font-serif text-2xl md:text-3xl text-white font-bold mb-2 leading-tight">
-                        {activeCampaign.name}
-                      </h2>
-                      <p className="text-slate-300 text-sm md:text-base max-w-lg line-clamp-2">
-                        {activeCampaign.description || "Uma aventura épica aguarda..."}
-                      </p>
+      {/* Hero Grid */}
+      <section className="px-5 mt-6">
+        <div className="grid grid-cols-3 gap-3 h-48">
+          {/* Active Character Card */}
+          <div className="col-span-2 bg-gradient-to-br from-purple-900 to-purple-700 rounded-2xl p-4 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-foreground opacity-5 rounded-full -mr-10 -mt-10" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-foreground opacity-5 rounded-full -ml-8 -mb-8" />
+            <div className="relative z-10 h-full flex flex-col justify-between">
+              {isLoading ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader2 className="w-6 h-6 animate-spin text-purple-300" />
+                </div>
+              ) : activeCharacter ? (
+                <>
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
+                        <Shield className="w-4 h-4" />
+                      </div>
+                      <span className="text-xs font-medium text-purple-200">ATIVO</span>
                     </div>
-                    <button 
-                      onClick={() => onNavigate?.("campaigns")}
-                      className="hidden sm:flex items-center gap-2 bg-white text-slate-950 px-6 py-3 rounded-lg font-bold hover:bg-mystic-400 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:shadow-mystic"
-                    >
-                      <Play className="w-4 h-4 fill-current" />
-                      Jogar
-                    </button>
-                    {/* Mobile Play Button */}
-                    <button 
-                      onClick={() => onNavigate?.("campaigns")}
-                      className="sm:hidden w-12 h-12 rounded-full bg-mystic-400 flex items-center justify-center text-slate-900 shadow-mystic animate-pulse"
-                    >
-                      <Play className="w-6 h-6 fill-current ml-1" />
-                    </button>
+                    <h3 className="text-lg font-bold leading-tight">{activeCharacter.name}</h3>
+                    <p className="text-xs text-purple-200 mt-1">
+                      {activeCharacter.race} {activeCharacter.class} • Nv {activeCharacter.level}
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
+                    <div className="flex-1 bg-background/20 rounded-lg px-2 py-1.5">
+                      <p className="text-xs text-purple-200">HP</p>
+                      <p className="text-sm font-bold">{activeCharacter.current_hp}/{activeCharacter.max_hp}</p>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full text-center">
+                  <Shield className="w-8 h-8 text-purple-300 mb-2" />
+                  <p className="text-sm text-purple-200">Nenhum personagem</p>
+                  <button 
+                    onClick={() => {
+                      if (!user) {
+                        toast.error("Faça login para criar um personagem", {
+                          action: {
+                            label: "Entrar",
+                            onClick: () => navigate("/auth")
+                          }
+                        });
+                        return;
+                      }
+                      navigate("/characters?create=true");
+                    }}
+                    className="mt-2 px-3 py-1 bg-purple-500 rounded-lg text-xs font-medium"
+                  >
+                    Criar
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Next Session Card */}
+          <div className="col-span-1 bg-gradient-to-br from-pink-900 to-pink-700 rounded-2xl p-3 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-foreground opacity-5 rounded-full -mr-8 -mt-8" />
+            <div className="relative z-10 h-full flex flex-col">
+              {loadingSessions ? (
+                <div className="flex items-center justify-center h-full">
+                  <Loader2 className="w-5 h-5 animate-spin text-pink-300" />
+                </div>
+              ) : nextSession ? (
+                <>
+                  <div className="flex-1 flex flex-col justify-center items-center text-center">
+                    <div className="w-10 h-10 rounded-full bg-pink-500 flex items-center justify-center mb-2">
+                      <Calendar className="w-5 h-5" />
+                    </div>
+                    <p className="text-[10px] text-pink-200 font-medium uppercase">Próxima</p>
+                    <p className="text-lg font-bold mt-0.5">
+                      {format(new Date(nextSession.scheduled_at), "dd/MM", { locale: ptBR })}
+                    </p>
+                    <p className="text-xs text-pink-200">
+                      {format(new Date(nextSession.scheduled_at), "HH:mm", { locale: ptBR })}
+                    </p>
+                  </div>
+                  <div className="pt-2 border-t border-pink-600 border-opacity-40">
+                    <p className="text-[10px] font-medium leading-tight text-center text-pink-200 truncate">
+                      {nextSession.campaign_name}
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex-1 flex flex-col justify-center items-center text-center">
+                    <div className="w-10 h-10 rounded-full bg-pink-500/50 flex items-center justify-center mb-2">
+                      <Calendar className="w-5 h-5 text-pink-300" />
+                    </div>
+                    <p className="text-[10px] text-pink-200 font-medium uppercase">Próxima</p>
+                    <p className="text-lg font-bold mt-0.5">--</p>
+                    <p className="text-xs text-pink-200">Sessão</p>
+                  </div>
+                  <div className="pt-2 border-t border-pink-600 border-opacity-40">
+                    <p className="text-[10px] font-medium leading-tight text-center text-pink-200">
+                      Sem sessões
+                    </p>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Actions */}
+      <section className="px-5 mt-8">
+        <h2 className="text-sm font-semibold text-muted-foreground mb-4">AÇÕES RÁPIDAS</h2>
+        <div className="grid grid-cols-4 gap-4">
+          {quickActions.map((action) => (
+            <button 
+              key={action.id} 
+              className="flex flex-col items-center gap-2"
+              onClick={() => {
+                switch (action.id) {
+                  case 'create':
+                    if (!user) {
+                      toast.error("Faça login para criar um personagem", {
+                        action: {
+                          label: "Entrar",
+                          onClick: () => navigate("/auth")
+                        }
+                      });
+                      return;
+                    }
+                    navigate('/characters?create=true');
+                    break;
+                  case 'join':
+                    if (!user) {
+                      toast.error("Faça login para entrar em uma campanha", {
+                        action: {
+                          label: "Entrar",
+                          onClick: () => navigate("/auth")
+                        }
+                      });
+                      return;
+                    }
+                    navigate('/campaigns?join=true');
+                    break;
+                  case 'dice':
+                    navigate('/tools?tool=dice');
+                    break;
+                  case 'note':
+                    if (!user) {
+                      toast.error("Faça login para acessar suas notas", {
+                        action: {
+                          label: "Entrar",
+                          onClick: () => navigate("/auth")
+                        }
+                      });
+                      return;
+                    }
+                    navigate('/campaigns');
+                    break;
+                }
+              }}
+            >
+              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-lg`}>
+                <action.icon className="w-5 h-5" />
+              </div>
+              <span className="text-xs text-muted-foreground text-center leading-tight">{action.label}</span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* Recents */}
+      <section className="mt-8 mb-6">
+        <div className="px-5 flex items-center justify-between mb-4">
+          <h2 className="text-sm font-semibold text-muted-foreground">RECENTES</h2>
+          <button 
+            onClick={() => onNavigate?.("characters")}
+            className="text-xs text-primary font-medium hover:underline"
+          >
+            Ver Todos
+          </button>
+        </div>
+        {isLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <Loader2 className="w-6 h-6 animate-spin text-primary" />
+          </div>
+        ) : recentItems.length === 0 ? (
+          <div className="px-5 py-8 text-center">
+            <p className="text-sm text-muted-foreground">Nenhum item recente</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-3 px-5 pb-2">
+              {recentItems.map((item) => (
+                <div 
+                  key={`${item.type}-${item.id}`}
+                  className="flex-shrink-0 w-40 bg-dark rounded-xl p-3 border border-border"
+                >
+                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3`}>
+                    <item.icon className="w-5 h-5" />
+                  </div>
+                  <h3 className="font-semibold text-sm mb-1 truncate">{item.name}</h3>
+                  <p className="text-xs text-muted-foreground truncate">{item.description}</p>
+                  <div className="mt-3 pt-3 border-t border-border">
+                    <p className="text-xs text-muted-foreground/70 truncate">{item.time}</p>
                   </div>
                 </div>
-              </>
-            ) : (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-slate-900/50">
-                <p className="text-slate-400 text-sm mb-4">Nenhuma campanha ativa</p>
-                <button 
-                  onClick={() => onNavigate?.("campaigns")}
-                  className="px-4 py-2 bg-arcane-600 text-white rounded-lg text-sm font-medium hover:bg-arcane-500 transition-colors"
-                >
-                  Explorar Campanhas
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Create Character Card */}
-          <div 
-            onClick={handleCreateCharacter}
-            className="col-span-1 lg:col-span-4 glass-panel rounded-2xl p-6 flex flex-col justify-center items-center text-center hover-glow cursor-pointer group transition-all relative overflow-hidden min-h-[200px]"
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-arcane-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            
-            <div className="w-16 h-16 rounded-2xl bg-slate-800 border border-white/10 flex items-center justify-center mb-4 group-hover:scale-110 group-hover:border-arcane-500 transition-all shadow-lg relative z-10">
-              <Plus className="w-8 h-8 text-arcane-400" />
-            </div>
-            <h3 className="font-serif text-xl font-bold text-white mb-1 relative z-10">Novo Personagem</h3>
-            <p className="text-slate-400 text-sm relative z-10">Forje um novo herói.</p>
-          </div>
-
-          {/* Recent Characters Section */}
-          <div className="col-span-1 lg:col-span-8">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-serif text-xl text-white font-bold">Personagens Recentes</h3>
-              <button 
-                onClick={() => onNavigate?.("characters")}
-                className="text-sm text-arcane-400 hover:text-white transition-colors"
-              >
-                Ver todos
-              </button>
-            </div>
-
-            {isLoading ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="w-6 h-6 animate-spin text-arcane-400" />
-              </div>
-            ) : recentCharacters.length === 0 ? (
-              <div className="glass-panel p-6 rounded-xl text-center">
-                <p className="text-slate-400 text-sm">Nenhum personagem criado ainda</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {recentCharacters.map((char) => {
-                  const hpPercent = (char.current_hp / char.max_hp) * 100;
-                  const hpColor = hpPercent > 50 ? "from-green-500 to-green-400" : hpPercent > 25 ? "from-yellow-500 to-yellow-400" : "from-red-500 to-red-400";
-                  
-                  return (
-                    <div 
-                      key={char.id}
-                      onClick={() => navigate(`/characters?id=${char.id}`)}
-                      className="glass-panel p-4 rounded-xl border border-white/5 hover:border-arcane-500/50 transition-colors flex items-center gap-4 cursor-pointer group relative overflow-hidden"
-                    >
-                      <div className="absolute right-0 top-0 h-full w-20 bg-gradient-to-l from-arcane-500/5 to-transparent" />
-                      <div 
-                        className="w-16 h-16 rounded-lg bg-slate-800 bg-cover border border-white/10 group-hover:border-arcane-500 transition-all shadow-lg"
-                        style={{ 
-                          backgroundImage: char.image_url 
-                            ? `url(${char.image_url})` 
-                            : `url(https://api.dicebear.com/7.x/adventurer/svg?seed=${char.name})` 
-                        }}
-                      />
-                      <div className="flex-1 min-w-0">
-                        <h4 className="font-serif font-bold text-lg text-white group-hover:text-arcane-400 transition-colors truncate">
-                          {char.name}
-                        </h4>
-                        <p className="text-xs text-slate-400 uppercase tracking-wider mb-1">
-                          {char.race} • {char.class} • Nvl {char.level}
-                        </p>
-                        <div className="w-28 h-1.5 bg-slate-700/50 rounded-full overflow-hidden backdrop-blur-sm">
-                          <div 
-                            className={`h-full bg-gradient-to-r ${hpColor}`}
-                            style={{ width: `${hpPercent}%` }}
-                          />
-                        </div>
-                      </div>
-                      <ChevronRight className="w-5 h-5 text-slate-600 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-          </div>
-
-          {/* Dice Roller Card */}
-          <div className="col-span-1 lg:col-span-4">
-            <div className="glass-panel rounded-2xl p-6 relative overflow-hidden group h-full flex flex-col justify-center">
-              <div className="absolute -right-6 -bottom-6 opacity-5 group-hover:opacity-10 transition-opacity rotate-12">
-                <Hexagon className="w-40 h-40 text-white" />
-              </div>
-              
-              <h3 className="font-serif text-lg font-bold text-white mb-4 flex items-center gap-2">
-                <Hexagon className="w-5 h-5 text-mystic-400" />
-                Dados
-              </h3>
-              
-              <div className="grid grid-cols-6 lg:grid-cols-3 gap-2">
-                {diceTypes.map((dice) => (
-                  <button
-                    key={dice}
-                    onClick={() => handleRollDice(dice)}
-                    className="aspect-square flex items-center justify-center bg-slate-800/50 hover:bg-arcane-600 hover:text-white text-slate-400 border border-white/5 rounded-lg font-bold text-sm transition-all shadow-sm hover:shadow-arcane"
-                  >
-                    {dice}
-                  </button>
-                ))}
-              </div>
+              ))}
             </div>
           </div>
-
-        </div>
-      </main>
+        )}
+      </section>
     </div>
   );
 }
