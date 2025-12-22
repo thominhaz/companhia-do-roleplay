@@ -143,7 +143,7 @@ function MasterCampaignCard({
 
   return (
     <div 
-      className={cn("bg-gradient-to-br rounded-2xl p-5 relative overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform", gradientClasses[gradient])}
+      className={cn("gradient-border animate-border-glow bg-gradient-to-br rounded-2xl p-5 relative overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform", gradientClasses[gradient])}
       onClick={onClick}
     >
       <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -mr-16 -mt-16" />
