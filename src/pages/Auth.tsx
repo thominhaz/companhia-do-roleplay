@@ -437,9 +437,7 @@ export default function Auth() {
     <section className={`relative w-full max-w-md mx-auto bg-slate-900 rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-slate-800 transition-all duration-300 ${activeCard === 'signup' ? 'ring-2 ring-emerald-500/50' : ''}`}>
       <div className="px-6 pt-8 pb-8 flex-1 flex flex-col gap-6">
         <header className="text-center space-y-2">
-          <div className="w-12 h-12 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/25">
-            <UserPlus className="w-6 h-6 text-white" />
-          </div>
+          <img src="/logo.png" alt="Go20" className="w-16 h-16 object-contain mx-auto" />
           <h2 className="text-2xl font-semibold text-slate-100 tracking-tight">Junte-se ao Go20</h2>
           <p className="text-sm text-slate-500">Crie sua conta e comece a explorar</p>
         </header>
