@@ -1,16 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Crown, Check, Sparkles, Users, Wand2, Shield, Gift, Loader2, Sword, ScrollText, Palette, History, MessageSquare, Swords, Share2, Heart, ExternalLink, Settings } from "lucide-react";
+import { Crown, Sparkles, Users, Wand2, Shield, Gift, Loader2, Sword, ScrollText, Palette, History, MessageSquare, Swords, Share2, Heart, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useSearchParams } from "react-router-dom";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface SubscriptionSheetProps {
   open: boolean;
@@ -21,7 +20,6 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
   const { user } = useAuth();
   const { data: subscription, refetch: refetchSubscription } = useSubscription();
   const queryClient = useQueryClient();
-  const [searchParams, setSearchParams] = useSearchParams();
   const currentTier = subscription?.tier ?? "aldeao";
   const isPaidTier = currentTier === "heroi" || currentTier === "mestre";
   
@@ -31,23 +29,7 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "quarterly" | "annual">("monthly");
 
-  // Verifica se voltou do checkout do Stripe
-  useEffect(() => {
-    const subscriptionStatus = searchParams.get("subscription");
-    if (subscriptionStatus === "success") {
-      toast.success("Assinatura realizada com sucesso! Aguarde enquanto atualizamos seu plano...");
-      // Limpa o parâmetro da URL
-      searchParams.delete("subscription");
-      setSearchParams(searchParams);
-      // Verifica a assinatura no Stripe
-      checkSubscriptionFromStripe();
-    } else if (subscriptionStatus === "canceled") {
-      toast.info("Assinatura cancelada");
-      searchParams.delete("subscription");
-      setSearchParams(searchParams);
-    }
-  }, [searchParams]);
-
+  // Função para verificar assinatura manualmente
   const checkSubscriptionFromStripe = async () => {
     try {
       const { data, error } = await supabase.functions.invoke("check-subscription");

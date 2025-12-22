@@ -1,6 +1,9 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
+import { useEffect, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { toast } from 'sonner';
 
 export type SubscriptionTier = 'aldeao' | 'heroi' | 'mestre';
 
@@ -132,6 +135,82 @@ export function useSubscription() {
     enabled: !!user,
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
+}
+
+// Hook para verificar e sincronizar assinatura com Stripe
+export function useSubscriptionSync() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const checkStripeSubscription = useCallback(async () => {
+    if (!user) return null;
+    
+    try {
+      const { data, error } = await supabase.functions.invoke("check-subscription");
+      
+      if (error) {
+        console.error("Error checking subscription:", error);
+        return null;
+      }
+      
+      // Invalida cache para forçar refetch
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      
+      return data;
+    } catch (error) {
+      console.error("Error in checkStripeSubscription:", error);
+      return null;
+    }
+  }, [user, queryClient]);
+
+  // Verifica parâmetros de retorno do Stripe checkout
+  useEffect(() => {
+    const subscriptionStatus = searchParams.get("subscription");
+    
+    if (subscriptionStatus === "success") {
+      toast.success("Assinatura realizada com sucesso! Atualizando seu plano...");
+      
+      // Limpa o parâmetro da URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("subscription");
+      setSearchParams(newParams, { replace: true });
+      
+      // Verifica a assinatura no Stripe com retry
+      const checkWithRetry = async (attempts = 0) => {
+        const result = await checkStripeSubscription();
+        
+        if (result?.subscribed) {
+          const tierName = result.tier === 'mestre' ? 'Mestre' : 'Herói';
+          toast.success(`Plano ${tierName} ativado com sucesso!`);
+        } else if (attempts < 3) {
+          // Retry após 2 segundos se não encontrou assinatura
+          setTimeout(() => checkWithRetry(attempts + 1), 2000);
+        }
+      };
+      
+      checkWithRetry();
+    } else if (subscriptionStatus === "canceled") {
+      toast.info("Assinatura cancelada");
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("subscription");
+      setSearchParams(newParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams, checkStripeSubscription]);
+
+  // Verifica assinatura ao fazer login
+  useEffect(() => {
+    if (user) {
+      // Delay inicial para garantir que o banco está atualizado
+      const timer = setTimeout(() => {
+        checkStripeSubscription();
+      }, 1000);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [user?.id, checkStripeSubscription]);
+
+  return { checkStripeSubscription };
 }
 
 export function useCharacterCount() {
