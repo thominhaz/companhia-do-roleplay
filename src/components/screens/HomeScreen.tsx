@@ -347,7 +347,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 }
               }}
             >
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-lg`}>
+              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-lg card-hover transition-all duration-300`}>
                 <action.icon className="w-5 h-5" />
               </div>
               <span className="text-xs text-muted-foreground text-center leading-tight">{action.label}</span>
@@ -381,14 +381,14 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               {recentItems.map((item) => (
                 <div 
                   key={`${item.type}-${item.id}`}
-                  className="flex-shrink-0 w-40 bg-dark rounded-xl p-3 border border-border card-interactive"
+                  className="flex-shrink-0 w-40 glass-card rounded-xl p-3 card-interactive"
                 >
                   <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3`}>
                     <item.icon className="w-5 h-5" />
                   </div>
                   <h3 className="font-semibold text-sm mb-1 truncate">{item.name}</h3>
                   <p className="text-xs text-muted-foreground truncate">{item.description}</p>
-                  <div className="mt-3 pt-3 border-t border-border">
+                  <div className="mt-3 pt-3 border-t border-border/30">
                     <p className="text-xs text-muted-foreground/70 truncate">{item.time}</p>
                   </div>
                 </div>

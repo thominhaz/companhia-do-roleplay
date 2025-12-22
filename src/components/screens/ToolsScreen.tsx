@@ -208,8 +208,8 @@ export function ToolsScreen() {
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className={cn(
-                    "w-full glass rounded-xl p-3 flex items-center gap-3 card-hover-subtle",
-                    "hover:border-primary/50 text-left"
+                    "w-full glass-card rounded-xl p-3 flex items-center gap-3 card-hover-subtle",
+                    "text-left"
                   )}
                 >
                   <div
