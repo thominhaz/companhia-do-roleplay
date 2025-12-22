@@ -83,19 +83,84 @@
   .dark {
     --background: 0 0% 7%;
     --foreground: 210 40% 98%;
+    --darker: 0 0% 5%;
+    --dark: 0 0% 10%;
+    --dark-panel: 0 0% 13%;
   }
 
   .light {
-    --background: 210 40% 98%;
+    --background: 0 0% 98%;
     --foreground: 0 0% 10%;
     --card: 0 0% 100%;
     --card-foreground: 0 0% 10%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 10%;
-    --muted: 0 0% 92%;
-    --muted-foreground: 0 0% 40%;
-    --border: 0 0% 85%;
-    --input: 0 0% 85%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 45%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 27 100% 55%;
+    
+    /* Light mode custom tokens */
+    --darker: 0 0% 94%;
+    --dark: 0 0% 96%;
+    --dark-panel: 0 0% 98%;
+    
+    /* Adjusted colors for light mode readability */
+    --primary: 27 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 271 76% 45%;
+    --secondary-foreground: 0 0% 100%;
+    --accent: 195 80% 45%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 85% 50%;
+    --destructive-foreground: 0 0% 100%;
+    
+    /* Logo colors adjusted for light mode */
+    --solar-orange: 27 100% 50%;
+    --cyan-blue: 195 80% 45%;
+    --cosmic-purple: 271 76% 45%;
+    --magenta-red: 359 85% 50%;
+    --gold: 27 100% 50%;
+    --crimson: 359 85% 50%;
+    
+    /* Light mode shadows */
+    --shadow-neon: 0 4px 12px hsl(0 0% 0% / 0.1);
+    --shadow-card: 0 4px 16px hsl(0 0% 0% / 0.08);
+    --shadow-elevated: 0 8px 24px hsl(0 0% 0% / 0.12);
+    --shadow-solar: 0 4px 20px hsl(27 100% 50% / 0.2);
+    
+    /* Light gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(195 80% 45%), hsl(271 76% 45%), hsl(359 85% 50%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
+  }
+
+  /* ========== LIGHT MODE FOR PREMIUM THEMES ========== */
+  
+  .theme-neon.light {
+    --background: 260 20% 96%;
+    --foreground: 260 30% 15%;
+    --card: 260 15% 100%;
+    --card-foreground: 260 30% 15%;
+    --muted: 260 15% 90%;
+    --muted-foreground: 260 20% 45%;
+    --border: 260 15% 85%;
+    --darker: 260 15% 92%;
+    --dark: 260 15% 95%;
+    --dark-panel: 260 15% 98%;
+  }
+
+  .theme-dark-elf.light {
+    --background: 270 20% 96%;
+    --foreground: 270 30% 15%;
+    --card: 270 15% 100%;
+    --card-foreground: 270 30% 15%;
+    --muted: 270 15% 90%;
+    --muted-foreground: 270 20% 45%;
+    --border: 270 15% 85%;
+    --darker: 270 15% 92%;
+    --dark: 270 15% 95%;
+    --dark-panel: 270 15% 98%;
   }
 
   /* ========== PREMIUM THEMES ========== */
@@ -313,28 +378,28 @@
   }
   
   .glow-solar {
-    box-shadow: 0 0 30px hsl(27 100% 67% / 0.5), 0 0 60px hsl(27 100% 67% / 0.2);
+    box-shadow: 0 0 30px hsl(var(--solar-orange) / 0.5), 0 0 60px hsl(var(--solar-orange) / 0.2);
   }
   
   .glow-purple {
-    box-shadow: 0 0 30px hsl(271 76% 53% / 0.5), 0 0 60px hsl(271 76% 53% / 0.2);
+    box-shadow: 0 0 30px hsl(var(--cosmic-purple) / 0.5), 0 0 60px hsl(var(--cosmic-purple) / 0.2);
   }
   
   .glow-pink {
-    box-shadow: 0 0 30px hsl(359 100% 65% / 0.5), 0 0 60px hsl(359 100% 65% / 0.2);
+    box-shadow: 0 0 30px hsl(var(--magenta-red) / 0.5), 0 0 60px hsl(var(--magenta-red) / 0.2);
   }
   
   .glow-cyan {
-    box-shadow: 0 0 30px hsl(195 93% 70% / 0.5), 0 0 60px hsl(195 93% 70% / 0.2);
+    box-shadow: 0 0 30px hsl(var(--cyan-blue) / 0.5), 0 0 60px hsl(var(--cyan-blue) / 0.2);
   }
 
   .glow-crimson {
-    box-shadow: 0 0 20px hsl(359 100% 65% / 0.4);
+    box-shadow: 0 0 20px hsl(var(--crimson) / 0.4);
   }
 
   .sheet-panel {
-    background: hsl(0 0% 12%);
-    border: 2px solid hsl(27 100% 67% / 0.6);
+    background: hsl(var(--card));
+    border: 2px solid hsl(var(--solar-orange) / 0.6);
   }
 
   .sheet-hexagon {
@@ -342,102 +407,85 @@
   }
   
   .glass {
-    background: hsl(0 0% 13% / 0.8);
+    background: hsl(var(--card) / 0.8);
     backdrop-filter: blur(12px);
-    border: 1px solid hsl(0 0% 25% / 0.5);
+    border: 1px solid hsl(var(--border) / 0.5);
   }
   
-  /* Glassmorphism card variants */
+  /* Glassmorphism card variants - Now theme-aware */
   .glass-card {
     background: linear-gradient(
       135deg,
-      hsl(0 0% 15% / 0.9) 0%,
-      hsl(0 0% 10% / 0.8) 100%
+      hsl(var(--card) / 0.95) 0%,
+      hsl(var(--background) / 0.9) 100%
     );
     backdrop-filter: blur(16px);
-    border: 1px solid hsl(0 0% 30% / 0.3);
-    box-shadow: 
-      0 8px 32px hsl(0 0% 0% / 0.3),
-      inset 0 1px 0 hsl(0 0% 100% / 0.05);
+    border: 1px solid hsl(var(--border) / 0.5);
+    box-shadow: var(--shadow-card);
   }
   
   .glass-card-solar {
     background: linear-gradient(
       135deg,
-      hsl(27 100% 67% / 0.15) 0%,
-      hsl(0 0% 10% / 0.85) 100%
+      hsl(var(--solar-orange) / 0.1) 0%,
+      hsl(var(--card) / 0.95) 100%
     );
     backdrop-filter: blur(20px);
-    border: 1px solid hsl(27 100% 67% / 0.3);
-    box-shadow: 
-      0 8px 32px hsl(0 0% 0% / 0.4),
-      0 0 40px hsl(27 100% 67% / 0.1),
-      inset 0 1px 0 hsl(27 100% 67% / 0.1);
+    border: 1px solid hsl(var(--solar-orange) / 0.3);
+    box-shadow: var(--shadow-card);
   }
   
   .glass-card-purple {
     background: linear-gradient(
       135deg,
-      hsl(271 76% 53% / 0.15) 0%,
-      hsl(0 0% 10% / 0.85) 100%
+      hsl(var(--cosmic-purple) / 0.1) 0%,
+      hsl(var(--card) / 0.95) 100%
     );
     backdrop-filter: blur(20px);
-    border: 1px solid hsl(271 76% 53% / 0.3);
-    box-shadow: 
-      0 8px 32px hsl(0 0% 0% / 0.4),
-      0 0 40px hsl(271 76% 53% / 0.1),
-      inset 0 1px 0 hsl(271 76% 53% / 0.1);
+    border: 1px solid hsl(var(--cosmic-purple) / 0.3);
+    box-shadow: var(--shadow-card);
   }
   
   .glass-card-cyan {
     background: linear-gradient(
       135deg,
-      hsl(195 93% 70% / 0.12) 0%,
-      hsl(0 0% 10% / 0.85) 100%
+      hsl(var(--cyan-blue) / 0.1) 0%,
+      hsl(var(--card) / 0.95) 100%
     );
     backdrop-filter: blur(20px);
-    border: 1px solid hsl(195 93% 70% / 0.25);
-    box-shadow: 
-      0 8px 32px hsl(0 0% 0% / 0.4),
-      0 0 40px hsl(195 93% 70% / 0.1),
-      inset 0 1px 0 hsl(195 93% 70% / 0.1);
+    border: 1px solid hsl(var(--cyan-blue) / 0.25);
+    box-shadow: var(--shadow-card);
   }
   
   .glass-card-magenta {
     background: linear-gradient(
       135deg,
-      hsl(359 100% 65% / 0.12) 0%,
-      hsl(0 0% 10% / 0.85) 100%
+      hsl(var(--magenta-red) / 0.1) 0%,
+      hsl(var(--card) / 0.95) 100%
     );
     backdrop-filter: blur(20px);
-    border: 1px solid hsl(359 100% 65% / 0.25);
-    box-shadow: 
-      0 8px 32px hsl(0 0% 0% / 0.4),
-      0 0 40px hsl(359 100% 65% / 0.1),
-      inset 0 1px 0 hsl(359 100% 65% / 0.1);
+    border: 1px solid hsl(var(--magenta-red) / 0.25);
+    box-shadow: var(--shadow-card);
   }
   
   .glass-card-gradient {
     background: linear-gradient(
       135deg,
-      hsl(195 93% 70% / 0.1) 0%,
-      hsl(271 76% 53% / 0.1) 50%,
-      hsl(359 100% 65% / 0.1) 100%
+      hsl(var(--cyan-blue) / 0.08) 0%,
+      hsl(var(--cosmic-purple) / 0.08) 50%,
+      hsl(var(--magenta-red) / 0.08) 100%
     );
     backdrop-filter: blur(24px);
-    border: 1px solid hsl(0 0% 100% / 0.1);
-    box-shadow: 
-      0 8px 32px hsl(0 0% 0% / 0.4),
-      0 0 60px hsl(271 76% 53% / 0.08),
-      inset 0 1px 0 hsl(0 0% 100% / 0.08);
+    border: 1px solid hsl(var(--border) / 0.3);
+    box-shadow: var(--shadow-card);
   }
   
   /* Premium glass effect with animated border */
   .glass-premium {
     background: linear-gradient(
       135deg,
-      hsl(0 0% 12% / 0.95) 0%,
-      hsl(0 0% 8% / 0.9) 100%
+      hsl(var(--card) / 0.95) 0%,
+      hsl(var(--background) / 0.9) 100%
     );
     backdrop-filter: blur(24px);
     position: relative;
@@ -452,9 +500,9 @@
     border-radius: inherit;
     background: linear-gradient(
       135deg,
-      hsl(27 100% 67% / 0.5),
-      hsl(271 76% 53% / 0.5),
-      hsl(195 93% 70% / 0.5)
+      hsl(var(--solar-orange) / 0.5),
+      hsl(var(--cosmic-purple) / 0.5),
+      hsl(var(--cyan-blue) / 0.5)
     );
     -webkit-mask: 
       linear-gradient(#fff 0 0) content-box, 
@@ -470,7 +518,7 @@
     inset: 0;
     background: radial-gradient(
       circle at 30% 20%,
-      hsl(27 100% 67% / 0.08) 0%,
+      hsl(var(--solar-orange) / 0.08) 0%,
       transparent 50%
     );
     pointer-events: none;
