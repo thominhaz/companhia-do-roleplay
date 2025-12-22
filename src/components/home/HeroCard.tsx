@@ -45,7 +45,7 @@ export function HeroCard({ character, nextSession }: HeroCardProps) {
             <p className="text-sm text-muted-foreground mb-4">
               Crie seu primeiro herói para começar a aventura!
             </p>
-            <button className="px-6 py-2.5 bg-gradient-primary rounded-full text-sm font-semibold text-foreground shadow-neon hover:scale-105 transition-transform">
+            <button className="px-6 py-2.5 bg-gradient-accent rounded-full text-sm font-semibold text-foreground shadow-solar hover:scale-105 transition-transform">
               Criar Personagem
             </button>
           </div>
@@ -119,7 +119,7 @@ export function HeroCard({ character, nextSession }: HeroCardProps) {
 
               {/* AC */}
               <div className="flex items-center gap-2">
-                <Shield className="w-4 h-4 text-neon-blue" />
+                <Shield className="w-4 h-4 text-cyan-blue" />
                 <span className="text-sm font-semibold text-foreground">
                   {character.armorClass}
                 </span>

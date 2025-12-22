@@ -111,7 +111,7 @@ export function RecentCampaigns({
                     {campaign.name}
                   </h3>
                   {campaign.isUserMaster && (
-                    <Crown className="w-3 h-3 text-gold flex-shrink-0" />
+                    <Crown className="w-3 h-3 text-solar-orange flex-shrink-0" />
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
