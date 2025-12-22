@@ -94,15 +94,31 @@ serve(async (req) => {
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
-      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
+      
+      // Verifica se current_period_end existe e é válido
+      const periodEnd = subscription.current_period_end;
+      logStep("Subscription period end raw", { periodEnd, type: typeof periodEnd });
+      
+      if (periodEnd && typeof periodEnd === 'number' && periodEnd > 0) {
+        subscriptionEnd = new Date(periodEnd * 1000).toISOString();
+      } else {
+        // Fallback: usa 30 dias a partir de agora
+        subscriptionEnd = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+      }
+      
       logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
 
-      const productId = subscription.items.data[0].price.product as string;
+      // Obtém o product ID - pode ser string ou objeto
+      const priceProduct = subscription.items.data[0]?.price?.product;
+      const productId = typeof priceProduct === 'string' ? priceProduct : priceProduct?.id || '';
+      
+      logStep("Product info", { priceProduct, productId, priceProductType: typeof priceProduct });
+      
       tier = PRODUCT_TO_TIER[productId] || "aldeao";
-      logStep("Determined subscription tier", { productId, tier });
+      logStep("Determined subscription tier", { productId, tier, mappedTiers: Object.keys(PRODUCT_TO_TIER) });
 
       // Atualiza o status no Supabase
-      await supabaseClient
+      const { error: upsertError } = await supabaseClient
         .from("subscriptions")
         .upsert({ 
           user_id: user.id, 
@@ -111,7 +127,11 @@ serve(async (req) => {
           updated_at: new Date().toISOString()
         }, { onConflict: "user_id" });
 
-      logStep("Updated subscription in Supabase", { tier, expires_at: subscriptionEnd });
+      if (upsertError) {
+        logStep("Error upserting subscription", { error: upsertError.message });
+      } else {
+        logStep("Updated subscription in Supabase", { tier, expires_at: subscriptionEnd });
+      }
     } else {
       logStep("No active subscription found");
       
