@@ -36,6 +36,11 @@ export type WizardData = {
   armor: string;
   selectedSkills: string[];
   extraLanguages: string[];
+  // Custom background fields
+  customBackgroundSkills: string[];
+  customBackgroundProficiencies: string[]; // Can be languages or tools
+  customBackgroundName: string;
+  customBackgroundFeature: string;
   // Backstory fields
   age: string;
   height: string;
@@ -78,6 +83,10 @@ const initialData: WizardData = {
   armor: '',
   selectedSkills: [],
   extraLanguages: [],
+  customBackgroundSkills: [],
+  customBackgroundProficiencies: [],
+  customBackgroundName: '',
+  customBackgroundFeature: '',
   age: '',
   height: '',
   weight: '',
