@@ -42,6 +42,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const ATTRIBUTES = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const;
 
@@ -160,6 +170,9 @@ export function CharacterSheet() {
   const [showHistory, setShowHistory] = useState(false);
   const [skillSearch, setSkillSearch] = useState('');
   const [hpModifier, setHpModifier] = useState('');
+  const [tempHpInput, setTempHpInput] = useState('');
+  const [showRestDialog, setShowRestDialog] = useState<'short' | 'long' | null>(null);
+  const [hitDiceToSpend, setHitDiceToSpend] = useState(0);
 
   const hasHistoryAccess = subscription?.limits.hasHistorico ?? false;
 
@@ -228,6 +241,89 @@ export function CharacterSheet() {
       return;
     }
     handleHpChange(isDamage ? -value : value);
+  };
+
+  // Temporary HP handler
+  const handleAddTempHp = async () => {
+    const value = parseInt(tempHpInput, 10);
+    if (isNaN(value) || value <= 0) {
+      toast.error('Digite um valor válido');
+      return;
+    }
+    try {
+      // Temp HP doesn't stack - use the higher value
+      const newTempHp = Math.max(character.temporary_hp, value);
+      await updateCharacter.mutateAsync({
+        id: character.id,
+        temporary_hp: newTempHp
+      });
+      toast.success(`HP Temporário: ${newTempHp}`);
+      setTempHpInput('');
+    } catch (error) {
+      toast.error('Erro ao adicionar HP temporário');
+    }
+  };
+
+  // Get hit dice info
+  const hitDice = character.hit_dice as { current: number; total: number; diceType: string };
+  const conMod = getModifier(attributes.constitution || 10);
+
+  // Short rest handler
+  const handleShortRest = async () => {
+    if (hitDiceToSpend <= 0 || hitDiceToSpend > hitDice.current) {
+      toast.error('Selecione uma quantidade válida de dados de vida');
+      return;
+    }
+
+    // Roll hit dice
+    const diceValue = parseInt(hitDice.diceType.replace('d', ''), 10);
+    let totalHealing = 0;
+    
+    for (let i = 0; i < hitDiceToSpend; i++) {
+      const roll = Math.floor(Math.random() * diceValue) + 1;
+      totalHealing += Math.max(1, roll + conMod);
+    }
+
+    const newHp = Math.min(character.max_hp, character.current_hp + totalHealing);
+    const newHitDice = { ...hitDice, current: hitDice.current - hitDiceToSpend };
+
+    try {
+      await updateCharacter.mutateAsync({
+        id: character.id,
+        current_hp: newHp,
+        hit_dice: newHitDice
+      });
+      toast.success(`Descanso Curto: +${totalHealing} HP (${hitDiceToSpend}${hitDice.diceType})`);
+      setShowRestDialog(null);
+      setHitDiceToSpend(0);
+    } catch (error) {
+      toast.error('Erro ao realizar descanso');
+    }
+  };
+
+  // Long rest handler
+  const handleLongRest = async () => {
+    // Recover all HP
+    const newHp = character.max_hp;
+    
+    // Recover half of total hit dice (minimum 1)
+    const hitDiceRecovered = Math.max(1, Math.floor(hitDice.total / 2));
+    const newHitDiceCurrent = Math.min(hitDice.total, hitDice.current + hitDiceRecovered);
+    const newHitDice = { ...hitDice, current: newHitDiceCurrent };
+
+    // Reset temporary HP
+    try {
+      await updateCharacter.mutateAsync({
+        id: character.id,
+        current_hp: newHp,
+        temporary_hp: 0,
+        hit_dice: newHitDice
+      });
+      toast.success(`Descanso Longo: HP recuperado (${newHp}), +${hitDiceRecovered} dados de vida`);
+      setShowRestDialog(null);
+    } catch (error) {
+      toast.error('Erro ao realizar descanso');
+    }
   };
 
   // Filter skills
@@ -397,8 +493,23 @@ export function CharacterSheet() {
                   </div>
                 </div>
                 
+                {/* Temporary HP Display */}
                 {character.temporary_hp > 0 && (
-                  <p className="text-xs text-blue-400 text-center">+{character.temporary_hp} Temporário</p>
+                  <div className="flex items-center justify-center gap-2 bg-blue-500/20 border border-blue-500/30 rounded-lg p-2">
+                    <Shield className="w-4 h-4 text-blue-400" />
+                    <span className="text-sm font-medium text-blue-400">+{character.temporary_hp} HP Temporário</span>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-blue-400 hover:text-blue-300"
+                      onClick={async () => {
+                        await updateCharacter.mutateAsync({ id: character.id, temporary_hp: 0 });
+                        toast.success('HP temporário removido');
+                      }}
+                    >
+                      <Minus className="w-3 h-3" />
+                    </Button>
+                  </div>
                 )}
 
                 {/* HP Modifier Input */}
@@ -435,6 +546,64 @@ export function CharacterSheet() {
                   >
                     <Plus className="w-4 h-4 mr-1" />
                     Curar
+                  </Button>
+                </div>
+
+                {/* Temporary HP Input */}
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder="HP Temporário"
+                    value={tempHpInput}
+                    onChange={(e) => setTempHpInput(e.target.value)}
+                    className="flex-1 text-center h-9 text-sm"
+                    min="1"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && tempHpInput) {
+                        handleAddTempHp();
+                      }
+                    }}
+                  />
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="h-9 px-3 bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30"
+                    onClick={handleAddTempHp}
+                    disabled={!tempHpInput || updateCharacter.isPending}
+                  >
+                    <Shield className="w-4 h-4 mr-1" />
+                    Temp
+                  </Button>
+                </div>
+
+                {/* Hit Dice & Rest */}
+                <div className="flex items-center gap-2 pt-2 border-t border-border/30">
+                  <div className="flex-1 bg-muted/30 rounded-lg p-2 text-center">
+                    <div className="flex items-center justify-center gap-1">
+                      <Dices className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-bold">{hitDice.current}/{hitDice.total}</span>
+                      <span className="text-xs text-muted-foreground">{hitDice.diceType}</span>
+                    </div>
+                    <p className="text-[10px] text-muted-foreground">Dados de Vida</p>
+                  </div>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="h-10 px-3 bg-amber-500/20 text-amber-400 border-amber-500/30 hover:bg-amber-500/30"
+                    onClick={() => setShowRestDialog('short')}
+                    disabled={hitDice.current === 0 || character.current_hp === character.max_hp}
+                  >
+                    <Moon className="w-4 h-4 mr-1" />
+                    Curto
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="h-10 px-3 bg-indigo-500/20 text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/30"
+                    onClick={() => setShowRestDialog('long')}
+                  >
+                    <Sunrise className="w-4 h-4 mr-1" />
+                    Longo
                   </Button>
                 </div>
               </div>
@@ -827,6 +996,90 @@ export function CharacterSheet() {
         open={showHistory}
         onOpenChange={setShowHistory}
       />
+
+      {/* Rest Dialog */}
+      <AlertDialog open={showRestDialog !== null} onOpenChange={(open) => !open && setShowRestDialog(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              {showRestDialog === 'short' ? (
+                <>
+                  <Moon className="w-5 h-5 text-amber-400" />
+                  Descanso Curto
+                </>
+              ) : (
+                <>
+                  <Sunrise className="w-5 h-5 text-indigo-400" />
+                  Descanso Longo
+                </>
+              )}
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-4 pt-2">
+                {showRestDialog === 'short' ? (
+                  <>
+                    <p>Durante um descanso curto (1 hora), você pode gastar dados de vida para recuperar HP.</p>
+                    <div className="bg-muted/50 rounded-lg p-3">
+                      <p className="text-sm text-foreground mb-2">
+                        Dados de vida disponíveis: <span className="font-bold text-primary">{hitDice.current}/{hitDice.total}</span> ({hitDice.diceType})
+                      </p>
+                      <p className="text-sm text-foreground mb-3">
+                        Modificador de Constituição: <span className="font-bold text-primary">{conMod >= 0 ? '+' : ''}{conMod}</span>
+                      </p>
+                      <div className="flex items-center gap-3">
+                        <label className="text-sm">Gastar dados:</label>
+                        <Input
+                          type="number"
+                          value={hitDiceToSpend || ''}
+                          onChange={(e) => setHitDiceToSpend(Math.max(0, Math.min(hitDice.current, parseInt(e.target.value) || 0)))}
+                          className="w-20 text-center"
+                          min={0}
+                          max={hitDice.current}
+                        />
+                        <span className="text-xs text-muted-foreground">
+                          (Recupera {hitDiceToSpend}{hitDice.diceType} + {conMod >= 0 ? '+' : ''}{conMod} por dado)
+                        </span>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <p>Durante um descanso longo (8 horas), você recupera todo o HP e metade dos dados de vida gastos.</p>
+                    <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+                      <p className="text-sm text-foreground">
+                        HP atual: <span className="font-bold">{character.current_hp}/{character.max_hp}</span> → <span className="font-bold text-green-500">{character.max_hp}/{character.max_hp}</span>
+                      </p>
+                      <p className="text-sm text-foreground">
+                        Dados de vida: <span className="font-bold">{hitDice.current}/{hitDice.total}</span> → <span className="font-bold text-green-500">{Math.min(hitDice.total, hitDice.current + Math.max(1, Math.floor(hitDice.total / 2)))}/{hitDice.total}</span>
+                      </p>
+                      {character.temporary_hp > 0 && (
+                        <p className="text-sm text-foreground">
+                          HP temporário: <span className="font-bold">{character.temporary_hp}</span> → <span className="font-bold text-muted-foreground">0</span>
+                        </p>
+                      )}
+                    </div>
+                  </>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setShowRestDialog(null);
+              setHitDiceToSpend(0);
+            }}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={showRestDialog === 'short' ? handleShortRest : handleLongRest}
+              disabled={showRestDialog === 'short' && hitDiceToSpend === 0}
+              className={showRestDialog === 'short' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-indigo-500 hover:bg-indigo-600'}
+            >
+              {showRestDialog === 'short' ? 'Descansar' : 'Descansar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
