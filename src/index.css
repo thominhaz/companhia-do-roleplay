@@ -2,78 +2,65 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 @layer base {
   :root {
-    /* Go20 Arcane Dark Theme */
-    --background: 220 20% 4%;
+    /* Go20 Dark Theme */
+    --background: 222 47% 7%;
     --foreground: 210 40% 98%;
 
-    --card: 220 25% 8%;
+    --card: 220 47% 11%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 220 25% 10%;
+    --popover: 220 47% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 174 72% 56%;
-    --primary-foreground: 220 20% 4%;
+    --primary: 263 70% 66%;
+    --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 20% 50%;
+    --secondary: 330 81% 60%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 220 20% 14%;
-    --muted-foreground: 220 15% 55%;
+    --muted: 220 30% 18%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 174 50% 40%;
+    --accent: 263 70% 66%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 220 20% 18%;
-    --input: 220 20% 15%;
-    --ring: 174 72% 56%;
+    --border: 220 30% 20%;
+    --input: 220 30% 20%;
+    --ring: 263 70% 66%;
 
     --radius: 0.75rem;
 
-    /* Custom Go20 Arcane Tokens */
-    --darker: 220 20% 4%;
-    --dark: 220 25% 8%;
-    --dark-panel: 220 25% 12%;
-    
-    /* Arcane Neon Colors */
-    --arcane-cyan: 174 72% 56%;
-    --arcane-teal: 175 50% 40%;
-    --arcane-purple: 263 70% 60%;
-    --arcane-gold: 45 93% 55%;
-    --arcane-silver: 210 10% 75%;
-    --arcane-crimson: 0 72% 51%;
-    
-    /* Legacy support */
-    --neon-purple: 263 70% 60%;
+    /* Custom Go20 tokens */
+    --darker: 222 47% 7%;
+    --dark: 220 47% 11%;
+    --dark-panel: 0 0% 15%;
+    --neon-purple: 263 70% 66%;
     --neon-pink: 330 81% 60%;
     --neon-blue: 217 91% 60%;
-    --gold: 45 93% 55%;
+    --gold: 45 93% 47%;
     --crimson: 0 72% 51%;
     --crimson-dark: 0 72% 35%;
     
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(174 72% 56%), hsl(175 50% 40%));
-    --gradient-arcane: linear-gradient(135deg, hsl(263 70% 60%), hsl(174 72% 56%));
-    --gradient-gold: linear-gradient(135deg, hsl(45 93% 55%), hsl(35 85% 45%));
-    --gradient-card: linear-gradient(180deg, hsl(220 25% 10% / 0.9), hsl(220 25% 6% / 0.95));
-    --gradient-glow: radial-gradient(circle at center, hsl(174 72% 56% / 0.2), transparent 70%);
+    --gradient-primary: linear-gradient(135deg, hsl(263 70% 66%), hsl(330 81% 60%));
+    --gradient-card: linear-gradient(180deg, hsl(220 47% 13%), hsl(220 47% 9%));
+    --gradient-glow: radial-gradient(circle at center, hsl(263 70% 66% / 0.3), transparent 70%);
     
     /* Shadows */
-    --shadow-arcane: 0 0 30px hsl(174 72% 56% / 0.3);
-    --shadow-card: 0 8px 32px hsl(220 20% 2% / 0.6);
-    --shadow-elevated: 0 20px 40px hsl(220 20% 2% / 0.8);
-    --shadow-inner-glow: inset 0 1px 0 hsl(210 40% 98% / 0.05);
+    --shadow-neon: 0 0 20px hsl(263 70% 66% / 0.4);
+    --shadow-card: 0 8px 32px hsl(222 47% 4% / 0.6);
+    --shadow-elevated: 0 20px 40px hsl(222 47% 4% / 0.8);
   }
 
   .dark {
-    --background: 220 20% 4%;
+    --background: 222 47% 7%;
     --foreground: 210 40% 98%;
   }
 }
@@ -90,19 +77,10 @@
   body {
     @apply bg-background text-foreground antialiased;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
-    background-image: 
-      radial-gradient(ellipse at top, hsl(220 25% 8%) 0%, transparent 50%),
-      radial-gradient(ellipse at bottom, hsl(174 72% 56% / 0.03) 0%, transparent 50%);
   }
 }
 
 @layer utilities {
-  /* Font utilities */
-  .font-display {
-    font-family: 'Cinzel', serif;
-  }
-
-  /* Background utilities */
   .bg-darker {
     background-color: hsl(var(--darker));
   }
@@ -114,29 +92,7 @@
   .bg-dark-panel {
     background-color: hsl(var(--dark-panel));
   }
-
-  /* Arcane color utilities */
-  .text-arcane-cyan {
-    color: hsl(var(--arcane-cyan));
-  }
-
-  .text-arcane-gold {
-    color: hsl(var(--arcane-gold));
-  }
-
-  .text-arcane-silver {
-    color: hsl(var(--arcane-silver));
-  }
-
-  .border-arcane-cyan {
-    border-color: hsl(var(--arcane-cyan));
-  }
-
-  .border-arcane-gold {
-    border-color: hsl(var(--arcane-gold));
-  }
   
-  /* Legacy support */
   .text-neon-purple {
     color: hsl(var(--neon-purple));
   }
@@ -161,131 +117,49 @@
     background-color: hsl(var(--crimson-dark));
   }
   
-  /* Gradient utilities */
   .bg-gradient-primary {
     background: var(--gradient-primary);
-  }
-
-  .bg-gradient-arcane {
-    background: var(--gradient-arcane);
-  }
-
-  .bg-gradient-gold {
-    background: var(--gradient-gold);
   }
   
   .bg-gradient-card {
     background: var(--gradient-card);
   }
-
-  /* Shadow utilities */
-  .shadow-arcane {
-    box-shadow: var(--shadow-arcane);
+  
+  .shadow-neon {
+    box-shadow: var(--shadow-neon);
   }
   
   .shadow-card {
     box-shadow: var(--shadow-card);
   }
   
-  .glow-cyan {
-    box-shadow: 0 0 30px hsl(174 72% 56% / 0.4), 0 0 60px hsl(174 72% 56% / 0.15);
-  }
-
-  .glow-gold {
-    box-shadow: 0 0 20px hsl(45 93% 55% / 0.3), 0 0 40px hsl(45 93% 55% / 0.1);
-  }
-  
   .glow-purple {
-    box-shadow: 0 0 30px hsl(263 70% 60% / 0.4), 0 0 60px hsl(263 70% 60% / 0.15);
+    box-shadow: 0 0 30px hsl(263 70% 66% / 0.5), 0 0 60px hsl(263 70% 66% / 0.2);
   }
   
   .glow-pink {
-    box-shadow: 0 0 30px hsl(330 81% 60% / 0.4), 0 0 60px hsl(330 81% 60% / 0.15);
+    box-shadow: 0 0 30px hsl(330 81% 60% / 0.5), 0 0 60px hsl(330 81% 60% / 0.2);
   }
 
   .glow-crimson {
     box-shadow: 0 0 20px hsl(0 72% 51% / 0.4);
   }
 
-  /* Glassmorphism */
-  .glass {
-    background: hsl(220 25% 10% / 0.85);
-    backdrop-filter: blur(16px);
-    border: 1px solid hsl(210 40% 98% / 0.08);
-    box-shadow: var(--shadow-inner-glow);
-  }
-
-  .glass-card {
-    background: linear-gradient(135deg, hsl(220 25% 12% / 0.9), hsl(220 25% 8% / 0.95));
-    backdrop-filter: blur(12px);
-    border: 1px solid hsl(174 72% 56% / 0.15);
-    box-shadow: 
-      var(--shadow-inner-glow),
-      0 8px 32px hsl(220 20% 2% / 0.5);
-  }
-
-  .glass-accent {
-    background: linear-gradient(135deg, hsl(174 72% 56% / 0.1), hsl(263 70% 60% / 0.05));
-    backdrop-filter: blur(12px);
-    border: 1px solid hsl(174 72% 56% / 0.2);
-  }
-
-  /* Arcane border glow */
-  .border-glow {
-    position: relative;
-  }
-
-  .border-glow::before {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: linear-gradient(135deg, hsl(174 72% 56% / 0.5), hsl(263 70% 60% / 0.3), hsl(45 93% 55% / 0.2));
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    pointer-events: none;
-  }
-
-  /* Sheet panel for character sheets */
   .sheet-panel {
-    background: hsl(220 25% 10%);
-    border: 2px solid hsl(45 93% 55% / 0.3);
-    box-shadow: inset 0 0 30px hsl(45 93% 55% / 0.05);
+    background: hsl(0 0% 12%);
+    border: 2px solid hsl(0 72% 40%);
   }
 
   .sheet-hexagon {
     clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
   }
-
-  /* Noise texture overlay */
-  .noise-overlay {
-    position: relative;
-  }
-
-  .noise-overlay::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
-    opacity: 0.03;
-    pointer-events: none;
-    border-radius: inherit;
-  }
-
-  /* Hexagon pattern overlay */
-  .hex-pattern {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='49' viewBox='0 0 28 49'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2366fcf1' fill-opacity='0.03'%3E%3Cpath d='M13.99 9.25l13 7.5v15l-13 7.5L1 31.75v-15l12.99-7.5zM3 17.9v12.7l10.99 6.34 11-6.35V17.9l-11-6.34L3 17.9zM0 15l12.98-7.5V0h-2v6.35L0 12.69v2.3zm0 18.5L12.98 41v8h-2v-6.85L0 35.81v-2.3zM15 0v7.5L27.99 15H28v-2.31h-.01L17 6.35V0h-2zm0 49v-8l12.99-7.5H28v2.31h-.01L17 42.15V49h-2z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-  }
-
-  /* Vignette effect */
-  .vignette {
-    box-shadow: inset 0 0 100px 40px hsl(220 20% 4% / 0.8);
+  
+  .glass {
+    background: hsl(220 47% 11% / 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(220 30% 25% / 0.5);
   }
   
-  /* Animations */
   .animate-float {
     animation: float 6s ease-in-out infinite;
   }
@@ -296,10 +170,6 @@
   
   .animate-slide-up {
     animation: slide-up 0.5s ease-out;
-  }
-
-  .animate-rune-pulse {
-    animation: rune-pulse 3s ease-in-out infinite;
   }
 }
 
@@ -321,17 +191,6 @@
   to {
     opacity: 1;
     transform: translateY(0);
-  }
-}
-
-@keyframes rune-pulse {
-  0%, 100% { 
-    opacity: 0.6;
-    filter: brightness(1);
-  }
-  50% { 
-    opacity: 1;
-    filter: brightness(1.2);
   }
 }
 
