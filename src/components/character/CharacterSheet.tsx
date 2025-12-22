@@ -24,7 +24,8 @@ import {
   Sunrise,
   Plus,
   Minus,
-  Dices
+  Dices,
+  History
 } from "lucide-react";
 import { useCharacter, useUpdateCharacter } from "@/hooks/useCharacters";
 import { getModifier, getAttributeAbbr } from "@/data/srd";
@@ -36,9 +37,11 @@ import { LevelUpSheet } from "./LevelUpSheet";
 import { EditStatsSheet } from "./EditStatsSheet";
 import { SpellsManagementSheet } from "./SpellsManagementSheet";
 import { NotesSheet } from "./NotesSheet";
+import { CharacterHistorySheet } from "./CharacterHistorySheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { useSubscription } from "@/hooks/useSubscription";
 
 const ATTRIBUTES = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const;
 
@@ -147,13 +150,17 @@ export function CharacterSheet() {
   const navigate = useNavigate();
   const { data: character, isLoading } = useCharacter(id || '');
   const updateCharacter = useUpdateCharacter();
+  const { data: subscription } = useSubscription();
   const [activeTab, setActiveTab] = useState('geral');
   const [skillsTab, setSkillsTab] = useState('pericias');
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showEditStats, setShowEditStats] = useState(false);
   const [showSpells, setShowSpells] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [skillSearch, setSkillSearch] = useState('');
+
+  const hasHistoryAccess = subscription?.limits.hasHistorico ?? false;
 
   if (isLoading) {
     return (
@@ -262,6 +269,11 @@ export function CharacterSheet() {
                 <DropdownMenuItem onClick={() => setShowNotes(true)}>
                   <FileText className="w-4 h-4 mr-2" />
                   Notas e Anotações
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowHistory(true)}>
+                  <History className="w-4 h-4 mr-2" />
+                  Histórico de Alterações
+                  {!hasHistoryAccess && <span className="ml-auto text-[10px] text-gold">PRO</span>}
                 </DropdownMenuItem>
                 {character.spellcasting && (
                   <DropdownMenuItem onClick={() => setShowSpells(true)}>
@@ -776,6 +788,12 @@ export function CharacterSheet() {
         character={character} 
         open={showNotes} 
         onOpenChange={setShowNotes} 
+      />
+      <CharacterHistorySheet
+        characterId={character.id}
+        characterName={character.name}
+        open={showHistory}
+        onOpenChange={setShowHistory}
       />
     </div>
   );
