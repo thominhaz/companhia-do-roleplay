@@ -242,7 +242,8 @@ export function QuickNotes({ onBack }: QuickNotesProps) {
           {/* Create button */}
           <Button
             onClick={handleCreateNote}
-            className="w-full mb-6 glass-card-solar h-14 text-base font-semibold"
+            variant="gradient"
+            className="w-full mb-6 h-14 text-base font-bold shadow-lg hover:shadow-xl border-2 border-primary/30"
             disabled={createNote.isPending}
           >
             {createNote.isPending ? (
