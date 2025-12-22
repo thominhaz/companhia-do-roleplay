@@ -190,9 +190,9 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       <section className="px-5 mt-6">
         <div className="grid grid-cols-3 gap-3 h-48">
           {/* Active Character Card */}
-          <div className="col-span-2 bg-gradient-to-br from-cosmic-purple to-cosmic-purple/70 rounded-2xl p-4 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-foreground opacity-5 rounded-full -mr-10 -mt-10" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-foreground opacity-5 rounded-full -ml-8 -mb-8" />
+          <div className="col-span-2 bg-gradient-to-br from-cosmic-purple to-cosmic-purple/70 rounded-2xl p-4 relative overflow-hidden parallax-scale">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-foreground opacity-5 rounded-full -mr-10 -mt-10 parallax-float" />
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-foreground opacity-5 rounded-full -ml-8 -mb-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col justify-between">
               {isLoading ? (
                 <div className="flex items-center justify-center h-full">
@@ -246,8 +246,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </div>
 
           {/* Next Session Card */}
-          <div className="col-span-1 bg-gradient-to-br from-magenta-red to-magenta-red/70 rounded-2xl p-3 relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-20 h-20 bg-foreground opacity-5 rounded-full -mr-8 -mt-8" />
+          <div className="col-span-1 bg-gradient-to-br from-magenta-red to-magenta-red/70 rounded-2xl p-3 relative overflow-hidden parallax-scale">
+            <div className="absolute top-0 right-0 w-20 h-20 bg-foreground opacity-5 rounded-full -mr-8 -mt-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col">
               {loadingSessions ? (
                 <div className="flex items-center justify-center h-full">

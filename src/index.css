@@ -492,3 +492,117 @@
   animation: ripple-animation 0.6s ease-out forwards;
   z-index: 10;
 }
+
+/* Parallax scroll effects */
+.parallax-container {
+  perspective: 1000px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.parallax-slow {
+  transform: translateZ(-1px) scale(2);
+  z-index: -1;
+}
+
+.parallax-medium {
+  transform: translateZ(-0.5px) scale(1.5);
+  z-index: 0;
+}
+
+/* Scroll-driven parallax with CSS */
+@supports (animation-timeline: scroll()) {
+  .parallax-up {
+    animation: parallax-up-motion linear both;
+    animation-timeline: scroll();
+    animation-range: 0% 100%;
+  }
+
+  .parallax-down {
+    animation: parallax-down-motion linear both;
+    animation-timeline: scroll();
+    animation-range: 0% 100%;
+  }
+
+  .parallax-fade {
+    animation: parallax-fade-motion linear both;
+    animation-timeline: scroll();
+    animation-range: 0% 50%;
+  }
+
+  .parallax-scale {
+    animation: parallax-scale-motion linear both;
+    animation-timeline: scroll();
+    animation-range: 0% 30%;
+  }
+
+  @keyframes parallax-up-motion {
+    from { transform: translateY(0); }
+    to { transform: translateY(-30px); }
+  }
+
+  @keyframes parallax-down-motion {
+    from { transform: translateY(0); }
+    to { transform: translateY(30px); }
+  }
+
+  @keyframes parallax-fade-motion {
+    from { opacity: 1; }
+    to { opacity: 0.6; }
+  }
+
+  @keyframes parallax-scale-motion {
+    from { transform: scale(1); }
+    to { transform: scale(0.98); }
+  }
+}
+
+/* Fallback parallax with transforms for browsers without scroll-timeline */
+@supports not (animation-timeline: scroll()) {
+  .parallax-bg {
+    background-attachment: fixed;
+    background-size: cover;
+    background-position: center;
+  }
+}
+
+/* Floating parallax elements */
+.parallax-float {
+  animation: parallax-float 6s ease-in-out infinite;
+}
+
+.parallax-float-delayed {
+  animation: parallax-float 6s ease-in-out infinite;
+  animation-delay: -3s;
+}
+
+@keyframes parallax-float {
+  0%, 100% { 
+    transform: translateY(0) rotate(0deg); 
+  }
+  25% { 
+    transform: translateY(-8px) rotate(1deg); 
+  }
+  50% { 
+    transform: translateY(-12px) rotate(0deg); 
+  }
+  75% { 
+    transform: translateY(-4px) rotate(-1deg); 
+  }
+}
+
+/* Subtle depth layers */
+.depth-layer-1 {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+.depth-layer-2 {
+  transform: translateZ(10px);
+  will-change: transform;
+}
+
+.depth-layer-3 {
+  transform: translateZ(20px);
+  will-change: transform;
+}
