@@ -108,6 +108,22 @@ const itemRarityOptions = [
   { value: 'artifact', label: 'Artefato' },
 ];
 
+// Helper function to get singular form of content type labels
+const getSingularLabel = (label: string | undefined): string => {
+  if (!label) return 'item';
+  const singularMap: Record<string, string> = {
+    'Magias': 'magia',
+    'Itens': 'item',
+    'Raças': 'raça',
+    'Classes': 'classe',
+    'Subclasses': 'subclasse',
+    'Monstros': 'monstro',
+    'Antecedentes': 'antecedente',
+    'Talentos': 'talento',
+  };
+  return singularMap[label] || label.toLowerCase().slice(0, -1);
+};
+
 export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const { user } = useAuth();
   const subscription = useSubscription();
@@ -427,23 +443,23 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
                 key={type.type}
                 onClick={() => setSelectedType(type.type)}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2 rounded-xl transition-all flex-shrink-0",
+                  "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all flex-shrink-0 min-w-fit",
                   isSelected 
-                    ? `bg-gradient-to-r ${type.color} text-white` 
+                    ? `bg-gradient-to-r ${type.color} text-white shadow-lg` 
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 )}
               >
-                <Icon className="w-4 h-4" />
-                <span className="text-sm font-medium">{type.label}</span>
+                <Icon className="w-4 h-4 flex-shrink-0" />
+                <span className="text-sm font-medium whitespace-nowrap">{type.label}</span>
               </button>
             );
           })}
         </div>
 
         {/* Search & Actions */}
-        <div className="flex gap-2">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 min-w-0">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
             <input
               type="text"
               placeholder={`Buscar ${selectedTypeInfo?.label.toLowerCase()}...`}
@@ -455,7 +471,10 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
           <Button
             variant="outline"
             size="icon"
-            className={cn("h-10 w-10", hasActiveFilters && "border-primary text-primary")}
+            className={cn(
+              "h-10 w-10 flex-shrink-0",
+              hasActiveFilters && "border-primary text-primary"
+            )}
             onClick={() => setShowFilters(!showFilters)}
           >
             <Filter className="w-4 h-4" />
@@ -463,15 +482,16 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
           <Button
             onClick={handleCreateClick}
             disabled={!isPremium || !isAvailableType}
+            size="sm"
             className={cn(
-              "h-10 px-4 gap-2",
+              "h-10 px-3 gap-1.5 flex-shrink-0 whitespace-nowrap",
               isPremium 
-                ? `bg-gradient-to-r ${selectedTypeInfo?.color}` 
+                ? `bg-gradient-to-r ${selectedTypeInfo?.color} text-white` 
                 : "bg-muted text-muted-foreground"
             )}
           >
             <Plus className="w-4 h-4" />
-            Criar
+            <span>Criar</span>
           </Button>
         </div>
 
@@ -574,8 +594,18 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
 
         {/* Content List */}
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <div className="space-y-3">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="rounded-xl bg-card p-4 space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg skeleton-go20" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-32 rounded skeleton-go20" />
+                    <div className="h-3 w-48 rounded skeleton-go20" />
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         ) : filteredContent.length === 0 ? (
           <div className="text-center py-12">
@@ -589,12 +619,12 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
             <h3 className="font-semibold text-foreground">
               {searchQuery 
                 ? `Nenhum resultado para "${searchQuery}"`
-                : `Nenhum ${selectedTypeInfo?.label.toLowerCase().slice(0, -1)} criado`
+                : `Nenhuma ${getSingularLabel(selectedTypeInfo?.label)} criada`
               }
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
               {isPremium 
-                ? `Clique em "Criar" para adicionar seu primeiro ${selectedTypeInfo?.label.toLowerCase().slice(0, -1)}` 
+                ? `Clique em "Criar" para adicionar sua primeira ${getSingularLabel(selectedTypeInfo?.label)}` 
                 : "Faça upgrade para criar conteúdo homebrew"
               }
             </p>

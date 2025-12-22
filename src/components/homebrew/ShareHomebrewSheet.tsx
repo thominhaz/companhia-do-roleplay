@@ -45,12 +45,10 @@ export function ShareHomebrewSheet({ open, onOpenChange, item }: ShareHomebrewSh
 
   // Initialize selected campaigns from current shares
   useEffect(() => {
-    if (currentShares.length > 0) {
+    if (!loadingShares) {
       setSelectedCampaigns(new Set(currentShares));
-    } else {
-      setSelectedCampaigns(new Set());
     }
-  }, [currentShares]);
+  }, [loadingShares, item?.id]);
 
   const handleToggleCampaign = (campaignId: string) => {
     const newSelected = new Set(selectedCampaigns);

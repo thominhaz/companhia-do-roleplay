@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { TabBar } from "@/components/layout/TabBar";
 import { HomeScreen } from "@/components/screens/HomeScreen";
@@ -8,10 +8,14 @@ import { ToolsScreen } from "@/components/screens/ToolsScreen";
 import { MenuScreen } from "@/components/screens/MenuScreen";
 import type { TabRoute } from "@/types";
 import { Helmet } from "react-helmet";
+import { cn } from "@/lib/utils";
 
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabRoute>("home");
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [displayedTab, setDisplayedTab] = useState<TabRoute>("home");
+  const prevTabRef = useRef<TabRoute>("home");
 
   // Handle tab from URL query param
   useEffect(() => {
@@ -25,10 +29,33 @@ const Index = () => {
     }
   }, [searchParams, setSearchParams]);
 
+  // Handle tab transitions
+  const handleTabChange = (newTab: TabRoute) => {
+    if (newTab === activeTab) return;
+    
+    prevTabRef.current = activeTab;
+    setIsTransitioning(true);
+    
+    // Short delay before changing content
+    setTimeout(() => {
+      setActiveTab(newTab);
+      setDisplayedTab(newTab);
+      // Small delay to allow content to mount before animating in
+      setTimeout(() => {
+        setIsTransitioning(false);
+      }, 50);
+    }, 150);
+  };
+
+  // Sync displayedTab with activeTab on initial load
+  useEffect(() => {
+    setDisplayedTab(activeTab);
+  }, []);
+
   const renderScreen = () => {
-    switch (activeTab) {
+    switch (displayedTab) {
       case "home":
-        return <HomeScreen onNavigate={setActiveTab} />;
+        return <HomeScreen onNavigate={handleTabChange} />;
       case "characters":
         return <CharactersScreen />;
       case "campaigns":
@@ -38,7 +65,7 @@ const Index = () => {
       case "menu":
         return <MenuScreen />;
       default:
-        return <HomeScreen onNavigate={setActiveTab} />;
+        return <HomeScreen onNavigate={handleTabChange} />;
     }
   };
 
@@ -55,8 +82,17 @@ const Index = () => {
       </Helmet>
 
       <div className="min-h-screen bg-darker">
-        {renderScreen()}
-        <TabBar activeTab={activeTab} onTabChange={setActiveTab} />
+        <div 
+          className={cn(
+            "transition-all duration-300 ease-out",
+            isTransitioning 
+              ? "opacity-0 translate-y-2" 
+              : "opacity-100 translate-y-0"
+          )}
+        >
+          {renderScreen()}
+        </div>
+        <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
     </>
   );
