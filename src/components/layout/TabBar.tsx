@@ -1,6 +1,7 @@
 import { Home, Users, Map, Wrench, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TabRoute } from "@/types";
+import { useState, useEffect } from "react";
 
 interface TabBarProps {
   activeTab: TabRoute;
@@ -16,6 +17,16 @@ const tabs = [
 ];
 
 export function TabBar({ activeTab, onTabChange }: TabBarProps) {
+  const [animatingTab, setAnimatingTab] = useState<TabRoute | null>(null);
+
+  const handleClick = (tabId: TabRoute) => {
+    if (tabId !== activeTab) {
+      setAnimatingTab(tabId);
+      onTabChange(tabId);
+      setTimeout(() => setAnimatingTab(null), 300);
+    }
+  };
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-border/50">
       <div className="flex items-center justify-around px-2 py-2 max-w-lg mx-auto">
@@ -23,11 +34,12 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           const isCampaigns = tab.id === "campaigns";
+          const isAnimating = animatingTab === tab.id;
 
           return (
             <button
               key={tab.id}
-              onClick={() => onTabChange(tab.id)}
+              onClick={() => handleClick(tab.id)}
               className={cn(
                 "flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all duration-300 min-w-[60px]",
                 isActive
@@ -39,7 +51,8 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
                 <Icon
                   className={cn(
                     "w-5 h-5 transition-all duration-300",
-                    isActive && "scale-110"
+                    isActive && "scale-110",
+                    isAnimating && "icon-animate"
                   )}
                 />
                 {isCampaigns && (
