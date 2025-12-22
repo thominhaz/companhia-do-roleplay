@@ -298,7 +298,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       {/* Quick Actions */}
       <section className="px-5 mt-8">
         <h2 className="text-sm font-semibold text-muted-foreground mb-4">AÇÕES RÁPIDAS</h2>
-        <div className="grid grid-cols-4 gap-4">
+        <div className="grid grid-cols-4 gap-4 stagger-fast">
           {quickActions.map((action) => (
             <button 
               key={action.id} 
@@ -377,7 +377,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </div>
         ) : (
           <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex gap-3 px-5 pb-2">
+            <div className="flex gap-3 px-5 pb-2 stagger-fast">
               {recentItems.map((item) => (
                 <div 
                   key={`${item.type}-${item.id}`}

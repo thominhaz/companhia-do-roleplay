@@ -223,7 +223,7 @@ export function MenuScreen() {
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               {section.title}
             </h2>
-            <div className="glass rounded-2xl overflow-hidden divide-y divide-border/50">
+            <div className="glass rounded-2xl overflow-hidden divide-y divide-border/50 stagger-fast">
               {section.items.map((item) => {
                 const Icon = item.icon;
                 const description = item.id === "subscription" 

@@ -10,13 +10,10 @@ import type { TabRoute } from "@/types";
 import { Helmet } from "react-helmet";
 import { cn } from "@/lib/utils";
 
-const TAB_ORDER: TabRoute[] = ["home", "characters", "campaigns", "tools", "menu"];
-
 const Index = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabRoute>("home");
   const [displayedTab, setDisplayedTab] = useState<TabRoute>("home");
-  const [slideDirection, setSlideDirection] = useState<"left" | "right" | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
 
   // Handle tab from URL query param
@@ -31,15 +28,10 @@ const Index = () => {
     }
   }, [searchParams, setSearchParams]);
 
-  // Handle tab transitions with slide animation
+  // Handle tab transitions with fade animation
   const handleTabChange = (newTab: TabRoute) => {
     if (newTab === activeTab || isAnimating) return;
     
-    const currentIndex = TAB_ORDER.indexOf(activeTab);
-    const newIndex = TAB_ORDER.indexOf(newTab);
-    const direction = newIndex > currentIndex ? "left" : "right";
-    
-    setSlideDirection(direction);
     setIsAnimating(true);
     setActiveTab(newTab);
     
@@ -47,8 +39,7 @@ const Index = () => {
     setTimeout(() => {
       setDisplayedTab(newTab);
       setIsAnimating(false);
-      setSlideDirection(null);
-    }, 300);
+    }, 250);
   };
 
   // Sync displayedTab with activeTab on initial load
@@ -73,11 +64,6 @@ const Index = () => {
     }
   };
 
-  const getContentAnimationClass = () => {
-    if (!slideDirection || !isAnimating) return "";
-    return slideDirection === "left" ? "slide-enter-left" : "slide-enter-right";
-  };
-
   return (
     <>
       <Helmet>
@@ -90,8 +76,8 @@ const Index = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Helmet>
 
-      <div className="min-h-screen bg-darker overflow-x-hidden">
-        <div className={cn("min-h-screen", getContentAnimationClass())}>
+      <div className="min-h-screen bg-darker">
+        <div className={cn("min-h-screen", isAnimating ? "animate-page-enter" : "")}>
           {renderScreen()}
         </div>
         <TabBar activeTab={activeTab} onTabChange={handleTabChange} />

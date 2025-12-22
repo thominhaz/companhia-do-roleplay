@@ -283,38 +283,84 @@
   }
 }
 
-/* Page slide transition animations - subtle horizontal slides */
-@keyframes slide-in-from-right {
+/* Page fade transition animations - vertical */
+@keyframes page-fade-enter {
   from {
     opacity: 0;
-    transform: translateX(40px);
+    transform: translateY(12px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
-@keyframes slide-in-from-left {
+.animate-page-enter {
+  animation: page-fade-enter 0.25s ease-out forwards;
+}
+
+/* Staggered list item animations */
+@keyframes stagger-fade-in {
   from {
     opacity: 0;
-    transform: translateX(-40px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
-/* Slide enter from right (going left/forward) */
-.slide-enter-left {
-  animation: slide-in-from-right 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+.stagger-item {
+  opacity: 0;
+  animation: stagger-fade-in 0.4s ease-out forwards;
 }
 
-/* Slide enter from left (going right/backward) */
-.slide-enter-right {
-  animation: slide-in-from-left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+.stagger-item:nth-child(1) { animation-delay: 0ms; }
+.stagger-item:nth-child(2) { animation-delay: 50ms; }
+.stagger-item:nth-child(3) { animation-delay: 100ms; }
+.stagger-item:nth-child(4) { animation-delay: 150ms; }
+.stagger-item:nth-child(5) { animation-delay: 200ms; }
+.stagger-item:nth-child(6) { animation-delay: 250ms; }
+.stagger-item:nth-child(7) { animation-delay: 300ms; }
+.stagger-item:nth-child(8) { animation-delay: 350ms; }
+.stagger-item:nth-child(9) { animation-delay: 400ms; }
+.stagger-item:nth-child(10) { animation-delay: 450ms; }
+.stagger-item:nth-child(n+11) { animation-delay: 500ms; }
+
+/* Stagger container - applies to children automatically */
+.stagger-container > * {
+  opacity: 0;
+  animation: stagger-fade-in 0.4s ease-out forwards;
 }
+
+.stagger-container > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-container > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-container > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-container > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-container > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-container > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-container > *:nth-child(7) { animation-delay: 300ms; }
+.stagger-container > *:nth-child(8) { animation-delay: 350ms; }
+.stagger-container > *:nth-child(9) { animation-delay: 400ms; }
+.stagger-container > *:nth-child(10) { animation-delay: 450ms; }
+.stagger-container > *:nth-child(n+11) { animation-delay: 500ms; }
+
+/* Fast stagger variant */
+.stagger-fast > * {
+  opacity: 0;
+  animation: stagger-fade-in 0.3s ease-out forwards;
+}
+
+.stagger-fast > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-fast > *:nth-child(2) { animation-delay: 30ms; }
+.stagger-fast > *:nth-child(3) { animation-delay: 60ms; }
+.stagger-fast > *:nth-child(4) { animation-delay: 90ms; }
+.stagger-fast > *:nth-child(5) { animation-delay: 120ms; }
+.stagger-fast > *:nth-child(6) { animation-delay: 150ms; }
+.stagger-fast > *:nth-child(7) { animation-delay: 180ms; }
+.stagger-fast > *:nth-child(8) { animation-delay: 210ms; }
+.stagger-fast > *:nth-child(n+9) { animation-delay: 240ms; }
 
 /* Go20 Skeleton with gradient */
 .skeleton-go20 {

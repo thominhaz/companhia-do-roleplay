@@ -169,7 +169,7 @@ export function ToolsScreen() {
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             Destaques
           </h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 gap-3 stagger-fast">
             {featuredTools.map((tool, index) => {
               const Icon = tool.icon;
               return (
@@ -201,7 +201,7 @@ export function ToolsScreen() {
           <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
             Compêndio
           </h2>
-          <div className="space-y-2">
+          <div className="space-y-2 stagger-container">
             {otherTools.map((tool, index) => {
               const Icon = tool.icon;
               return (
