@@ -10,10 +10,29 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface SubscriptionSheetProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
+}
+
+interface UpgradePreview {
+  currentPlan: string;
+  newPlan: string;
+  prorationAmount: number;
+  creditAmount: number;
+  chargeAmount: number;
+  daysRemaining: number;
 }
 
 export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps) {
@@ -27,8 +46,12 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
   const [isRedeeming, setIsRedeeming] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [isUpgrading, setIsUpgrading] = useState(false);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "quarterly" | "annual">("monthly");
+  const [upgradePreview, setUpgradePreview] = useState<UpgradePreview | null>(null);
+  const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
+  const [pendingUpgradePlan, setPendingUpgradePlan] = useState<"mestre" | null>(null);
 
   // Função para verificar assinatura manualmente
   const checkSubscriptionFromStripe = async () => {
@@ -81,8 +104,8 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
     }
   };
 
-  // Upgrade with proration (for existing subscribers)
-  const handleUpgradeWithProration = async (newPlan: "mestre") => {
+  // Preview upgrade proration before confirming
+  const handlePreviewUpgrade = async (newPlan: "mestre") => {
     if (!user) {
       toast.error("Você precisa estar logado");
       return;
@@ -94,11 +117,49 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
       annual: "anual"
     };
 
+    setIsLoadingPreview(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("preview-upgrade", {
+        body: { 
+          newPlan, 
+          period: periodMap[billingPeriod] 
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data?.success) {
+        setUpgradePreview(data);
+        setPendingUpgradePlan(newPlan);
+        setShowUpgradeDialog(true);
+      } else {
+        throw new Error(data?.error || "Erro ao calcular preview");
+      }
+    } catch (error: any) {
+      console.error("Preview error:", error);
+      toast.error(error.message || "Erro ao calcular valor do upgrade");
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  };
+
+  // Confirm and execute the upgrade
+  const confirmUpgrade = async () => {
+    if (!pendingUpgradePlan) return;
+
+    const periodMap = {
+      monthly: "mensal",
+      quarterly: "trimestral",
+      annual: "anual"
+    };
+
     setIsUpgrading(true);
+    setShowUpgradeDialog(false);
+    
     try {
       const { data, error } = await supabase.functions.invoke("upgrade-subscription", {
         body: { 
-          newPlan, 
+          newPlan: pendingUpgradePlan, 
           period: periodMap[billingPeriod] 
         }
       });
@@ -117,6 +178,8 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
       toast.error(error.message || "Erro ao fazer upgrade");
     } finally {
       setIsUpgrading(false);
+      setPendingUpgradePlan(null);
+      setUpgradePreview(null);
     }
   };
 
@@ -371,18 +434,18 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
               
               {currentTier !== "mestre" && (
                 <Button 
-                  onClick={() => currentTier === "heroi" ? handleUpgradeWithProration("mestre") : handleUpgrade("mestre")}
-                  disabled={isCheckingOut || isUpgrading}
+                  onClick={() => currentTier === "heroi" ? handlePreviewUpgrade("mestre") : handleUpgrade("mestre")}
+                  disabled={isCheckingOut || isUpgrading || isLoadingPreview}
                   className="w-full mt-4 bg-gradient-to-r from-gold to-amber-500 text-black font-semibold hover:opacity-90"
                 >
-                  {isCheckingOut || isUpgrading ? (
+                  {isCheckingOut || isUpgrading || isLoadingPreview ? (
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                   ) : currentTier === "heroi" ? (
                     <ArrowUp className="w-4 h-4 mr-2" />
                   ) : (
                     <Crown className="w-4 h-4 mr-2" />
                   )}
-                  {currentTier === "heroi" ? "Fazer Upgrade (pagar diferença)" : "Assinar Mestre"}
+                  {currentTier === "heroi" ? "Fazer Upgrade para Mestre" : "Assinar Mestre"}
                 </Button>
               )}
             </div>
@@ -451,6 +514,81 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
           </p>
         </div>
       </SheetContent>
+
+      {/* Upgrade Confirmation Dialog */}
+      <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <ArrowUp className="w-5 h-5 text-gold" />
+              Confirmar Upgrade para Mestre
+            </AlertDialogTitle>
+            <AlertDialogDescription asChild>
+              <div className="space-y-4 pt-2">
+                {upgradePreview && (
+                  <>
+                    <div className="bg-muted rounded-lg p-4 space-y-3">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Plano atual:</span>
+                        <span className="font-medium">{upgradePreview.currentPlan}</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Novo plano:</span>
+                        <span className="font-medium text-gold">{upgradePreview.newPlan}</span>
+                      </div>
+                      <div className="border-t border-border pt-3 space-y-2">
+                        {upgradePreview.creditAmount > 0 && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Crédito (tempo não usado):</span>
+                            <span className="text-green-500">- R$ {upgradePreview.creditAmount.toFixed(2)}</span>
+                          </div>
+                        )}
+                        {upgradePreview.chargeAmount > 0 && (
+                          <div className="flex justify-between text-sm">
+                            <span className="text-muted-foreground">Novo plano (proporcional):</span>
+                            <span>R$ {upgradePreview.chargeAmount.toFixed(2)}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="border-t border-border pt-3">
+                        <div className="flex justify-between font-semibold">
+                          <span>Total a pagar agora:</span>
+                          <span className="text-gold">R$ {upgradePreview.prorationAmount.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {upgradePreview.daysRemaining > 0 
+                        ? `Você tem ${upgradePreview.daysRemaining} dias restantes no seu período atual. O valor proporcional será cobrado imediatamente.`
+                        : "O valor proporcional será cobrado imediatamente."
+                      }
+                    </p>
+                  </>
+                )}
+              </div>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => {
+              setPendingUpgradePlan(null);
+              setUpgradePreview(null);
+            }}>
+              Cancelar
+            </AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmUpgrade}
+              className="bg-gradient-to-r from-gold to-amber-500 text-black hover:opacity-90"
+            >
+              {isUpgrading ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Crown className="w-4 h-4 mr-2" />
+              )}
+              Confirmar Upgrade
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Sheet>
   );
 }
