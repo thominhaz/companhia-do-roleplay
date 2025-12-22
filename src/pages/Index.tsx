@@ -6,11 +6,14 @@ import { CharactersScreen } from "@/components/screens/CharactersScreen";
 import { CampaignsScreen } from "@/components/screens/CampaignsScreen";
 import { ToolsScreen } from "@/components/screens/ToolsScreen";
 import { MenuScreen } from "@/components/screens/MenuScreen";
+import { useSubscriptionSync } from "@/hooks/useSubscription";
 import type { TabRoute } from "@/types";
 import { Helmet } from "react-helmet";
 import { cn } from "@/lib/utils";
 
 const Index = () => {
+  // Hook para sincronizar assinatura com Stripe automaticamente
+  useSubscriptionSync();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabRoute>("home");
   const [displayedTab, setDisplayedTab] = useState<TabRoute>("home");
