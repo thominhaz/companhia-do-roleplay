@@ -129,7 +129,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const navigate = useNavigate();
 
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Aventureiro";
-  const isPremium = subscription?.status === "premium";
+  const currentTier = subscription?.tier || 'aldeao';
+  const isPaidTier = currentTier === 'heroi' || currentTier === 'mestre';
 
   const isLoading = loadingChars || loadingCampaigns;
   const nextSession = upcomingSessions?.[0];
@@ -170,13 +171,15 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           {user && (
             <div className="flex items-center gap-2">
               <span className={`px-3 py-1 text-xs font-semibold rounded-full ${
-                isPremium 
-                  ? "bg-solar-orange/20 text-solar-orange" 
-                  : "bg-muted text-muted-foreground"
+                currentTier === 'mestre'
+                  ? "bg-gold/20 text-gold"
+                  : currentTier === 'heroi'
+                    ? "bg-secondary/20 text-secondary" 
+                    : "bg-muted text-muted-foreground"
               }`}>
-                {isPremium ? "Premium" : "Free"}
+                {currentTier === 'mestre' ? "Mestre" : currentTier === 'heroi' ? "Herói" : "Aldeão"}
               </span>
-              {!isPremium && characters && (
+              {currentTier === 'aldeao' && characters && (
                 <span className="text-xs text-muted-foreground">
                   {characters.length}/3
                 </span>

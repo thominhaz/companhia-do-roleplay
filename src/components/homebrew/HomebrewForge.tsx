@@ -126,8 +126,9 @@ const getSingularLabel = (label: string | undefined): string => {
 
 export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const { user } = useAuth();
-  const subscription = useSubscription();
-  const isPremium = subscription.data?.status === 'premium';
+  const { data: subscription } = useSubscription();
+  const canCreateHomebrew = subscription?.canCreateHomebrew || false;
+  const currentTier = subscription?.tier || 'aldeao';
   
   const [selectedType, setSelectedType] = useState<HomebrewContentType>('spell');
   const [searchQuery, setSearchQuery] = useState("");
@@ -200,7 +201,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   };
 
   const handleCreateClick = () => {
-    if (!isPremium) return;
+    if (!canCreateHomebrew) return;
     
     switch (selectedType) {
       case 'spell': setShowCreateSpell(true); break;
@@ -398,10 +399,14 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
                 Crie seu conteúdo homebrew
               </p>
             </div>
-            {isPremium && (
-              <Badge variant="secondary" className="bg-gold/20 text-gold border-gold/30">
+            {canCreateHomebrew && (
+              <Badge variant="secondary" className={cn(
+                currentTier === 'mestre' 
+                  ? "bg-gold/20 text-gold border-gold/30"
+                  : "bg-secondary/20 text-secondary border-secondary/30"
+              )}>
                 <Crown className="w-3 h-3 mr-1" />
-                Premium
+                {currentTier === 'mestre' ? 'Mestre' : 'Herói'}
               </Badge>
             )}
           </div>
@@ -410,21 +415,21 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
 
       <main className="px-4 py-4 max-w-lg mx-auto space-y-4">
         {/* Premium Gate */}
-        {!isPremium && (
-          <div className="glass rounded-xl p-4 border-2 border-gold/30 bg-gradient-to-br from-gold/10 to-transparent">
+        {!canCreateHomebrew && (
+          <div className="glass rounded-xl p-4 border-2 border-secondary/30 bg-gradient-to-br from-secondary/10 to-transparent">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gold/20 flex items-center justify-center flex-shrink-0">
-                <Crown className="w-5 h-5 text-gold" />
+              <div className="w-10 h-10 rounded-xl bg-secondary/20 flex items-center justify-center flex-shrink-0">
+                <Crown className="w-5 h-5 text-secondary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-gold">Recurso Premium</h3>
+                <h3 className="font-semibold text-secondary">Recurso Exclusivo</h3>
                 <p className="text-sm text-muted-foreground mt-1">
-                  A criação de conteúdo homebrew é exclusiva para assinantes premium. 
+                  A criação de conteúdo homebrew é exclusiva para assinantes Herói ou Mestre. 
                   Crie magias, itens, raças e monstros personalizados!
                 </p>
                 <Button 
                   size="sm" 
-                  className="mt-3 bg-gold hover:bg-gold/90 text-black"
+                  className="mt-3 bg-secondary hover:bg-secondary/90 text-secondary-foreground"
                 >
                   Fazer Upgrade
                 </Button>
@@ -481,11 +486,11 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
           </Button>
           <Button
             onClick={handleCreateClick}
-            disabled={!isPremium || !isAvailableType}
+            disabled={!canCreateHomebrew || !isAvailableType}
             size="sm"
             className={cn(
               "h-10 px-3 gap-1.5 flex-shrink-0 whitespace-nowrap",
-              isPremium 
+              canCreateHomebrew 
                 ? `bg-gradient-to-r ${selectedTypeInfo?.color} text-white` 
                 : "bg-muted text-muted-foreground"
             )}
@@ -564,7 +569,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
         )}
 
         {/* Stats & Actions */}
-        {isPremium && (
+        {canCreateHomebrew && (
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">{homebrewCount} conteúdos criados</span>
             <div className="flex gap-2">
@@ -623,7 +628,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
               }
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              {isPremium 
+              {canCreateHomebrew 
                 ? `Clique em "Criar" para adicionar sua primeira ${getSingularLabel(selectedTypeInfo?.label)}` 
                 : "Faça upgrade para criar conteúdo homebrew"
               }
