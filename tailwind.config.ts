@@ -52,20 +52,36 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        darker: "hsl(var(--darker))",
-        dark: "hsl(var(--dark))",
-        "neon-purple": "hsl(var(--neon-purple))",
-        "neon-pink": "hsl(var(--neon-pink))",
-        "neon-blue": "hsl(var(--neon-blue))",
+        // Custom colors
+        arcane: {
+          400: "hsl(var(--arcane-400))",
+          500: "hsl(var(--arcane-500))",
+          600: "hsl(var(--arcane-600))",
+          900: "hsl(var(--arcane-900))",
+        },
+        mystic: {
+          400: "hsl(var(--mystic-400))",
+        },
         gold: "hsl(var(--gold))",
+        slate: {
+          300: "hsl(var(--slate-300))",
+          400: "hsl(var(--slate-400))",
+          500: "hsl(var(--slate-500))",
+          600: "hsl(var(--slate-600))",
+          700: "hsl(var(--slate-700))",
+          800: "hsl(var(--slate-800))",
+          900: "hsl(var(--slate-900))",
+          950: "hsl(var(--slate-950))",
+        },
+      },
+      fontFamily: {
+        sans: ["Inter", "system-ui", "sans-serif"],
+        serif: ["Cinzel", "serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-      },
-      fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {
@@ -93,7 +109,7 @@ export default {
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-primary": "linear-gradient(135deg, hsl(var(--neon-purple)), hsl(var(--neon-pink)))",
+        "gradient-arcane": "linear-gradient(135deg, hsl(var(--arcane-600)), hsl(var(--arcane-900)))",
       },
     },
   },
