@@ -178,7 +178,7 @@ export default function Auth() {
       <div className="flex-1 flex flex-col px-6 pt-8 pb-8 gap-8">
         {/* Brand Logo */}
         <div className="flex flex-col items-center gap-4">
-          <img src="/logo.png" alt="Go20" className="w-20 h-20 object-contain" />
+          <img src="/lovable-uploads/efa0d41b-14e0-4651-a827-05d928549cb9.png" alt="Go20" className="w-24 h-24 object-contain" />
           <div className="text-center">
             <h1 className="text-xl font-semibold text-slate-100 tracking-tight">Bem-vindo de volta</h1>
             <p className="text-sm text-slate-500 mt-1">Entre na sua conta Go20</p>
@@ -305,7 +305,7 @@ export default function Auth() {
       <div className="flex-1 flex flex-col px-6 pt-8 pb-8 gap-8">
         {/* Brand Logo */}
         <div className="flex flex-col items-center gap-4">
-          <img src="/logo.png" alt="Go20" className="w-20 h-20 object-contain" />
+          <img src="/lovable-uploads/efa0d41b-14e0-4651-a827-05d928549cb9.png" alt="Go20" className="w-24 h-24 object-contain" />
           <div className="text-center">
             <h1 className="text-xl font-semibold text-slate-100 tracking-tight">Recuperar Senha</h1>
             <p className="text-sm text-slate-500 mt-1">Enviaremos um link para redefinir sua senha</p>
@@ -437,7 +437,7 @@ export default function Auth() {
     <section className={`relative w-full max-w-md mx-auto bg-slate-900 rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-slate-800 transition-all duration-300 ${activeCard === 'signup' ? 'ring-2 ring-emerald-500/50' : ''}`}>
       <div className="px-6 pt-8 pb-8 flex-1 flex flex-col gap-6">
         <header className="text-center space-y-2">
-          <img src="/logo.png" alt="Go20" className="w-16 h-16 object-contain mx-auto" />
+          <img src="/lovable-uploads/efa0d41b-14e0-4651-a827-05d928549cb9.png" alt="Go20" className="w-24 h-24 object-contain mx-auto" />
           <h2 className="text-2xl font-semibold text-slate-100 tracking-tight">Junte-se ao Go20</h2>
           <p className="text-sm text-slate-500">Crie sua conta e comece a explorar</p>
         </header>
