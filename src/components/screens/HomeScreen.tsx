@@ -342,7 +342,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                       });
                       return;
                     }
-                    navigate('/campaigns');
+                    navigate('/?tab=tools&tool=notes');
                     break;
                 }
               }}

@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   Dice6, 
   BookOpen, 
@@ -11,7 +11,8 @@ import {
   ChevronRight,
   Zap,
   Gem,
-  Sword
+  Sword,
+  StickyNote
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DiceRoller } from "@/components/tools/DiceRoller";
@@ -21,9 +22,10 @@ import { WeaponsArmorList } from "@/components/tools/WeaponsArmorList";
 import { BasicRules } from "@/components/tools/BasicRules";
 import { HealingRest } from "@/components/tools/HealingRest";
 import { HomebrewForge } from "@/components/homebrew/HomebrewForge";
+import { QuickNotes } from "@/components/tools/QuickNotes";
 import { AppHeader } from "@/components/layout/AppHeader";
 
-type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | "homebrew" | null;
+type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | "homebrew" | "notes" | null;
 
 const tools = [
   {
@@ -98,12 +100,34 @@ const tools = [
     featured: true,
     toolKey: "homebrew" as ActiveTool,
   },
+  {
+    id: "notes",
+    name: "Notas Rápidas",
+    description: "Anotações pessoais com Markdown",
+    icon: StickyNote,
+    color: "from-amber-500 to-amber-500/70",
+    featured: true,
+    toolKey: "notes" as ActiveTool,
+  },
 ];
 
 export function ToolsScreen() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTool, setActiveTool] = useState<ActiveTool>(null);
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Handle URL params for opening specific tool
+  useEffect(() => {
+    const toolParam = searchParams.get('tool');
+    if (toolParam === 'notes') {
+      setActiveTool('notes');
+      setSearchParams({}, { replace: true });
+    } else if (toolParam === 'dice') {
+      setActiveTool('dice');
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
   
   const filteredTools = tools.filter((t) => 
     t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -142,6 +166,9 @@ export function ToolsScreen() {
   }
   if (activeTool === "homebrew") {
     return <HomebrewForge onBack={() => setActiveTool(null)} />;
+  }
+  if (activeTool === "notes") {
+    return <QuickNotes onBack={() => setActiveTool(null)} />;
   }
 
   return (

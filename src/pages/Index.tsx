@@ -22,9 +22,14 @@ const Index = () => {
     if (tabParam && ['home', 'characters', 'campaigns', 'tools', 'menu'].includes(tabParam)) {
       setActiveTab(tabParam as TabRoute);
       setDisplayedTab(tabParam as TabRoute);
+      // Keep other params like tool=notes
       const newParams = new URLSearchParams(searchParams);
       newParams.delete('tab');
-      setSearchParams(newParams, { replace: true });
+      if (newParams.toString()) {
+        setSearchParams(newParams, { replace: true });
+      } else {
+        setSearchParams({}, { replace: true });
+      }
     }
   }, [searchParams, setSearchParams]);
 
