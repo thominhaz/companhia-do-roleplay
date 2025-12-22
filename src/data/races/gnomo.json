@@ -34,7 +34,7 @@
       "id": "rock_gnome",
       "name": "Gnomo das Rochas",
       "name_en": "Rock Gnome",
-      "description": "Como um gnomo das rochas, você tem uma inventividade natural e resistência além da de outros gnomos.",
+      "description": "Como um gnomo das rochas, você tem uma inventividade natural e resistência além da de outros gnomos. (Única sub-raça oficial no SRD 5.1)",
       "ability_bonuses": {
         "constitution": 1
       },
@@ -62,34 +62,6 @@
               "time_hours": 1,
               "gold": 10
             }
-          }
-        }
-      ]
-    },
-    {
-      "id": "forest_gnome",
-      "name": "Gnomo da Floresta",
-      "name_en": "Forest Gnome",
-      "description": "Como um gnomo da floresta, você tem um dom natural para ilusão e velocidade e furtividade inerentes.",
-      "ability_bonuses": {
-        "dexterity": 1
-      },
-      "traits": [
-        {
-          "id": "natural_illusionist",
-          "name": "Ilusionista Natural",
-          "description_markdown": "Você conhece o truque **ilusão menor**. **Inteligência** é seu atributo de conjuração para ele.",
-          "mechanical": {
-            "cantrip": "minor_illusion",
-            "spellcasting_ability": "intelligence"
-          }
-        },
-        {
-          "id": "speak_with_small_beasts",
-          "name": "Falar com Pequenas Bestas",
-          "description_markdown": "Através de sons e gestos, você pode comunicar ideias simples com bestas **Pequenas** ou menores. Gnomos da floresta amam animais e frequentemente mantêm esquilos, texugos, coelhos, toupeiras, pica-paus e outras criaturas como animais de estimação queridos.",
-          "mechanical": {
-            "can_speak_with_small_beasts": true
           }
         }
       ]

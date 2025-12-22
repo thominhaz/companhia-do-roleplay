@@ -65,7 +65,7 @@
       "id": "hill_dwarf",
       "name": "Anão da Colina",
       "name_en": "Hill Dwarf",
-      "description": "Como um anão da colina, você tem sentidos aguçados, intuição profunda e notável resiliência.",
+      "description": "Como um anão da colina, você tem sentidos aguçados, intuição profunda e notável resiliência. (Única sub-raça oficial no SRD 5.1)",
       "ability_bonuses": {
         "wisdom": 1
       },
@@ -76,25 +76,6 @@
           "description_markdown": "Seu máximo de **Pontos de Vida** aumenta em **1**, e aumenta em 1 cada vez que você sobe de nível.",
           "mechanical": {
             "hp_bonus_per_level": 1
-          }
-        }
-      ]
-    },
-    {
-      "id": "mountain_dwarf",
-      "name": "Anão da Montanha",
-      "name_en": "Mountain Dwarf",
-      "description": "Como um anão da montanha, você é forte e resistente, acostumado a uma vida difícil em terrenos acidentados.",
-      "ability_bonuses": {
-        "strength": 2
-      },
-      "traits": [
-        {
-          "id": "dwarven_armor_training",
-          "name": "Treinamento Anão com Armaduras",
-          "description_markdown": "Você tem proficiência com **armaduras leves** e **armaduras médias**.",
-          "mechanical": {
-            "armor_proficiencies": ["light_armor", "medium_armor"]
           }
         }
       ]
