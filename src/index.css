@@ -6,7 +6,7 @@
 
 @layer base {
   :root {
-    /* Ward RPG Dark Theme */
+    /* Go20 Dark Theme */
     --background: 222 47% 7%;
     --foreground: 210 40% 98%;
 
@@ -37,7 +37,7 @@
 
     --radius: 0.75rem;
 
-    /* Custom Ward RPG tokens */
+    /* Custom Go20 tokens */
     --darker: 222 47% 7%;
     --dark: 220 47% 11%;
     --dark-panel: 0 0% 15%;
