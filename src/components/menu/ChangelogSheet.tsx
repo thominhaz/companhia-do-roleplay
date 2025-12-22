@@ -5,7 +5,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Bug, Wrench, Zap, Rocket, Brain, FileText, Store, Users } from "lucide-react";
+import { Sparkles, Bug, Wrench, Zap, Rocket, Brain, FileText, Store, Users, Swords, Gem, Clock, Flag, Hammer, FileDown } from "lucide-react";
 
 interface ChangelogEntry {
   version: string;
@@ -59,6 +59,36 @@ const upcomingFeatures: UpcomingFeature[] = [
     icon: Users,
     title: "Oficina de NPCs",
     description: "Gerador e gerenciador de NPCs com personalidade, motivações, segredos e relacionamentos para dar vida ao seu mundo.",
+  },
+  {
+    icon: Swords,
+    title: "Gerador de Encontros",
+    description: "Crie combates balanceados com medidor de dificuldade que compara o nível dos jogadores com os monstros selecionados.",
+  },
+  {
+    icon: Gem,
+    title: "Gerador de Tesouros",
+    description: "Gere loot aleatório baseado no nível de dificuldade, tipo de criatura e raridade dos itens.",
+  },
+  {
+    icon: Clock,
+    title: "Timeline de Campanha",
+    description: "Linha do tempo visual e interativa para registrar e visualizar os eventos importantes da sua história.",
+  },
+  {
+    icon: Flag,
+    title: "Sistema de Facções",
+    description: "Gerencie facções, guildas e organizações com sistema de reputação, influência e relacionamentos políticos.",
+  },
+  {
+    icon: Hammer,
+    title: "Sistema de Crafting",
+    description: "Criação de itens, poções, pergaminhos e encantamentos com receitas, materiais e tempo de fabricação.",
+  },
+  {
+    icon: FileDown,
+    title: "Exportar para PDF",
+    description: "Exporte fichas de personagem em PDF profissional, pronto para impressão ou compartilhamento.",
   },
 ];
 
