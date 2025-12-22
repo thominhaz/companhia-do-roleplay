@@ -151,7 +151,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             {!user && (
               <button 
                 onClick={() => navigate("/auth")}
-                className="px-4 py-2 text-sm font-medium bg-gradient-primary rounded-xl text-foreground"
+                className="px-4 py-2 text-sm font-medium bg-muted hover:bg-muted/80 rounded-xl text-foreground transition-colors"
               >
                 Entrar
               </button>
