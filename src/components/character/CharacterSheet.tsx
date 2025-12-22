@@ -159,6 +159,7 @@ export function CharacterSheet() {
   const [showNotes, setShowNotes] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [skillSearch, setSkillSearch] = useState('');
+  const [hpModifier, setHpModifier] = useState('');
 
   const hasHistoryAccess = subscription?.limits.hasHistorico ?? false;
 
@@ -206,6 +207,7 @@ export function CharacterSheet() {
 
   // HP modification handlers
   const handleHpChange = async (delta: number) => {
+    if (delta === 0) return;
     const newHp = Math.max(0, Math.min(character.max_hp, character.current_hp + delta));
     try {
       await updateCharacter.mutateAsync({
@@ -213,9 +215,19 @@ export function CharacterSheet() {
         current_hp: newHp
       });
       toast.success(delta > 0 ? `+${delta} HP` : `${delta} HP`);
+      setHpModifier('');
     } catch (error) {
       toast.error('Erro ao atualizar HP');
     }
+  };
+
+  const handleHpModifierSubmit = (isDamage: boolean) => {
+    const value = parseInt(hpModifier, 10);
+    if (isNaN(value) || value <= 0) {
+      toast.error('Digite um valor válido');
+      return;
+    }
+    handleHpChange(isDamage ? -value : value);
   };
 
   // Filter skills
@@ -367,43 +379,63 @@ export function CharacterSheet() {
               {/* HP Bar */}
               <div className="space-y-3">
                 <h3 className="text-sm font-semibold text-foreground">Pontos de Vida</h3>
+                
+                {/* HP Progress Bar */}
                 <div className="relative">
-                  <div className="flex items-center gap-2">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 rounded-full bg-destructive/20 text-destructive hover:bg-destructive/30"
-                      onClick={() => handleHpChange(-1)}
-                    >
-                      <Minus className="w-4 h-4" />
-                    </Button>
-                    <div className="flex-1 relative">
-                      <div className="h-8 bg-muted/50 rounded-full overflow-hidden">
-                        <div 
-                          className={`h-full transition-all duration-500 rounded-full ${
-                            hpPercent > 50 ? 'bg-green-500' : hpPercent > 25 ? 'bg-yellow-500' : 'bg-red-500'
-                          }`}
-                          style={{ width: `${hpPercent}%` }}
-                        />
-                      </div>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="text-sm font-bold text-foreground drop-shadow-md">
-                          {character.current_hp}/{character.max_hp}
-                        </span>
-                      </div>
-                    </div>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-8 w-8 rounded-full bg-green-500/20 text-green-500 hover:bg-green-500/30"
-                      onClick={() => handleHpChange(1)}
-                    >
-                      <Plus className="w-4 h-4" />
-                    </Button>
+                  <div className="h-10 bg-muted/50 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full transition-all duration-500 rounded-full ${
+                        hpPercent > 50 ? 'bg-green-500' : hpPercent > 25 ? 'bg-yellow-500' : 'bg-red-500'
+                      }`}
+                      style={{ width: `${hpPercent}%` }}
+                    />
                   </div>
-                  {character.temporary_hp > 0 && (
-                    <p className="text-xs text-blue-400 text-center mt-1">+{character.temporary_hp} Temporário</p>
-                  )}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-lg font-bold text-foreground drop-shadow-md">
+                      {character.current_hp}/{character.max_hp}
+                    </span>
+                  </div>
+                </div>
+                
+                {character.temporary_hp > 0 && (
+                  <p className="text-xs text-blue-400 text-center">+{character.temporary_hp} Temporário</p>
+                )}
+
+                {/* HP Modifier Input */}
+                <div className="flex items-center gap-2">
+                  <Input
+                    type="number"
+                    placeholder="Quantidade"
+                    value={hpModifier}
+                    onChange={(e) => setHpModifier(e.target.value)}
+                    className="flex-1 text-center h-10"
+                    min="1"
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' && hpModifier) {
+                        handleHpModifierSubmit(false);
+                      }
+                    }}
+                  />
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="h-10 px-4 bg-destructive/20 text-destructive border-destructive/30 hover:bg-destructive/30"
+                    onClick={() => handleHpModifierSubmit(true)}
+                    disabled={!hpModifier || updateCharacter.isPending}
+                  >
+                    <Minus className="w-4 h-4 mr-1" />
+                    Dano
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    size="sm"
+                    className="h-10 px-4 bg-green-500/20 text-green-500 border-green-500/30 hover:bg-green-500/30"
+                    onClick={() => handleHpModifierSubmit(false)}
+                    disabled={!hpModifier || updateCharacter.isPending}
+                  >
+                    <Plus className="w-4 h-4 mr-1" />
+                    Curar
+                  </Button>
                 </div>
               </div>
 
