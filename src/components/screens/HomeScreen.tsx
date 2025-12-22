@@ -381,7 +381,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               {recentItems.map((item) => (
                 <div 
                   key={`${item.type}-${item.id}`}
-                  className="flex-shrink-0 w-40 bg-dark rounded-xl p-3 border border-border"
+                  className="flex-shrink-0 w-40 bg-dark rounded-xl p-3 border border-border card-interactive"
                 >
                   <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3`}>
                     <item.icon className="w-5 h-5" />
