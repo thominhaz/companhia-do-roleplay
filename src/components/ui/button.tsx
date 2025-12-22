@@ -5,18 +5,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-solar",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input bg-background hover:bg-accent/20 hover:text-accent-foreground hover:border-accent",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent/20 hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-        gradient: "bg-gradient-to-r from-solar-orange to-magenta-red text-foreground hover:opacity-90 shadow-solar",
-        glow: "bg-primary text-primary-foreground shadow-solar hover:shadow-lg",
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-[0_0_20px_rgba(255,159,85,0.5)] hover:scale-[1.02]",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 hover:shadow-[0_0_20px_rgba(255,78,80,0.5)] hover:scale-[1.02]",
+        outline: "border border-input bg-background hover:bg-accent/20 hover:text-accent-foreground hover:border-accent hover:shadow-[0_0_15px_rgba(109,213,250,0.3)] hover:scale-[1.02]",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 hover:shadow-[0_0_15px_rgba(138,43,226,0.4)] hover:scale-[1.02]",
+        ghost: "hover:bg-accent/20 hover:text-accent-foreground hover:shadow-[0_0_10px_rgba(109,213,250,0.2)]",
+        link: "text-primary underline-offset-4 hover:underline hover:text-solar-orange",
+        gradient: "bg-gradient-to-r from-solar-orange to-magenta-red text-foreground hover:opacity-90 hover:shadow-[0_0_25px_rgba(255,159,85,0.6)] hover:scale-[1.02]",
+        glow: "bg-primary text-primary-foreground shadow-[0_0_15px_rgba(255,159,85,0.4)] hover:shadow-[0_0_30px_rgba(255,159,85,0.7)] hover:scale-[1.02]",
+        cyan: "bg-cyan-blue text-background hover:bg-cyan-blue/90 hover:shadow-[0_0_20px_rgba(109,213,250,0.6)] hover:scale-[1.02]",
+        purple: "bg-cosmic-purple text-white hover:bg-cosmic-purple/90 hover:shadow-[0_0_20px_rgba(138,43,226,0.6)] hover:scale-[1.02]",
       },
       size: {
         default: "h-10 px-4 py-2",
