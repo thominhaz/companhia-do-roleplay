@@ -115,14 +115,11 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
   const { data: campaignPlayers } = useCampaignPlayers(campaignId);
   
   // Fetch homebrew monsters shared with this campaign
-  const { data: campaignHomebrew } = useCampaignHomebrew(campaignId);
+  const { sharedContent: campaignHomebrew } = useCampaignHomebrew(campaignId);
   const homebrewMonsters = useMemo(() => 
-    campaignHomebrew?.filter(h => h.type === 'monster') || [], 
+    campaignHomebrew?.filter(h => h.content.type === 'monster').map(h => h.content) || [], 
     [campaignHomebrew]
   );
-
-  // Fetch campaign players for the player selection
-  const { data: campaignPlayers } = useCampaignPlayers(campaignId);
   
   // Filter only players with characters (not master)
   const playersWithCharacters = campaignPlayers?.filter(
@@ -781,11 +778,10 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                         </div>
                       )}
                     </div>
-                  )
+                  )}
 
-                  }
-
-                  {/* Manual fields for Monster/NPC */}
+                  {/* Player Selection */}
+                  {combatantType === 'player' && (
                     <div className="space-y-2">
                       <Label>Selecionar Jogador da Campanha</Label>
                       {playersWithCharacters.length === 0 ? (
@@ -803,7 +799,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                             if (player && player.character) {
                               setNewCombatant({
                                 name: player.character.name,
-                                initiative: 10, // Will be rolled
+                                initiative: 10,
                                 current_hp: (player.character as any).current_hp || (player.character as any).max_hp || 10,
                                 max_hp: (player.character as any).max_hp || 10,
                                 armor_class: (player.character as any).armor_class || 10,
