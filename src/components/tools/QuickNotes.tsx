@@ -13,6 +13,7 @@ import {
   Tag,
   X
 } from "lucide-react";
+import DOMPurify from "dompurify";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { 
@@ -70,7 +71,7 @@ function getTagColor(tag: string): string {
   return TAG_COLORS[Math.abs(hash) % TAG_COLORS.length];
 }
 
-// Simple markdown renderer
+// Simple markdown renderer with XSS protection
 function renderMarkdown(text: string): string {
   if (!text) return "";
   
@@ -91,7 +92,11 @@ function renderMarkdown(text: string): string {
 
   html = html.replace(/(<li.*<\li>)(<br \/>)?(<li)/g, '$1$3');
 
-  return html;
+  // Sanitize HTML to prevent XSS attacks
+  return DOMPurify.sanitize(html, {
+    ALLOWED_TAGS: ['h1', 'h2', 'h3', 'strong', 'em', 'del', 'code', 'li', 'blockquote', 'hr', 'br'],
+    ALLOWED_ATTR: ['class']
+  });
 }
 
 export function QuickNotes({ onBack }: QuickNotesProps) {
