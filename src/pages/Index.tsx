@@ -45,7 +45,7 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>Ward RPG - Companheiro D&D 5e</title>
+        <title>Go20 - Companheiro D&D 5e</title>
         <meta
           name="description"
           content="Gerencie seus personagens de D&D 5e, campanhas e ferramentas de RPG em um só lugar."
