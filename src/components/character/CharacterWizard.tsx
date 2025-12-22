@@ -188,7 +188,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       temporary_hp: 0,
       armor_class: 10 + dexModifier,
       initiative: dexModifier,
-      speed: selectedRace.speed,
+      speed: Math.floor(selectedRace.speed),
       proficiency_bonus: 2,
       attributes: finalAttributes,
       saving_throws: {},
