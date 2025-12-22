@@ -1,15 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Crown, Check, Sparkles, Users, Wand2, Shield, Gift, Loader2, Sword, ScrollText, Palette, History, MessageSquare, Swords, Share2, Heart } from "lucide-react";
+import { Crown, Check, Sparkles, Users, Wand2, Shield, Gift, Loader2, Sword, ScrollText, Palette, History, MessageSquare, Swords, Share2, Heart, ExternalLink, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSearchParams } from "react-router-dom";
 
 interface SubscriptionSheetProps {
   open: boolean;
@@ -18,17 +19,106 @@ interface SubscriptionSheetProps {
 
 export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps) {
   const { user } = useAuth();
-  const { data: subscription } = useSubscription();
+  const { data: subscription, refetch: refetchSubscription } = useSubscription();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
   const currentTier = subscription?.tier ?? "aldeao";
   const isPaidTier = currentTier === "heroi" || currentTier === "mestre";
   
   const [redeemCode, setRedeemCode] = useState("");
   const [isRedeeming, setIsRedeeming] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const [isOpeningPortal, setIsOpeningPortal] = useState(false);
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "quarterly" | "annual">("monthly");
 
-  const handleUpgrade = (plan: string) => {
-    toast.info("Integração com pagamentos em breve!");
+  // Verifica se voltou do checkout do Stripe
+  useEffect(() => {
+    const subscriptionStatus = searchParams.get("subscription");
+    if (subscriptionStatus === "success") {
+      toast.success("Assinatura realizada com sucesso! Aguarde enquanto atualizamos seu plano...");
+      // Limpa o parâmetro da URL
+      searchParams.delete("subscription");
+      setSearchParams(searchParams);
+      // Verifica a assinatura no Stripe
+      checkSubscriptionFromStripe();
+    } else if (subscriptionStatus === "canceled") {
+      toast.info("Assinatura cancelada");
+      searchParams.delete("subscription");
+      setSearchParams(searchParams);
+    }
+  }, [searchParams]);
+
+  const checkSubscriptionFromStripe = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke("check-subscription");
+      if (error) throw error;
+      
+      queryClient.invalidateQueries({ queryKey: ["subscription"] });
+      refetchSubscription();
+      
+      if (data?.subscribed) {
+        toast.success(`Plano ${data.tier === 'mestre' ? 'Mestre' : 'Herói'} ativado!`);
+      }
+    } catch (error) {
+      console.error("Error checking subscription:", error);
+    }
+  };
+
+  const handleUpgrade = async (plan: "heroi" | "mestre") => {
+    if (!user) {
+      toast.error("Você precisa estar logado para assinar");
+      return;
+    }
+
+    const periodMap = {
+      monthly: "mensal",
+      quarterly: "trimestral",
+      annual: "anual"
+    };
+
+    setIsCheckingOut(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { 
+          plan, 
+          period: periodMap[billingPeriod] 
+        }
+      });
+
+      if (error) throw error;
+      
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (error: any) {
+      console.error("Checkout error:", error);
+      toast.error(error.message || "Erro ao iniciar checkout");
+    } finally {
+      setIsCheckingOut(false);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    if (!user) {
+      toast.error("Você precisa estar logado");
+      return;
+    }
+
+    setIsOpeningPortal(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("customer-portal");
+      
+      if (error) throw error;
+      
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      }
+    } catch (error: any) {
+      console.error("Portal error:", error);
+      toast.error(error.message || "Erro ao abrir portal de gerenciamento");
+    } finally {
+      setIsOpeningPortal(false);
+    }
   };
 
   const handleRedeemCode = async () => {
@@ -202,10 +292,15 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
               
               {currentTier !== "heroi" && currentTier !== "mestre" && (
                 <Button 
-                  onClick={() => handleUpgrade("hero")}
+                  onClick={() => handleUpgrade("heroi")}
+                  disabled={isCheckingOut}
                   className="w-full mt-4 bg-secondary text-secondary-foreground font-semibold hover:bg-secondary/90"
                 >
-                  <Sword className="w-4 h-4 mr-2" />
+                  {isCheckingOut ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Sword className="w-4 h-4 mr-2" />
+                  )}
                   Assinar Herói
                 </Button>
               )}
@@ -254,10 +349,15 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
               
               {currentTier !== "mestre" && (
                 <Button 
-                  onClick={() => handleUpgrade("master")}
+                  onClick={() => handleUpgrade("mestre")}
+                  disabled={isCheckingOut}
                   className="w-full mt-4 bg-gradient-to-r from-gold to-amber-500 text-black font-semibold hover:opacity-90"
                 >
-                  <Crown className="w-4 h-4 mr-2" />
+                  {isCheckingOut ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <Crown className="w-4 h-4 mr-2" />
+                  )}
                   Assinar Mestre
                 </Button>
               )}
@@ -296,10 +396,28 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
           </div>
 
           {isPaidTier && (
-            <div className="p-4 rounded-xl bg-muted">
+            <div className="p-4 rounded-xl bg-muted space-y-3">
               <p className="text-sm text-muted-foreground text-center">
                 Você possui o plano {currentTier === "mestre" ? "Mestre" : "Herói"}! Obrigado por apoiar o Go20.
               </p>
+              {subscription?.expiresAt && (
+                <p className="text-xs text-muted-foreground text-center">
+                  Válido até: {new Date(subscription.expiresAt).toLocaleDateString("pt-BR")}
+                </p>
+              )}
+              <Button
+                onClick={handleManageSubscription}
+                disabled={isOpeningPortal}
+                variant="outline"
+                className="w-full"
+              >
+                {isOpeningPortal ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Settings className="w-4 h-4 mr-2" />
+                )}
+                Gerenciar Assinatura
+              </Button>
             </div>
           )}
 
