@@ -3,7 +3,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { Crown, Sparkles, Users, Wand2, Shield, Gift, Loader2, Sword, ScrollText, Palette, History, MessageSquare, Swords, Share2, Heart, Settings, ArrowUp } from "lucide-react";
+import { Crown, Sparkles, Users, Wand2, Shield, Gift, Loader2, Sword, ScrollText, Palette, History, MessageSquare, Swords, Share2, Heart, Settings, ArrowUp, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -51,7 +51,8 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "quarterly" | "annual">("monthly");
   const [upgradePreview, setUpgradePreview] = useState<UpgradePreview | null>(null);
   const [showUpgradeDialog, setShowUpgradeDialog] = useState(false);
-  const [pendingUpgradePlan, setPendingUpgradePlan] = useState<"mestre" | null>(null);
+  const [pendingUpgradePlan, setPendingUpgradePlan] = useState<"mestre" | "heroi" | null>(null);
+  const [isDowngrade, setIsDowngrade] = useState(false);
 
   // Função para verificar assinatura manualmente
   const checkSubscriptionFromStripe = async () => {
@@ -104,8 +105,16 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
     }
   };
 
-  // Preview upgrade proration before confirming
+  // Preview upgrade/downgrade proration before confirming
   const handlePreviewUpgrade = async (newPlan: "mestre") => {
+    await handlePreviewPlanChange(newPlan, false);
+  };
+
+  const handlePreviewDowngrade = async (newPlan: "heroi") => {
+    await handlePreviewPlanChange(newPlan, true);
+  };
+
+  const handlePreviewPlanChange = async (newPlan: "mestre" | "heroi", downgrade: boolean) => {
     if (!user) {
       toast.error("Você precisa estar logado");
       return;
@@ -118,6 +127,7 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
     };
 
     setIsLoadingPreview(true);
+    setIsDowngrade(downgrade);
     try {
       const { data, error } = await supabase.functions.invoke("preview-upgrade", {
         body: { 
@@ -137,14 +147,14 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
       }
     } catch (error: any) {
       console.error("Preview error:", error);
-      toast.error(error.message || "Erro ao calcular valor do upgrade");
+      toast.error(error.message || `Erro ao calcular valor do ${downgrade ? 'downgrade' : 'upgrade'}`);
     } finally {
       setIsLoadingPreview(false);
     }
   };
 
-  // Confirm and execute the upgrade
-  const confirmUpgrade = async () => {
+  // Confirm and execute the upgrade/downgrade
+  const confirmPlanChange = async () => {
     if (!pendingUpgradePlan) return;
 
     const periodMap = {
@@ -167,19 +177,20 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
       if (error) throw error;
       
       if (data?.success) {
-        toast.success(data.message || "Upgrade realizado com sucesso!");
+        toast.success(data.message || `${isDowngrade ? 'Downgrade' : 'Upgrade'} realizado com sucesso!`);
         queryClient.invalidateQueries({ queryKey: ["subscription"] });
         refetchSubscription();
       } else {
-        throw new Error(data?.error || "Erro ao fazer upgrade");
+        throw new Error(data?.error || `Erro ao fazer ${isDowngrade ? 'downgrade' : 'upgrade'}`);
       }
     } catch (error: any) {
-      console.error("Upgrade error:", error);
-      toast.error(error.message || "Erro ao fazer upgrade");
+      console.error("Plan change error:", error);
+      toast.error(error.message || `Erro ao fazer ${isDowngrade ? 'downgrade' : 'upgrade'}`);
     } finally {
       setIsUpgrading(false);
       setPendingUpgradePlan(null);
       setUpgradePreview(null);
+      setIsDowngrade(false);
     }
   };
 
@@ -389,6 +400,22 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
                   Assinar Herói
                 </Button>
               )}
+              
+              {currentTier === "mestre" && (
+                <Button 
+                  onClick={() => handlePreviewDowngrade("heroi")}
+                  disabled={isLoadingPreview || isUpgrading}
+                  variant="outline"
+                  className="w-full mt-4 border-secondary text-secondary hover:bg-secondary/10"
+                >
+                  {isLoadingPreview ? (
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  ) : (
+                    <ArrowDown className="w-4 h-4 mr-2" />
+                  )}
+                  Fazer Downgrade para Herói
+                </Button>
+              )}
             </div>
 
             {/* Mestre (Master) */}
@@ -515,13 +542,17 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
         </div>
       </SheetContent>
 
-      {/* Upgrade Confirmation Dialog */}
+      {/* Upgrade/Downgrade Confirmation Dialog */}
       <AlertDialog open={showUpgradeDialog} onOpenChange={setShowUpgradeDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <ArrowUp className="w-5 h-5 text-gold" />
-              Confirmar Upgrade para Mestre
+              {isDowngrade ? (
+                <ArrowDown className="w-5 h-5 text-secondary" />
+              ) : (
+                <ArrowUp className="w-5 h-5 text-gold" />
+              )}
+              {isDowngrade ? `Confirmar Downgrade para ${upgradePreview?.newPlan}` : `Confirmar Upgrade para ${upgradePreview?.newPlan}`}
             </AlertDialogTitle>
             <AlertDialogDescription asChild>
               <div className="space-y-4 pt-2">
@@ -534,7 +565,7 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
                       </div>
                       <div className="flex justify-between text-sm">
                         <span className="text-muted-foreground">Novo plano:</span>
-                        <span className="font-medium text-gold">{upgradePreview.newPlan}</span>
+                        <span className={`font-medium ${isDowngrade ? 'text-secondary' : 'text-gold'}`}>{upgradePreview.newPlan}</span>
                       </div>
                       <div className="border-t border-border pt-3 space-y-2">
                         {upgradePreview.creditAmount > 0 && (
@@ -552,15 +583,21 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
                       </div>
                       <div className="border-t border-border pt-3">
                         <div className="flex justify-between font-semibold">
-                          <span>Total a pagar agora:</span>
-                          <span className="text-gold">R$ {upgradePreview.prorationAmount.toFixed(2)}</span>
+                          <span>{upgradePreview.prorationAmount >= 0 ? 'Total a pagar agora:' : 'Crédito a receber:'}</span>
+                          <span className={isDowngrade ? 'text-green-500' : 'text-gold'}>
+                            {upgradePreview.prorationAmount < 0 ? '+ ' : ''}R$ {Math.abs(upgradePreview.prorationAmount).toFixed(2)}
+                          </span>
                         </div>
                       </div>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {upgradePreview.daysRemaining > 0 
-                        ? `Você tem ${upgradePreview.daysRemaining} dias restantes no seu período atual. O valor proporcional será cobrado imediatamente.`
-                        : "O valor proporcional será cobrado imediatamente."
+                      {isDowngrade 
+                        ? upgradePreview.prorationAmount < 0
+                          ? `Você receberá um crédito de R$ ${Math.abs(upgradePreview.prorationAmount).toFixed(2)} que será aplicado nas próximas faturas.`
+                          : "A mudança será aplicada imediatamente."
+                        : upgradePreview.daysRemaining > 0 
+                          ? `Você tem ${upgradePreview.daysRemaining} dias restantes no seu período atual. O valor proporcional será cobrado imediatamente.`
+                          : "O valor proporcional será cobrado imediatamente."
                       }
                     </p>
                   </>
@@ -572,19 +609,25 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
             <AlertDialogCancel onClick={() => {
               setPendingUpgradePlan(null);
               setUpgradePreview(null);
+              setIsDowngrade(false);
             }}>
               Cancelar
             </AlertDialogCancel>
             <AlertDialogAction 
-              onClick={confirmUpgrade}
-              className="bg-gradient-to-r from-gold to-amber-500 text-black hover:opacity-90"
+              onClick={confirmPlanChange}
+              className={isDowngrade 
+                ? "bg-secondary text-secondary-foreground hover:bg-secondary/90" 
+                : "bg-gradient-to-r from-gold to-amber-500 text-black hover:opacity-90"
+              }
             >
               {isUpgrading ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : isDowngrade ? (
+                <Sword className="w-4 h-4 mr-2" />
               ) : (
                 <Crown className="w-4 h-4 mr-2" />
               )}
-              Confirmar Upgrade
+              {isDowngrade ? 'Confirmar Downgrade' : 'Confirmar Upgrade'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
