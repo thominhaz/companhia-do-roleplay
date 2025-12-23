@@ -1078,12 +1078,19 @@ export function CharacterSheet() {
                 <ScrollArea className="h-[150px]">
                   <div className="space-y-1">
                     {(character.spells as any[])?.length > 0 ? (
-                      (character.spells as any[]).slice(0, 8).map((spell: any, i: number) => (
-                        <div key={i} className="flex items-center justify-between p-2 bg-muted/30 rounded-lg">
-                          <span className="text-sm">{spell.name || spell}</span>
-                          <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                        </div>
-                      ))
+                      (character.spells as any[]).slice(0, 8).map((spell: any, i: number) => {
+                        const spellName = spell.name || spell;
+                        // Format snake_case to Title Case
+                        const formattedName = typeof spellName === 'string' 
+                          ? spellName.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
+                          : spellName;
+                        return (
+                          <div key={i} className="flex items-center justify-between p-2 bg-muted/30 rounded-lg">
+                            <span className="text-sm">{formattedName}</span>
+                            <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                          </div>
+                        );
+                      })
                     ) : (
                       <p className="text-sm text-muted-foreground text-center py-4">Nenhuma magia</p>
                     )}
