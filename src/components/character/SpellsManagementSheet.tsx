@@ -30,8 +30,8 @@ interface FullSpellData {
   level: number;
   school?: string;
   casting_time?: string;
-  range?: string;
-  components?: string;
+  range?: string | number;
+  components?: string | { verbal?: boolean; somatic?: boolean; material?: boolean; material_description?: string };
   materials?: string;
   duration?: string;
   concentration?: boolean;
@@ -39,8 +39,33 @@ interface FullSpellData {
   description?: string;
   description_markdown?: string;
   higher_levels?: string;
+  at_higher_levels?: string;
   classes?: string[];
 }
+
+// Helper functions to format spell data
+const formatComponents = (components: FullSpellData['components']): string => {
+  if (!components) return "—";
+  if (typeof components === 'string') return components;
+  
+  const parts: string[] = [];
+  if (components.verbal) parts.push('V');
+  if (components.somatic) parts.push('S');
+  if (components.material) parts.push('M');
+  return parts.join(', ') || "—";
+};
+
+const formatRange = (range: FullSpellData['range']): string => {
+  if (!range) return "—";
+  if (typeof range === 'string') return range;
+  if (typeof range === 'number') return `${range}m`;
+  return "—";
+};
+
+const getMaterialDescription = (components: FullSpellData['components']): string | null => {
+  if (!components || typeof components === 'string') return null;
+  return components.material_description || null;
+};
 
 const SPELL_SCHOOLS: Record<string, { name: string; color: string; icon: string }> = {
   "abjuration": { name: "Abjuração", color: "bg-blue-500/20 text-blue-400 border-blue-500/30", icon: "🛡️" },
@@ -694,14 +719,14 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                         <Target className="w-4 h-4 text-muted-foreground" />
                         <div>
                           <p className="text-[10px] text-muted-foreground uppercase">Alcance</p>
-                          <p className="text-xs font-medium">{selectedSpell.range || "—"}</p>
+                          <p className="text-xs font-medium">{formatRange(selectedSpell.range)}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
                         <Component className="w-4 h-4 text-muted-foreground" />
                         <div>
                           <p className="text-[10px] text-muted-foreground uppercase">Componentes</p>
-                          <p className="text-xs font-medium">{selectedSpell.components || "—"}</p>
+                          <p className="text-xs font-medium">{formatComponents(selectedSpell.components)}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -715,11 +740,13 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                   </Card>
 
                   {/* Materials */}
-                  {selectedSpell.materials && (
+                  {(selectedSpell.materials || getMaterialDescription(selectedSpell.components)) && (
                     <Card className="p-3 bg-amber-500/10 border-amber-500/30">
                       <div className="flex items-start gap-2">
                         <FlaskConical className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
-                        <p className="text-xs text-amber-200">{selectedSpell.materials}</p>
+                        <p className="text-xs text-amber-200">
+                          {selectedSpell.materials || getMaterialDescription(selectedSpell.components)}
+                        </p>
                       </div>
                     </Card>
                   )}
@@ -736,10 +763,12 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                   </div>
 
                   {/* Higher Levels */}
-                  {selectedSpell.higher_levels && (
+                  {(selectedSpell.higher_levels || selectedSpell.at_higher_levels) && (
                     <Card className="p-3 bg-primary/10 border-primary/30">
                       <h4 className="text-xs font-semibold mb-1 text-primary">Em Níveis Superiores</h4>
-                      <p className="text-xs text-muted-foreground">{selectedSpell.higher_levels}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {selectedSpell.higher_levels || selectedSpell.at_higher_levels}
+                      </p>
                     </Card>
                   )}
 
