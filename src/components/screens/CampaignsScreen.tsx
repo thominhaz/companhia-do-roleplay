@@ -12,6 +12,9 @@ import { Button } from "@/components/ui/button";
 import { CreateCampaignSheet } from "@/components/campaign/CreateCampaignSheet";
 import { CampaignDetailSheet } from "@/components/campaign/CampaignDetailSheet";
 import { JoinCampaignSheet } from "@/components/campaign/JoinCampaignSheet";
+import { CampaignNotesSheet } from "@/components/campaign/CampaignNotesSheet";
+import { CampaignChatSheet } from "@/components/campaign/CampaignChatSheet";
+import { CreateSessionSheet } from "@/components/campaign/CreateSessionSheet";
 import { AppHeader } from "@/components/layout/AppHeader";
 
 type FilterType = 'all' | 'mastering' | 'playing';
@@ -87,12 +90,18 @@ function MasterCampaignCard({
   campaign, 
   playerCount, 
   nextSession,
-  onClick 
+  onClick,
+  onChatClick,
+  onNotesClick,
+  onAgendaClick
 }: { 
   campaign: CampaignDB; 
   playerCount: number;
   nextSession?: string | null;
   onClick: () => void;
+  onChatClick: () => void;
+  onNotesClick: () => void;
+  onAgendaClick: () => void;
 }) {
   const isActive = !!nextSession;
   const gradient = isActive ? "emerald" : "orange";
@@ -187,19 +196,19 @@ function MasterCampaignCard({
         <div className="flex gap-2 mb-4">
           <button 
             className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => { e.stopPropagation(); onChatClick(); }}
           >
             <MessageCircle className="w-3 h-3 inline mr-2" />Chat
           </button>
           <button 
             className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => { e.stopPropagation(); onNotesClick(); }}
           >
             <StickyNote className="w-3 h-3 inline mr-2" />Notas
           </button>
           <button 
             className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", buttonBgClasses[gradient])}
-            onClick={(e) => e.stopPropagation()}
+            onClick={(e) => { e.stopPropagation(); onAgendaClick(); }}
           >
             <Calendar className="w-3 h-3 inline mr-2" />Agenda
           </button>
@@ -224,7 +233,7 @@ function MasterCampaignCard({
   );
 }
 
-function PlayerCampaignCard({ campaign, masterName, onClick }: { campaign: CampaignDB; masterName?: string; onClick: () => void }) {
+function PlayerCampaignCard({ campaign, masterName, onClick, onChatClick, onNotesClick }: { campaign: CampaignDB; masterName?: string; onClick: () => void; onChatClick: () => void; onNotesClick: () => void }) {
   const colors = {
     iconBg: "from-blue-600 to-blue-800",
     buttonBg: "bg-blue-600/20",
@@ -259,13 +268,13 @@ function PlayerCampaignCard({ campaign, masterName, onClick }: { campaign: Campa
       <div className="flex gap-2 mb-3">
         <button 
           className={cn("flex-1 py-2 rounded-lg text-xs font-medium", colors.buttonBg, colors.buttonText)}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); onChatClick(); }}
         >
           <MessageCircle className="w-3 h-3 inline mr-2" />Chat
         </button>
         <button 
           className={cn("flex-1 py-2 rounded-lg text-xs font-medium", colors.buttonBg, colors.buttonText)}
-          onClick={(e) => e.stopPropagation()}
+          onClick={(e) => { e.stopPropagation(); onNotesClick(); }}
         >
           <StickyNote className="w-3 h-3 inline mr-2" />Notas
         </button>
@@ -292,6 +301,12 @@ export function CampaignsScreen() {
   const [showDetailSheet, setShowDetailSheet] = useState(false);
   const [selectedIsMaster, setSelectedIsMaster] = useState(false);
   const [activeFilter, setActiveFilter] = useState<FilterType>('all');
+  
+  // Quick action sheets
+  const [showQuickChat, setShowQuickChat] = useState(false);
+  const [showQuickNotes, setShowQuickNotes] = useState(false);
+  const [showQuickAgenda, setShowQuickAgenda] = useState(false);
+  const [quickActionCampaign, setQuickActionCampaign] = useState<CampaignDB | null>(null);
 
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -332,6 +347,21 @@ export function CampaignsScreen() {
     setSelectedCampaign(campaign);
     setSelectedIsMaster(isMaster);
     setShowDetailSheet(true);
+  };
+
+  const handleQuickChat = (campaign: CampaignDB) => {
+    setQuickActionCampaign(campaign);
+    setShowQuickChat(true);
+  };
+
+  const handleQuickNotes = (campaign: CampaignDB) => {
+    setQuickActionCampaign(campaign);
+    setShowQuickNotes(true);
+  };
+
+  const handleQuickAgenda = (campaign: CampaignDB) => {
+    setQuickActionCampaign(campaign);
+    setShowQuickAgenda(true);
   };
 
   const filteredMasterCampaigns = activeFilter === 'playing' ? [] : masterCampaigns;
@@ -462,6 +492,9 @@ export function CampaignsScreen() {
                     playerCount={campaign.campaign_players?.[0]?.count || 0}
                     nextSession={campaign.sessions?.[0]?.scheduled_at}
                     onClick={() => handleOpenCampaign(campaign, true)}
+                    onChatClick={() => handleQuickChat(campaign)}
+                    onNotesClick={() => handleQuickNotes(campaign)}
+                    onAgendaClick={() => handleQuickAgenda(campaign)}
                   />
                 ))}
               </div>
@@ -482,6 +515,8 @@ export function CampaignsScreen() {
                     key={campaign.id} 
                     campaign={campaign}
                     onClick={() => handleOpenCampaign(campaign, false)}
+                    onChatClick={() => handleQuickChat(campaign)}
+                    onNotesClick={() => handleQuickNotes(campaign)}
                   />
                 ))}
               </div>
@@ -512,6 +547,27 @@ export function CampaignsScreen() {
         onOpenChange={setShowDetailSheet}
         isMaster={selectedIsMaster}
       />
+
+      {/* Quick Action Sheets */}
+      {quickActionCampaign && (
+        <>
+          <CampaignChatSheet
+            campaignId={quickActionCampaign.id}
+            open={showQuickChat}
+            onOpenChange={setShowQuickChat}
+          />
+          <CampaignNotesSheet
+            campaignId={quickActionCampaign.id}
+            open={showQuickNotes}
+            onOpenChange={setShowQuickNotes}
+          />
+          <CreateSessionSheet
+            campaignId={quickActionCampaign.id}
+            open={showQuickAgenda}
+            onOpenChange={setShowQuickAgenda}
+          />
+        </>
+      )}
     </div>
   );
 }
