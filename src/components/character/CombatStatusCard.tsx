@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Swords, Clock, Heart, Shield, Users, Zap, Plus, Minus, ChevronDown, ChevronUp } from "lucide-react";
 import { useCharacterActiveCombat } from "@/hooks/useCharacterCombat";
 import { useUpdateCombatant } from "@/hooks/useCombat";
-import { useUpdateCharacter } from "@/hooks/useCharacters";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,7 +15,6 @@ interface CombatStatusCardProps {
 export function CombatStatusCard({ characterId }: CombatStatusCardProps) {
   const { data: combatInfo, isLoading } = useCharacterActiveCombat(characterId);
   const updateCombatant = useUpdateCombatant();
-  const updateCharacter = useUpdateCharacter();
   const [hpModifier, setHpModifier] = useState('');
   const [showInitiative, setShowInitiative] = useState(false);
 
@@ -48,17 +46,12 @@ export function CombatStatusCard({ characterId }: CombatStatusCardProps) {
     const newHp = Math.max(0, Math.min(combatant.max_hp, combatant.current_hp + change));
 
     try {
-      // Update combatant HP in combat
+      // Update combatant HP in combat and sync to character
       await updateCombatant.mutateAsync({
         id: combatant.id,
         encounterId: encounter.id,
         current_hp: newHp,
-      });
-
-      // Also update the character's HP to keep them synced
-      await updateCharacter.mutateAsync({
-        id: characterId,
-        current_hp: newHp,
+        syncToCharacter: true,
       });
 
       toast.success(change > 0 ? `+${change} HP` : `${change} HP`);
@@ -200,8 +193,8 @@ export function CombatStatusCard({ characterId }: CombatStatusCardProps) {
                     id: combatant.id,
                     encounterId: encounter.id,
                     current_hp: newHp,
+                    syncToCharacter: true,
                   });
-                  await updateCharacter.mutateAsync({ id: characterId, current_hp: newHp });
                   toast.success(`-${val} HP`);
                 }}
               >
@@ -220,8 +213,8 @@ export function CombatStatusCard({ characterId }: CombatStatusCardProps) {
                     id: combatant.id,
                     encounterId: encounter.id,
                     current_hp: newHp,
+                    syncToCharacter: true,
                   });
-                  await updateCharacter.mutateAsync({ id: characterId, current_hp: newHp });
                   toast.success(`+${val} HP`);
                 }}
               >

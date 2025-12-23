@@ -236,12 +236,12 @@ export function useAddCombatant() {
   });
 }
 
-// Update a combatant
+// Update a combatant and optionally sync with character sheet
 export function useUpdateCombatant() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, encounterId, ...updates }: Partial<Combatant> & { id: string; encounterId: string }) => {
+    mutationFn: async ({ id, encounterId, syncToCharacter, ...updates }: Partial<Combatant> & { id: string; encounterId: string; syncToCharacter?: boolean }) => {
       const { data, error } = await supabase
         .from('combatants')
         .update(updates)
@@ -250,6 +250,83 @@ export function useUpdateCombatant() {
         .single();
 
       if (error) throw error;
+
+      // If this combatant is linked to a character and sync is requested, update character too
+      if (syncToCharacter && data.character_id) {
+        const characterUpdates: Record<string, any> = {};
+        
+        if (updates.current_hp !== undefined) {
+          characterUpdates.current_hp = updates.current_hp;
+        }
+        if (updates.armor_class !== undefined) {
+          characterUpdates.armor_class = updates.armor_class;
+        }
+        if (updates.conditions !== undefined) {
+          characterUpdates.conditions = updates.conditions;
+        }
+
+        if (Object.keys(characterUpdates).length > 0) {
+          await supabase
+            .from('characters')
+            .update(characterUpdates)
+            .eq('id', data.character_id);
+          
+          // Invalidate character queries
+          queryClient.invalidateQueries({ queryKey: ['character', data.character_id] });
+          queryClient.invalidateQueries({ queryKey: ['characters'] });
+        }
+      }
+
+      return { data, encounterId };
+    },
+    onSuccess: ({ encounterId }) => {
+      queryClient.invalidateQueries({ queryKey: ['combatants', encounterId] });
+    },
+  });
+}
+
+// Update combatant with automatic sync to character (convenience hook)
+export function useUpdateCombatantWithSync() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, encounterId, characterId, ...updates }: Partial<Combatant> & { id: string; encounterId: string; characterId?: string | null }) => {
+      // Update combatant
+      const { data, error } = await supabase
+        .from('combatants')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Sync to character if linked
+      const charId = characterId ?? data.character_id;
+      if (charId) {
+        const characterUpdates: Record<string, any> = {};
+        
+        if (updates.current_hp !== undefined) {
+          characterUpdates.current_hp = updates.current_hp;
+        }
+        if (updates.armor_class !== undefined) {
+          characterUpdates.armor_class = updates.armor_class;
+        }
+        if (updates.conditions !== undefined) {
+          characterUpdates.conditions = updates.conditions;
+        }
+
+        if (Object.keys(characterUpdates).length > 0) {
+          await supabase
+            .from('characters')
+            .update(characterUpdates)
+            .eq('id', charId);
+          
+          queryClient.invalidateQueries({ queryKey: ['character', charId] });
+          queryClient.invalidateQueries({ queryKey: ['characters'] });
+        }
+      }
+
       return { data, encounterId };
     },
     onSuccess: ({ encounterId }) => {

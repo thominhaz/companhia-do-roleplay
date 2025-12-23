@@ -270,6 +270,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
       id: hpDialog.combatant.id,
       encounterId: encounter.id,
       current_hp: newHp,
+      syncToCharacter: true, // Sync HP to character sheet
     });
     
     // Log the HP change
@@ -297,6 +298,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
       id: combatant.id,
       encounterId: encounter.id,
       conditions,
+      syncToCharacter: true, // Sync conditions to character sheet
     });
     
     // Log condition change
