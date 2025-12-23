@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft,
   Heart,
   Shield,
   Zap,
+  Clock,
+  Target,
   Footprints,
   Swords,
   BookOpen,
@@ -43,6 +45,8 @@ import { NotesSheet } from "./NotesSheet";
 import { CharacterHistorySheet } from "./CharacterHistorySheet";
 import { CombatStatusCard } from "./CombatStatusCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -111,7 +115,49 @@ const CONDITIONS = [
   { name: "Surdo", icon: "🔇" },
 ];
 
-// Card Component
+// Spell constants
+const SPELL_SCHOOLS: Record<string, { name: string; color: string }> = {
+  abjuration: { name: "Abjuração", color: "bg-blue-500/20 text-blue-400" },
+  conjuration: { name: "Conjuração", color: "bg-yellow-500/20 text-yellow-400" },
+  divination: { name: "Adivinhação", color: "bg-cyan-500/20 text-cyan-400" },
+  enchantment: { name: "Encantamento", color: "bg-pink-500/20 text-pink-400" },
+  evocation: { name: "Evocação", color: "bg-red-500/20 text-red-400" },
+  illusion: { name: "Ilusão", color: "bg-purple-500/20 text-purple-400" },
+  necromancy: { name: "Necromancia", color: "bg-green-500/20 text-green-400" },
+  transmutation: { name: "Transmutação", color: "bg-orange-500/20 text-orange-400" },
+};
+
+interface SpellData {
+  id: string;
+  name: string;
+  name_en: string;
+  level: number;
+  school: string;
+  casting_time: string;
+  range: number;
+  range_type: string;
+  components: {
+    verbal: boolean;
+    somatic: boolean;
+    material: boolean;
+    material_description?: string;
+  };
+  duration: string;
+  concentration: boolean;
+  ritual: boolean;
+  description_markdown: string;
+  at_higher_levels?: string;
+}
+
+const spellFiles = [
+  () => import("@/data/spells/a-c.json"),
+  () => import("@/data/spells/g-i.json"),
+  () => import("@/data/spells/j-l.json"),
+  () => import("@/data/spells/n-p.json"),
+  () => import("@/data/spells/q-s.json"),
+  () => import("@/data/spells/t-z.json"),
+];
+
 function SheetCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={`bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4 ${className}`}>
@@ -201,8 +247,51 @@ export function CharacterSheet() {
   const [tempHpInput, setTempHpInput] = useState('');
   const [showRestDialog, setShowRestDialog] = useState<'short' | 'long' | null>(null);
   const [hitDiceToSpend, setHitDiceToSpend] = useState(0);
+  const [allSpellsData, setAllSpellsData] = useState<SpellData[]>([]);
+  const [selectedSpellDetail, setSelectedSpellDetail] = useState<SpellData | null>(null);
+  const [spellsLoading, setSpellsLoading] = useState(true);
 
   const hasHistoryAccess = subscription?.limits.hasHistorico ?? false;
+
+  // Load all spells data
+  useEffect(() => {
+    const loadSpells = async () => {
+      try {
+        const results = await Promise.all(spellFiles.map(fn => fn()));
+        const spells: SpellData[] = [];
+        results.forEach((mod: any) => {
+          if (mod.default?.magias) {
+            spells.push(...mod.default.magias);
+          } else if (mod.magias) {
+            spells.push(...mod.magias);
+          }
+        });
+        setAllSpellsData(spells);
+      } catch (error) {
+        console.error("Error loading spells:", error);
+      } finally {
+        setSpellsLoading(false);
+      }
+    };
+    loadSpells();
+  }, []);
+
+  // Map character spells to full spell data
+  const characterSpellsWithData = useMemo(() => {
+    if (!character?.spells) return [];
+    const charSpells = character.spells as any[];
+    return charSpells.map((spell: any) => {
+      const spellId = typeof spell === 'string' ? spell : spell.id || spell.name;
+      const fullData = allSpellsData.find(s => s.id === spellId || s.name_en?.toLowerCase().replace(/\s+/g, '_') === spellId);
+      return {
+        id: spellId,
+        fullData,
+        displayName: fullData?.name || (typeof spellId === 'string' 
+          ? spellId.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
+          : spellId),
+      };
+    });
+  }, [character?.spells, allSpellsData]);
 
   // Helper to update conditions with combat sync
   const updateConditions = async (newConditions: string[]) => {
@@ -1075,20 +1164,38 @@ export function CharacterSheet() {
                   </div>
                 </div>
 
-                <ScrollArea className="h-[150px]">
+                <ScrollArea className="h-[180px]">
                   <div className="space-y-1">
-                    {(character.spells as any[])?.length > 0 ? (
-                      (character.spells as any[]).slice(0, 8).map((spell: any, i: number) => {
-                        const spellName = spell.name || spell;
-                        // Format snake_case to Title Case
-                        const formattedName = typeof spellName === 'string' 
-                          ? spellName.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
-                          : spellName;
+                    {characterSpellsWithData.length > 0 ? (
+                      characterSpellsWithData.slice(0, 10).map((spell, i) => {
+                        const levelLabel = spell.fullData?.level === 0 ? "Truque" : `${spell.fullData?.level || '?'}º`;
+                        const school = spell.fullData?.school;
+                        const schoolInfo = school ? SPELL_SCHOOLS[school] : null;
+                        
                         return (
-                          <div key={i} className="flex items-center justify-between p-2 bg-muted/30 rounded-lg">
-                            <span className="text-sm">{formattedName}</span>
-                            <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                          </div>
+                          <button
+                            key={i}
+                            onClick={() => spell.fullData && setSelectedSpellDetail(spell.fullData)}
+                            className="w-full flex items-center gap-2 p-2 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                          >
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-medium truncate">{spell.displayName}</span>
+                                {spell.fullData?.concentration && (
+                                  <span className="text-[9px] px-1 py-0.5 rounded bg-yellow-500/20 text-yellow-400">C</span>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-2 mt-0.5">
+                                <span className="text-[10px] text-muted-foreground">{levelLabel}</span>
+                                {schoolInfo && (
+                                  <Badge variant="outline" className={`text-[9px] px-1 py-0 h-4 ${schoolInfo.color}`}>
+                                    {schoolInfo.name}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+                            <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+                          </button>
                         );
                       })
                     ) : (
@@ -1157,6 +1264,53 @@ export function CharacterSheet() {
         open={showHistory}
         onOpenChange={setShowHistory}
       />
+
+      {/* Spell Detail Sheet */}
+      <Sheet open={!!selectedSpellDetail} onOpenChange={() => setSelectedSpellDetail(null)}>
+        <SheetContent side="bottom" className="bg-card border-border h-[85vh]">
+          {selectedSpellDetail && (
+            <ScrollArea className="h-full pr-4">
+              <SheetHeader className="pb-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-6 h-6 text-foreground" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <SheetTitle className="text-left text-lg">{selectedSpellDetail.name}</SheetTitle>
+                    <p className="text-xs text-muted-foreground">{selectedSpellDetail.name_en}</p>
+                    <div className="flex flex-wrap gap-1.5 mt-2">
+                      <Badge variant="outline" className="text-xs">
+                        {selectedSpellDetail.level === 0 ? "Truque" : `${selectedSpellDetail.level}º Círculo`}
+                      </Badge>
+                      {SPELL_SCHOOLS[selectedSpellDetail.school] && (
+                        <Badge className={`text-xs ${SPELL_SCHOOLS[selectedSpellDetail.school].color}`}>
+                          {SPELL_SCHOOLS[selectedSpellDetail.school].name}
+                        </Badge>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </SheetHeader>
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                <div className="glass rounded-lg p-3"><p className="text-xs text-muted-foreground">Tempo</p><p className="text-sm font-medium">{selectedSpellDetail.casting_time}</p></div>
+                <div className="glass rounded-lg p-3"><p className="text-xs text-muted-foreground">Alcance</p><p className="text-sm font-medium">{selectedSpellDetail.range_type === "self" ? "Pessoal" : selectedSpellDetail.range_type === "touch" ? "Toque" : `${selectedSpellDetail.range}m`}</p></div>
+                <div className="glass rounded-lg p-3"><p className="text-xs text-muted-foreground">Duração</p><p className="text-sm font-medium">{selectedSpellDetail.duration}</p></div>
+                <div className="glass rounded-lg p-3"><p className="text-xs text-muted-foreground">Componentes</p><p className="text-sm font-medium">{[selectedSpellDetail.components.verbal && "V", selectedSpellDetail.components.somatic && "S", selectedSpellDetail.components.material && "M"].filter(Boolean).join(", ")}</p></div>
+              </div>
+              <div className="mb-4">
+                <h3 className="text-sm font-semibold mb-2">Descrição</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{selectedSpellDetail.description_markdown.replace(/\*\*/g, "").replace(/###\s*/g, "\n").replace(/\n-\s/g, "\n• ")}</p>
+              </div>
+              {selectedSpellDetail.at_higher_levels && (
+                <div className="glass rounded-lg p-3 mb-6">
+                  <p className="text-xs text-primary font-medium mb-1">Em Níveis Superiores</p>
+                  <p className="text-sm text-muted-foreground">{selectedSpellDetail.at_higher_levels.replace(/\*\*/g, "")}</p>
+                </div>
+              )}
+            </ScrollArea>
+          )}
+        </SheetContent>
+      </Sheet>
 
       {/* Rest Dialog */}
       <AlertDialog open={showRestDialog !== null} onOpenChange={(open) => !open && setShowRestDialog(null)}>
