@@ -2,7 +2,7 @@ import { WizardData } from '../CharacterWizard';
 import { CLASSES } from '@/data/srd';
 import { cn } from '@/lib/utils';
 import { Check, Info } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import skillsData from '@/data/rules/pericias.json';
 
 interface SkillsStepProps {
@@ -141,14 +141,16 @@ export function SkillsStep({ data, updateData }: SkillsStepProps) {
                         <h4 className="text-sm font-semibold text-foreground">
                           {skill.name}
                         </h4>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
-                          </TooltipTrigger>
-                          <TooltipContent side="top" className="max-w-xs">
-                            <p className="text-xs">{skill.description}</p>
-                          </TooltipContent>
-                        </Tooltip>
+                        <TooltipProvider delayDuration={100}>
+                          <Tooltip>
+                            <TooltipTrigger asChild onClick={(e) => e.stopPropagation()}>
+                              <Info className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                            </TooltipTrigger>
+                            <TooltipContent side="top" className="max-w-xs z-[9999]">
+                              <p className="text-xs">{skill.description}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       </div>
                       <p className="text-xs text-muted-foreground truncate">
                         {skill.description.slice(0, 60)}...
