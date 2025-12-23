@@ -313,6 +313,7 @@ export type Database = {
           backstory: string | null
           bonds: string | null
           class: string
+          conditions: string[] | null
           created_at: string
           currency: Json
           current_hp: number
@@ -354,6 +355,7 @@ export type Database = {
           backstory?: string | null
           bonds?: string | null
           class: string
+          conditions?: string[] | null
           created_at?: string
           currency?: Json
           current_hp?: number
@@ -395,6 +397,7 @@ export type Database = {
           backstory?: string | null
           bonds?: string | null
           class?: string
+          conditions?: string[] | null
           created_at?: string
           currency?: Json
           current_hp?: number

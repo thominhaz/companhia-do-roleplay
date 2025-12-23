@@ -49,6 +49,7 @@ export interface CharacterDB {
   languages: string[];
   image_url: string | null;
   is_archived: boolean;
+  conditions: string[];
   created_at: string;
   updated_at: string;
 }

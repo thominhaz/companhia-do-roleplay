@@ -227,6 +227,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       proficiencies: [],
       languages: [...selectedRace.languages, ...data.extraLanguages],
       image_url: null,
+      conditions: [],
     };
 
     await createCharacter.mutateAsync(character);
