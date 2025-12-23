@@ -1,4 +1,4 @@
-import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Wand2, Skull, Check, Lock, Loader2, LogIn } from "lucide-react";
+import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Wand2, Skull, Check, Lock, Loader2, LogIn, Swords } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -15,6 +15,7 @@ import { JoinCampaignSheet } from "@/components/campaign/JoinCampaignSheet";
 import { CampaignNotesSheet } from "@/components/campaign/CampaignNotesSheet";
 import { CampaignChatSheet } from "@/components/campaign/CampaignChatSheet";
 import { CreateSessionSheet } from "@/components/campaign/CreateSessionSheet";
+import { PlayerCombatView } from "@/components/campaign/PlayerCombatView";
 import { AppHeader } from "@/components/layout/AppHeader";
 
 type FilterType = 'all' | 'mastering' | 'playing';
@@ -233,7 +234,7 @@ function MasterCampaignCard({
   );
 }
 
-function PlayerCampaignCard({ campaign, masterName, onClick, onChatClick, onNotesClick }: { campaign: CampaignDB; masterName?: string; onClick: () => void; onChatClick: () => void; onNotesClick: () => void }) {
+function PlayerCampaignCard({ campaign, masterName, onClick, onChatClick, onNotesClick, onCombatClick }: { campaign: CampaignDB; masterName?: string; onClick: () => void; onChatClick: () => void; onNotesClick: () => void; onCombatClick: () => void }) {
   const colors = {
     iconBg: "from-blue-600 to-blue-800",
     buttonBg: "bg-blue-600/20",
@@ -278,6 +279,12 @@ function PlayerCampaignCard({ campaign, masterName, onClick, onChatClick, onNote
         >
           <StickyNote className="w-3 h-3 inline mr-2" />Notas
         </button>
+        <button 
+          className={cn("flex-1 py-2 rounded-lg text-xs font-medium", colors.buttonBg, colors.buttonText)}
+          onClick={(e) => { e.stopPropagation(); onCombatClick(); }}
+        >
+          <Swords className="w-3 h-3 inline mr-2" />Combate
+        </button>
       </div>
 
       <div className="flex items-center gap-4 pt-3 border-t border-border">
@@ -306,6 +313,7 @@ export function CampaignsScreen() {
   const [showQuickChat, setShowQuickChat] = useState(false);
   const [showQuickNotes, setShowQuickNotes] = useState(false);
   const [showQuickAgenda, setShowQuickAgenda] = useState(false);
+  const [showQuickCombat, setShowQuickCombat] = useState(false);
   const [quickActionCampaign, setQuickActionCampaign] = useState<CampaignDB | null>(null);
 
   const navigate = useNavigate();
@@ -362,6 +370,11 @@ export function CampaignsScreen() {
   const handleQuickAgenda = (campaign: CampaignDB) => {
     setQuickActionCampaign(campaign);
     setShowQuickAgenda(true);
+  };
+
+  const handleQuickCombat = (campaign: CampaignDB) => {
+    setQuickActionCampaign(campaign);
+    setShowQuickCombat(true);
   };
 
   const filteredMasterCampaigns = activeFilter === 'playing' ? [] : masterCampaigns;
@@ -517,6 +530,7 @@ export function CampaignsScreen() {
                     onClick={() => handleOpenCampaign(campaign, false)}
                     onChatClick={() => handleQuickChat(campaign)}
                     onNotesClick={() => handleQuickNotes(campaign)}
+                    onCombatClick={() => handleQuickCombat(campaign)}
                   />
                 ))}
               </div>
@@ -565,6 +579,11 @@ export function CampaignsScreen() {
             campaignId={quickActionCampaign.id}
             open={showQuickAgenda}
             onOpenChange={setShowQuickAgenda}
+          />
+          <PlayerCombatView
+            campaignId={quickActionCampaign.id}
+            open={showQuickCombat}
+            onOpenChange={setShowQuickCombat}
           />
         </>
       )}
