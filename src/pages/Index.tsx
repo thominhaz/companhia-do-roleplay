@@ -25,14 +25,14 @@ const Index = () => {
     if (tabParam && ['home', 'characters', 'campaigns', 'tools', 'menu'].includes(tabParam)) {
       setActiveTab(tabParam as TabRoute);
       setDisplayedTab(tabParam as TabRoute);
-      // Keep other params like tool=notes
-      const newParams = new URLSearchParams(searchParams);
-      newParams.delete('tab');
-      if (newParams.toString()) {
-        setSearchParams(newParams, { replace: true });
-      } else {
-        setSearchParams({}, { replace: true });
-      }
+      // Keep other params like tool=notes, create=true, join=true
+      const newParams = new URLSearchParams();
+      searchParams.forEach((value, key) => {
+        if (key !== 'tab') {
+          newParams.set(key, value);
+        }
+      });
+      setSearchParams(newParams, { replace: true });
     }
   }, [searchParams, setSearchParams]);
 

@@ -1,7 +1,7 @@
 import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Wand2, Skull, Check, Lock, Loader2, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { useMasterCampaigns, usePlayerCampaigns, CampaignDB } from "@/hooks/useCampaigns";
@@ -284,6 +284,7 @@ function PlayerCampaignCard({ campaign, masterName, onClick }: { campaign: Campa
 }
 
 export function CampaignsScreen() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [showCreateSheet, setShowCreateSheet] = useState(false);
   const [showJoinSheet, setShowJoinSheet] = useState(false);
@@ -299,6 +300,14 @@ export function CampaignsScreen() {
 
   const { data: masterData, isLoading: loadingMaster } = useMasterCampaigns();
   const { data: playerData, isLoading: loadingPlayer } = usePlayerCampaigns();
+
+  // Open join sheet if ?join=true in URL
+  useEffect(() => {
+    if (searchParams.get('join') === 'true' && user) {
+      setShowJoinSheet(true);
+      setSearchParams({}, { replace: true });
+    }
+  }, [searchParams, user, setSearchParams]);
 
   const isLoading = loadingMaster || loadingPlayer;
 
