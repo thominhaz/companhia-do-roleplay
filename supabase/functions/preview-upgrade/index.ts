@@ -126,17 +126,32 @@ serve(async (req) => {
       .filter((line: { amount: number }) => line.amount > 0)
       .reduce((sum: number, line: { amount: number }) => sum + line.amount, 0) / 100;
 
-    // Get next billing date
-    const periodEndMs = subscription.current_period_end * 1000;
-    const nextBillingDate = new Date(periodEndMs);
-    const daysRemaining = Math.ceil((periodEndMs - Date.now()) / (1000 * 60 * 60 * 24));
+    // Next billing date / remaining days (guard against missing Stripe fields)
+    const currentPeriodEnd = (subscription as any)?.current_period_end;
 
-    logStep("Preview calculated", { 
-      prorationAmount, 
-      creditAmount, 
+    let nextBillingDateIso: string | null = null;
+    let daysRemaining: number | null = null;
+
+    if (typeof currentPeriodEnd === "number" && Number.isFinite(currentPeriodEnd)) {
+      const periodEndMs = currentPeriodEnd * 1000;
+      const nextBillingDate = new Date(periodEndMs);
+      if (!Number.isNaN(nextBillingDate.getTime())) {
+        nextBillingDateIso = nextBillingDate.toISOString();
+      }
+      daysRemaining = Math.max(
+        0,
+        Math.ceil((periodEndMs - Date.now()) / (1000 * 60 * 60 * 24))
+      );
+    }
+
+    logStep("Preview calculated", {
+      prorationAmount,
+      creditAmount,
       chargeAmount,
       linesCount: previewInvoice.lines.data.length,
-      daysRemaining
+      currentPeriodEnd,
+      daysRemaining,
+      nextBillingDateIso,
     });
 
     return new Response(
@@ -148,7 +163,7 @@ serve(async (req) => {
         creditAmount,
         chargeAmount,
         currency: "BRL",
-        nextBillingDate: nextBillingDate.toISOString(),
+        nextBillingDate: nextBillingDateIso,
         daysRemaining,
       }),
       {

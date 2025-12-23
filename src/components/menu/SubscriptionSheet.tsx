@@ -32,7 +32,8 @@ interface UpgradePreview {
   prorationAmount: number;
   creditAmount: number;
   chargeAmount: number;
-  daysRemaining: number;
+  daysRemaining: number | null;
+  nextBillingDate?: string | null;
 }
 
 export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps) {
@@ -590,16 +591,15 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
                         </div>
                       </div>
                     </div>
-                    <p className="text-xs text-muted-foreground">
-                      {isDowngrade 
-                        ? upgradePreview.prorationAmount < 0
-                          ? `Você receberá um crédito de R$ ${Math.abs(upgradePreview.prorationAmount).toFixed(2)} que será aplicado nas próximas faturas.`
-                          : "A mudança será aplicada imediatamente."
-                        : upgradePreview.daysRemaining > 0 
-                          ? `Você tem ${upgradePreview.daysRemaining} dias restantes no seu período atual. O valor proporcional será cobrado imediatamente.`
-                          : "O valor proporcional será cobrado imediatamente."
-                      }
-                    </p>
+                      <p className="text-xs text-muted-foreground">
+                        {isDowngrade
+                          ? upgradePreview.prorationAmount < 0
+                            ? `Você receberá um crédito de R$ ${Math.abs(upgradePreview.prorationAmount).toFixed(2)} que será aplicado nas próximas faturas.`
+                            : "A mudança será aplicada imediatamente."
+                          : (upgradePreview.daysRemaining ?? 0) > 0
+                            ? `Você tem ${upgradePreview.daysRemaining} dias restantes no seu período atual. O valor proporcional será cobrado imediatamente.`
+                            : "O valor proporcional será cobrado imediatamente."}
+                      </p>
                   </>
                 )}
               </div>

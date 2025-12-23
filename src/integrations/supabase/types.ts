@@ -874,6 +874,10 @@ export type Database = {
         Args: { _campaign_id: string; _user_id: string }
         Returns: boolean
       }
+      is_homebrew_owner: {
+        Args: { _content_id: string; _user_id: string }
+        Returns: boolean
+      }
       is_mestre: { Args: { _user_id: string }; Returns: boolean }
       is_premium: { Args: { _user_id: string }; Returns: boolean }
       join_campaign_by_code: {
