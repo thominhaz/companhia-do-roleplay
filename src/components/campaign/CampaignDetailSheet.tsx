@@ -31,10 +31,12 @@ import { CombatTracker } from "./CombatTracker";
 import { CampaignNotesSheet } from "./CampaignNotesSheet";
 import { CampaignChatSheet } from "./CampaignChatSheet";
 import { CampaignCompendiumSheet } from "./CampaignCompendiumSheet";
+import { DiscordWebhookConfig } from "./DiscordWebhookConfig";
 import { Library } from "lucide-react";
+import { useSubscription } from "@/hooks/useSubscription";
 
 interface CampaignDetailSheetProps {
-  campaign: CampaignDB | null;
+  campaign: (CampaignDB & { discord_webhook_url?: string | null }) | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   isMaster: boolean;
@@ -52,6 +54,7 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
   const { data: sessions, isLoading: loadingSessions } = useCampaignSessions(campaign?.id || '');
   const { data: players, isLoading: loadingPlayers } = useCampaignPlayers(campaign?.id || '');
   const deleteCampaign = useDeleteCampaign();
+  const { data: subscription } = useSubscription();
 
   if (!campaign) return null;
 
@@ -371,6 +374,14 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
                       {format(new Date(campaign.created_at), "dd/MM/yyyy", { locale: ptBR })}
                     </p>
                   </div>
+
+                  {/* Discord Integration - Only for Mestre tier */}
+                  {subscription?.limits.hasDiscordIntegration && (
+                    <DiscordWebhookConfig
+                      campaignId={campaign.id}
+                      currentWebhookUrl={campaign.discord_webhook_url || null}
+                    />
+                  )}
 
                   <Button 
                     variant="destructive" 

@@ -1,1 +1,4 @@
 project_id = "fnolqjgjzxgqvxvxllog"
+
+[functions.send-discord-notification]
+verify_jwt = true
