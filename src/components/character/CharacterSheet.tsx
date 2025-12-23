@@ -635,6 +635,26 @@ export function CharacterSheet() {
                   <p className="text-[10px] text-muted-foreground">Prof.</p>
                 </div>
               </div>
+
+              {/* Active Conditions */}
+              {character.conditions && character.conditions.length > 0 && (
+                <div className="mt-4 bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
+                  <h3 className="text-sm font-semibold text-orange-400 mb-2 flex items-center gap-2">
+                    <Swords className="w-4 h-4" />
+                    Condições Ativas
+                  </h3>
+                  <div className="flex flex-wrap gap-1">
+                    {character.conditions.map((condition, idx) => (
+                      <span 
+                        key={idx}
+                        className="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full"
+                      >
+                        {condition}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
             </SheetCard>
 
             {/* Saving Throws */}
