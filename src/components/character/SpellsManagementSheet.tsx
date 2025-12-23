@@ -156,11 +156,15 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
   // Get full spell data for character spells
   const characterSpellsWithData = useMemo(() => {
     return spells.map(spell => {
-      const spellNameNormalized = spell.name.toLowerCase().replace(/_/g, ' ');
-      const fullData = allSpellsData.find(s => 
-        s.name?.toLowerCase() === spellNameNormalized ||
-        s.name_en?.toLowerCase() === spellNameNormalized
-      );
+      const spellNameNormalized = spell.name.toLowerCase().replace(/_/g, ' ').trim();
+      const fullData = allSpellsData.find(s => {
+        const dbName = s.name?.toLowerCase().trim() || '';
+        const dbNameEn = s.name_en?.toLowerCase().trim() || '';
+        const dbId = (s as any).id?.toLowerCase().replace(/_/g, ' ').trim() || '';
+        return dbName === spellNameNormalized || 
+               dbNameEn === spellNameNormalized ||
+               dbId === spellNameNormalized;
+      });
       return {
         ...spell,
         fullData,
@@ -256,12 +260,16 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
       <Card
         key={spell.name}
         className={cn(
-          "p-3 cursor-pointer transition-all hover:scale-[1.02]",
+          "p-3 cursor-pointer transition-colors",
           isPrepared
-            ? "bg-primary/10 border-primary/40 shadow-lg shadow-primary/10"
-            : "bg-card/50 border-border/50 hover:border-border"
+            ? "bg-primary/10 border-primary/40"
+            : "bg-card/50 border-border/50 hover:bg-card/80"
         )}
-        onClick={() => spell.fullData && setSelectedSpell(spell.fullData)}
+        onClick={() => {
+          if (spell.fullData) {
+            setSelectedSpell(spell.fullData);
+          }
+        }}
       >
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
