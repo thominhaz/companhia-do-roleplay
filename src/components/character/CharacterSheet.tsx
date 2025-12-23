@@ -54,6 +54,11 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const ATTRIBUTES = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const;
 
@@ -85,6 +90,23 @@ const SKILLS = [
   { id: 'sleight_of_hand', name: 'Prestidigitação', attr: 'dexterity' },
   { id: 'stealth', name: 'Furtividade', attr: 'dexterity' },
   { id: 'survival', name: 'Sobrevivência', attr: 'wisdom' },
+];
+
+const CONDITIONS = [
+  { name: "Agarrado", icon: "🪢" },
+  { name: "Amedrontado", icon: "😨" },
+  { name: "Atordoado", icon: "💫" },
+  { name: "Caído", icon: "⬇️" },
+  { name: "Cego", icon: "👁️" },
+  { name: "Encantado", icon: "💕" },
+  { name: "Envenenado", icon: "☠️" },
+  { name: "Exausto", icon: "😫" },
+  { name: "Incapacitado", icon: "🚫" },
+  { name: "Inconsciente", icon: "💤" },
+  { name: "Invisível", icon: "👻" },
+  { name: "Paralisado", icon: "🧊" },
+  { name: "Petrificado", icon: "🗿" },
+  { name: "Surdo", icon: "🔇" },
 ];
 
 // Card Component
@@ -637,20 +659,76 @@ export function CharacterSheet() {
                 </div>
               </div>
 
-              {/* Active Conditions */}
-              {character.conditions && character.conditions.length > 0 && (
-                <div className="mt-4 bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
-                  <h3 className="text-sm font-semibold text-orange-400 mb-2 flex items-center gap-2">
+              {/* Conditions Section */}
+              <div className="mt-4 bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-sm font-semibold text-orange-400 flex items-center gap-2">
                     <Swords className="w-4 h-4" />
-                    Condições Ativas
+                    Condições
                   </h3>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 px-2 text-orange-400 hover:text-orange-300 hover:bg-orange-500/20"
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        Adicionar
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-64 p-2" align="end">
+                      <div className="space-y-1">
+                        <p className="text-xs text-muted-foreground mb-2 px-2">Selecione uma condição:</p>
+                        <ScrollArea className="h-64">
+                          {CONDITIONS.map((cond) => {
+                            const isActive = character.conditions?.includes(cond.name);
+                            return (
+                              <button
+                                key={cond.name}
+                                className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-sm transition-colors ${
+                                  isActive 
+                                    ? 'bg-orange-500/20 text-orange-400' 
+                                    : 'hover:bg-muted text-foreground'
+                                }`}
+                                onClick={async () => {
+                                  if (isActive) {
+                                    const newConditions = character.conditions.filter(c => c !== cond.name);
+                                    await updateCharacter.mutateAsync({
+                                      id: character.id,
+                                      conditions: newConditions,
+                                    });
+                                    toast.success(`Condição "${cond.name}" removida`);
+                                  } else {
+                                    const newConditions = [...(character.conditions || []), cond.name];
+                                    await updateCharacter.mutateAsync({
+                                      id: character.id,
+                                      conditions: newConditions,
+                                    });
+                                    toast.success(`Condição "${cond.name}" adicionada`);
+                                  }
+                                }}
+                              >
+                                <span className="text-base">{cond.icon}</span>
+                                <span className="flex-1">{cond.name}</span>
+                                {isActive && <X className="w-3 h-3 text-orange-400" />}
+                              </button>
+                            );
+                          })}
+                        </ScrollArea>
+                      </div>
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                
+                {character.conditions && character.conditions.length > 0 ? (
                   <div className="flex flex-wrap gap-1">
                     {character.conditions.map((condition, idx) => (
                       <span 
                         key={idx}
-                        className="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full flex items-center gap-1 group"
+                        className="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full flex items-center gap-1"
                       >
-                        {condition}
+                        {CONDITIONS.find(c => c.name === condition)?.icon} {condition}
                         <button
                           onClick={async () => {
                             const newConditions = character.conditions.filter((_, i) => i !== idx);
@@ -667,8 +745,12 @@ export function CharacterSheet() {
                       </span>
                     ))}
                   </div>
-                </div>
-              )}
+                ) : (
+                  <p className="text-xs text-muted-foreground text-center py-2">
+                    Nenhuma condição ativa
+                  </p>
+                )}
+              </div>
             </SheetCard>
 
             {/* Saving Throws */}
