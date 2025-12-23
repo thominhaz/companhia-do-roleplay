@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Sparkles, Check, BookOpen, Save, Search, Plus, Gem, Eye, Zap, Clock, Target, Component, Timer, FlaskConical, Scroll, X } from "lucide-react";
+import { Sparkles, Check, BookOpen, Save, Search, Plus, Gem, Zap, Clock, Target, Component, Timer, FlaskConical, Scroll, X, Trash2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -209,6 +209,10 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
     );
   };
 
+  const removeSpell = (spellName: string) => {
+    setSpells(prev => prev.filter(s => s.name !== spellName));
+  };
+
   const toggleSlot = (slotLevel: number, slotIndex: number) => {
     setUsedSlots(prev => {
       const newSlots = [...prev];
@@ -309,6 +313,16 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
           </div>
 
           <div className="flex flex-col items-end gap-1">
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                removeSpell(spell.name);
+              }}
+              className="w-6 h-6 rounded-full flex items-center justify-center transition-colors bg-destructive/20 hover:bg-destructive/40 text-destructive"
+              title="Remover magia"
+            >
+              <Trash2 className="w-3 h-3" />
+            </button>
             {level > 0 && (
               <button
                 onClick={(e) => {
@@ -321,6 +335,7 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                     ? "bg-primary text-primary-foreground"
                     : "bg-muted hover:bg-muted-foreground/20"
                 )}
+                title={isPrepared ? "Despreparar" : "Preparar"}
               >
                 {isPrepared && <Check className="w-3.5 h-3.5" />}
               </button>
