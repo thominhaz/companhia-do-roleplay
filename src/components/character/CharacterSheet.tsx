@@ -222,6 +222,21 @@ export function CharacterSheet() {
     }
   };
 
+  // Helper to sync HP with combat
+  const syncHpWithCombat = async (newCurrentHp: number, newMaxHp?: number) => {
+    if (combatInfo?.combatant && combatInfo?.encounter) {
+      const updateData: { id: string; encounterId: string; current_hp: number; max_hp?: number } = {
+        id: combatInfo.combatant.id,
+        encounterId: combatInfo.encounter.id,
+        current_hp: newCurrentHp,
+      };
+      if (newMaxHp !== undefined) {
+        updateData.max_hp = newMaxHp;
+      }
+      await updateCombatant.mutateAsync(updateData);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background p-4">
@@ -273,6 +288,8 @@ export function CharacterSheet() {
         id: character.id,
         current_hp: newHp
       });
+      // Sync with combat
+      await syncHpWithCombat(newHp);
       toast.success(delta > 0 ? `+${delta} HP` : `${delta} HP`);
       setHpModifier('');
     } catch (error) {
@@ -339,6 +356,8 @@ export function CharacterSheet() {
         current_hp: newHp,
         hit_dice: newHitDice
       });
+      // Sync with combat
+      await syncHpWithCombat(newHp);
       toast.success(`Descanso Curto: +${totalHealing} HP (${hitDiceToSpend}${hitDice.diceType})`);
       setShowRestDialog(null);
       setHitDiceToSpend(0);
@@ -365,6 +384,8 @@ export function CharacterSheet() {
         temporary_hp: 0,
         hit_dice: newHitDice
       });
+      // Sync with combat
+      await syncHpWithCombat(newHp, newHp);
       toast.success(`Descanso Longo: HP recuperado (${newHp}), +${hitDiceRecovered} dados de vida`);
       setShowRestDialog(null);
     } catch (error) {
