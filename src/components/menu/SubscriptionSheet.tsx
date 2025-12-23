@@ -451,7 +451,6 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
                   { icon: Swords, text: "Combat Tracker Pro com HP em tempo real" },
                   { icon: MessageSquare, text: "Integração Discord (rolagens e alertas)" },
                   { icon: Share2, text: "Partilha de Homebrew nas campanhas" },
-                  { icon: Heart, text: "Gestão de Stress/Sanidade" },
                 ].map((feature, i) => (
                   <li key={i} className="flex items-center gap-2 text-sm text-foreground">
                     <feature.icon className="w-4 h-4 text-gold shrink-0" />
