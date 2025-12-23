@@ -29,6 +29,8 @@ import {
   X
 } from "lucide-react";
 import { useCharacter, useUpdateCharacter } from "@/hooks/useCharacters";
+import { useCharacterActiveCombat } from "@/hooks/useCharacterCombat";
+import { useUpdateCombatant } from "@/hooks/useCombat";
 import { getModifier, getAttributeAbbr } from "@/data/srd";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -184,6 +186,8 @@ export function CharacterSheet() {
   const navigate = useNavigate();
   const { data: character, isLoading } = useCharacter(id || '');
   const updateCharacter = useUpdateCharacter();
+  const { data: combatInfo } = useCharacterActiveCombat(id || '');
+  const updateCombatant = useUpdateCombatant();
   const { data: subscription } = useSubscription();
   const [activeTab, setActiveTab] = useState('geral');
   const [skillsTab, setSkillsTab] = useState('pericias');
@@ -199,6 +203,24 @@ export function CharacterSheet() {
   const [hitDiceToSpend, setHitDiceToSpend] = useState(0);
 
   const hasHistoryAccess = subscription?.limits.hasHistorico ?? false;
+
+  // Helper to update conditions with combat sync
+  const updateConditions = async (newConditions: string[]) => {
+    // Update character
+    await updateCharacter.mutateAsync({
+      id: character!.id,
+      conditions: newConditions,
+    });
+
+    // If in active combat, also update the combatant
+    if (combatInfo?.combatant && combatInfo?.encounter) {
+      await updateCombatant.mutateAsync({
+        id: combatInfo.combatant.id,
+        encounterId: combatInfo.encounter.id,
+        conditions: newConditions,
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -694,17 +716,11 @@ export function CharacterSheet() {
                                 onClick={async () => {
                                   if (isActive) {
                                     const newConditions = character.conditions.filter(c => c !== cond.name);
-                                    await updateCharacter.mutateAsync({
-                                      id: character.id,
-                                      conditions: newConditions,
-                                    });
+                                    await updateConditions(newConditions);
                                     toast.success(`Condição "${cond.name}" removida`);
                                   } else {
                                     const newConditions = [...(character.conditions || []), cond.name];
-                                    await updateCharacter.mutateAsync({
-                                      id: character.id,
-                                      conditions: newConditions,
-                                    });
+                                    await updateConditions(newConditions);
                                     toast.success(`Condição "${cond.name}" adicionada`);
                                   }
                                 }}
@@ -732,10 +748,7 @@ export function CharacterSheet() {
                         <button
                           onClick={async () => {
                             const newConditions = character.conditions.filter((_, i) => i !== idx);
-                            await updateCharacter.mutateAsync({
-                              id: character.id,
-                              conditions: newConditions,
-                            });
+                            await updateConditions(newConditions);
                             toast.success(`Condição "${condition}" removida`);
                           }}
                           className="ml-1 hover:bg-orange-500/30 rounded-full p-0.5 transition-colors"
