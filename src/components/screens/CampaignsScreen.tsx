@@ -295,7 +295,7 @@ export function CampaignsScreen() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
-  const isPremium = subscription?.status === 'premium';
+  const canCreateCampaign = subscription?.canCreateCampaign ?? false;
 
   const { data: masterData, isLoading: loadingMaster } = useMasterCampaigns();
   const { data: playerData, isLoading: loadingPlayer } = usePlayerCampaigns();
@@ -312,7 +312,7 @@ export function CampaignsScreen() {
       toast.error("Faça login para criar campanhas");
       return;
     }
-    if (!isPremium) {
+    if (!canCreateCampaign) {
       setShowPremiumModal(true);
       return;
     }
@@ -334,7 +334,7 @@ export function CampaignsScreen() {
         title="Campanhas"
         rightContent={
           <div className="flex items-center gap-2">
-            {isPremium && (
+            {canCreateCampaign && (
               <div className="px-2 py-1 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full">
                 <Crown className="w-3 h-3 text-black" />
               </div>
@@ -411,7 +411,7 @@ export function CampaignsScreen() {
           </div>
           <h3 className="text-lg font-semibold text-foreground mb-2">Nenhuma campanha</h3>
           <p className="text-sm text-muted-foreground mb-6">
-            {isPremium ? "Crie sua primeira campanha ou entre em uma existente!" : "Assine o Premium para criar campanhas ou entre em uma mesa existente."}
+            {canCreateCampaign ? "Crie sua primeira campanha ou entre em uma existente!" : "Assine o Premium para criar campanhas ou entre em uma mesa existente."}
           </p>
           <div className="flex gap-3 justify-center">
             <Button
@@ -424,7 +424,7 @@ export function CampaignsScreen() {
             <Button
               onClick={handleCreateCampaign}
             >
-              {isPremium ? "Criar Campanha" : "Ver Planos"}
+              {canCreateCampaign ? "Criar Campanha" : "Ver Planos"}
             </Button>
           </div>
         </div>
