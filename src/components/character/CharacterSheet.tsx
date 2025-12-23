@@ -38,6 +38,7 @@ import { EditStatsSheet } from "./EditStatsSheet";
 import { SpellsManagementSheet } from "./SpellsManagementSheet";
 import { NotesSheet } from "./NotesSheet";
 import { CharacterHistorySheet } from "./CharacterHistorySheet";
+import { CombatStatusCard } from "./CombatStatusCard";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
@@ -401,6 +402,9 @@ export function CharacterSheet() {
           
           {/* Left Column - Character Info */}
           <div className="space-y-4">
+            {/* Combat Status Card - Shows when character is in active combat */}
+            <CombatStatusCard characterId={character.id} />
+            
             <SheetCard>
               {/* Tab Header */}
               <div className="flex justify-center mb-4">
