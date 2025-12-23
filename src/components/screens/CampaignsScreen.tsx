@@ -334,9 +334,16 @@ export function CampaignsScreen() {
         title="Campanhas"
         rightContent={
           <div className="flex items-center gap-2">
-            {canCreateCampaign && (
-              <div className="px-2 py-1 bg-gradient-to-r from-amber-500 to-yellow-500 rounded-full">
-                <Crown className="w-3 h-3 text-black" />
+            {subscription?.tier && (
+              <div className={cn(
+                "px-2.5 py-1 rounded-full flex items-center gap-1.5 text-xs font-semibold",
+                subscription.tier === 'mestre' && "bg-gradient-to-r from-amber-500 to-yellow-500 text-black",
+                subscription.tier === 'heroi' && "bg-gradient-to-r from-purple-500 to-indigo-500 text-white",
+                subscription.tier === 'aldeao' && "bg-muted text-muted-foreground"
+              )}>
+                {subscription.tier === 'mestre' && <Crown className="w-3 h-3" />}
+                {subscription.tier === 'heroi' && <Users className="w-3 h-3" />}
+                <span className="capitalize">{subscription.tier}</span>
               </div>
             )}
             {user ? (
