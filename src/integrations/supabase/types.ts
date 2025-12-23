@@ -704,6 +704,7 @@ export type Database = {
           id: string
           is_active: boolean | null
           max_uses: number | null
+          tier: string
         }
         Insert: {
           code: string
@@ -714,6 +715,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           max_uses?: number | null
+          tier?: string
         }
         Update: {
           code?: string
@@ -724,6 +726,7 @@ export type Database = {
           id?: string
           is_active?: boolean | null
           max_uses?: number | null
+          tier?: string
         }
         Relationships: []
       }
