@@ -21,6 +21,11 @@ const PRICE_IDS: Record<string, Record<string, string>> = {
   },
 };
 
+const PLAN_NAMES: Record<string, string> = {
+  heroi: "Herói",
+  mestre: "Mestre",
+};
+
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : "";
   console.log(`[UPGRADE-SUBSCRIPTION] ${step}${detailsStr}`);
@@ -98,8 +103,29 @@ serve(async (req) => {
 
     // Check if already on the same plan
     if (currentPriceId === newPriceId) {
-      throw new Error("You are already on this plan.");
+      throw new Error("Você já está neste plano.");
     }
+
+    // Determine current and new plan names
+    let currentPlanName = "Desconhecido";
+    let isDowngrade = false;
+    const currentTierOrder = { heroi: 1, mestre: 2 };
+    let currentTier = "";
+    let newTier = "";
+
+    for (const [plan, prices] of Object.entries(PRICE_IDS)) {
+      if (Object.values(prices).includes(currentPriceId)) {
+        currentPlanName = PLAN_NAMES[plan] || plan;
+        currentTier = plan;
+        break;
+      }
+    }
+    
+    newTier = newPlan;
+    isDowngrade = (currentTierOrder[currentTier as keyof typeof currentTierOrder] || 0) > 
+                  (currentTierOrder[newTier as keyof typeof currentTierOrder] || 0);
+
+    logStep("Plan change detected", { currentPlanName, newPlanName: PLAN_NAMES[newPlan], isDowngrade });
 
     // Preview the proration to show user what they'll pay
     const previewInvoice = await stripe.invoices.createPreview({
@@ -136,40 +162,59 @@ serve(async (req) => {
 
     logStep("Subscription updated successfully", { 
       subscriptionId: updatedSubscription.id,
-      status: updatedSubscription.status 
+      status: updatedSubscription.status,
+      currentPeriodEnd: updatedSubscription.current_period_end
     });
 
-    // Determine the new tier based on the price
-    let newTier = "aldeao";
-    for (const [tier, prices] of Object.entries(PRICE_IDS)) {
-      if (Object.values(prices).includes(newPriceId)) {
-        newTier = tier;
-        break;
+    // Calculate expires_at safely
+    let expiresAt: string | null = null;
+    const periodEnd = updatedSubscription.current_period_end;
+    
+    if (typeof periodEnd === "number" && Number.isFinite(periodEnd) && periodEnd > 0) {
+      const expiresDate = new Date(periodEnd * 1000);
+      if (!Number.isNaN(expiresDate.getTime())) {
+        expiresAt = expiresDate.toISOString();
       }
     }
+    
+    logStep("Calculated expires_at", { periodEnd, expiresAt });
 
     // Update the subscription status in Supabase
+    const updateData: Record<string, unknown> = {
+      status: newTier,
+      updated_at: new Date().toISOString(),
+    };
+    
+    if (expiresAt) {
+      updateData.expires_at = expiresAt;
+    }
+
     const { error: updateError } = await supabaseClient
       .from("subscriptions")
-      .update({
-        status: newTier,
-        expires_at: new Date(updatedSubscription.current_period_end * 1000).toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      .update(updateData)
       .eq("user_id", user.id);
 
     if (updateError) {
       logStep("Warning: Failed to update subscription in database", { error: updateError.message });
     } else {
-      logStep("Database updated successfully", { newTier });
+      logStep("Database updated successfully", { newTier, expiresAt });
     }
+
+    // Prepare success message
+    const actionType = isDowngrade ? "Downgrade" : "Upgrade";
+    const chargeMessage = prorationAmount > 0 
+      ? `Você foi cobrado R$ ${prorationAmount.toFixed(2).replace('.', ',')} (valor proporcional).`
+      : prorationAmount < 0
+        ? `Você receberá um crédito de R$ ${Math.abs(prorationAmount).toFixed(2).replace('.', ',')} na próxima fatura.`
+        : "";
 
     return new Response(
       JSON.stringify({
         success: true,
-        message: `Upgrade realizado com sucesso! Você foi cobrado R$ ${prorationAmount.toFixed(2)} (valor proporcional).`,
+        message: `${actionType} para ${PLAN_NAMES[newPlan]} realizado com sucesso! ${chargeMessage}`.trim(),
         prorationAmount,
         newTier,
+        isDowngrade,
         subscriptionId: updatedSubscription.id,
       }),
       {

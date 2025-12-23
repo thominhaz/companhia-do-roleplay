@@ -25,6 +25,16 @@ const PLAN_NAMES: Record<string, string> = {
   mestre: "Mestre",
 };
 
+// Preços em centavos
+const PRICE_AMOUNTS: Record<string, number> = {
+  "price_1SgQwiQPJCHLjWYJdheLim2i": 890,  // Herói mensal
+  "price_1ShEezQPJCHLjWYJypHN0lwu": 2290, // Herói trimestral
+  "price_1SgQyCQPJCHLjWYJXhoCJ3d4": 7990, // Herói anual
+  "price_1SgR0lQPJCHLjWYJjv3gTsOE": 1890, // Mestre mensal
+  "price_1ShEfiQPJCHLjWYJe1QLo6VV": 4990, // Mestre trimestral
+  "price_1SgR17QPJCHLjWYJKJwM9AhZ": 17990, // Mestre anual
+};
+
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : "";
   console.log(`[PREVIEW-UPGRADE] ${step}${detailsStr}`);
@@ -93,16 +103,28 @@ serve(async (req) => {
     const subscriptionItemId = subscription.items.data[0].id;
     const currentPriceId = subscription.items.data[0].price.id;
 
+    logStep("Current subscription", { 
+      subscriptionId: subscription.id, 
+      currentPriceId,
+      newPriceId
+    });
+
     // Determine current plan name
     let currentPlanName = "Desconhecido";
+    let currentPeriod = "mensal";
     for (const [plan, prices] of Object.entries(PRICE_IDS)) {
-      if (Object.values(prices).includes(currentPriceId)) {
-        currentPlanName = PLAN_NAMES[plan] || plan;
-        break;
+      for (const [periodKey, priceId] of Object.entries(prices)) {
+        if (priceId === currentPriceId) {
+          currentPlanName = PLAN_NAMES[plan] || plan;
+          currentPeriod = periodKey;
+          break;
+        }
       }
     }
+    
+    logStep("Plan details", { currentPlanName, currentPeriod, newPlanName: PLAN_NAMES[newPlan], newPeriod: period });
 
-    // Preview the proration
+    // Use Stripe's preview to get accurate proration
     const previewInvoice = await stripe.invoices.createPreview({
       customer: customerId,
       subscription: subscription.id,
@@ -117,38 +139,51 @@ serve(async (req) => {
       },
     });
 
-    const prorationAmount = previewInvoice.total / 100;
-    const lines = previewInvoice.lines.data as Array<{ amount: number }>;
-    const creditAmount = lines
-      .filter((line: { amount: number }) => line.amount < 0)
-      .reduce((sum: number, line: { amount: number }) => sum + Math.abs(line.amount), 0) / 100;
-    const chargeAmount = lines
-      .filter((line: { amount: number }) => line.amount > 0)
-      .reduce((sum: number, line: { amount: number }) => sum + line.amount, 0) / 100;
+    logStep("Stripe preview invoice", {
+      total: previewInvoice.total,
+      subtotal: previewInvoice.subtotal,
+      linesCount: previewInvoice.lines.data.length,
+    });
 
-    // Next billing date / remaining days (guard against missing Stripe fields)
-    const currentPeriodEnd = (subscription as any)?.current_period_end;
+    // Analyze invoice lines for credit and charge breakdown
+    const lines = previewInvoice.lines.data as Array<{ amount: number; description?: string; type?: string }>;
+    
+    let creditAmount = 0;
+    let chargeAmount = 0;
+    
+    for (const line of lines) {
+      logStep("Invoice line", { amount: line.amount, description: line.description });
+      if (line.amount < 0) {
+        creditAmount += Math.abs(line.amount);
+      } else {
+        chargeAmount += line.amount;
+      }
+    }
+
+    // Convert from cents to BRL
+    const creditAmountBRL = creditAmount / 100;
+    const chargeAmountBRL = chargeAmount / 100;
+    const prorationAmountBRL = previewInvoice.total / 100;
+
+    // Next billing date / remaining days
+    const currentPeriodEnd = subscription.current_period_end;
 
     let nextBillingDateIso: string | null = null;
     let daysRemaining: number | null = null;
 
-    if (typeof currentPeriodEnd === "number" && Number.isFinite(currentPeriodEnd)) {
+    if (typeof currentPeriodEnd === "number" && Number.isFinite(currentPeriodEnd) && currentPeriodEnd > 0) {
       const periodEndMs = currentPeriodEnd * 1000;
       const nextBillingDate = new Date(periodEndMs);
       if (!Number.isNaN(nextBillingDate.getTime())) {
         nextBillingDateIso = nextBillingDate.toISOString();
+        daysRemaining = Math.max(0, Math.ceil((periodEndMs - Date.now()) / (1000 * 60 * 60 * 24)));
       }
-      daysRemaining = Math.max(
-        0,
-        Math.ceil((periodEndMs - Date.now()) / (1000 * 60 * 60 * 24))
-      );
     }
 
     logStep("Preview calculated", {
-      prorationAmount,
-      creditAmount,
-      chargeAmount,
-      linesCount: previewInvoice.lines.data.length,
+      prorationAmountBRL,
+      creditAmountBRL,
+      chargeAmountBRL,
       currentPeriodEnd,
       daysRemaining,
       nextBillingDateIso,
@@ -158,10 +193,12 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         currentPlan: currentPlanName,
+        currentPeriod,
         newPlan: PLAN_NAMES[newPlan] || newPlan,
-        prorationAmount,
-        creditAmount,
-        chargeAmount,
+        newPeriod: period,
+        prorationAmount: prorationAmountBRL,
+        creditAmount: creditAmountBRL,
+        chargeAmount: chargeAmountBRL,
         currency: "BRL",
         nextBillingDate: nextBillingDateIso,
         daysRemaining,
