@@ -60,6 +60,7 @@ const SPELLCASTING_CLASSES: Record<string, { cantrips: number; spells: number; s
 // Spell files will be loaded dynamically
 const spellFiles = [
   () => import("@/data/spells/a-c.json"),
+  () => import("@/data/spells/d-f.json"),
   () => import("@/data/spells/g-i.json"),
   () => import("@/data/spells/j-l.json"),
   () => import("@/data/spells/n-p.json"),
