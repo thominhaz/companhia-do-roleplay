@@ -25,7 +25,8 @@ import {
   Plus,
   Minus,
   Dices,
-  History
+  History,
+  X
 } from "lucide-react";
 import { useCharacter, useUpdateCharacter } from "@/hooks/useCharacters";
 import { getModifier, getAttributeAbbr } from "@/data/srd";
@@ -647,9 +648,22 @@ export function CharacterSheet() {
                     {character.conditions.map((condition, idx) => (
                       <span 
                         key={idx}
-                        className="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full"
+                        className="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full flex items-center gap-1 group"
                       >
                         {condition}
+                        <button
+                          onClick={async () => {
+                            const newConditions = character.conditions.filter((_, i) => i !== idx);
+                            await updateCharacter.mutateAsync({
+                              id: character.id,
+                              conditions: newConditions,
+                            });
+                            toast.success(`Condição "${condition}" removida`);
+                          }}
+                          className="ml-1 hover:bg-orange-500/30 rounded-full p-0.5 transition-colors"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
                       </span>
                     ))}
                   </div>
