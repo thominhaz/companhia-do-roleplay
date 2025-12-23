@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import { CharacterSheet } from "@/components/character/CharacterSheet";
 import { SpellGrimoire } from "@/components/tools/SpellGrimoire";
 import ResetPassword from "@/pages/ResetPassword";
+import Checklist from "@/pages/Checklist";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/character/:id" element={<CharacterSheet />} />
               <Route path="/grimoire" element={<SpellGrimoire />} />
+              <Route path="/checklist" element={<Checklist />} />
               {/* Tab redirects - redirect to Index with tab query param */}
               <Route path="/characters" element={<RedirectWithParams to="/?tab=characters" />} />
               <Route path="/campaigns" element={<RedirectWithParams to="/?tab=campaigns" />} />
