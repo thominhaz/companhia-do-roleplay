@@ -1,10 +1,24 @@
 import { useState } from "react";
-import { ArrowLeft, Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, RotateCcw, Plus, Minus, Sparkles } from "lucide-react";
+import { ArrowLeft, Dice1, Dice2, Dice3, Dice4, Dice5, Dice6, RotateCcw, Plus, Minus, Sparkles, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useDiscordNotification } from "@/hooks/useDiscordNotification";
+import { useAllCampaigns } from "@/hooks/useCampaigns";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 interface DiceRollerProps {
   onBack: () => void;
+  campaignId?: string;
 }
 
 type DiceType = "d4" | "d6" | "d8" | "d10" | "d12" | "d20" | "d100";
@@ -27,31 +41,44 @@ const DICE_CONFIG: { type: DiceType; max: number; color: string }[] = [
   { type: "d100", max: 100, color: "from-gold to-gold/80" },
 ];
 
-export function DiceRoller({ onBack }: DiceRollerProps) {
+export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerProps) {
   const [selectedDice, setSelectedDice] = useState<DiceType>("d20");
   const [diceCount, setDiceCount] = useState(1);
   const [modifier, setModifier] = useState(0);
   const [rollHistory, setRollHistory] = useState<RollResult[]>([]);
   const [isRolling, setIsRolling] = useState(false);
   const [currentResult, setCurrentResult] = useState<RollResult | null>(null);
+  const [sendToDiscord, setSendToDiscord] = useState(false);
+  const [selectedCampaignId, setSelectedCampaignId] = useState<string>(propCampaignId || "");
 
-  const rollDice = () => {
+  const { user } = useAuth();
+  const { data: campaigns } = useAllCampaigns();
+  const { sendDiceRoll, hasDiscordIntegration } = useDiscordNotification();
+
+  // Get campaigns where user is master (only masters can send to Discord)
+  const masterCampaigns = campaigns?.master || [];
+
+  const rollDice = async () => {
     const diceConfig = DICE_CONFIG.find((d) => d.type === selectedDice);
     if (!diceConfig) return;
 
     setIsRolling(true);
 
     // Simulate rolling animation
-    setTimeout(() => {
+    setTimeout(async () => {
       const results: number[] = [];
       for (let i = 0; i < diceCount; i++) {
         results.push(Math.floor(Math.random() * diceConfig.max) + 1);
       }
 
+      const total = results.reduce((a, b) => a + b, 0) + modifier;
+      const isCritical = selectedDice === "d20" && results.length === 1 && results[0] === 20;
+      const isCriticalFail = selectedDice === "d20" && results.length === 1 && results[0] === 1;
+
       const result: RollResult = {
         dice: selectedDice,
         results,
-        total: results.reduce((a, b) => a + b, 0) + modifier,
+        total,
         modifier,
         timestamp: new Date(),
       };
@@ -59,6 +86,24 @@ export function DiceRoller({ onBack }: DiceRollerProps) {
       setCurrentResult(result);
       setRollHistory((prev) => [result, ...prev.slice(0, 9)]);
       setIsRolling(false);
+
+      // Send to Discord if enabled
+      if (sendToDiscord && selectedCampaignId && hasDiscordIntegration) {
+        const success = await sendDiceRoll(selectedCampaignId, {
+          username: user?.email?.split('@')[0] || 'Jogador',
+          diceType: selectedDice,
+          diceCount,
+          modifier,
+          results,
+          total,
+          isCritical,
+          isCriticalFail,
+        });
+
+        if (success) {
+          toast.success("Rolagem enviada ao Discord!");
+        }
+      }
     }, 500);
   };
 
@@ -208,10 +253,44 @@ export function DiceRoller({ onBack }: DiceRollerProps) {
           </div>
         </section>
 
+        {/* Discord Integration */}
+        {hasDiscordIntegration && masterCampaigns.length > 0 && (
+          <section className="glass rounded-xl p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="w-4 h-4 text-[#5865F2]" />
+                <Label htmlFor="discord-toggle" className="text-sm font-medium">
+                  Enviar ao Discord
+                </Label>
+              </div>
+              <Switch
+                id="discord-toggle"
+                checked={sendToDiscord}
+                onCheckedChange={setSendToDiscord}
+              />
+            </div>
+
+            {sendToDiscord && (
+              <Select value={selectedCampaignId} onValueChange={setSelectedCampaignId}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione a campanha" />
+                </SelectTrigger>
+                <SelectContent>
+                  {masterCampaigns.map((campaign) => (
+                    <SelectItem key={campaign.id} value={campaign.id}>
+                      {campaign.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          </section>
+        )}
+
         {/* Roll Button */}
         <Button
           onClick={rollDice}
-          disabled={isRolling}
+          disabled={isRolling || (sendToDiscord && !selectedCampaignId)}
           className={cn(
             "w-full h-14 text-lg font-bold bg-gradient-to-r",
             getDiceConfig()?.color
