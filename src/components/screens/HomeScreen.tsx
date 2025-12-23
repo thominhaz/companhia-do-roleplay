@@ -237,7 +237,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                         });
                         return;
                       }
-                      navigate("/characters?create=true");
+                      navigate("/?tab=characters&create=true");
                     }}
                     className="mt-2 px-3 py-1 bg-solar-orange rounded-lg text-xs font-medium text-background"
                   >
@@ -318,7 +318,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                       });
                       return;
                     }
-                    navigate('/characters?create=true');
+                    navigate('/?tab=characters&create=true');
                     break;
                   case 'join':
                     if (!user) {
@@ -330,10 +330,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                       });
                       return;
                     }
-                    navigate('/campaigns?join=true');
+                    navigate('/?tab=campaigns&join=true');
                     break;
                   case 'dice':
-                    navigate('/tools?tool=dice');
+                    navigate('/?tab=tools&tool=dice');
                     break;
                   case 'note':
                     if (!user) {

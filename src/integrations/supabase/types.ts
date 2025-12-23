@@ -14,6 +14,101 @@ export type Database = {
   }
   public: {
     Tables: {
+      bug_comments: {
+        Row: {
+          bug_id: string
+          content: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          bug_id: string
+          content: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          bug_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bug_comments_bug_id_fkey"
+            columns: ["bug_id"]
+            isOneToOne: false
+            referencedRelation: "bugs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bugs: {
+        Row: {
+          actual_behavior: string | null
+          app_version: string | null
+          assigned_to: string | null
+          browser: string | null
+          created_at: string
+          description: string | null
+          device: string | null
+          expected_behavior: string | null
+          id: string
+          reporter_id: string
+          resolved_at: string | null
+          screenshot_url: string | null
+          section: string
+          severity: Database["public"]["Enums"]["bug_severity"]
+          status: Database["public"]["Enums"]["bug_status"]
+          steps_to_reproduce: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          actual_behavior?: string | null
+          app_version?: string | null
+          assigned_to?: string | null
+          browser?: string | null
+          created_at?: string
+          description?: string | null
+          device?: string | null
+          expected_behavior?: string | null
+          id?: string
+          reporter_id: string
+          resolved_at?: string | null
+          screenshot_url?: string | null
+          section: string
+          severity?: Database["public"]["Enums"]["bug_severity"]
+          status?: Database["public"]["Enums"]["bug_status"]
+          steps_to_reproduce?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          actual_behavior?: string | null
+          app_version?: string | null
+          assigned_to?: string | null
+          browser?: string | null
+          created_at?: string
+          description?: string | null
+          device?: string | null
+          expected_behavior?: string | null
+          id?: string
+          reporter_id?: string
+          resolved_at?: string | null
+          screenshot_url?: string | null
+          section?: string
+          severity?: Database["public"]["Enums"]["bug_severity"]
+          status?: Database["public"]["Enums"]["bug_status"]
+          steps_to_reproduce?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       campaign_messages: {
         Row: {
           campaign_id: string
@@ -896,6 +991,8 @@ export type Database = {
       }
     }
     Enums: {
+      bug_severity: "low" | "medium" | "high" | "critical"
+      bug_status: "open" | "in_progress" | "resolved" | "closed" | "wont_fix"
       homebrew_content_type:
         | "spell"
         | "item"
@@ -1039,6 +1136,8 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      bug_severity: ["low", "medium", "high", "critical"],
+      bug_status: ["open", "in_progress", "resolved", "closed", "wont_fix"],
       homebrew_content_type: [
         "spell",
         "item",
