@@ -8,10 +8,8 @@ import { toast } from 'sonner';
 import { 
   Loader2, 
   Shield, 
-  Sword, 
   Sparkles, 
   LogIn, 
-  UserPlus, 
   Mail, 
   Lock, 
   Eye, 
@@ -129,7 +127,6 @@ export default function Auth() {
     if (error) toast.error(error.message);
   };
 
-
   const handleForgotPassword = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !z.string().email().safeParse(email).success) {
@@ -157,17 +154,19 @@ export default function Auth() {
     }
   };
 
-  // Login Card Component
-  const LoginCard = () => (
+  // Render Login Card content
+  const renderLoginCard = () => (
     <section className={`gradient-border relative w-full max-w-md mx-auto bg-background rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ${activeCard === 'login' ? 'animate-border-glow' : 'border border-border'}`}>
       <header className="flex items-center justify-between px-6 pt-6">
         <button 
+          type="button"
           onClick={() => navigate('/')}
           className="p-2 rounded-xl hover:bg-muted transition-colors duration-200"
         >
           <ArrowLeft className="w-5 h-5 text-muted-foreground" />
         </button>
         <button 
+          type="button"
           onClick={() => setActiveCard('forgot')}
           className="text-sm font-medium text-muted-foreground hover:text-solar-orange transition-colors duration-200"
         >
@@ -176,7 +175,6 @@ export default function Auth() {
       </header>
       
       <div className="flex-1 flex flex-col px-6 pt-8 pb-8 gap-8">
-        {/* Brand Logo */}
         <div className="flex flex-col items-center gap-4">
           <img src="/lovable-uploads/efa0d41b-14e0-4651-a827-05d928549cb9.png" alt="Go20" className="w-32 h-32 object-contain" />
           <div className="text-center">
@@ -197,7 +195,7 @@ export default function Auth() {
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onClick={() => setActiveCard('login')}
+              onFocus={() => setActiveCard('login')}
               className="w-full rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-solar-orange focus:border-transparent transition-all duration-200 text-foreground"
             />
             {errors.email && activeCard === 'login' && (
@@ -217,7 +215,7 @@ export default function Auth() {
                 placeholder="Digite sua senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onClick={() => setActiveCard('login')}
+                onFocus={() => setActiveCard('login')}
                 className="w-full rounded-xl border border-border bg-muted/50 px-4 py-3 pr-12 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-solar-orange focus:border-transparent transition-all duration-200 text-foreground"
               />
               <button 
@@ -247,7 +245,6 @@ export default function Auth() {
           </Button>
         </form>
 
-        {/* Social Login */}
         <div className="flex items-center gap-4">
           <div className="flex-1 h-px bg-border" />
           <span className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Ou continuar com</span>
@@ -276,6 +273,7 @@ export default function Auth() {
         <p className="text-muted-foreground">
           Novo no Go20?{' '}
           <button 
+            type="button"
             onClick={() => setActiveCard('signup')}
             className="font-semibold text-solar-orange hover:text-solar-orange/80 transition-colors"
           >
@@ -286,11 +284,12 @@ export default function Auth() {
     </section>
   );
 
-  // Forgot Password Card Component
-  const ForgotPasswordCard = () => (
+  // Render Forgot Password Card content
+  const renderForgotPasswordCard = () => (
     <section className="gradient-border relative w-full max-w-md mx-auto bg-background rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 animate-border-glow">
       <header className="flex items-center px-6 pt-6">
         <button 
+          type="button"
           onClick={() => {
             setActiveCard('login');
             setResetEmailSent(false);
@@ -303,7 +302,6 @@ export default function Auth() {
       </header>
       
       <div className="flex-1 flex flex-col px-6 pt-8 pb-8 gap-8">
-        {/* Brand Logo */}
         <div className="flex flex-col items-center gap-4">
           <img src="/lovable-uploads/efa0d41b-14e0-4651-a827-05d928549cb9.png" alt="Go20" className="w-32 h-32 object-contain" />
           <div className="text-center">
@@ -324,6 +322,7 @@ export default function Auth() {
               </p>
             </div>
             <Button 
+              type="button"
               onClick={() => {
                 setActiveCard('login');
                 setResetEmailSent(false);
@@ -373,6 +372,7 @@ export default function Auth() {
         <p className="text-muted-foreground">
           Lembrou a senha?{' '}
           <button 
+            type="button"
             onClick={() => {
               setActiveCard('login');
               setResetEmailSent(false);
@@ -386,8 +386,8 @@ export default function Auth() {
     </section>
   );
 
-  // Hero Card Component (desktop only)
-  const HeroCard = () => (
+  // Render Hero Card content (desktop only)
+  const renderHeroCard = () => (
     <section className="hidden xl:flex gradient-border relative w-full max-w-md mx-auto bg-gradient-to-br from-background via-muted to-background rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex-col text-foreground">
       <div className="absolute inset-0 bg-gradient-to-br from-solar-orange/10 via-cosmic-purple/10 to-cyan-blue/10" />
       <div className="relative flex-1 flex flex-col items-center justify-center p-8 gap-8">
@@ -410,6 +410,7 @@ export default function Auth() {
 
         <div className="flex flex-col gap-3 w-full max-w-sm">
           <Button 
+            type="button"
             className="w-full flex items-center justify-center gap-3 animate-gradient-bg text-white font-semibold py-4 rounded-xl hover:shadow-lg hover:shadow-solar-orange/30 transition-all duration-300"
             onClick={() => setActiveCard('signup')}
           >
@@ -432,8 +433,8 @@ export default function Auth() {
     </section>
   );
 
-  // Signup Card Component
-  const SignupCard = () => (
+  // Render Signup Card content
+  const renderSignupCard = () => (
     <section className={`gradient-border relative w-full max-w-md mx-auto bg-background rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ${activeCard === 'signup' ? 'animate-border-glow' : 'border border-border'}`}>
       <div className="px-6 pt-8 pb-8 flex-1 flex flex-col gap-6">
         <header className="text-center space-y-2">
@@ -451,7 +452,7 @@ export default function Auth() {
               placeholder="Como você quer ser chamado?"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              onClick={() => setActiveCard('signup')}
+              onFocus={() => setActiveCard('signup')}
               className="w-full rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-cyan-blue focus:border-transparent transition-all duration-200 text-foreground"
             />
             {errors.displayName && activeCard === 'signup' && (
@@ -470,7 +471,7 @@ export default function Auth() {
               placeholder="seu@email.com"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              onClick={() => setActiveCard('signup')}
+              onFocus={() => setActiveCard('signup')}
               className="w-full rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-cyan-blue focus:border-transparent transition-all duration-200 text-foreground"
             />
             {errors.email && activeCard === 'signup' && (
@@ -490,7 +491,7 @@ export default function Auth() {
                 placeholder="Mínimo 6 caracteres"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                onClick={() => setActiveCard('signup')}
+                onFocus={() => setActiveCard('signup')}
                 className="w-full rounded-xl border border-border bg-muted/50 px-4 py-3 pr-12 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-cyan-blue focus:border-transparent transition-all duration-200 text-foreground"
               />
               <button 
@@ -547,6 +548,7 @@ export default function Auth() {
           <p className="text-muted-foreground">
             Já tem uma conta?{' '}
             <button 
+              type="button"
               onClick={() => setActiveCard('login')}
               className="font-semibold text-cyan-blue hover:text-cyan-blue/80 transition-colors"
             >
@@ -572,22 +574,22 @@ export default function Auth() {
       <main className="relative z-10 w-full max-w-7xl mx-auto hidden xl:flex flex-row gap-6 lg:gap-8">
         {activeCard === 'forgot' ? (
           <div className="w-full flex justify-center">
-            <ForgotPasswordCard />
+            {renderForgotPasswordCard()}
           </div>
         ) : (
           <>
-            <LoginCard />
-            <HeroCard />
-            <SignupCard />
+            {renderLoginCard()}
+            {renderHeroCard()}
+            {renderSignupCard()}
           </>
         )}
       </main>
 
       {/* Mobile/Tablet: Show only active card */}
       <main className="relative z-10 w-full max-w-md mx-auto xl:hidden">
-        {activeCard === 'login' && <LoginCard />}
-        {activeCard === 'signup' && <SignupCard />}
-        {activeCard === 'forgot' && <ForgotPasswordCard />}
+        {activeCard === 'login' && renderLoginCard()}
+        {activeCard === 'signup' && renderSignupCard()}
+        {activeCard === 'forgot' && renderForgotPasswordCard()}
       </main>
     </div>
   );
