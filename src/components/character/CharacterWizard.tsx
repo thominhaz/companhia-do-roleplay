@@ -1,6 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, X, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, X, AlertTriangle, BookOpen, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCreateCharacter, CharacterInsert } from '@/hooks/useCharacters';
@@ -22,6 +22,15 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export type WizardData = {
   race: string;
@@ -129,10 +138,27 @@ interface CharacterWizardProps {
 export function CharacterWizard({ onClose }: CharacterWizardProps) {
   const [step, setStep] = useState(0);
   const [data, setData] = useState<WizardData>(initialData);
+  const [showSrdModal, setShowSrdModal] = useState(true);
+  const [dontShowAgain, setDontShowAgain] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
   const createCharacter = useCreateCharacter();
+
+  // Check localStorage for SRD modal preference
+  useEffect(() => {
+    const hideModal = localStorage.getItem('hideSrdModal');
+    if (hideModal === 'true') {
+      setShowSrdModal(false);
+    }
+  }, []);
+
+  const handleCloseSrdModal = () => {
+    if (dontShowAgain) {
+      localStorage.setItem('hideSrdModal', 'true');
+    }
+    setShowSrdModal(false);
+  };
 
   // Calculate missing items for checklist
   const missingItems = useMemo(() => {
@@ -371,7 +397,62 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-background flex flex-col">
+    <>
+      {/* SRD/OGL Information Modal */}
+      <Dialog open={showSrdModal} onOpenChange={setShowSrdModal}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center">
+                <BookOpen className="w-6 h-6 text-foreground" />
+              </div>
+              <div>
+                <DialogTitle className="text-left">Aviso sobre Conteúdo</DialogTitle>
+                <Badge variant="outline" className="mt-1 text-[10px] bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
+                  SRD 5.1 / OGL
+                </Badge>
+              </div>
+            </div>
+          </DialogHeader>
+          <DialogDescription className="space-y-3 text-left">
+            <p>
+              Este aplicativo utiliza o <strong>System Reference Document (SRD) 5.1</strong> da Wizards of the Coast, 
+              disponibilizado sob a <strong>Open Game License (OGL)</strong>.
+            </p>
+            <p>
+              Por questões de <strong>direitos autorais</strong>, algumas opções oficiais do D&D 5e 
+              <strong> não estão disponíveis</strong>, incluindo:
+            </p>
+            <ul className="list-disc list-inside text-sm space-y-1 text-muted-foreground">
+              <li>Sub-raças além das incluídas no SRD</li>
+              <li>Subclasses além das básicas</li>
+              <li>Antecedentes além do Acólito</li>
+              <li>Magias exclusivas de suplementos</li>
+            </ul>
+            <p className="text-sm">
+              Opções marcadas com <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-cyan-500/10 text-cyan-400 border-cyan-500/30">SRD 5.1</Badge> são 
+              conteúdo oficial. Você também pode criar <strong>conteúdo homebrew</strong> personalizado!
+            </p>
+          </DialogDescription>
+          <DialogFooter className="flex-col gap-3 sm:flex-col">
+            <div className="flex items-center gap-2">
+              <Checkbox 
+                id="dontShowAgain" 
+                checked={dontShowAgain}
+                onCheckedChange={(checked) => setDontShowAgain(checked === true)}
+              />
+              <label htmlFor="dontShowAgain" className="text-xs text-muted-foreground cursor-pointer">
+                Não mostrar novamente
+              </label>
+            </div>
+            <Button onClick={handleCloseSrdModal} className="w-full bg-gradient-primary">
+              Entendi, continuar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <div className="fixed inset-0 z-50 bg-background flex flex-col">
       {/* Header */}
       <header className="sticky top-0 z-40 glass border-b border-border/50 px-4 py-3">
         <div className="flex items-center justify-between">
@@ -468,5 +549,6 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
         {renderStep()}
       </main>
     </div>
+    </>
   );
 }

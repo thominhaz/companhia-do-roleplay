@@ -268,14 +268,18 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h4 className="text-sm font-semibold text-foreground truncate">
                         {spell.name}
                       </h4>
-                      {spell.id.startsWith('homebrew-') && (
+                      {spell.id.startsWith('homebrew-') ? (
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-primary/20 text-primary border-primary/30">
                           <Sword className="w-2.5 h-2.5 mr-0.5" />
                           Homebrew
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-[9px] px-1 py-0 bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
+                          SRD
                         </Badge>
                       )}
                       <Tooltip>
@@ -332,14 +336,18 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                   </div>
                   
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h4 className="text-sm font-semibold text-foreground truncate">
                         {spell.name}
                       </h4>
-                      {spell.id.startsWith('homebrew-') && (
+                      {spell.id.startsWith('homebrew-') ? (
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-primary/20 text-primary border-primary/30">
                           <Sword className="w-2.5 h-2.5 mr-0.5" />
                           Homebrew
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-[9px] px-1 py-0 bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
+                          SRD
                         </Badge>
                       )}
                       {spell.concentration && (
