@@ -115,9 +115,9 @@ export function CreateSpellSheet({ open, onOpenChange, editingSpell }: CreateSpe
         components: data.components || "V, S",
         duration: data.duration || "Instantânea",
         classes: data.classes?.join(", ") || "",
-        save_type: data.mechanics?.save_type || "",
+        save_type: data.mechanics?.save_type || "none",
         damage: data.mechanics?.damage || "",
-        damage_type: data.mechanics?.damage_type || "",
+        damage_type: data.mechanics?.damage_type || "none",
       });
     } else {
       setForm(defaultFormState);

@@ -49,7 +49,7 @@ const itemTypes = [
 ];
 
 const damageTypes = [
-  { value: "", label: "Nenhum" },
+  { value: "none", label: "Nenhum" },
   { value: "acid", label: "Ácido" },
   { value: "bludgeoning", label: "Concussão" },
   { value: "cold", label: "Frio" },
@@ -74,7 +74,7 @@ const defaultFormState = {
   requires_attunement: false,
   attunement_requirements: "",
   damage: "",
-  damage_type: "",
+  damage_type: "none",
   ac_bonus: "",
   charges: "",
   recharge: "",
@@ -99,7 +99,7 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
         requires_attunement: data.requires_attunement || false,
         attunement_requirements: data.attunement_requirements || "",
         damage: data.damage || "",
-        damage_type: data.damage_type || "",
+        damage_type: data.damage_type || "none",
         ac_bonus: data.ac_bonus ? String(data.ac_bonus) : "",
         charges: data.charges ? String(data.charges) : "",
         recharge: data.recharge || "",
@@ -118,7 +118,7 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
       requires_attunement: form.requires_attunement,
       attunement_requirements: form.attunement_requirements || undefined,
       damage: form.damage || undefined,
-      damage_type: form.damage_type || undefined,
+      damage_type: form.damage_type !== "none" ? form.damage_type : undefined,
       ac_bonus: form.ac_bonus ? parseInt(form.ac_bonus) : undefined,
       charges: form.charges ? parseInt(form.charges) : undefined,
       recharge: form.recharge || undefined,
