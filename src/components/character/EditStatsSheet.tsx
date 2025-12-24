@@ -1,12 +1,14 @@
-import { useState, useEffect } from "react";
-import { Edit3, Heart, Shield, Zap, Footprints, Save } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Edit3, Save, User, Camera, X, Trash2 } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUpdateCharacter, CharacterDB } from "@/hooks/useCharacters";
-import { getAttributeAbbr } from "@/data/srd";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface EditStatsSheetProps {
   character: CharacterDB;
@@ -14,198 +16,200 @@ interface EditStatsSheetProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const ATTRIBUTES = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const;
-
 export function EditStatsSheet({ character, open, onOpenChange }: EditStatsSheetProps) {
   const updateCharacter = useUpdateCharacter();
-  const [formData, setFormData] = useState({
-    current_hp: character.current_hp,
-    max_hp: character.max_hp,
-    temporary_hp: character.temporary_hp,
-    armor_class: character.armor_class,
-    speed: character.speed,
-    experience: character.experience,
-    attributes: { ...(character.attributes as Record<string, number>) },
-  });
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [name, setName] = useState(character.name);
+  const [imageUrl, setImageUrl] = useState(character.image_url || "");
+  const [isUploading, setIsUploading] = useState(false);
 
   useEffect(() => {
-    setFormData({
-      current_hp: character.current_hp,
-      max_hp: character.max_hp,
-      temporary_hp: character.temporary_hp,
-      armor_class: character.armor_class,
-      speed: character.speed,
-      experience: character.experience,
-      attributes: { ...(character.attributes as Record<string, number>) },
-    });
+    setName(character.name);
+    setImageUrl(character.image_url || "");
   }, [character]);
 
-  const handleAttributeChange = (attr: string, value: string) => {
-    const numValue = parseInt(value) || 0;
-    setFormData(prev => ({
-      ...prev,
-      attributes: {
-        ...prev.attributes,
-        [attr]: Math.min(30, Math.max(1, numValue)),
-      },
-    }));
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error("Por favor, selecione uma imagem válida");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("A imagem deve ter no máximo 5MB");
+      return;
+    }
+
+    setIsUploading(true);
+
+    try {
+      // Create a unique file name
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${character.id}-${Date.now()}.${fileExt}`;
+      const filePath = `character-avatars/${fileName}`;
+
+      // Upload to Supabase Storage
+      const { data, error } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
+
+      if (error) {
+        // If bucket doesn't exist, show helpful message
+        if (error.message.includes('Bucket not found')) {
+          toast.error("Storage não configurado. Use uma URL de imagem externa.");
+          return;
+        }
+        throw error;
+      }
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      setImageUrl(urlData.publicUrl);
+      toast.success("Imagem enviada com sucesso!");
+    } catch (error: any) {
+      console.error("Error uploading image:", error);
+      toast.error("Erro ao enviar imagem. Tente usar uma URL externa.");
+    } finally {
+      setIsUploading(false);
+    }
   };
 
-  const handleNumberChange = (field: keyof typeof formData, value: string) => {
-    const numValue = parseInt(value) || 0;
-    setFormData(prev => ({
-      ...prev,
-      [field]: Math.max(0, numValue),
-    }));
+  const handleRemoveImage = () => {
+    setImageUrl("");
   };
 
   const handleSave = async () => {
-    // Recalculate initiative based on new dexterity
-    const newDexMod = Math.floor((formData.attributes.dexterity - 10) / 2);
-    
+    if (!name.trim()) {
+      toast.error("O nome do personagem é obrigatório");
+      return;
+    }
+
     await updateCharacter.mutateAsync({
       id: character.id,
-      current_hp: Math.min(formData.current_hp, formData.max_hp),
-      max_hp: formData.max_hp,
-      temporary_hp: formData.temporary_hp,
-      armor_class: formData.armor_class,
-      speed: formData.speed,
-      experience: formData.experience,
-      initiative: newDexMod,
-      attributes: formData.attributes as any,
+      name: name.trim(),
+      image_url: imageUrl || null,
     });
 
+    toast.success("Personagem atualizado!");
     onOpenChange(false);
+  };
+
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2);
   };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[85vh] bg-darker">
+      <SheetContent side="bottom" className="h-[60vh] bg-darker">
         <SheetHeader className="pb-4 border-b border-border">
           <SheetTitle className="flex items-center gap-2">
             <Edit3 className="w-5 h-5 text-primary" />
-            Editar Estatísticas
+            Editar Personagem
           </SheetTitle>
         </SheetHeader>
 
         <ScrollArea className="h-full py-4">
           <div className="space-y-6">
-            {/* Combat Stats */}
-            <div className="glass rounded-xl p-4">
-              <h3 className="text-sm font-semibold mb-4">Estatísticas de Combate</h3>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-red-500" />
-                    HP Atual
-                  </Label>
-                  <Input
-                    type="number"
-                    value={formData.current_hp}
-                    onChange={(e) => handleNumberChange('current_hp', e.target.value)}
-                    min={0}
-                    max={formData.max_hp}
-                  />
-                </div>
+            {/* Profile Image */}
+            <div className="flex flex-col items-center gap-4">
+              <div className="relative">
+                <Avatar className="w-24 h-24 border-2 border-primary/30">
+                  <AvatarImage src={imageUrl} alt={name} />
+                  <AvatarFallback className="bg-primary/20 text-primary text-2xl font-bold">
+                    {getInitials(name)}
+                  </AvatarFallback>
+                </Avatar>
                 
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-green-500" />
-                    HP Máximo
-                  </Label>
-                  <Input
-                    type="number"
-                    value={formData.max_hp}
-                    onChange={(e) => handleNumberChange('max_hp', e.target.value)}
-                    min={1}
-                  />
-                </div>
+                {imageUrl && (
+                  <button
+                    onClick={handleRemoveImage}
+                    className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-destructive text-destructive-foreground flex items-center justify-center"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                )}
+              </div>
 
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <Heart className="w-4 h-4 text-blue-500" />
-                    HP Temporário
-                  </Label>
-                  <Input
-                    type="number"
-                    value={formData.temporary_hp}
-                    onChange={(e) => handleNumberChange('temporary_hp', e.target.value)}
-                    min={0}
-                  />
-                </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading}
+                >
+                  <Camera className="w-4 h-4 mr-2" />
+                  {isUploading ? "Enviando..." : "Escolher Foto"}
+                </Button>
+                
+                {imageUrl && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleRemoveImage}
+                    className="text-destructive hover:text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Remover
+                  </Button>
+                )}
+              </div>
 
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <Shield className="w-4 h-4 text-cyan-500" />
-                    Classe de Armadura
-                  </Label>
-                  <Input
-                    type="number"
-                    value={formData.armor_class}
-                    onChange={(e) => handleNumberChange('armor_class', e.target.value)}
-                    min={1}
-                  />
-                </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
 
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <Footprints className="w-4 h-4 text-orange-500" />
-                    Deslocamento (m)
-                  </Label>
-                  <Input
-                    type="number"
-                    value={formData.speed}
-                    onChange={(e) => handleNumberChange('speed', e.target.value)}
-                    min={0}
-                    step={1.5}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-yellow-500" />
-                    Experiência (XP)
-                  </Label>
-                  <Input
-                    type="number"
-                    value={formData.experience}
-                    onChange={(e) => handleNumberChange('experience', e.target.value)}
-                    min={0}
-                  />
-                </div>
+              {/* URL Input as fallback */}
+              <div className="w-full space-y-2">
+                <Label className="text-xs text-muted-foreground">Ou cole a URL da imagem:</Label>
+                <Input
+                  placeholder="https://exemplo.com/imagem.jpg"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                />
               </div>
             </div>
 
-            {/* Attributes */}
+            {/* Character Name */}
             <div className="glass rounded-xl p-4">
-              <h3 className="text-sm font-semibold mb-4">Atributos</h3>
-              
-              <div className="grid grid-cols-3 gap-3">
-                {ATTRIBUTES.map((attr) => (
-                  <div key={attr} className="space-y-2">
-                    <Label className="text-xs text-center block uppercase">
-                      {getAttributeAbbr(attr)}
-                    </Label>
-                    <Input
-                      type="number"
-                      value={formData.attributes[attr] || 10}
-                      onChange={(e) => handleAttributeChange(attr, e.target.value)}
-                      min={1}
-                      max={30}
-                      className="text-center text-lg font-bold"
-                    />
-                  </div>
-                ))}
+              <div className="space-y-2">
+                <Label className="flex items-center gap-2">
+                  <User className="w-4 h-4 text-primary" />
+                  Nome do Personagem
+                </Label>
+                <Input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  placeholder="Nome do personagem"
+                  maxLength={100}
+                />
               </div>
             </div>
 
             {/* Save Button */}
             <Button
-              className="w-full"
+              className="w-full bg-gradient-primary"
               size="lg"
               onClick={handleSave}
-              disabled={updateCharacter.isPending}
+              disabled={updateCharacter.isPending || !name.trim()}
             >
               <Save className="w-4 h-4 mr-2" />
               {updateCharacter.isPending ? "Salvando..." : "Salvar Alterações"}
