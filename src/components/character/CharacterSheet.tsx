@@ -55,6 +55,8 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useCharacterCampaign } from "@/hooks/useCampaigns";
+import { InlineCampaignChat } from "./InlineCampaignChat";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -253,6 +255,7 @@ export function CharacterSheet() {
   const { data: combatInfo } = useCharacterActiveCombat(id || '');
   const updateCombatant = useUpdateCombatant();
   const { data: subscription } = useSubscription();
+  const { data: characterCampaign } = useCharacterCampaign(id);
   const [activeTab, setActiveTab] = useState('geral');
   const [skillsTab, setSkillsTab] = useState('pericias');
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -1851,6 +1854,14 @@ export function CharacterSheet() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Campaign Chat - only show if character is in a campaign */}
+      {characterCampaign && (
+        <InlineCampaignChat 
+          campaignId={characterCampaign.id} 
+          campaignName={characterCampaign.name}
+        />
+      )}
     </div>
   );
 }
