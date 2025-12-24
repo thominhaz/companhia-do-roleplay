@@ -181,8 +181,11 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
                   <Icon className="w-5 h-5" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap">
                     <h3 className="font-semibold">{charClass.name}</h3>
+                    <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
+                      SRD 5.1
+                    </Badge>
                     {data.class === charClass.id && (
                       <Check className="w-4 h-4 text-primary" />
                     )}

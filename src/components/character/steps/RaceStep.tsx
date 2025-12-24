@@ -47,8 +47,11 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="font-semibold">{race.name}</h3>
+                  <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
+                    SRD 5.1
+                  </Badge>
                   {data.race === race.id && (
                     <Check className="w-4 h-4 text-primary" />
                   )}
