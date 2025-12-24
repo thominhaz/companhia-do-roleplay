@@ -1,22 +1,46 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { MessageSquare, Save, Loader2, ExternalLink, Check, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useQuery } from "@tanstack/react-query";
 
 interface DiscordWebhookConfigProps {
   campaignId: string;
-  currentWebhookUrl: string | null;
+  currentWebhookUrl?: string | null; // Deprecated: Now fetched securely
 }
 
-export function DiscordWebhookConfig({ campaignId, currentWebhookUrl }: DiscordWebhookConfigProps) {
-  const [webhookUrl, setWebhookUrl] = useState(currentWebhookUrl || "");
+export function DiscordWebhookConfig({ campaignId }: DiscordWebhookConfigProps) {
+  const [webhookUrl, setWebhookUrl] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [isTesting, setIsTesting] = useState(false);
   const queryClient = useQueryClient();
+
+  // Fetch webhook URL securely using the database function
+  // This ensures only the campaign master can see the webhook URL
+  const { data: secureWebhookUrl, isLoading: isLoadingWebhook } = useQuery({
+    queryKey: ['campaign-webhook', campaignId],
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc('get_campaign_webhook_url', {
+        campaign_id: campaignId
+      });
+      if (error) {
+        console.error('Error fetching webhook URL:', error);
+        return null;
+      }
+      return data as string | null;
+    },
+    enabled: !!campaignId,
+  });
+
+  // Update local state when secure webhook is loaded
+  useEffect(() => {
+    if (secureWebhookUrl !== undefined) {
+      setWebhookUrl(secureWebhookUrl || "");
+    }
+  }, [secureWebhookUrl]);
 
   const isValidWebhook = webhookUrl.startsWith("https://discord.com/api/webhooks/") || 
                          webhookUrl.startsWith("https://discordapp.com/api/webhooks/");
@@ -108,7 +132,7 @@ export function DiscordWebhookConfig({ campaignId, currentWebhookUrl }: DiscordW
             Envie rolagens e alertas para seu servidor
           </p>
         </div>
-        {currentWebhookUrl && (
+        {secureWebhookUrl && (
           <span className="ml-auto text-xs bg-emerald-500/20 text-emerald-500 px-2 py-1 rounded-full flex items-center gap-1">
             <Check className="w-3 h-3" />
             Conectado
@@ -161,7 +185,7 @@ export function DiscordWebhookConfig({ campaignId, currentWebhookUrl }: DiscordW
           </Button>
         )}
 
-        {currentWebhookUrl && (
+        {secureWebhookUrl && (
           <Button
             variant="outline"
             size="sm"
@@ -177,7 +201,7 @@ export function DiscordWebhookConfig({ campaignId, currentWebhookUrl }: DiscordW
         <Button
           size="sm"
           onClick={handleSave}
-          disabled={isSaving || (!webhookUrl && !currentWebhookUrl)}
+          disabled={isSaving || isLoadingWebhook || (!webhookUrl && !secureWebhookUrl)}
           className="gap-1 ml-auto"
         >
           {isSaving ? (

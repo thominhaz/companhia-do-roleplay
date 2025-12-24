@@ -44,28 +44,88 @@ serve(async (req) => {
 
   try {
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
-    const supabase = createClient(supabaseUrl, supabaseKey);
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+    // ==========================================
+    // AUTHENTICATION: Validate JWT token
+    // ==========================================
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.error('No authorization header provided');
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: No authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    
+    // Create client with anon key to validate user token
+    const authClient = createClient(supabaseUrl, supabaseAnonKey);
+    const { data: { user }, error: authError } = await authClient.auth.getUser(token);
+
+    if (authError || !user) {
+      console.error('Authentication failed:', authError?.message);
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized: Invalid token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`Authenticated user: ${user.id}`);
+
+    // Create service role client for database operations
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     const payload: NotificationPayload = await req.json();
     const { campaignId, type, data } = payload;
 
-    console.log(`Processing Discord notification for campaign ${campaignId}, type: ${type}`);
+    console.log(`Processing Discord notification for campaign ${campaignId}, type: ${type}, user: ${user.id}`);
 
-    // Get campaign's Discord webhook URL
+    // ==========================================
+    // AUTHORIZATION: Verify campaign membership
+    // ==========================================
+    
+    // Get campaign details including master_id
     const { data: campaign, error: campaignError } = await supabase
       .from('campaigns')
-      .select('discord_webhook_url, name')
+      .select('discord_webhook_url, name, master_id')
       .eq('id', campaignId)
       .single();
 
-    if (campaignError) {
-      console.error('Error fetching campaign:', campaignError);
+    if (campaignError || !campaign) {
+      console.error('Campaign not found:', campaignError);
       return new Response(
         JSON.stringify({ error: 'Campaign not found' }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
+
+    // Check if user is campaign master
+    const isMaster = campaign.master_id === user.id;
+
+    // Check if user is campaign member
+    const { data: membership, error: membershipError } = await supabase
+      .from('campaign_players')
+      .select('id')
+      .eq('campaign_id', campaignId)
+      .eq('user_id', user.id)
+      .maybeSingle();
+
+    if (!isMaster && !membership) {
+      console.error(`User ${user.id} is not a member of campaign ${campaignId}`);
+      return new Response(
+        JSON.stringify({ error: 'Forbidden: You are not a member of this campaign' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    console.log(`User ${user.id} authorized (master: ${isMaster}, member: ${!!membership})`);
+
+    // ==========================================
+    // MAIN LOGIC: Send Discord notification
+    // ==========================================
 
     if (!campaign.discord_webhook_url) {
       console.log('No Discord webhook configured for this campaign');
@@ -191,7 +251,7 @@ serve(async (req) => {
       );
     }
 
-    console.log('Discord notification sent successfully');
+    console.log(`Discord notification sent successfully by user ${user.id}`);
 
     return new Response(
       JSON.stringify({ success: true }),
