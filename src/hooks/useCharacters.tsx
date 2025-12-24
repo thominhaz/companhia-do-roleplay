@@ -83,17 +83,31 @@ export function useCharacter(id: string) {
   return useQuery({
     queryKey: ['character', id],
     queryFn: async () => {
-      if (!user) return null;
+      if (!user || !id) return null;
 
-      const { data, error } = await supabase
+      // Try to fetch as owner first
+      const { data: ownData, error: ownError } = await supabase
         .from('characters')
         .select('*')
         .eq('id', id)
         .eq('user_id', user.id)
-        .single();
+        .maybeSingle();
 
-      if (error) throw error;
-      return data as CharacterDB;
+      if (ownData) return ownData as CharacterDB;
+
+      // If not found as owner, try to fetch as campaign member (read-only view)
+      const { data: memberData, error: memberError } = await supabase
+        .from('characters')
+        .select('*')
+        .eq('id', id)
+        .maybeSingle();
+
+      if (memberError) {
+        console.error('Error fetching character:', memberError);
+        return null;
+      }
+
+      return memberData as CharacterDB | null;
     },
     enabled: !!user && !!id,
   });
