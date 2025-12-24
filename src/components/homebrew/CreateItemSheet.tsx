@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Loader2, Gem } from "lucide-react";
+import { Loader2, Gem, Sparkles } from "lucide-react";
 import {
   Sheet,
   SheetContent,
@@ -147,6 +147,220 @@ const potionColors = [
   { value: "gold", label: "Dourado", hex: "#fbbf24" },
   { value: "silver", label: "Prateado", hex: "#9ca3af" },
   { value: "multicolor", label: "Multicor", hex: "linear-gradient(45deg, #ef4444, #3b82f6, #22c55e)" },
+];
+
+// Pre-configured potion templates
+const potionTemplates = [
+  {
+    id: "healing",
+    name: "Poção de Cura",
+    label: "Cura",
+    icon: "❤️",
+    color: "red",
+    description: "Você recupera pontos de vida ao beber esta poção. O líquido vermelho brilha quando agitado.",
+    rarity: "common",
+    effect_type: "healing",
+    healing: "2d4+2",
+    duration: "instant",
+    variants: [
+      { name: "Poção de Cura", healing: "2d4+2", rarity: "common" },
+      { name: "Poção de Cura Maior", healing: "4d4+4", rarity: "uncommon" },
+      { name: "Poção de Cura Superior", healing: "8d4+8", rarity: "rare" },
+      { name: "Poção de Cura Suprema", healing: "10d4+20", rarity: "very_rare" },
+    ]
+  },
+  {
+    id: "strength",
+    name: "Poção de Força de Gigante",
+    label: "Força",
+    icon: "💪",
+    color: "orange",
+    description: "Quando você bebe esta poção, seu valor de Força muda por 1 hora. O líquido é opaco e contém fragmentos de unhas de gigante.",
+    rarity: "uncommon",
+    effect_type: "buff",
+    effect_value: "Sua Força se torna 21 por 1 hora",
+    duration: "1_hour",
+    variants: [
+      { name: "Poção de Força de Gigante das Colinas", effect_value: "Sua Força se torna 21 por 1 hora", rarity: "uncommon" },
+      { name: "Poção de Força de Gigante da Pedra/Gelo", effect_value: "Sua Força se torna 23 por 1 hora", rarity: "rare" },
+      { name: "Poção de Força de Gigante do Fogo", effect_value: "Sua Força se torna 25 por 1 hora", rarity: "rare" },
+      { name: "Poção de Força de Gigante das Nuvens", effect_value: "Sua Força se torna 27 por 1 hora", rarity: "very_rare" },
+      { name: "Poção de Força de Gigante das Tempestades", effect_value: "Sua Força se torna 29 por 1 hora", rarity: "legendary" },
+    ]
+  },
+  {
+    id: "invisibility",
+    name: "Poção de Invisibilidade",
+    label: "Invisibilidade",
+    icon: "👻",
+    color: "white",
+    description: "O conteúdo desta poção parece ser um líquido turvo que flui como se fosse fumaça. Você fica invisível por 1 hora. O efeito termina se você atacar ou conjurar uma magia.",
+    rarity: "very_rare",
+    effect_type: "utility",
+    effect_value: "Você se torna invisível por 1 hora. Qualquer equipamento que você esteja usando ou carregando também fica invisível. O efeito termina antecipadamente se você atacar ou conjurar uma magia.",
+    duration: "1_hour",
+    variants: []
+  },
+  {
+    id: "flying",
+    name: "Poção de Voo",
+    label: "Voo",
+    icon: "🦅",
+    color: "blue",
+    description: "Quando você bebe esta poção, ganha deslocamento de voo igual ao seu deslocamento de caminhada por 1 hora. O líquido é cristalino com bolhas que flutuam.",
+    rarity: "very_rare",
+    effect_type: "movement",
+    effect_value: "Você ganha deslocamento de voo igual ao seu deslocamento de caminhada por 1 hora e pode pairar no ar.",
+    duration: "1_hour",
+    variants: []
+  },
+  {
+    id: "speed",
+    name: "Poção de Velocidade",
+    label: "Velocidade",
+    icon: "⚡",
+    color: "yellow",
+    description: "Quando você bebe esta poção, ganha os efeitos da magia Velocidade por 1 minuto (sem concentração). O líquido amarelo é listrado com preto.",
+    rarity: "very_rare",
+    effect_type: "buff",
+    effect_value: "Você ganha os efeitos da magia Velocidade por 1 minuto (sem concentração): +2 CA, vantagem em testes de resistência de Destreza, deslocamento dobrado, e uma ação adicional por turno (atacar, correr, desengajar, esconder ou usar objeto).",
+    duration: "1_minute",
+    variants: []
+  },
+  {
+    id: "resistance",
+    name: "Poção de Resistência",
+    label: "Resistência",
+    icon: "🛡️",
+    color: "purple",
+    description: "Quando você bebe esta poção, ganha resistência a um tipo de dano por 1 hora.",
+    rarity: "uncommon",
+    effect_type: "protection",
+    effect_value: "Você ganha resistência a um tipo de dano por 1 hora.",
+    duration: "1_hour",
+    variants: [
+      { name: "Poção de Resistência a Ácido", effect_value: "Você ganha resistência a dano de ácido por 1 hora.", rarity: "uncommon" },
+      { name: "Poção de Resistência a Frio", effect_value: "Você ganha resistência a dano de frio por 1 hora.", rarity: "uncommon" },
+      { name: "Poção de Resistência a Fogo", effect_value: "Você ganha resistência a dano de fogo por 1 hora.", rarity: "uncommon" },
+      { name: "Poção de Resistência a Eletricidade", effect_value: "Você ganha resistência a dano elétrico por 1 hora.", rarity: "uncommon" },
+      { name: "Poção de Resistência a Necrótico", effect_value: "Você ganha resistência a dano necrótico por 1 hora.", rarity: "uncommon" },
+      { name: "Poção de Resistência a Veneno", effect_value: "Você ganha resistência a dano de veneno por 1 hora.", rarity: "uncommon" },
+      { name: "Poção de Resistência a Psíquico", effect_value: "Você ganha resistência a dano psíquico por 1 hora.", rarity: "uncommon" },
+      { name: "Poção de Resistência a Radiante", effect_value: "Você ganha resistência a dano radiante por 1 hora.", rarity: "uncommon" },
+    ]
+  },
+  {
+    id: "heroism",
+    name: "Poção de Heroísmo",
+    label: "Heroísmo",
+    icon: "🦸",
+    color: "gold",
+    description: "Por 1 hora após beber esta poção, você ganha 10 pontos de vida temporários. Também ganha os efeitos da magia Benção. O líquido brilha dourado.",
+    rarity: "rare",
+    effect_type: "buff",
+    effect_value: "Por 1 hora, você ganha 10 pontos de vida temporários que desaparecem após 1 hora. Durante esse tempo, você também está sob os efeitos da magia Benção (sem concentração).",
+    duration: "1_hour",
+    variants: []
+  },
+  {
+    id: "climbing",
+    name: "Poção de Escalada",
+    label: "Escalada",
+    icon: "🧗",
+    color: "green",
+    description: "Quando você bebe esta poção, ganha deslocamento de escalada igual ao seu deslocamento de caminhada por 1 hora. O líquido é dividido em camadas marrom, prata e cinza.",
+    rarity: "common",
+    effect_type: "movement",
+    effect_value: "Por 1 hora, você ganha deslocamento de escalada igual ao seu deslocamento de caminhada. Durante esse tempo, você tem vantagem em testes de Força (Atletismo) para escalar.",
+    duration: "1_hour",
+    variants: []
+  },
+  {
+    id: "water_breathing",
+    name: "Poção de Respirar na Água",
+    label: "Respirar na Água",
+    icon: "🌊",
+    color: "blue",
+    description: "Você pode respirar debaixo d'água por 1 hora após beber esta poção. O líquido esverdeado tem uma bolha de água-viva flutuando.",
+    rarity: "uncommon",
+    effect_type: "utility",
+    effect_value: "Você pode respirar debaixo d'água por 1 hora.",
+    duration: "1_hour",
+    variants: []
+  },
+  {
+    id: "poison",
+    name: "Veneno Básico",
+    label: "Veneno",
+    icon: "☠️",
+    color: "green",
+    description: "Pode ser aplicado em arma ou munição. Uma criatura atingida sofre 1d4 de dano de veneno. O veneno retém a potência por 1 minuto.",
+    rarity: "common",
+    effect_type: "damage",
+    damage: "1d4",
+    damage_type: "poison",
+    duration: "instant",
+    variants: [
+      { name: "Veneno Básico", damage: "1d4", rarity: "common" },
+      { name: "Veneno de Serpente", damage: "3d6", rarity: "uncommon" },
+      { name: "Veneno de Wyvern", damage: "7d6", rarity: "rare" },
+      { name: "Veneno de Dragão Negro Adulto", damage: "12d6", rarity: "very_rare" },
+    ]
+  },
+  {
+    id: "antitoxin",
+    name: "Antitoxina",
+    label: "Antitoxina",
+    icon: "💊",
+    color: "yellow",
+    description: "Uma criatura que beber esta poção tem vantagem em testes de resistência contra veneno por 1 hora.",
+    rarity: "common",
+    effect_type: "protection",
+    effect_value: "Você tem vantagem em testes de resistência contra ser envenenado por 1 hora.",
+    duration: "1_hour",
+    variants: []
+  },
+  {
+    id: "diminution",
+    name: "Poção de Diminuição",
+    label: "Diminuição",
+    icon: "🔬",
+    color: "red",
+    description: "Quando você bebe esta poção, ganha o efeito de redução da magia Ampliar/Reduzir por 1d4 horas (sem concentração).",
+    rarity: "rare",
+    effect_type: "transformation",
+    effect_value: "Seu tamanho diminui em uma categoria por 1d4 horas. Você tem desvantagem em testes de Força e seus ataques com armas causam 1d4 a menos de dano.",
+    duration: "special",
+    variants: []
+  },
+  {
+    id: "growth",
+    name: "Poção de Crescimento",
+    label: "Crescimento",
+    icon: "📏",
+    color: "red",
+    description: "Quando você bebe esta poção, ganha o efeito de ampliação da magia Ampliar/Reduzir por 1d4 horas (sem concentração).",
+    rarity: "uncommon",
+    effect_type: "transformation",
+    effect_value: "Seu tamanho aumenta em uma categoria por 1d4 horas. Você tem vantagem em testes de Força e seus ataques com armas causam 1d4 de dano adicional.",
+    duration: "special",
+    variants: []
+  },
+  {
+    id: "mind_reading",
+    name: "Poção de Leitura Mental",
+    label: "Leitura Mental",
+    icon: "🧠",
+    color: "purple",
+    description: "Quando você bebe esta poção, ganha os efeitos da magia Detectar Pensamentos (CD 13). O líquido denso e roxo tem uma nuvem rosa flutuando.",
+    rarity: "rare",
+    effect_type: "detection",
+    effect_value: "Você ganha os efeitos da magia Detectar Pensamentos (CD de resistência 13) por 1 minuto.",
+    duration: "1_minute",
+    save_dc: "13",
+    save_type: "WIS",
+    variants: []
+  },
 ];
 
 // Weapon specific options
@@ -453,6 +667,40 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
     }));
   };
 
+  // Apply potion template
+  const applyPotionTemplate = (templateId: string, variantIndex?: number) => {
+    const template = potionTemplates.find(t => t.id === templateId);
+    if (!template) return;
+
+    const variant = variantIndex !== undefined && template.variants[variantIndex] 
+      ? template.variants[variantIndex] 
+      : null;
+
+    setForm(prev => ({
+      ...prev,
+      type: template.id === 'poison' ? 'poison' : 'potion',
+      name: variant?.name || template.name,
+      description: template.description,
+      icon: template.icon,
+      rarity: variant?.rarity || template.rarity,
+      potion_color: template.color,
+      consumable_effect_type: template.effect_type,
+      consumable_effect_value: variant?.effect_value || template.effect_value || "",
+      consumable_duration: template.duration,
+      consumable_healing: variant?.healing || template.healing || "",
+      consumable_damage: variant?.damage || template.damage || "",
+      consumable_damage_type: template.damage_type || "none",
+      consumable_save_dc: template.save_dc || "",
+      consumable_save_type: template.save_type || "none",
+      consumable_uses: "1",
+    }));
+  };
+
+  const [showTemplates, setShowTemplates] = useState(false);
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | null>(null);
+
+  const selectedTemplate = potionTemplates.find(t => t.id === selectedTemplateId);
+
   const isLoading = isCreating || isUpdating;
   const isWeapon = form.type === 'weapon';
   const isArmor = form.type === 'armor';
@@ -502,6 +750,126 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
         </SheetHeader>
 
         <ScrollArea className="h-[calc(90vh-120px)] pr-4">
+          {/* Templates Section */}
+          {!isEditing && (
+            <div className="py-4 border-b border-border mb-4">
+              <button
+                type="button"
+                onClick={() => setShowTemplates(!showTemplates)}
+                className="flex items-center gap-2 text-sm font-medium text-primary hover:text-primary/80 transition-colors"
+              >
+                <Sparkles className="w-4 h-4" />
+                {showTemplates ? "Ocultar Templates" : "Usar Template de Poção/Veneno"}
+              </button>
+              
+              {showTemplates && (
+                <div className="mt-4 space-y-3">
+                  <p className="text-xs text-muted-foreground">
+                    Selecione um template para preencher automaticamente os campos:
+                  </p>
+                  
+                  {/* Template Grid */}
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {potionTemplates.map((template) => (
+                      <button
+                        key={template.id}
+                        type="button"
+                        onClick={() => {
+                          if (template.variants.length > 0) {
+                            setSelectedTemplateId(selectedTemplateId === template.id ? null : template.id);
+                          } else {
+                            applyPotionTemplate(template.id);
+                            setShowTemplates(false);
+                          }
+                        }}
+                        className={`flex flex-col items-center gap-1 p-2 rounded-lg text-xs transition-all ${
+                          selectedTemplateId === template.id
+                            ? 'bg-primary text-primary-foreground ring-2 ring-primary ring-offset-2'
+                            : 'bg-muted hover:bg-muted/80'
+                        }`}
+                      >
+                        <span className="text-lg">{template.icon}</span>
+                        <span className="text-center leading-tight">{template.label}</span>
+                        {template.variants.length > 0 && (
+                          <Badge variant="outline" className="text-[10px] px-1 py-0">
+                            {template.variants.length} var.
+                          </Badge>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Variant Selection */}
+                  {selectedTemplate && selectedTemplate.variants.length > 0 && (
+                    <div className="mt-3 p-3 bg-muted/50 rounded-lg space-y-2">
+                      <p className="text-xs font-medium">Escolha uma variante de {selectedTemplate.name}:</p>
+                      <div className="space-y-1">
+                        {selectedTemplate.variants.map((variant, index) => (
+                          <button
+                            key={index}
+                            type="button"
+                            onClick={() => {
+                              applyPotionTemplate(selectedTemplate.id, index);
+                              setShowTemplates(false);
+                              setSelectedTemplateId(null);
+                            }}
+                            className="w-full flex items-center justify-between p-2 rounded-lg bg-background hover:bg-primary/10 transition-all text-left"
+                          >
+                            <span className="text-sm">{variant.name}</span>
+                            <div className="flex items-center gap-2">
+                              {'healing' in variant && (
+                                <Badge variant="secondary" className="text-[10px]">
+                                  {variant.healing}
+                                </Badge>
+                              )}
+                              {'damage' in variant && (
+                                <Badge variant="destructive" className="text-[10px]">
+                                  {variant.damage}
+                                </Badge>
+                              )}
+                              {'effect_value' in variant && (
+                                <Badge variant="outline" className="text-[10px] max-w-[120px] truncate">
+                                  {variant.effect_value?.slice(0, 20)}...
+                                </Badge>
+                              )}
+                              <Badge 
+                                className={`text-[10px] ${
+                                  variant.rarity === 'common' ? 'bg-gray-500' :
+                                  variant.rarity === 'uncommon' ? 'bg-green-600' :
+                                  variant.rarity === 'rare' ? 'bg-blue-600' :
+                                  variant.rarity === 'very_rare' ? 'bg-purple-600' :
+                                  'bg-amber-600'
+                                }`}
+                              >
+                                {variant.rarity === 'common' ? 'Comum' :
+                                 variant.rarity === 'uncommon' ? 'Incomum' :
+                                 variant.rarity === 'rare' ? 'Raro' :
+                                 variant.rarity === 'very_rare' ? 'M. Raro' :
+                                 'Lendário'}
+                              </Badge>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                      {/* Use base template option */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          applyPotionTemplate(selectedTemplate.id);
+                          setShowTemplates(false);
+                          setSelectedTemplateId(null);
+                        }}
+                        className="w-full text-xs text-muted-foreground hover:text-foreground transition-colors py-1"
+                      >
+                        Ou usar versão base: {selectedTemplate.name}
+                      </button>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-4 py-4">
             {/* Basic Info */}
             <div className="grid grid-cols-[auto_1fr] gap-3">
