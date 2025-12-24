@@ -47,6 +47,7 @@ import { SpellsManagementSheet } from "./SpellsManagementSheet";
 import { NotesSheet } from "./NotesSheet";
 import { CharacterHistorySheet } from "./CharacterHistorySheet";
 import { CombatStatusCard } from "./CombatStatusCard";
+import { InventoryManagementSheet } from "./InventoryManagementSheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -273,6 +274,7 @@ export function CharacterSheet() {
   const [spellsLoading, setSpellsLoading] = useState(true);
   const [xpInput, setXpInput] = useState('');
   const [useMilestone, setUseMilestone] = useState(false);
+  const [showInventory, setShowInventory] = useState(false);
 
   const hasHistoryAccess = subscription?.limits.hasHistorico ?? false;
 
@@ -1312,123 +1314,240 @@ export function CharacterSheet() {
 
             {/* Inventory Section */}
             <SheetCard>
-              <h3 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
-                <Backpack className="w-4 h-4 text-primary" />
-                Inventário
-              </h3>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <Backpack className="w-4 h-4 text-primary" />
+                  Inventário
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowInventory(true)}
+                  className="text-xs"
+                >
+                  <Edit3 className="w-3 h-3 mr-1" />
+                  Gerenciar
+                </Button>
+              </div>
               
               {/* Weapons */}
               {(character.equipment as any[])?.filter((item: any) => item.type === 'weapon').length > 0 && (
                 <div className="mb-3">
                   <p className="text-[10px] uppercase text-primary font-semibold mb-1">Armas</p>
-                  {(character.equipment as any[]).filter((item: any) => item.type === 'weapon').map((item: any, i: number) => (
-                    <div 
-                      key={`weapon-${i}`} 
-                      className={`flex items-center justify-between p-3 rounded-xl mb-2 cursor-pointer transition-colors ${
-                        item.equipped 
-                          ? 'bg-primary/20 border border-primary/40' 
-                          : 'bg-muted/30 hover:bg-muted/50'
-                      }`}
-                      onClick={async () => {
-                        const equipment = [...(character.equipment as any[])];
-                        const itemIndex = equipment.findIndex(e => e.id === item.id || (e.name === item.name && e.type === item.type));
-                        if (itemIndex >= 0) {
-                          equipment[itemIndex] = { ...equipment[itemIndex], equipped: !equipment[itemIndex].equipped };
-                          await updateCharacter.mutateAsync({
-                            id: character.id,
-                            equipment: equipment
-                          });
-                          toast.success(equipment[itemIndex].equipped ? `${item.name} equipado` : `${item.name} desequipado`);
-                        }
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Swords className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">{item.name}</span>
+                  {(character.equipment as any[]).filter((item: any) => item.type === 'weapon').map((item: any, i: number) => {
+                    // Calculate weapon damage with modifier
+                    const hasFinesse = item.properties?.includes('finesse');
+                    const isRanged = item.properties?.includes('ammunition') || item.range;
+                    const strMod = getModifier((attributes as any)?.strength || 10);
+                    const dexMod = getModifier((attributes as any)?.dexterity || 10);
+                    let mod = strMod;
+                    if (isRanged) mod = dexMod;
+                    else if (hasFinesse) mod = Math.max(strMod, dexMod);
+                    const modSign = mod >= 0 ? '+' : '';
+                    const damageDisplay = item.damage ? `${item.damage} ${modSign}${mod}` : '';
+                    
+                    return (
+                      <div 
+                        key={`weapon-${i}`} 
+                        className={`flex items-center justify-between p-3 rounded-xl mb-2 cursor-pointer transition-colors ${
+                          item.equipped 
+                            ? 'bg-primary/20 border border-primary/40' 
+                            : 'bg-muted/30 hover:bg-muted/50'
+                        }`}
+                        onClick={async () => {
+                          const equipment = [...(character.equipment as any[])];
+                          const itemIndex = equipment.findIndex(e => e.id === item.id || (e.name === item.name && e.type === item.type));
+                          if (itemIndex >= 0) {
+                            equipment[itemIndex] = { ...equipment[itemIndex], equipped: !equipment[itemIndex].equipped };
+                            await updateCharacter.mutateAsync({
+                              id: character.id,
+                              equipment: equipment
+                            });
+                            toast.success(equipment[itemIndex].equipped ? `${item.name} equipado` : `${item.name} desequipado`);
+                          }
+                        }}
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <Swords className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">{item.name}</span>
+                            {item.properties?.includes('finesse') && (
+                              <Badge variant="secondary" className="text-[9px] px-1 py-0">Acuidade</Badge>
+                            )}
+                            {item.properties?.includes('versatile') && (
+                              <Badge variant="secondary" className="text-[9px] px-1 py-0">Versátil</Badge>
+                            )}
+                          </div>
+                          {item.equipped && item.properties?.length > 0 && (
+                            <div className="flex flex-wrap gap-1 mt-1 ml-6">
+                              {item.properties.filter((p: string) => !['finesse', 'versatile'].includes(p)).slice(0, 3).map((prop: string) => (
+                                <span key={prop} className="text-[9px] text-muted-foreground">
+                                  {prop === 'light' ? 'Leve' :
+                                   prop === 'heavy' ? 'Pesada' :
+                                   prop === 'two_handed' ? '2 mãos' :
+                                   prop === 'reach' ? 'Alcance' :
+                                   prop === 'thrown' ? 'Arremesso' : prop}
+                                </span>
+                              ))}
+                            </div>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {damageDisplay && (
+                            <span className="text-xs text-primary font-mono">{damageDisplay}</span>
+                          )}
+                          {item.equipped && (
+                            <Badge variant="outline" className="text-[10px] bg-primary/20 text-primary border-primary/40">
+                              ✓
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        {item.damage && <span className="text-xs text-primary font-mono">{item.damage}</span>}
-                        {item.equipped && (
-                          <Badge variant="outline" className="text-[10px] bg-primary/20 text-primary border-primary/40">
-                            Equipado
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
               {/* Armor */}
               {(character.equipment as any[])?.filter((item: any) => item.type === 'armor' || item.type === 'shield').length > 0 && (
                 <div className="mb-3">
-                  <p className="text-[10px] uppercase text-primary font-semibold mb-1">Armaduras</p>
-                  {(character.equipment as any[]).filter((item: any) => item.type === 'armor' || item.type === 'shield').map((item: any, i: number) => (
-                    <div 
-                      key={`armor-${i}`} 
-                      className={`flex items-center justify-between p-3 rounded-xl mb-2 cursor-pointer transition-colors ${
-                        item.equipped 
-                          ? 'bg-cyan-500/20 border border-cyan-500/40' 
-                          : 'bg-muted/30 hover:bg-muted/50'
-                      }`}
-                      onClick={async () => {
-                        const equipment = [...(character.equipment as any[])];
-                        const itemIndex = equipment.findIndex(e => e.id === item.id || (e.name === item.name && e.type === item.type));
-                        if (itemIndex >= 0) {
-                          const newEquipped = !equipment[itemIndex].equipped;
-                          equipment[itemIndex] = { ...equipment[itemIndex], equipped: newEquipped };
-                          
-                          // Recalculate AC when armor is equipped/unequipped
-                          let newAC = 10 + getModifier((attributes as any)?.dexterity || 10);
-                          if (newEquipped && item.armorClass) {
-                            // Use armor AC + DEX mod (simplified)
-                            newAC = item.armorClass + (item.maxDexBonus !== undefined 
-                              ? Math.min(getModifier((attributes as any)?.dexterity || 10), item.maxDexBonus)
-                              : getModifier((attributes as any)?.dexterity || 10));
+                  <p className="text-[10px] uppercase text-cyan-400 font-semibold mb-1">Armaduras</p>
+                  {(character.equipment as any[]).filter((item: any) => item.type === 'armor' || item.type === 'shield').map((item: any, i: number) => {
+                    // Check strength requirement
+                    const meetsStr = !item.strengthRequirement || (attributes?.strength || 10) >= item.strengthRequirement;
+                    
+                    // Calculate displayed AC
+                    const dexMod = getModifier((attributes as any)?.dexterity || 10);
+                    let acDisplay = '';
+                    if (item.type === 'shield') {
+                      acDisplay = `+${item.armorClass || 2}`;
+                    } else if (item.armorCategory === 'heavy') {
+                      acDisplay = `CA ${item.armorClass}`;
+                    } else if (item.armorCategory === 'medium') {
+                      const bonus = Math.min(dexMod, item.maxDexBonus ?? 2);
+                      acDisplay = `CA ${(item.armorClass || 0) + bonus}`;
+                    } else {
+                      acDisplay = `CA ${(item.armorClass || 0) + dexMod}`;
+                    }
+                    
+                    return (
+                      <div 
+                        key={`armor-${i}`} 
+                        className={`flex items-center justify-between p-3 rounded-xl mb-2 cursor-pointer transition-colors ${
+                          item.equipped 
+                            ? 'bg-cyan-500/20 border border-cyan-500/40' 
+                            : 'bg-muted/30 hover:bg-muted/50'
+                        }`}
+                        onClick={async () => {
+                          const equipment = [...(character.equipment as any[])];
+                          const itemIndex = equipment.findIndex(e => e.id === item.id || (e.name === item.name && e.type === item.type));
+                          if (itemIndex >= 0) {
+                            const newEquipped = !equipment[itemIndex].equipped;
+                            
+                            // Unequip other armor of same type
+                            if (newEquipped) {
+                              equipment.forEach((e, idx) => {
+                                if (idx !== itemIndex && e.type === item.type && e.equipped) {
+                                  equipment[idx] = { ...e, equipped: false };
+                                }
+                              });
+                            }
+                            
+                            equipment[itemIndex] = { ...equipment[itemIndex], equipped: newEquipped };
+                            
+                            // Recalculate AC
+                            const dexMod = getModifier((attributes as any)?.dexterity || 10);
+                            const equippedArmor = equipment.find(e => e.type === 'armor' && e.equipped);
+                            const equippedShield = equipment.find(e => e.type === 'shield' && e.equipped);
+                            
+                            let newAC = 10 + dexMod; // Base: no armor
+                            if (equippedArmor) {
+                              if (equippedArmor.armorCategory === 'heavy') {
+                                newAC = equippedArmor.armorClass || 10;
+                              } else if (equippedArmor.armorCategory === 'medium') {
+                                newAC = (equippedArmor.armorClass || 10) + Math.min(dexMod, equippedArmor.maxDexBonus ?? 2);
+                              } else {
+                                newAC = (equippedArmor.armorClass || 10) + dexMod;
+                              }
+                            }
+                            if (equippedShield) {
+                              newAC += equippedShield.armorClass || 2;
+                            }
+                            
+                            await updateCharacter.mutateAsync({
+                              id: character.id,
+                              equipment: equipment,
+                              armor_class: newAC
+                            });
+                            toast.success(newEquipped ? `${item.name} equipado (CA: ${newAC})` : `${item.name} desequipado`);
                           }
-                          
-                          await updateCharacter.mutateAsync({
-                            id: character.id,
-                            equipment: equipment,
-                            ...(item.armorClass ? { armor_class: newAC } : {})
-                          });
-                          toast.success(newEquipped ? `${item.name} equipado` : `${item.name} desequipado`);
-                        }
-                      }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <Shield className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-sm font-medium">{item.name}</span>
+                        }}
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2">
+                            <Shield className="w-4 h-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">{item.name}</span>
+                            {item.stealthDisadvantage && (
+                              <Badge variant="secondary" className="text-[9px] px-1 py-0 bg-orange-500/20 text-orange-400">
+                                Furt. -
+                              </Badge>
+                            )}
+                          </div>
+                          {item.equipped && !meetsStr && (
+                            <p className="text-[9px] text-red-400 ml-6 mt-1">
+                              ⚠️ FOR {item.strengthRequirement} necessária (Desloc. -3m)
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-cyan-400 font-mono">{acDisplay}</span>
+                          {item.strengthRequirement && (
+                            <Badge 
+                              variant="outline" 
+                              className={`text-[9px] px-1 py-0 ${!meetsStr ? 'border-red-500 text-red-400' : ''}`}
+                            >
+                              F{item.strengthRequirement}
+                            </Badge>
+                          )}
+                          {item.equipped && (
+                            <Badge variant="outline" className="text-[10px] bg-cyan-500/20 text-cyan-400 border-cyan-500/40">
+                              ✓
+                            </Badge>
+                          )}
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        {item.armorClass && <span className="text-xs text-cyan-400 font-mono">CA {item.armorClass}</span>}
-                        {item.equipped && (
-                          <Badge variant="outline" className="text-[10px] bg-cyan-500/20 text-cyan-400 border-cyan-500/40">
-                            Equipado
-                          </Badge>
-                        )}
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
 
               {/* Other Items */}
-              {(character.equipment as any[])?.filter((item: any) => item.type !== 'weapon' && item.type !== 'armor' && item.type !== 'shield').length > 0 && (
+              {(character.equipment as any[])?.filter((item: any) => item.type === 'item').length > 0 && (
                 <div className="mb-3">
                   <p className="text-[10px] uppercase text-muted-foreground font-semibold mb-1">Outros Itens</p>
                   <div className="flex flex-wrap gap-1">
-                    {(character.equipment as any[]).filter((item: any) => item.type !== 'weapon' && item.type !== 'armor' && item.type !== 'shield').slice(0, 6).map((item: any, i: number) => (
+                    {(character.equipment as any[]).filter((item: any) => item.type === 'item').slice(0, 8).map((item: any, i: number) => (
                       <Badge key={`item-${i}`} variant="outline" className="text-xs">
                         {item.name} {item.quantity > 1 && `(${item.quantity})`}
                       </Badge>
                     ))}
+                    {(character.equipment as any[]).filter((item: any) => item.type === 'item').length > 8 && (
+                      <Badge variant="outline" className="text-xs text-muted-foreground">
+                        +{(character.equipment as any[]).filter((item: any) => item.type === 'item').length - 8}
+                      </Badge>
+                    )}
                   </div>
                 </div>
               )}
 
               {(!character.equipment || (character.equipment as any[]).length === 0) && (
-                <p className="text-sm text-muted-foreground text-center py-4">Nenhum equipamento</p>
+                <div className="text-center py-4">
+                  <p className="text-sm text-muted-foreground mb-2">Nenhum equipamento</p>
+                  <Button variant="outline" size="sm" onClick={() => setShowInventory(true)}>
+                    <Plus className="w-3 h-3 mr-1" />
+                    Adicionar Itens
+                  </Button>
+                </div>
               )}
 
               {/* Currency */}
@@ -1854,6 +1973,13 @@ export function CharacterSheet() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Inventory Management Sheet */}
+      <InventoryManagementSheet
+        open={showInventory}
+        onOpenChange={setShowInventory}
+        character={character}
+      />
 
       {/* Campaign Chat - only show if character is in a campaign */}
       {characterCampaign && (
