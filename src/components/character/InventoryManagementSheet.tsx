@@ -29,11 +29,13 @@ import {
   AlertTriangle,
   Eye,
   EyeOff,
-  Coins
+  Coins,
+  Sparkles
 } from "lucide-react";
 import { toast } from "sonner";
 import { useUpdateCharacter } from "@/hooks/useCharacters";
 import { getModifier } from "@/data/srd";
+import { useHomebrew } from "@/hooks/useHomebrew";
 
 // Import equipment data
 import weaponsData from "@/data/equipment/armas.json";
@@ -92,9 +94,11 @@ const DAMAGE_TYPE_LABELS: Record<string, string> = {
 
 export function InventoryManagementSheet({ open, onOpenChange, character }: InventoryManagementSheetProps) {
   const updateCharacter = useUpdateCharacter();
+  const { homebrewContent, isLoading: isLoadingHomebrew } = useHomebrew('item');
   const [activeTab, setActiveTab] = useState("weapons");
   const [searchQuery, setSearchQuery] = useState("");
   const [showCustomForm, setShowCustomForm] = useState(false);
+  const [homebrewSearchQuery, setHomebrewSearchQuery] = useState("");
   
   // Custom item form state
   const [customItem, setCustomItem] = useState({
@@ -152,6 +156,67 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
       a.name_en.toLowerCase().includes(query)
     );
   }, [searchQuery]);
+
+  // Filter homebrew items
+  const filteredHomebrewItems = useMemo(() => {
+    const query = homebrewSearchQuery.toLowerCase();
+    return homebrewContent.filter(item => 
+      item.name.toLowerCase().includes(query) ||
+      (item.description && item.description.toLowerCase().includes(query))
+    );
+  }, [homebrewContent, homebrewSearchQuery]);
+
+  // Add homebrew item to inventory
+  const addHomebrewItem = async (homebrewItem: any) => {
+    const itemData = homebrewItem.data || {};
+    
+    // Determine item type
+    let itemType: 'weapon' | 'armor' | 'shield' | 'item' = 'item';
+    if (itemData.category === 'weapon' || itemData.damage) {
+      itemType = 'weapon';
+    } else if (itemData.category === 'shield') {
+      itemType = 'shield';
+    } else if (itemData.category === 'armor' || itemData.armorClass) {
+      itemType = 'armor';
+    }
+
+    const newItem: EquipmentItem = {
+      id: `homebrew_${homebrewItem.id}_${Date.now()}`,
+      name: homebrewItem.name,
+      type: itemType,
+      equipped: false,
+      quantity: 1,
+      isCustom: true,
+      description: homebrewItem.description || itemData.description,
+      weight: itemData.weight ? parseFloat(itemData.weight) : undefined,
+    };
+
+    // Add weapon properties
+    if (itemType === 'weapon') {
+      newItem.damage = itemData.damage || itemData.dice;
+      newItem.damageType = itemData.damageType || 'slashing';
+      newItem.properties = itemData.properties || [];
+      if (itemData.range) {
+        newItem.range = { normal: itemData.range.normal || 0, max: itemData.range.max || 0 };
+      }
+    }
+
+    // Add armor properties
+    if (itemType === 'armor' || itemType === 'shield') {
+      newItem.armorClass = parseInt(itemData.armorClass) || (itemType === 'shield' ? 2 : 10);
+      newItem.armorCategory = itemData.armorCategory || (itemType === 'shield' ? 'shield' : 'light');
+      newItem.maxDexBonus = itemData.maxDexBonus;
+      newItem.strengthRequirement = itemData.strengthRequirement;
+      newItem.stealthDisadvantage = itemData.stealthDisadvantage || false;
+    }
+
+    const newEquipment = [...equipment, newItem];
+    await updateCharacter.mutateAsync({
+      id: character.id,
+      equipment: newEquipment,
+    });
+    toast.success(`${homebrewItem.name} adicionado ao inventário`);
+  };
 
   // Add SRD weapon to inventory
   const addWeapon = async (weapon: typeof weaponsData.items[0]) => {
@@ -389,7 +454,7 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
         </SheetHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid grid-cols-4 w-full">
+          <TabsList className="grid grid-cols-5 w-full">
             <TabsTrigger value="weapons" className="flex items-center gap-1">
               <Swords className="w-4 h-4" />
               <span className="hidden sm:inline">Armas</span>
@@ -398,9 +463,13 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
               <Shield className="w-4 h-4" />
               <span className="hidden sm:inline">Armaduras</span>
             </TabsTrigger>
+            <TabsTrigger value="homebrew" className="flex items-center gap-1">
+              <Sparkles className="w-4 h-4" />
+              <span className="hidden sm:inline">Homebrew</span>
+            </TabsTrigger>
             <TabsTrigger value="inventory" className="flex items-center gap-1">
               <Package className="w-4 h-4" />
-              <span className="hidden sm:inline">Inventário</span>
+              <span className="hidden sm:inline">Itens</span>
             </TabsTrigger>
             <TabsTrigger value="currency" className="flex items-center gap-1">
               <Coins className="w-4 h-4" />
@@ -841,6 +910,96 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
                     </p>
                   )}
                 </div>
+              </ScrollArea>
+            </div>
+          </TabsContent>
+
+          {/* Homebrew Tab */}
+          <TabsContent value="homebrew" className="mt-4">
+            <div className="space-y-4">
+              {/* Search */}
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar itens homebrew..."
+                  value={homebrewSearchQuery}
+                  onChange={(e) => setHomebrewSearchQuery(e.target.value)}
+                  className="pl-10"
+                />
+              </div>
+
+              {/* Homebrew Items List */}
+              <ScrollArea className="h-[400px]">
+                {isLoadingHomebrew ? (
+                  <div className="text-center py-8">
+                    <p className="text-sm text-muted-foreground">Carregando itens...</p>
+                  </div>
+                ) : filteredHomebrewItems.length > 0 ? (
+                  <div className="space-y-2">
+                    <h4 className="text-sm font-semibold text-primary flex items-center gap-2">
+                      <Sparkles className="w-4 h-4" />
+                      Seus Itens da Forja ({filteredHomebrewItems.length})
+                    </h4>
+                    {filteredHomebrewItems.map(item => {
+                      const itemData = item.data as any || {};
+                      const isWeapon = itemData.category === 'weapon' || itemData.damage;
+                      const isArmor = itemData.category === 'armor' || itemData.armorClass;
+                      const isShield = itemData.category === 'shield';
+                      
+                      return (
+                        <div 
+                          key={item.id}
+                          className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors border border-primary/20"
+                        >
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-lg">{item.icon || '✨'}</span>
+                              <span className="font-medium">{item.name}</span>
+                              <Badge variant="outline" className="text-[10px] bg-primary/10 border-primary/30">
+                                {isWeapon ? 'Arma' : isArmor ? 'Armadura' : isShield ? 'Escudo' : 'Item'}
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-2 mt-1">
+                              {isWeapon && itemData.damage && (
+                                <span className="text-sm text-primary font-mono">
+                                  {itemData.damage} {getDamageTypeLabel(itemData.damageType || '')}
+                                </span>
+                              )}
+                              {(isArmor || isShield) && itemData.armorClass && (
+                                <span className="text-sm text-primary font-mono">
+                                  CA {itemData.armorClass}
+                                </span>
+                              )}
+                              {item.description && (
+                                <span className="text-xs text-muted-foreground line-clamp-1">
+                                  {item.description}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => addHomebrewItem(item)}
+                            className="gap-1"
+                          >
+                            <Plus className="w-4 h-4" />
+                            Adicionar
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 space-y-2">
+                    <Sparkles className="w-8 h-8 mx-auto text-muted-foreground/50" />
+                    <p className="text-sm text-muted-foreground">
+                      Nenhum item homebrew encontrado
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Crie itens na Forja Homebrew para adicioná-los aqui
+                    </p>
+                  </div>
+                )}
               </ScrollArea>
             </div>
           </TabsContent>
