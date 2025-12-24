@@ -438,31 +438,27 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
           </div>
         )}
 
-        {/* Content Type Selector */}
-        <div className="relative -mx-4">
-          <div className="flex gap-2 overflow-x-auto pb-3 pt-1 px-4 scrollbar-hide">
-            {contentTypes.map((type) => {
-              const Icon = type.icon;
-              const isSelected = selectedType === type.type;
-              return (
-                <button
-                  key={type.type}
-                  onClick={() => setSelectedType(type.type)}
-                  className={cn(
-                    "flex items-center gap-2 px-4 py-2.5 rounded-xl transition-all flex-shrink-0",
-                    isSelected 
-                      ? `bg-gradient-to-r ${type.color} text-white shadow-lg` 
-                      : "bg-muted text-muted-foreground hover:bg-muted/80"
-                  )}
-                >
-                  <Icon className="w-4 h-4 flex-shrink-0" />
-                  <span className="text-sm font-medium whitespace-nowrap">{type.label}</span>
-                </button>
-              );
-            })}
-            {/* Spacer to prevent last item from being cut */}
-            <div className="w-4 flex-shrink-0" aria-hidden="true" />
-          </div>
+        {/* Content Type Selector - Grid de Cards */}
+        <div className="grid grid-cols-4 gap-2">
+          {contentTypes.map((type) => {
+            const Icon = type.icon;
+            const isSelected = selectedType === type.type;
+            return (
+              <button
+                key={type.type}
+                onClick={() => setSelectedType(type.type)}
+                className={cn(
+                  "flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all",
+                  isSelected 
+                    ? `bg-gradient-to-br ${type.color} text-white shadow-lg` 
+                    : "bg-muted text-muted-foreground hover:bg-muted/80"
+                )}
+              >
+                <Icon className={cn("w-5 h-5", isSelected && "drop-shadow-md")} />
+                <span className="text-[11px] font-medium leading-tight text-center">{type.label}</span>
+              </button>
+            );
+          })}
         </div>
 
         {/* Search & Actions */}
