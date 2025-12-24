@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, useSearchParams } from "react-router-dom";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider } from "@/hooks/useTheme";
+import { SoundSettingsProvider } from "@/hooks/useSoundSettings";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
@@ -27,26 +28,28 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <ThemeProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/character/:id" element={<CharacterSheet />} />
-              <Route path="/grimoire" element={<SpellGrimoire />} />
-              <Route path="/checklist" element={<Checklist />} />
-              {/* Tab redirects - redirect to Index with tab query param */}
-              <Route path="/characters" element={<RedirectWithParams to="/?tab=characters" />} />
-              <Route path="/campaigns" element={<RedirectWithParams to="/?tab=campaigns" />} />
-              <Route path="/tools" element={<RedirectWithParams to="/?tab=tools" />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+        <SoundSettingsProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/character/:id" element={<CharacterSheet />} />
+                <Route path="/grimoire" element={<SpellGrimoire />} />
+                <Route path="/checklist" element={<Checklist />} />
+                {/* Tab redirects - redirect to Index with tab query param */}
+                <Route path="/characters" element={<RedirectWithParams to="/?tab=characters" />} />
+                <Route path="/campaigns" element={<RedirectWithParams to="/?tab=campaigns" />} />
+                <Route path="/tools" element={<RedirectWithParams to="/?tab=tools" />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </SoundSettingsProvider>
       </ThemeProvider>
     </AuthProvider>
   </QueryClientProvider>

@@ -1,8 +1,10 @@
 import { useCallback, useRef } from 'react';
+import { useSoundSettings } from './useSoundSettings';
 
 // Simple sound system using Web Audio API for subtle wooden/click sounds
 export const useSoundEffects = () => {
   const audioContextRef = useRef<AudioContext | null>(null);
+  const { settings } = useSoundSettings();
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
@@ -13,6 +15,8 @@ export const useSoundEffects = () => {
 
   // Subtle wooden click sound
   const playClick = useCallback(() => {
+    if (!settings.enabled) return;
+    
     try {
       const ctx = getAudioContext();
       const oscillator = ctx.createOscillator();
@@ -28,7 +32,8 @@ export const useSoundEffects = () => {
       filter.frequency.setValueAtTime(800, ctx.currentTime);
       filter.Q.setValueAtTime(1, ctx.currentTime);
 
-      gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+      const baseVolume = 0.15 * settings.volume;
+      gainNode.gain.setValueAtTime(baseVolume, ctx.currentTime);
       gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
 
       oscillator.connect(filter);
@@ -40,10 +45,12 @@ export const useSoundEffects = () => {
     } catch (e) {
       // Silently fail if audio not supported
     }
-  }, [getAudioContext]);
+  }, [getAudioContext, settings.enabled, settings.volume]);
 
   // Dice roll sound - multiple quick wooden taps
   const playDiceRoll = useCallback(() => {
+    if (!settings.enabled) return;
+    
     try {
       const ctx = getAudioContext();
       const rollCount = 4 + Math.floor(Math.random() * 3);
@@ -64,9 +71,9 @@ export const useSoundEffects = () => {
         filter.frequency.setValueAtTime(300 + Math.random() * 200, ctx.currentTime);
         filter.Q.setValueAtTime(2, ctx.currentTime);
 
-        const volume = 0.08 + Math.random() * 0.06;
+        const baseVolume = (0.08 + Math.random() * 0.06) * settings.volume;
         noiseGain.gain.setValueAtTime(0, ctx.currentTime + delay);
-        noiseGain.gain.linearRampToValueAtTime(volume, ctx.currentTime + delay + 0.005);
+        noiseGain.gain.linearRampToValueAtTime(baseVolume, ctx.currentTime + delay + 0.005);
         noiseGain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + 0.05);
 
         oscillator.connect(filter);
@@ -79,10 +86,12 @@ export const useSoundEffects = () => {
     } catch (e) {
       // Silently fail if audio not supported
     }
-  }, [getAudioContext]);
+  }, [getAudioContext, settings.enabled, settings.volume]);
 
   // Success sound - gentle wooden chime
   const playSuccess = useCallback(() => {
+    if (!settings.enabled) return;
+    
     try {
       const ctx = getAudioContext();
       const frequencies = [330, 440];
@@ -98,8 +107,9 @@ export const useSoundEffects = () => {
         filter.type = 'lowpass';
         filter.frequency.setValueAtTime(1200, ctx.currentTime);
 
+        const baseVolume = 0.1 * settings.volume;
         gainNode.gain.setValueAtTime(0, ctx.currentTime + i * 0.08);
-        gainNode.gain.linearRampToValueAtTime(0.1, ctx.currentTime + i * 0.08 + 0.01);
+        gainNode.gain.linearRampToValueAtTime(baseVolume, ctx.currentTime + i * 0.08 + 0.01);
         gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.08 + 0.2);
 
         oscillator.connect(filter);
@@ -112,7 +122,7 @@ export const useSoundEffects = () => {
     } catch (e) {
       // Silently fail
     }
-  }, [getAudioContext]);
+  }, [getAudioContext, settings.enabled, settings.volume]);
 
   return { playClick, playDiceRoll, playSuccess };
 };

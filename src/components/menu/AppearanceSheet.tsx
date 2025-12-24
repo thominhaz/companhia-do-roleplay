@@ -1,8 +1,12 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Moon, Sun, Monitor, Sparkles, Lock, Crown, Palette } from "lucide-react";
+import { Moon, Sun, Monitor, Sparkles, Lock, Crown, Palette, Volume2, VolumeX } from "lucide-react";
 import { useTheme, ThemeMode, ThemeStyle } from "@/hooks/useTheme";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useSoundSettings } from "@/hooks/useSoundSettings";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 import { Badge } from "@/components/ui/badge";
+import { Switch } from "@/components/ui/switch";
+import { Slider } from "@/components/ui/slider";
 
 interface AppearanceSheetProps {
   open: boolean;
@@ -27,6 +31,8 @@ interface ThemeStyleOption {
 export function AppearanceSheet({ open, onOpenChange }: AppearanceSheetProps) {
   const { mode, style, setMode, setStyle, canUseTheme } = useTheme();
   const { data: subscription } = useSubscription();
+  const { settings: soundSettings, setEnabled: setSoundEnabled, setVolume: setSoundVolume } = useSoundSettings();
+  const { playClick } = useSoundEffects();
 
   const modes: ThemeModeOption[] = [
     { id: "dark", label: "Escuro", icon: Moon, description: "Tema escuro para ambientes com pouca luz" },
@@ -167,6 +173,53 @@ export function AppearanceSheet({ open, onOpenChange }: AppearanceSheetProps) {
                   </button>
                 );
               })}
+            </div>
+          </div>
+
+          {/* Sound Settings */}
+          <div>
+            <h4 className="text-sm font-semibold text-foreground mb-3 flex items-center gap-2">
+              {soundSettings.enabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              Sons
+            </h4>
+            <div className="space-y-4 bg-muted rounded-xl p-4">
+              {/* Enable/Disable Toggle */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-foreground">Efeitos Sonoros</p>
+                  <p className="text-xs text-muted-foreground">Sons ao rolar dados e clicar</p>
+                </div>
+                <Switch
+                  checked={soundSettings.enabled}
+                  onCheckedChange={(checked) => {
+                    setSoundEnabled(checked);
+                    if (checked) {
+                      setTimeout(playClick, 50);
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Volume Slider */}
+              {soundSettings.enabled && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-muted-foreground">Volume</p>
+                    <span className="text-xs text-muted-foreground tabular-nums">
+                      {Math.round(soundSettings.volume * 100)}%
+                    </span>
+                  </div>
+                  <Slider
+                    value={[soundSettings.volume * 100]}
+                    onValueChange={([value]) => setSoundVolume(value / 100)}
+                    onValueCommit={() => playClick()}
+                    max={100}
+                    min={0}
+                    step={5}
+                    className="w-full"
+                  />
+                </div>
+              )}
             </div>
           </div>
 
