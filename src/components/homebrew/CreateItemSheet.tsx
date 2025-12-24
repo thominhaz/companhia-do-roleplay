@@ -23,6 +23,7 @@ import {
 import { useHomebrew } from "@/hooks/useHomebrew";
 import { HomebrewContent, HomebrewItemData } from "@/types";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Badge } from "@/components/ui/badge";
 
 interface CreateItemSheetProps {
   open: boolean;
@@ -39,16 +40,46 @@ const itemRarities = [
   { value: "artifact", label: "Artefato" },
 ];
 
-const itemTypes = [
-  { value: "weapon", label: "Arma" },
-  { value: "armor", label: "Armadura" },
-  { value: "wondrous", label: "Item Maravilhoso" },
-  { value: "potion", label: "Poção" },
-  { value: "scroll", label: "Pergaminho" },
-  { value: "wand", label: "Varinha" },
-  { value: "ring", label: "Anel" },
-  { value: "other", label: "Outro" },
+// Categorized item types
+const itemCategories = [
+  { 
+    label: "Equipáveis", 
+    items: [
+      { value: "weapon", label: "Arma", icon: "⚔️" },
+      { value: "armor", label: "Armadura", icon: "🛡️" },
+      { value: "wondrous", label: "Item Maravilhoso", icon: "✨" },
+      { value: "ring", label: "Anel", icon: "💍" },
+      { value: "wand", label: "Varinha", icon: "🪄" },
+      { value: "rod", label: "Bastão", icon: "🏑" },
+      { value: "staff", label: "Cajado", icon: "🦯" },
+    ]
+  },
+  { 
+    label: "Consumíveis", 
+    items: [
+      { value: "potion", label: "Poção", icon: "🧪" },
+      { value: "scroll", label: "Pergaminho", icon: "📜" },
+      { value: "ammunition", label: "Munição Mágica", icon: "🏹" },
+      { value: "poison", label: "Veneno", icon: "☠️" },
+      { value: "food", label: "Comida/Bebida", icon: "🍖" },
+      { value: "bomb", label: "Bomba/Granada", icon: "💣" },
+      { value: "oil", label: "Óleo/Unguento", icon: "🫗" },
+      { value: "consumable_other", label: "Outro Consumível", icon: "📦" },
+    ]
+  },
+  {
+    label: "Outros",
+    items: [
+      { value: "container", label: "Recipiente Mágico", icon: "👜" },
+      { value: "instrument", label: "Instrumento", icon: "🎸" },
+      { value: "tool", label: "Ferramenta Mágica", icon: "🔧" },
+      { value: "other", label: "Outro", icon: "💎" },
+    ]
+  }
 ];
+
+// Flatten for lookup
+const allItemTypes = itemCategories.flatMap(cat => cat.items);
 
 const damageTypes = [
   { value: "none", label: "Nenhum" },
@@ -65,6 +96,57 @@ const damageTypes = [
   { value: "radiant", label: "Radiante" },
   { value: "slashing", label: "Cortante" },
   { value: "thunder", label: "Trovão" },
+];
+
+// Consumable specific options
+const consumableEffectTypes = [
+  { value: "healing", label: "Cura", icon: "❤️" },
+  { value: "buff", label: "Fortalecimento", icon: "💪" },
+  { value: "damage", label: "Dano", icon: "💥" },
+  { value: "utility", label: "Utilidade", icon: "🔮" },
+  { value: "restoration", label: "Restauração", icon: "✨" },
+  { value: "transformation", label: "Transformação", icon: "🦋" },
+  { value: "detection", label: "Detecção", icon: "👁️" },
+  { value: "movement", label: "Movimento", icon: "💨" },
+  { value: "protection", label: "Proteção", icon: "🛡️" },
+  { value: "special", label: "Especial", icon: "⭐" },
+];
+
+const consumableDurations = [
+  { value: "instant", label: "Instantâneo" },
+  { value: "1_round", label: "1 rodada" },
+  { value: "1_minute", label: "1 minuto" },
+  { value: "10_minutes", label: "10 minutos" },
+  { value: "1_hour", label: "1 hora" },
+  { value: "8_hours", label: "8 horas" },
+  { value: "24_hours", label: "24 horas" },
+  { value: "permanent", label: "Permanente" },
+  { value: "special", label: "Especial" },
+];
+
+const saveTypes = [
+  { value: "none", label: "Nenhum" },
+  { value: "STR", label: "Força" },
+  { value: "DEX", label: "Destreza" },
+  { value: "CON", label: "Constituição" },
+  { value: "INT", label: "Inteligência" },
+  { value: "WIS", label: "Sabedoria" },
+  { value: "CHA", label: "Carisma" },
+];
+
+const potionColors = [
+  { value: "red", label: "Vermelho", hex: "#ef4444" },
+  { value: "blue", label: "Azul", hex: "#3b82f6" },
+  { value: "green", label: "Verde", hex: "#22c55e" },
+  { value: "purple", label: "Roxo", hex: "#a855f7" },
+  { value: "orange", label: "Laranja", hex: "#f97316" },
+  { value: "yellow", label: "Amarelo", hex: "#eab308" },
+  { value: "pink", label: "Rosa", hex: "#ec4899" },
+  { value: "black", label: "Preto", hex: "#1f2937" },
+  { value: "white", label: "Branco/Transparente", hex: "#f3f4f6" },
+  { value: "gold", label: "Dourado", hex: "#fbbf24" },
+  { value: "silver", label: "Prateado", hex: "#9ca3af" },
+  { value: "multicolor", label: "Multicor", hex: "linear-gradient(45deg, #ef4444, #3b82f6, #22c55e)" },
 ];
 
 // Weapon specific options
@@ -127,6 +209,10 @@ const armorBaseTypes = {
   ],
 };
 
+// Check if type is consumable
+const consumableTypes = ['potion', 'scroll', 'ammunition', 'poison', 'food', 'bomb', 'oil', 'consumable_other'];
+const isConsumableType = (type: string) => consumableTypes.includes(type);
+
 const defaultFormState = {
   name: "",
   description: "",
@@ -152,6 +238,21 @@ const defaultFormState = {
   max_dex_bonus: "full",
   stealth_disadvantage: false,
   strength_requirement: "",
+  // Consumable fields
+  consumable_effect_type: "utility",
+  consumable_effect_value: "",
+  consumable_duration: "instant",
+  consumable_save_dc: "",
+  consumable_save_type: "none",
+  consumable_damage: "",
+  consumable_damage_type: "none",
+  consumable_healing: "",
+  consumable_uses: "1",
+  consumable_area: "",
+  potion_color: "blue",
+  scroll_spell_level: "0",
+  scroll_spell_name: "",
+  ammunition_quantity: "20",
   // Common
   weight: "",
   charges: "",
@@ -193,6 +294,21 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
         max_dex_bonus: data.max_dex_bonus || "full",
         stealth_disadvantage: data.stealth_disadvantage || false,
         strength_requirement: data.strength_requirement ? String(data.strength_requirement) : "",
+        // Consumable
+        consumable_effect_type: data.consumable_effect_type || "utility",
+        consumable_effect_value: data.consumable_effect_value || "",
+        consumable_duration: data.consumable_duration || "instant",
+        consumable_save_dc: data.consumable_save_dc ? String(data.consumable_save_dc) : "",
+        consumable_save_type: data.consumable_save_type || "none",
+        consumable_damage: data.consumable_damage || "",
+        consumable_damage_type: data.consumable_damage_type || "none",
+        consumable_healing: data.consumable_healing || "",
+        consumable_uses: data.consumable_uses ? String(data.consumable_uses) : "1",
+        consumable_area: data.consumable_area || "",
+        potion_color: data.potion_color || "blue",
+        scroll_spell_level: data.scroll_spell_level ? String(data.scroll_spell_level) : "0",
+        scroll_spell_name: data.scroll_spell_name || "",
+        ammunition_quantity: data.ammunition_quantity ? String(data.ammunition_quantity) : "20",
         // Common
         weight: data.weight ? String(data.weight) : "",
         charges: data.charges ? String(data.charges) : "",
@@ -202,6 +318,16 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
       setForm(defaultFormState);
     }
   }, [editingItem, open]);
+
+  // Update icon based on type
+  useEffect(() => {
+    if (!isEditing) {
+      const typeInfo = allItemTypes.find(t => t.value === form.type);
+      if (typeInfo) {
+        setForm(prev => ({ ...prev, icon: typeInfo.icon }));
+      }
+    }
+  }, [form.type, isEditing]);
 
   // Update base AC when armor type changes
   useEffect(() => {
@@ -254,6 +380,43 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
       itemData.strength_requirement = form.strength_requirement ? parseInt(form.strength_requirement) : undefined;
     }
 
+    // Add consumable-specific data
+    if (isConsumableType(form.type)) {
+      itemData.is_consumable = true;
+      itemData.consumable_effect_type = form.consumable_effect_type;
+      itemData.consumable_effect_value = form.consumable_effect_value || undefined;
+      itemData.consumable_duration = form.consumable_duration;
+      itemData.consumable_uses = form.consumable_uses ? parseInt(form.consumable_uses) : 1;
+      
+      if (form.consumable_save_type !== 'none') {
+        itemData.consumable_save_type = form.consumable_save_type;
+        itemData.consumable_save_dc = form.consumable_save_dc ? parseInt(form.consumable_save_dc) : undefined;
+      }
+      
+      if (form.consumable_effect_type === 'damage' || form.type === 'bomb' || form.type === 'poison') {
+        itemData.consumable_damage = form.consumable_damage || undefined;
+        itemData.consumable_damage_type = form.consumable_damage_type !== 'none' ? form.consumable_damage_type : undefined;
+        itemData.consumable_area = form.consumable_area || undefined;
+      }
+      
+      if (form.consumable_effect_type === 'healing' || form.consumable_effect_type === 'restoration') {
+        itemData.consumable_healing = form.consumable_healing || undefined;
+      }
+      
+      if (form.type === 'potion') {
+        itemData.potion_color = form.potion_color;
+      }
+      
+      if (form.type === 'scroll') {
+        itemData.scroll_spell_level = form.scroll_spell_level ? parseInt(form.scroll_spell_level) : 0;
+        itemData.scroll_spell_name = form.scroll_spell_name || undefined;
+      }
+      
+      if (form.type === 'ammunition') {
+        itemData.ammunition_quantity = form.ammunition_quantity ? parseInt(form.ammunition_quantity) : 20;
+      }
+    }
+
     if (isEditing && editingItem) {
       updateHomebrew({
         id: editingItem.id,
@@ -293,6 +456,7 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
   const isLoading = isCreating || isUpdating;
   const isWeapon = form.type === 'weapon';
   const isArmor = form.type === 'armor';
+  const isConsumable = isConsumableType(form.type);
 
   const currentArmorTypes = isArmor 
     ? armorBaseTypes[form.armor_category as keyof typeof armorBaseTypes] || []
@@ -326,12 +490,13 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <Gem className="w-5 h-5 text-amber-500" />
-            {isEditing ? "Editar Item" : "Criar Item Mágico"}
+            {isEditing ? "Editar Item" : "Criar Item"}
+            {isConsumable && <Badge variant="secondary" className="text-xs">Consumível</Badge>}
           </SheetTitle>
           <SheetDescription>
             {isEditing 
               ? "Edite os detalhes do seu item homebrew"
-              : "Preencha os detalhes do seu item mágico homebrew"
+              : "Preencha os detalhes do seu item homebrew"
             }
           </SheetDescription>
         </SheetHeader>
@@ -360,62 +525,323 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
               </div>
             </div>
 
-            {/* Type & Rarity */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label>Tipo *</Label>
-                <Select value={form.type} onValueChange={(v) => updateField("type", v)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {itemTypes.map((type) => (
-                      <SelectItem key={type.value} value={type.value}>
-                        {type.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label>Raridade *</Label>
-                <Select value={form.rarity} onValueChange={(v) => updateField("rarity", v)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {itemRarities.map((rarity) => (
-                      <SelectItem key={rarity.value} value={rarity.value}>
-                        {rarity.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+            {/* Type Selection - Categorized */}
+            <div>
+              <Label>Tipo de Item *</Label>
+              <div className="mt-2 space-y-3">
+                {itemCategories.map((category) => (
+                  <div key={category.label}>
+                    <p className="text-xs text-muted-foreground mb-2">{category.label}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {category.items.map((type) => (
+                        <button
+                          key={type.value}
+                          type="button"
+                          onClick={() => updateField("type", type.value)}
+                          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-all ${
+                            form.type === type.value
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted hover:bg-muted/80'
+                          }`}
+                        >
+                          <span>{type.icon}</span>
+                          <span>{type.label}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
 
-            {/* Attunement */}
-            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-              <div>
-                <Label>Requer Sintonização</Label>
-                <p className="text-xs text-muted-foreground">
-                  O item precisa de sintonização para funcionar
-                </p>
-              </div>
-              <Switch
-                checked={form.requires_attunement}
-                onCheckedChange={(v) => updateField("requires_attunement", v)}
-              />
+            {/* Rarity */}
+            <div>
+              <Label>Raridade *</Label>
+              <Select value={form.rarity} onValueChange={(v) => updateField("rarity", v)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {itemRarities.map((rarity) => (
+                    <SelectItem key={rarity.value} value={rarity.value}>
+                      {rarity.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
-            {form.requires_attunement && (
-              <div>
-                <Label>Requisitos de Sintonização (opcional)</Label>
-                <Input
-                  value={form.attunement_requirements}
-                  onChange={(e) => updateField("attunement_requirements", e.target.value)}
-                  placeholder="Ex: por um conjurador"
-                />
+            {/* Attunement (only for non-consumables) */}
+            {!isConsumable && (
+              <>
+                <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                  <div>
+                    <Label>Requer Sintonização</Label>
+                    <p className="text-xs text-muted-foreground">
+                      O item precisa de sintonização para funcionar
+                    </p>
+                  </div>
+                  <Switch
+                    checked={form.requires_attunement}
+                    onCheckedChange={(v) => updateField("requires_attunement", v)}
+                  />
+                </div>
+
+                {form.requires_attunement && (
+                  <div>
+                    <Label>Requisitos de Sintonização (opcional)</Label>
+                    <Input
+                      value={form.attunement_requirements}
+                      onChange={(e) => updateField("attunement_requirements", e.target.value)}
+                      placeholder="Ex: por um conjurador"
+                    />
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* =================== CONSUMABLE SECTION =================== */}
+            {isConsumable && (
+              <div className="pt-2 border-t border-border space-y-4">
+                <h4 className="text-sm font-medium flex items-center gap-2">
+                  🧪 Propriedades do Consumível
+                </h4>
+
+                {/* Effect Type */}
+                <div>
+                  <Label>Tipo de Efeito</Label>
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {consumableEffectTypes.map((effect) => (
+                      <button
+                        key={effect.value}
+                        type="button"
+                        onClick={() => updateField("consumable_effect_type", effect.value)}
+                        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm transition-all ${
+                          form.consumable_effect_type === effect.value
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted hover:bg-muted/80'
+                        }`}
+                      >
+                        <span>{effect.icon}</span>
+                        <span>{effect.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Healing (for healing/restoration effects) */}
+                {(form.consumable_effect_type === 'healing' || form.consumable_effect_type === 'restoration') && (
+                  <div>
+                    <Label>Cura</Label>
+                    <Input
+                      value={form.consumable_healing}
+                      onChange={(e) => updateField("consumable_healing", e.target.value)}
+                      placeholder="Ex: 2d4+2 ou 'remove 1 condição'"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Pode ser dados (2d4+2) ou texto descritivo
+                    </p>
+                  </div>
+                )}
+
+                {/* Damage (for damage effects, bombs, poisons) */}
+                {(form.consumable_effect_type === 'damage' || form.type === 'bomb' || form.type === 'poison') && (
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <Label>Dano</Label>
+                      <Input
+                        value={form.consumable_damage}
+                        onChange={(e) => updateField("consumable_damage", e.target.value)}
+                        placeholder="Ex: 3d6"
+                      />
+                    </div>
+                    <div>
+                      <Label>Tipo de Dano</Label>
+                      <Select value={form.consumable_damage_type} onValueChange={(v) => updateField("consumable_damage_type", v)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {damageTypes.map((type) => (
+                            <SelectItem key={type.value} value={type.value}>
+                              {type.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                )}
+
+                {/* Area of Effect (for bombs, some potions) */}
+                {(form.type === 'bomb' || form.consumable_effect_type === 'damage') && (
+                  <div>
+                    <Label>Área de Efeito</Label>
+                    <Input
+                      value={form.consumable_area}
+                      onChange={(e) => updateField("consumable_area", e.target.value)}
+                      placeholder="Ex: esfera de 6m de raio"
+                    />
+                  </div>
+                )}
+
+                {/* Effect Value (for buffs and utility) */}
+                {(form.consumable_effect_type === 'buff' || form.consumable_effect_type === 'utility' || 
+                  form.consumable_effect_type === 'protection' || form.consumable_effect_type === 'movement' ||
+                  form.consumable_effect_type === 'detection' || form.consumable_effect_type === 'transformation') && (
+                  <div>
+                    <Label>Efeito</Label>
+                    <Textarea
+                      value={form.consumable_effect_value}
+                      onChange={(e) => updateField("consumable_effect_value", e.target.value)}
+                      placeholder="Ex: +2 em testes de Força por 1 hora"
+                      rows={2}
+                    />
+                  </div>
+                )}
+
+                {/* Duration */}
+                <div>
+                  <Label>Duração</Label>
+                  <Select value={form.consumable_duration} onValueChange={(v) => updateField("consumable_duration", v)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {consumableDurations.map((dur) => (
+                        <SelectItem key={dur.value} value={dur.value}>
+                          {dur.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Save DC & Type */}
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Teste de Resistência</Label>
+                    <Select value={form.consumable_save_type} onValueChange={(v) => updateField("consumable_save_type", v)}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {saveTypes.map((type) => (
+                          <SelectItem key={type.value} value={type.value}>
+                            {type.label}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {form.consumable_save_type !== 'none' && (
+                    <div>
+                      <Label>CD do Teste</Label>
+                      <Input
+                        type="number"
+                        value={form.consumable_save_dc}
+                        onChange={(e) => updateField("consumable_save_dc", e.target.value)}
+                        placeholder="15"
+                        min="1"
+                        max="30"
+                      />
+                    </div>
+                  )}
+                </div>
+
+                {/* Uses */}
+                <div>
+                  <Label>Usos</Label>
+                  <Input
+                    type="number"
+                    value={form.consumable_uses}
+                    onChange={(e) => updateField("consumable_uses", e.target.value)}
+                    placeholder="1"
+                    min="1"
+                  />
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Quantas vezes pode ser usado antes de ser consumido
+                  </p>
+                </div>
+
+                {/* Potion-specific: Color */}
+                {form.type === 'potion' && (
+                  <div>
+                    <Label>Cor da Poção</Label>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {potionColors.map((color) => (
+                        <button
+                          key={color.value}
+                          type="button"
+                          onClick={() => updateField("potion_color", color.value)}
+                          className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition-all ${
+                            form.potion_color === color.value
+                              ? 'ring-2 ring-primary ring-offset-2 ring-offset-background'
+                              : ''
+                          }`}
+                          style={{
+                            background: color.hex.startsWith('linear') ? color.hex : undefined,
+                            backgroundColor: !color.hex.startsWith('linear') ? color.hex : undefined,
+                            color: ['black', 'blue', 'purple'].includes(color.value) ? 'white' : 'black'
+                          }}
+                        >
+                          {color.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Scroll-specific: Spell */}
+                {form.type === 'scroll' && (
+                  <div className="grid grid-cols-[1fr_2fr] gap-3">
+                    <div>
+                      <Label>Nível da Magia</Label>
+                      <Select value={form.scroll_spell_level} onValueChange={(v) => updateField("scroll_spell_level", v)}>
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="0">Truque</SelectItem>
+                          <SelectItem value="1">1º Nível</SelectItem>
+                          <SelectItem value="2">2º Nível</SelectItem>
+                          <SelectItem value="3">3º Nível</SelectItem>
+                          <SelectItem value="4">4º Nível</SelectItem>
+                          <SelectItem value="5">5º Nível</SelectItem>
+                          <SelectItem value="6">6º Nível</SelectItem>
+                          <SelectItem value="7">7º Nível</SelectItem>
+                          <SelectItem value="8">8º Nível</SelectItem>
+                          <SelectItem value="9">9º Nível</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label>Nome da Magia</Label>
+                      <Input
+                        value={form.scroll_spell_name}
+                        onChange={(e) => updateField("scroll_spell_name", e.target.value)}
+                        placeholder="Ex: Bola de Fogo"
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Ammunition-specific: Quantity */}
+                {form.type === 'ammunition' && (
+                  <div>
+                    <Label>Quantidade por Unidade</Label>
+                    <Input
+                      type="number"
+                      value={form.ammunition_quantity}
+                      onChange={(e) => updateField("ammunition_quantity", e.target.value)}
+                      placeholder="20"
+                      min="1"
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Quantas peças de munição vêm no pacote
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
@@ -571,7 +997,6 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
                     value={form.armor_category} 
                     onValueChange={(v) => {
                       updateField("armor_category", v);
-                      // Reset armor base type when category changes
                       const types = armorBaseTypes[v as keyof typeof armorBaseTypes] || [];
                       if (types.length > 0) {
                         updateField("armor_base_type", types[0].value);
@@ -686,30 +1111,32 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
               </div>
             )}
 
-            {/* =================== CHARGES SECTION =================== */}
-            <div className="pt-2 border-t border-border">
-              <h4 className="text-sm font-medium mb-3">Cargas (opcional)</h4>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <Label>Número de Cargas</Label>
-                  <Input
-                    type="number"
-                    value={form.charges}
-                    onChange={(e) => updateField("charges", e.target.value)}
-                    placeholder="3"
-                    min="0"
-                  />
-                </div>
-                <div>
-                  <Label>Recarga</Label>
-                  <Input
-                    value={form.recharge}
-                    onChange={(e) => updateField("recharge", e.target.value)}
-                    placeholder="1d4 ao amanhecer"
-                  />
+            {/* =================== CHARGES SECTION (for non-consumables) =================== */}
+            {!isConsumable && (
+              <div className="pt-2 border-t border-border">
+                <h4 className="text-sm font-medium mb-3">Cargas (opcional)</h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <Label>Número de Cargas</Label>
+                    <Input
+                      type="number"
+                      value={form.charges}
+                      onChange={(e) => updateField("charges", e.target.value)}
+                      placeholder="3"
+                      min="0"
+                    />
+                  </div>
+                  <div>
+                    <Label>Recarga</Label>
+                    <Input
+                      value={form.recharge}
+                      onChange={(e) => updateField("recharge", e.target.value)}
+                      placeholder="1d4 ao amanhecer"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Weight */}
             <div>
@@ -730,7 +1157,10 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
               <Textarea
                 value={form.description}
                 onChange={(e) => updateField("description", e.target.value)}
-                placeholder="Descreva as propriedades mágicas e a história do item..."
+                placeholder={isConsumable 
+                  ? "Descreva o efeito, aparência e como usar o consumível..."
+                  : "Descreva as propriedades mágicas e a história do item..."
+                }
                 rows={4}
                 required
               />
