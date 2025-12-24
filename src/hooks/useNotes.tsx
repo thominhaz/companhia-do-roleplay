@@ -12,6 +12,10 @@ export interface CampaignNote {
   is_public: boolean;
   created_at: string;
   updated_at: string;
+  profile?: {
+    display_name: string | null;
+    avatar_url: string | null;
+  } | null;
 }
 
 // Fetch notes for a campaign
@@ -30,7 +34,26 @@ export function useCampaignNotes(campaignId: string) {
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
-      return data as CampaignNote[];
+
+      if (!data || data.length === 0) return [];
+
+      // Get unique user IDs
+      const userIds = [...new Set(data.map(n => n.user_id))];
+
+      // Get profiles for these users
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url')
+        .in('id', userIds);
+
+      // Create a map of user_id to profile
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+      // Combine notes with their profiles
+      return data.map(note => ({
+        ...note,
+        profile: profileMap.get(note.user_id) || null,
+      })) as CampaignNote[];
     },
     enabled: !!campaignId && !!user,
   });
