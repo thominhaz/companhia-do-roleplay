@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCampaignNotes, useCreateNote, useUpdateNote, useDeleteNote, CampaignNote } from "@/hooks/useNotes";
+import { useCampaignImageUpload } from "@/hooks/useCampaignImageUpload";
 import { useAuth } from "@/hooks/useAuth";
 import { 
   StickyNote, 
@@ -17,9 +18,10 @@ import {
   Save,
   ArrowLeft,
   Edit,
-  User
+  User,
+  ImagePlus,
+  X
 } from "lucide-react";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -29,6 +31,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 interface CampaignNotesSheetProps {
   campaignId: string;
@@ -42,14 +45,37 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [editForm, setEditForm] = useState({ title: "", content: "", is_public: false });
+  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: notes, isLoading } = useCampaignNotes(campaignId);
   const createNote = useCreateNote();
   const updateNote = useUpdateNote();
   const deleteNote = useDeleteNote();
+  const { uploadImage, isUploading, progress } = useCampaignImageUpload();
 
   const myNotes = notes?.filter(n => n.user_id === user?.id) || [];
   const publicNotes = notes?.filter(n => n.is_public && n.user_id !== user?.id) || [];
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const url = await uploadImage(file, { folder: `notes/${campaignId}`, maxSizeKB: 500 });
+    if (url) {
+      // Insert image markdown into content
+      const imageMarkdown = `\n![Imagem](${url})\n`;
+      setEditForm(prev => ({
+        ...prev,
+        content: prev.content + imageMarkdown,
+      }));
+      setUploadedImages(prev => [...prev, url]);
+    }
+
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   const handleCreateNote = async () => {
     if (!editForm.title.trim()) return;
@@ -62,6 +88,7 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
     });
 
     setEditForm({ title: "", content: "", is_public: false });
+    setUploadedImages([]);
     setIsCreating(false);
   };
 
@@ -78,6 +105,7 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
 
     setIsEditing(false);
     setSelectedNote(null);
+    setUploadedImages([]);
   };
 
   const handleDeleteNote = async (note: CampaignNote) => {
@@ -96,6 +124,7 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
       is_public: note.is_public,
     });
     setIsEditing(false);
+    setUploadedImages([]);
   };
 
   const startEditing = () => {
@@ -114,12 +143,47 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
     setIsCreating(true);
     setSelectedNote(null);
     setIsEditing(false);
+    setUploadedImages([]);
   };
 
   const goBack = () => {
     setSelectedNote(null);
     setIsEditing(false);
     setIsCreating(false);
+    setUploadedImages([]);
+  };
+
+  // Render note content with images
+  const renderNoteContent = (content: string) => {
+    // Parse markdown-style images: ![alt](url)
+    const parts = content.split(/!\[([^\]]*)\]\(([^)]+)\)/g);
+    const elements: React.ReactNode[] = [];
+    
+    for (let i = 0; i < parts.length; i++) {
+      if (i % 3 === 0) {
+        // Text part
+        if (parts[i]) {
+          elements.push(
+            <p key={i} className="whitespace-pre-wrap text-foreground">
+              {parts[i]}
+            </p>
+          );
+        }
+      } else if (i % 3 === 2) {
+        // Image URL
+        elements.push(
+          <img 
+            key={i} 
+            src={parts[i]} 
+            alt={parts[i-1] || 'Imagem'}
+            className="rounded-lg max-w-full my-2 cursor-pointer"
+            onClick={() => window.open(parts[i], '_blank')}
+          />
+        );
+      }
+    }
+
+    return elements.length > 0 ? elements : <p className="whitespace-pre-wrap text-foreground">{content}</p>;
   };
 
   // Note detail/edit view
@@ -148,95 +212,131 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
             </div>
           </SheetHeader>
 
-          <div className="p-6 space-y-4">
-            {isEditing || isCreating ? (
-              <>
-                <div className="space-y-2">
-                  <Label>Título</Label>
-                  <Input
-                    value={editForm.title}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-                    placeholder="Título da nota..."
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Conteúdo</Label>
-                  <Textarea
-                    value={editForm.content}
-                    onChange={(e) => setEditForm(prev => ({ ...prev, content: e.target.value }))}
-                    placeholder="Escreva sua nota aqui..."
-                    className="min-h-[200px]"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
-                  <div className="flex items-center gap-2">
-                    {editForm.is_public ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                    <div>
-                      <p className="text-sm font-medium">Nota pública</p>
-                      <p className="text-xs text-muted-foreground">
-                        {editForm.is_public ? "Visível para todos da campanha" : "Apenas você pode ver"}
-                      </p>
-                    </div>
+          <ScrollArea className="h-[calc(90vh-100px)]">
+            <div className="p-6 space-y-4">
+              {isEditing || isCreating ? (
+                <>
+                  <div className="space-y-2">
+                    <Label>Título</Label>
+                    <Input
+                      value={editForm.title}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                      placeholder="Título da nota..."
+                    />
                   </div>
-                  <Switch
-                    checked={editForm.is_public}
-                    onCheckedChange={(checked) => setEditForm(prev => ({ ...prev, is_public: checked }))}
-                  />
-                </div>
 
-                <Button
-                  onClick={isCreating ? handleCreateNote : handleUpdateNote}
-                  disabled={!editForm.title.trim() || createNote.isPending || updateNote.isPending}
-                  className="w-full"
-                >
-                  {(createNote.isPending || updateNote.isPending) ? (
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  ) : (
-                    <Save className="w-4 h-4 mr-2" />
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <Label>Conteúdo</Label>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageUpload}
+                        className="hidden"
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={isUploading}
+                      >
+                        {isUploading ? (
+                          <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                        ) : (
+                          <ImagePlus className="w-4 h-4 mr-1" />
+                        )}
+                        Adicionar Imagem
+                      </Button>
+                    </div>
+                    <Textarea
+                      value={editForm.content}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, content: e.target.value }))}
+                      placeholder="Escreva sua nota aqui..."
+                      className="min-h-[200px]"
+                    />
+                  </div>
+
+                  {/* Show uploaded images preview */}
+                  {uploadedImages.length > 0 && (
+                    <div className="flex flex-wrap gap-2">
+                      {uploadedImages.map((url, idx) => (
+                        <img 
+                          key={idx} 
+                          src={url} 
+                          alt={`Uploaded ${idx + 1}`}
+                          className="w-20 h-20 object-cover rounded-lg"
+                        />
+                      ))}
+                    </div>
                   )}
-                  {isCreating ? "Criar Nota" : "Salvar"}
-                </Button>
-              </>
-            ) : (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                  {selectedNote?.profile && (
-                    <>
-                      <div className="flex items-center gap-1.5">
-                        <Avatar className="w-5 h-5">
-                          <AvatarImage src={selectedNote.profile.avatar_url || undefined} />
-                          <AvatarFallback className="text-[10px]">
-                            {selectedNote.profile.display_name?.charAt(0).toUpperCase() || 'U'}
-                          </AvatarFallback>
-                        </Avatar>
-                        <span className="font-medium text-foreground">
-                          {selectedNote.profile.display_name || 'Jogador'}
-                        </span>
+
+                  <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
+                    <div className="flex items-center gap-2">
+                      {editForm.is_public ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                      <div>
+                        <p className="text-sm font-medium">Nota pública</p>
+                        <p className="text-xs text-muted-foreground">
+                          {editForm.is_public ? "Visível para todos da campanha" : "Apenas você pode ver"}
+                        </p>
                       </div>
-                      <span>•</span>
-                    </>
-                  )}
-                  {selectedNote?.is_public ? (
-                    <Eye className="w-4 h-4" />
-                  ) : (
-                    <EyeOff className="w-4 h-4" />
-                  )}
-                  <span>{selectedNote?.is_public ? "Pública" : "Privada"}</span>
-                  <span>•</span>
-                  <span>
-                    {formatDistanceToNow(new Date(selectedNote?.updated_at || ""), { locale: ptBR, addSuffix: true })}
-                  </span>
+                    </div>
+                    <Switch
+                      checked={editForm.is_public}
+                      onCheckedChange={(checked) => setEditForm(prev => ({ ...prev, is_public: checked }))}
+                    />
+                  </div>
+
+                  <Button
+                    onClick={isCreating ? handleCreateNote : handleUpdateNote}
+                    disabled={!editForm.title.trim() || createNote.isPending || updateNote.isPending || isUploading}
+                    className="w-full"
+                  >
+                    {(createNote.isPending || updateNote.isPending) ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4 mr-2" />
+                    )}
+                    {isCreating ? "Criar Nota" : "Salvar"}
+                  </Button>
+                </>
+              ) : (
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                    {selectedNote?.profile && (
+                      <>
+                        <div className="flex items-center gap-1.5">
+                          <Avatar className="w-5 h-5">
+                            <AvatarImage src={selectedNote.profile.avatar_url || undefined} />
+                            <AvatarFallback className="text-[10px]">
+                              {selectedNote.profile.display_name?.charAt(0).toUpperCase() || 'U'}
+                            </AvatarFallback>
+                          </Avatar>
+                          <span className="font-medium text-foreground">
+                            {selectedNote.profile.display_name || 'Jogador'}
+                          </span>
+                        </div>
+                        <span>•</span>
+                      </>
+                    )}
+                    {selectedNote?.is_public ? (
+                      <Eye className="w-4 h-4" />
+                    ) : (
+                      <EyeOff className="w-4 h-4" />
+                    )}
+                    <span>{selectedNote?.is_public ? "Pública" : "Privada"}</span>
+                    <span>•</span>
+                    <span>
+                      {formatDistanceToNow(new Date(selectedNote?.updated_at || ""), { locale: ptBR, addSuffix: true })}
+                    </span>
+                  </div>
+                  <div className="prose prose-invert max-w-none">
+                    {renderNoteContent(selectedNote?.content || "Sem conteúdo")}
+                  </div>
                 </div>
-                <div className="prose prose-invert max-w-none">
-                  <p className="whitespace-pre-wrap text-foreground">
-                    {selectedNote?.content || "Sem conteúdo"}
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
+              )}
+            </div>
+          </ScrollArea>
         </SheetContent>
       </Sheet>
     );
@@ -295,7 +395,7 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
                               )}
                             </div>
                             <p className="text-sm text-muted-foreground truncate mt-1">
-                              {note.content || "Sem conteúdo"}
+                              {note.content?.replace(/!\[[^\]]*\]\([^)]+\)/g, '[imagem]') || "Sem conteúdo"}
                             </p>
                             <p className="text-xs text-muted-foreground/70 mt-2">
                               {formatDistanceToNow(new Date(note.updated_at), { locale: ptBR, addSuffix: true })}
@@ -334,7 +434,7 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
                           <Eye className="w-3 h-3 text-muted-foreground flex-shrink-0" />
                         </div>
                         <p className="text-sm text-muted-foreground truncate">
-                          {note.content || "Sem conteúdo"}
+                          {note.content?.replace(/!\[[^\]]*\]\([^)]+\)/g, '[imagem]') || "Sem conteúdo"}
                         </p>
                         <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground/70">
                           <div className="flex items-center gap-1.5">

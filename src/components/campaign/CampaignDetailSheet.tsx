@@ -35,6 +35,7 @@ import { CampaignCompendiumSheet } from "./CampaignCompendiumSheet";
 import { DiscordWebhookConfig } from "./DiscordWebhookConfig";
 import { Library } from "lucide-react";
 import { useSubscription } from "@/hooks/useSubscription";
+import { cn } from "@/lib/utils";
 
 interface CampaignDetailSheetProps {
   campaign: (CampaignDB & { discord_webhook_url?: string | null }) | null;
@@ -94,19 +95,46 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
       <Sheet open={open} onOpenChange={onOpenChange}>
         <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl p-0">
           {/* Header */}
-          <div className="bg-gradient-to-br from-primary/20 to-primary/5 p-6 border-b border-border">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-2xl bg-primary/30 flex items-center justify-center">
-                  <Crown className="w-8 h-8 text-primary" />
-                </div>
-                <div>
-                  <h2 className="text-xl font-bold">{campaign.name}</h2>
-                  <p className="text-sm text-muted-foreground">
-                    {isMaster ? "Você é o Mestre" : "Jogador"} • D&D 5e
-                  </p>
-                </div>
+          <div className="relative">
+            {/* Campaign Image Background */}
+            {campaign.image_url ? (
+              <div className="absolute inset-0 h-32 overflow-hidden">
+                <img 
+                  src={campaign.image_url} 
+                  alt={campaign.name}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent" />
               </div>
+            ) : null}
+            
+            <div className={cn(
+              "relative p-6 border-b border-border",
+              campaign.image_url ? "pt-20" : "bg-gradient-to-br from-primary/20 to-primary/5"
+            )}>
+              <div className="flex items-start justify-between">
+                <div className="flex items-center gap-4">
+                  <div className={cn(
+                    "w-16 h-16 rounded-2xl flex items-center justify-center overflow-hidden",
+                    campaign.image_url ? "bg-card/90 backdrop-blur" : "bg-primary/30"
+                  )}>
+                    {campaign.image_url ? (
+                      <img 
+                        src={campaign.image_url} 
+                        alt={campaign.name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <Crown className="w-8 h-8 text-primary" />
+                    )}
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold">{campaign.name}</h2>
+                    <p className="text-sm text-muted-foreground">
+                      {isMaster ? "Você é o Mestre" : "Jogador"} • D&D 5e
+                    </p>
+                  </div>
+                </div>
               {isMaster ? (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
@@ -217,6 +245,7 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
                 </div>
               </div>
             )}
+            </div>
           </div>
 
           {/* Tabs */}
