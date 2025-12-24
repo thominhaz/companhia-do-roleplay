@@ -1,7 +1,8 @@
 import { RACES, getModifier, getModifierString, Attribute } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
-import { Minus, Plus, RotateCcw } from 'lucide-react';
+import { Minus, Plus, RotateCcw, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface AttributesStepProps {
   data: WizardData;
@@ -26,6 +27,12 @@ const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8];
 export function AttributesStep({ data, updateData }: AttributesStepProps) {
   const selectedRace = RACES.find(r => r.id === data.race);
   
+  // Check if race has ability bonus choices (like Half-Elf)
+  const abilityBonusChoice = selectedRace?.ability_bonuses_choice;
+  const choicesNeeded = abilityBonusChoice?.count || 0;
+  const choicesAvailable = abilityBonusChoice?.options || [];
+  const currentChoices = data.abilityBonusChoices || [];
+  
   const calculatePointsUsed = () => {
     return Object.values(data.attributes).reduce((total, score) => {
       return total + (POINT_BUY_COSTS[score] || 0);
@@ -37,9 +44,15 @@ export function AttributesStep({ data, updateData }: AttributesStepProps) {
 
   const getRacialBonus = (attr: Attribute): number => {
     let bonus = 0;
+    // Fixed racial bonuses
     if (selectedRace?.ability_bonuses[attr]) {
       bonus += (selectedRace.ability_bonuses[attr] as number) || 0;
     }
+    // Chosen racial bonuses
+    if (currentChoices.includes(attr)) {
+      bonus += 1;
+    }
+    // Subrace bonuses
     if (data.subrace && selectedRace?.subraces) {
       const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
       if (subrace?.ability_bonuses[attr]) {
@@ -87,6 +100,7 @@ export function AttributesStep({ data, updateData }: AttributesStepProps) {
         wisdom: 10,
         charisma: 10,
       },
+      abilityBonusChoices: [],
     });
   };
 
@@ -99,6 +113,21 @@ export function AttributesStep({ data, updateData }: AttributesStepProps) {
     updateData({ attributes: newAttributes });
   };
 
+  const toggleBonusChoice = (attr: string) => {
+    const newChoices = [...currentChoices];
+    const index = newChoices.indexOf(attr);
+    
+    if (index >= 0) {
+      // Remove choice
+      newChoices.splice(index, 1);
+    } else if (newChoices.length < choicesNeeded) {
+      // Add choice if we haven't reached the limit
+      newChoices.push(attr);
+    }
+    
+    updateData({ abilityBonusChoices: newChoices });
+  };
+
   return (
     <div className="px-4 py-6 space-y-6">
       <div>
@@ -107,6 +136,46 @@ export function AttributesStep({ data, updateData }: AttributesStepProps) {
           Use o sistema de compra de pontos. Você tem 27 pontos para distribuir.
         </p>
       </div>
+
+      {/* Ability Bonus Choices (for races like Half-Elf) */}
+      {abilityBonusChoice && choicesNeeded > 0 && (
+        <div className="p-4 rounded-xl bg-primary/10 border border-primary/30">
+          <h3 className="text-sm font-semibold mb-2 text-primary">
+            Escolha {choicesNeeded} Atributo{choicesNeeded > 1 ? 's' : ''} para +1
+          </h3>
+          <p className="text-xs text-muted-foreground mb-3">
+            {selectedRace?.name} permite escolher bônus adicionais de atributo.
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {choicesAvailable.map((attr) => {
+              const isSelected = currentChoices.includes(attr);
+              const canSelect = isSelected || currentChoices.length < choicesNeeded;
+              
+              return (
+                <button
+                  key={attr}
+                  onClick={() => toggleBonusChoice(attr)}
+                  disabled={!canSelect}
+                  className={cn(
+                    "px-3 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-1",
+                    isSelected
+                      ? "bg-primary text-primary-foreground"
+                      : canSelect
+                        ? "bg-muted hover:bg-muted/80"
+                        : "bg-muted/50 text-muted-foreground opacity-50 cursor-not-allowed"
+                  )}
+                >
+                  {isSelected && <Check className="w-3 h-3" />}
+                  {ATTRIBUTE_NAMES[attr as Attribute]}
+                </button>
+              );
+            })}
+          </div>
+          <p className="text-xs text-muted-foreground mt-2">
+            Selecionados: {currentChoices.length}/{choicesNeeded}
+          </p>
+        </div>
+      )}
 
       {/* Points Counter */}
       <div className="flex items-center justify-between p-4 rounded-xl bg-muted/30 border border-border">

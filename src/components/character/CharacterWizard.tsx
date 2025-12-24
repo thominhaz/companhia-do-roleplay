@@ -29,6 +29,7 @@ export type WizardData = {
   class: string;
   subclass: string | null;
   attributes: Record<Attribute, number>;
+  abilityBonusChoices: string[]; // For races like Half-Elf that let you choose attribute bonuses
   background: string;
   alignment: string;
   name: string;
@@ -76,6 +77,7 @@ const initialData: WizardData = {
     wisdom: 10,
     charisma: 10,
   },
+  abilityBonusChoices: [],
   background: '',
   alignment: '',
   name: '',
@@ -179,6 +181,13 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       finalAttributes[attr as Attribute] += (bonus as number) || 0;
     });
 
+    // Apply ability bonus choices (for races like Half-Elf)
+    if (data.abilityBonusChoices && data.abilityBonusChoices.length > 0) {
+      data.abilityBonusChoices.forEach(attr => {
+        finalAttributes[attr as Attribute] += 1;
+      });
+    }
+
     // Apply subrace bonuses if applicable
     if (data.subrace && selectedRace.subraces) {
       const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
@@ -191,7 +200,55 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
 
     const conModifier = getModifier(finalAttributes.constitution);
     const dexModifier = getModifier(finalAttributes.dexterity);
-    const maxHp = calculateHP(selectedClass.hit_die, conModifier, 1);
+    
+    // Calculate racial HP bonus (e.g., Hill Dwarf gets +1 HP per level)
+    let raceHpBonus = 0;
+    if (data.subrace && selectedRace.subraces) {
+      const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
+      if (subrace?.traits) {
+        const hpTrait = subrace.traits.find(t => (t.mechanical as any)?.hp_bonus_per_level);
+        if (hpTrait) {
+          raceHpBonus = (hpTrait.mechanical as any).hp_bonus_per_level || 0;
+        }
+      }
+    }
+    
+    const baseMaxHp = calculateHP(selectedClass.hit_die, conModifier, 1);
+    const maxHp = baseMaxHp + raceHpBonus; // Apply racial HP bonus for level 1
+
+    // Collect racial weapon proficiencies and skill proficiencies
+    const racialWeaponProficiencies: string[] = [];
+    const racialSkillProficiencies: string[] = [];
+    
+    // Check race traits for proficiencies
+    selectedRace.traits.forEach(trait => {
+      const mechanical = trait.mechanical as any;
+      if (mechanical?.weapon_proficiencies) {
+        racialWeaponProficiencies.push(...mechanical.weapon_proficiencies);
+      }
+      if (mechanical?.skill_proficiencies) {
+        racialSkillProficiencies.push(...mechanical.skill_proficiencies);
+      }
+    });
+    
+    // Check subrace traits for proficiencies
+    if (data.subrace && selectedRace.subraces) {
+      const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
+      if (subrace?.traits) {
+        subrace.traits.forEach(trait => {
+          const mechanical = trait.mechanical as any;
+          if (mechanical?.weapon_proficiencies) {
+            racialWeaponProficiencies.push(...mechanical.weapon_proficiencies);
+          }
+          if (mechanical?.skill_proficiencies) {
+            racialSkillProficiencies.push(...mechanical.skill_proficiencies);
+          }
+        });
+      }
+    }
+
+    // Combine selected skills with racial skill proficiencies
+    const allSkillProficiencies = [...new Set([...data.selectedSkills, ...racialSkillProficiencies])];
 
     const character: CharacterInsert = {
       name: data.name,
@@ -212,7 +269,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
         (acc, save) => ({ ...acc, [save]: { proficient: true } }), 
         {}
       ),
-      skills: data.selectedSkills.reduce((acc, skillId) => ({ ...acc, [skillId]: { proficient: true } }), {}),
+      skills: allSkillProficiencies.reduce((acc, skillId) => ({ ...acc, [skillId]: { proficient: true } }), {}),
       hit_dice: { total: 1, current: 1, diceType: `d${selectedClass.hit_die}` },
       death_saves: { successes: 0, failures: 0 },
       equipment: [
@@ -235,7 +292,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       flaws: data.flaws,
       backstory: data.backstory || null,
       features: [],
-      proficiencies: [],
+      proficiencies: racialWeaponProficiencies,
       languages: [...selectedRace.languages, ...data.extraLanguages],
       image_url: null,
       conditions: [],
