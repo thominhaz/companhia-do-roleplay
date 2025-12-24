@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { ArrowLeft, Search, Sparkles, Clock, Target, BookOpen, Focus, Scroll } from "lucide-react";
+import { ArrowLeft, Search, Sparkles, Clock, Target, BookOpen, Focus, Scroll, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -7,37 +7,38 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+
+// New unified spell interface based on magias.json
 interface Spell {
-  id: string;
   name: string;
-  name_en: string;
+  originalName: string;
   level: number;
   school: string;
-  casting_time: string;
-  range: number;
-  range_type: string;
+  castingTime: string;
+  range: string;
   components: {
     verbal: boolean;
     somatic: boolean;
     material: boolean;
-    material_description?: string;
+    materialDescription?: string;
   };
   duration: string;
   concentration: boolean;
   ritual: boolean;
-  description_markdown: string;
-  at_higher_levels?: string;
+  description: string;
+  higherLevels: string | null;
+  classes: string[];
 }
 
 const SCHOOLS: Record<string, { name: string; color: string }> = {
-  abjuration: { name: "Abjuração", color: "bg-blue-500/20 text-blue-400" },
-  conjuration: { name: "Conjuração", color: "bg-yellow-500/20 text-yellow-400" },
-  divination: { name: "Adivinhação", color: "bg-cyan-500/20 text-cyan-400" },
-  enchantment: { name: "Encantamento", color: "bg-pink-500/20 text-pink-400" },
-  evocation: { name: "Evocação", color: "bg-red-500/20 text-red-400" },
-  illusion: { name: "Ilusão", color: "bg-purple-500/20 text-purple-400" },
-  necromancy: { name: "Necromancia", color: "bg-green-500/20 text-green-400" },
-  transmutation: { name: "Transmutação", color: "bg-orange-500/20 text-orange-400" },
+  "Abjuração": { name: "Abjuração", color: "bg-blue-500/20 text-blue-400" },
+  "Conjuração": { name: "Conjuração", color: "bg-yellow-500/20 text-yellow-400" },
+  "Adivinhação": { name: "Adivinhação", color: "bg-cyan-500/20 text-cyan-400" },
+  "Encantamento": { name: "Encantamento", color: "bg-pink-500/20 text-pink-400" },
+  "Evocação": { name: "Evocação", color: "bg-red-500/20 text-red-400" },
+  "Ilusão": { name: "Ilusão", color: "bg-purple-500/20 text-purple-400" },
+  "Necromancia": { name: "Necromancia", color: "bg-green-500/20 text-green-400" },
+  "Transmutação": { name: "Transmutação", color: "bg-orange-500/20 text-orange-400" },
 };
 
 const LEVELS = [
@@ -55,25 +56,14 @@ const LEVELS = [
 
 // Spellcaster classes with their spell lists
 const SPELLCASTER_CLASSES = [
-  { id: 'mago', name: 'Mago' },
-  { id: 'clerigo', name: 'Clérigo' },
-  { id: 'druida', name: 'Druida' },
-  { id: 'bardo', name: 'Bardo' },
-  { id: 'paladino', name: 'Paladino' },
-  { id: 'patrulheiro', name: 'Patrulheiro' },
-  { id: 'feiticeiro', name: 'Feiticeiro' },
-  { id: 'bruxo', name: 'Bruxo' },
-];
-
-// Spell files will be loaded dynamically
-const spellFiles = [
-  () => import("@/data/spells/a-c.json"),
-  () => import("@/data/spells/d-f.json"),
-  () => import("@/data/spells/g-i.json"),
-  () => import("@/data/spells/j-l.json"),
-  () => import("@/data/spells/n-p.json"),
-  () => import("@/data/spells/q-s.json"),
-  () => import("@/data/spells/t-z.json"),
+  { id: 'Mago', name: 'Mago' },
+  { id: 'Clérigo', name: 'Clérigo' },
+  { id: 'Druida', name: 'Druida' },
+  { id: 'Bardo', name: 'Bardo' },
+  { id: 'Paladino', name: 'Paladino' },
+  { id: 'Patrulheiro', name: 'Patrulheiro' },
+  { id: 'Feiticeiro', name: 'Feiticeiro' },
+  { id: 'Bruxo', name: 'Bruxo' },
 ];
 
 export function SpellGrimoire() {
@@ -91,15 +81,8 @@ export function SpellGrimoire() {
   useEffect(() => {
     const loadSpells = async () => {
       try {
-        const results = await Promise.all(spellFiles.map(fn => fn()));
-        const spells: Spell[] = [];
-        results.forEach((mod: any) => {
-          if (mod.default?.magias) {
-            spells.push(...mod.default.magias);
-          } else if (mod.magias) {
-            spells.push(...mod.magias);
-          }
-        });
+        const mod = await import("@/data/spells/magias.json");
+        const spells = mod.default as Spell[];
         setAllSpells(spells);
       } catch (error) {
         console.error("Error loading spells:", error);
@@ -115,7 +98,7 @@ export function SpellGrimoire() {
       const matchesSearch =
         search === "" ||
         spell.name.toLowerCase().includes(search.toLowerCase()) ||
-        spell.name_en.toLowerCase().includes(search.toLowerCase());
+        spell.originalName.toLowerCase().includes(search.toLowerCase());
 
       const matchesLevel = selectedLevel === null || spell.level === selectedLevel;
       const matchesSchool = selectedSchool === null || spell.school === selectedSchool;
@@ -123,9 +106,8 @@ export function SpellGrimoire() {
       const matchesRitual = showRitual === null || spell.ritual === showRitual;
       
       // Filter by class - check if spell's classes array includes selected class
-      const spellClasses = (spell as any).classes as string[] | undefined;
       const matchesClass = selectedClass === null || 
-        (spellClasses && spellClasses.some(c => c.toLowerCase() === selectedClass.toLowerCase()));
+        (spell.classes && spell.classes.some(c => c === selectedClass));
 
       return matchesSearch && matchesLevel && matchesSchool && matchesConcentration && matchesRitual && matchesClass;
     }).sort((a, b) => {
@@ -133,14 +115,6 @@ export function SpellGrimoire() {
       return a.name.localeCompare(b.name, "pt-BR");
     });
   }, [search, selectedLevel, selectedSchool, showConcentration, showRitual, selectedClass, allSpells]);
-
-
-  const formatRange = (range: number, rangeType: string) => {
-    if (rangeType === "self") return "Pessoal";
-    if (rangeType === "touch") return "Toque";
-    if (range === 0) return "Pessoal";
-    return `${range}m`;
-  };
 
   const getComponentsString = (components: Spell["components"]) => {
     const parts = [];
@@ -284,7 +258,7 @@ export function SpellGrimoire() {
         <div className="space-y-2">
           {filteredSpells.map((spell, index) => (
             <button
-              key={spell.id}
+              key={`${spell.name}-${index}`}
               onClick={() => setSelectedSpell(spell)}
               className={cn(
                 "w-full glass rounded-xl p-3 text-left",
@@ -311,7 +285,7 @@ export function SpellGrimoire() {
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {spell.level === 0 ? "Truque" : `${spell.level}º Círculo`} •{" "}
-                    {SCHOOLS[spell.school]?.name || spell.school}
+                    {spell.school}
                   </p>
                 </div>
                 <Sparkles className="w-4 h-4 text-primary shrink-0" />
@@ -343,13 +317,13 @@ export function SpellGrimoire() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <SheetTitle className="text-left text-lg">{selectedSpell.name}</SheetTitle>
-                    <p className="text-xs text-muted-foreground">{selectedSpell.name_en}</p>
+                    <p className="text-xs text-muted-foreground">{selectedSpell.originalName}</p>
                     <div className="flex flex-wrap gap-1.5 mt-2">
                       <Badge variant="outline" className="text-xs">
                         {selectedSpell.level === 0 ? "Truque" : `${selectedSpell.level}º Círculo`}
                       </Badge>
                       <Badge className={cn("text-xs", SCHOOLS[selectedSpell.school]?.color)}>
-                        {SCHOOLS[selectedSpell.school]?.name || selectedSpell.school}
+                        {selectedSpell.school}
                       </Badge>
                       {selectedSpell.concentration && (
                         <Badge className="text-xs bg-yellow-500/20 text-yellow-400">
@@ -373,16 +347,14 @@ export function SpellGrimoire() {
                     <Clock className="w-3.5 h-3.5" />
                     <span className="text-xs">Tempo</span>
                   </div>
-                  <p className="text-sm font-medium">{selectedSpell.casting_time}</p>
+                  <p className="text-sm font-medium">{selectedSpell.castingTime}</p>
                 </div>
                 <div className="glass rounded-lg p-3">
                   <div className="flex items-center gap-2 text-muted-foreground mb-1">
                     <Target className="w-3.5 h-3.5" />
                     <span className="text-xs">Alcance</span>
                   </div>
-                  <p className="text-sm font-medium">
-                    {formatRange(selectedSpell.range, selectedSpell.range_type)}
-                  </p>
+                  <p className="text-sm font-medium">{selectedSpell.range}</p>
                 </div>
                 <div className="glass rounded-lg p-3">
                   <div className="flex items-center gap-2 text-muted-foreground mb-1">
@@ -403,10 +375,27 @@ export function SpellGrimoire() {
               </div>
 
               {/* Material Components */}
-              {selectedSpell.components.material && selectedSpell.components.material_description && (
+              {selectedSpell.components.material && selectedSpell.components.materialDescription && (
                 <div className="glass rounded-lg p-3 mb-4">
                   <p className="text-xs text-muted-foreground mb-1">Componente Material</p>
-                  <p className="text-sm">{selectedSpell.components.material_description}</p>
+                  <p className="text-sm">{selectedSpell.components.materialDescription}</p>
+                </div>
+              )}
+
+              {/* Classes */}
+              {selectedSpell.classes && selectedSpell.classes.length > 0 && (
+                <div className="glass rounded-lg p-3 mb-4">
+                  <div className="flex items-center gap-2 text-muted-foreground mb-2">
+                    <Users className="w-3.5 h-3.5" />
+                    <span className="text-xs">Classes</span>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {selectedSpell.classes.map((cls) => (
+                      <Badge key={cls} variant="outline" className="text-xs">
+                        {cls}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
               )}
 
@@ -418,20 +407,17 @@ export function SpellGrimoire() {
                 </div>
                 <div className="prose prose-sm prose-invert max-w-none">
                   <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {selectedSpell.description_markdown
-                      .replace(/\*\*/g, "")
-                      .replace(/###\s*/g, "\n")
-                      .replace(/\n-\s/g, "\n• ")}
+                    {selectedSpell.description}
                   </p>
                 </div>
               </div>
 
               {/* At Higher Levels */}
-              {selectedSpell.at_higher_levels && (
+              {selectedSpell.higherLevels && (
                 <div className="glass rounded-lg p-3 mb-6">
                   <p className="text-xs text-primary font-medium mb-1">Em Níveis Superiores</p>
                   <p className="text-sm text-muted-foreground">
-                    {selectedSpell.at_higher_levels.replace(/\*\*/g, "")}
+                    {selectedSpell.higherLevels}
                   </p>
                 </div>
               )}
