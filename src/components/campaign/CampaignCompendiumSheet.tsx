@@ -23,13 +23,13 @@ interface CampaignCompendiumSheetProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const contentTypes: { type: HomebrewContentType; label: string; icon: React.ElementType; color: string }[] = [
-  { type: 'spell', label: 'Magias', icon: Sparkles, color: 'from-purple-500 to-purple-700' },
-  { type: 'item', label: 'Itens', icon: Gem, color: 'from-amber-500 to-amber-700' },
-  { type: 'race', label: 'Raças', icon: Users, color: 'from-blue-500 to-blue-700' },
-  { type: 'monster', label: 'Monstros', icon: Skull, color: 'from-red-500 to-red-700' },
-  { type: 'background', label: 'Antecedentes', icon: BookOpen, color: 'from-green-500 to-green-700' },
-  { type: 'feat', label: 'Talentos', icon: Star, color: 'from-orange-500 to-orange-700' },
+const contentTypes: { type: HomebrewContentType; label: string; singular: string; icon: React.ElementType; color: string }[] = [
+  { type: 'spell', label: 'Magias', singular: 'magia', icon: Sparkles, color: 'from-purple-500 to-purple-700' },
+  { type: 'item', label: 'Itens', singular: 'item', icon: Gem, color: 'from-amber-500 to-amber-700' },
+  { type: 'race', label: 'Raças', singular: 'raça', icon: Users, color: 'from-blue-500 to-blue-700' },
+  { type: 'monster', label: 'Monstros', singular: 'monstro', icon: Skull, color: 'from-red-500 to-red-700' },
+  { type: 'background', label: 'Antecedentes', singular: 'antecedente', icon: BookOpen, color: 'from-green-500 to-green-700' },
+  { type: 'feat', label: 'Talentos', singular: 'talento', icon: Star, color: 'from-orange-500 to-orange-700' },
 ];
 
 export function CampaignCompendiumSheet({ campaignId, open, onOpenChange }: CampaignCompendiumSheetProps) {
@@ -185,7 +185,7 @@ export function CampaignCompendiumSheet({ campaignId, open, onOpenChange }: Camp
                 {selectedTypeInfo && <selectedTypeInfo.icon className="w-8 h-8 text-white" />}
               </div>
               <h3 className="font-semibold text-foreground">
-                Nenhum {selectedTypeInfo?.label.toLowerCase().slice(0, -1)} compartilhado
+                Nenhum {selectedTypeInfo?.singular} compartilhado
               </h3>
               <p className="text-sm text-muted-foreground mt-1">
                 O mestre ainda não compartilhou conteúdo deste tipo com a campanha.
