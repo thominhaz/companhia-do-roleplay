@@ -26,6 +26,69 @@ const PLAN_NAMES: Record<string, string> = {
   mestre: "Mestre",
 };
 
+const DISCORD_BOT_TOKEN = Deno.env.get('DISCORD_BOT_TOKEN');
+const DISCORD_GUILD_ID = '1452751308212801742';
+const DISCORD_ROLE_IDS: Record<string, string> = {
+  mestre: '1453170024071168092',
+  heroi: '1453170091398267003',
+  aldeao: '1453170210545860800',
+};
+
+async function syncDiscordRole(discordUserId: string, tier: string): Promise<void> {
+  if (!DISCORD_BOT_TOKEN) {
+    console.log('[UPGRADE-SUBSCRIPTION] Discord bot token not configured, skipping role sync');
+    return;
+  }
+
+  console.log(`[UPGRADE-SUBSCRIPTION] Syncing Discord role for user ${discordUserId} to tier ${tier}`);
+
+  let roleToAdd = DISCORD_ROLE_IDS.aldeao;
+  if (tier === 'mestre' || tier === 'premium') {
+    roleToAdd = DISCORD_ROLE_IDS.mestre;
+  } else if (tier === 'heroi') {
+    roleToAdd = DISCORD_ROLE_IDS.heroi;
+  }
+
+  // Remove other roles first
+  for (const [tierName, roleId] of Object.entries(DISCORD_ROLE_IDS)) {
+    if (roleId !== roleToAdd) {
+      try {
+        await fetch(
+          `https://discord.com/api/v10/guilds/${DISCORD_GUILD_ID}/members/${discordUserId}/roles/${roleId}`,
+          {
+            method: 'DELETE',
+            headers: { 'Authorization': `Bot ${DISCORD_BOT_TOKEN}` },
+          }
+        );
+      } catch (e) {
+        console.log(`[UPGRADE-SUBSCRIPTION] Failed to remove role ${tierName}:`, e);
+      }
+    }
+  }
+
+  // Add the new role
+  try {
+    const response = await fetch(
+      `https://discord.com/api/v10/guilds/${DISCORD_GUILD_ID}/members/${discordUserId}/roles/${roleToAdd}`,
+      {
+        method: 'PUT',
+        headers: { 
+          'Authorization': `Bot ${DISCORD_BOT_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+      }
+    );
+    
+    if (response.ok) {
+      console.log(`[UPGRADE-SUBSCRIPTION] Successfully added role ${tier} to Discord user ${discordUserId}`);
+    } else {
+      console.log(`[UPGRADE-SUBSCRIPTION] Failed to add role: ${await response.text()}`);
+    }
+  } catch (e) {
+    console.log(`[UPGRADE-SUBSCRIPTION] Error adding Discord role:`, e);
+  }
+}
+
 const logStep = (step: string, details?: unknown) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : "";
   console.log(`[UPGRADE-SUBSCRIPTION] ${step}${detailsStr}`);
@@ -198,6 +261,19 @@ serve(async (req) => {
       logStep("Warning: Failed to update subscription in database", { error: updateError.message });
     } else {
       logStep("Database updated successfully", { newTier, expiresAt });
+    }
+
+    // Sync Discord role if user has Discord linked
+    const { data: profile } = await supabaseClient
+      .from("profiles")
+      .select("discord_user_id")
+      .eq("id", user.id)
+      .single();
+
+    if (profile?.discord_user_id) {
+      await syncDiscordRole(profile.discord_user_id, newTier);
+    } else {
+      logStep("User has no Discord linked, skipping role sync");
     }
 
     // Prepare success message
