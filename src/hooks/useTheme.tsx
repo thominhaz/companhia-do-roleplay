@@ -19,7 +19,7 @@ const PREMIUM_THEMES: ThemeStyle[] = ['neon', 'vintage', 'dark-elf'];
 const FREE_THEMES: ThemeStyle[] = ['default'];
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const { data: subscription } = useSubscription();
+  const { data: subscription, isLoading: isLoadingSubscription } = useSubscription();
   const [mode, setModeState] = useState<ThemeMode>(() => {
     const stored = localStorage.getItem('go20-theme-mode');
     return (stored as ThemeMode) || 'dark';
@@ -67,6 +67,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.classList.add(mode);
     }
     
+    // While subscription is loading, apply stored style without resetting
+    if (isLoadingSubscription) {
+      root.classList.add(`theme-${style}`);
+      return;
+    }
+    
     // Apply style (only if user has access)
     if (canUseTheme(style)) {
       root.classList.add(`theme-${style}`);
@@ -78,7 +84,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('go20-theme-style', 'default');
       }
     }
-  }, [mode, style, hasThemeAccess]);
+  }, [mode, style, hasThemeAccess, isLoadingSubscription]);
 
   // Listen for system theme changes
   useEffect(() => {
