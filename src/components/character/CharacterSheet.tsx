@@ -416,8 +416,12 @@ export function CharacterSheet() {
 
   const hpPercent = Math.max(0, Math.min(100, (character.current_hp / character.max_hp) * 100));
 
-  // Get proficiencies
-  const proficiencies = character.proficiencies as { armor?: string[]; weapons?: string[]; tools?: string[] } || {};
+  // Get proficiencies - handle both array format (racial weapons) and object format
+  const rawProficiencies = character.proficiencies;
+  const proficiencies: { armor?: string[]; weapons?: string[]; tools?: string[] } = 
+    Array.isArray(rawProficiencies) 
+      ? { weapons: rawProficiencies as string[] }
+      : (rawProficiencies as { armor?: string[]; weapons?: string[]; tools?: string[] } || {});
   const languages = character.languages as string[] || [];
 
   // HP modification handlers - supports temporary HP absorption
