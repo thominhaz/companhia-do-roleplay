@@ -48,7 +48,8 @@ import { NotesSheet } from "./NotesSheet";
 import { CharacterHistorySheet } from "./CharacterHistorySheet";
 import { CombatStatusCard } from "./CombatStatusCard";
 import { InventoryManagementSheet } from "./InventoryManagementSheet";
-import { SpellCastDialog, SPELL_SLOTS_BY_LEVEL } from "./SpellCastDialog";
+import { SpellCastDialog, SPELL_SLOTS_BY_LEVEL, type ActiveConcentration } from "./SpellCastDialog";
+import { useAddCombatLog } from "@/hooks/useCombatLogs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -279,6 +280,9 @@ export function CharacterSheet() {
   const [spellToCast, setSpellToCast] = useState<SpellData | null>(null);
   const [showSpellCastDialog, setShowSpellCastDialog] = useState(false);
 
+  // Combat log integration
+  const addCombatLog = useAddCombatLog();
+
   // Get spell slots for character
   const spellSlots = useMemo(() => {
     if (!character) return [0, 0, 0, 0, 0, 0, 0, 0, 0];
@@ -291,20 +295,80 @@ export function CharacterSheet() {
     return (character.spellcasting as any)?.usedSlots || [0, 0, 0, 0, 0, 0, 0, 0, 0];
   }, [character?.spellcasting]);
 
+  // Get active concentration
+  const activeConcentration = useMemo((): ActiveConcentration | null => {
+    if (!character?.spellcasting) return null;
+    return (character.spellcasting as any)?.activeConcentration || null;
+  }, [character?.spellcasting]);
+
   // Cast spell and consume slot
-  const handleCastSpell = async (spellLevel: number, castAtLevel: number) => {
+  const handleCastSpell = async (spellLevel: number, castAtLevel: number, isConcentration: boolean) => {
     if (!character) return;
     
+    const spellName = spellToCast?.name || "Magia";
+    const isCantrip = spellLevel === 0;
+    
+    // Update slots (only for non-cantrips)
     const newUsedSlots = [...usedSlots];
-    newUsedSlots[castAtLevel - 1] = (newUsedSlots[castAtLevel - 1] || 0) + 1;
+    if (!isCantrip && castAtLevel > 0) {
+      newUsedSlots[castAtLevel - 1] = (newUsedSlots[castAtLevel - 1] || 0) + 1;
+    }
+    
+    // Update concentration
+    const newConcentration: ActiveConcentration | null = isConcentration 
+      ? { spellName, castAt: new Date().toISOString() }
+      : activeConcentration;
     
     await updateCharacter.mutateAsync({
       id: character.id,
       spellcasting: {
         ...(character.spellcasting as any),
         usedSlots: newUsedSlots,
+        activeConcentration: newConcentration,
       },
     });
+
+    // Log to combat if in active combat
+    if (combatInfo?.combatant && combatInfo?.encounter) {
+      const levelText = isCantrip ? "(truque)" : `(nível ${castAtLevel})`;
+      const concentrationText = isConcentration ? " [Concentração]" : "";
+      
+      await addCombatLog.mutateAsync({
+        encounter_id: combatInfo.encounter.id,
+        combatant_id: combatInfo.combatant.id,
+        combatant_name: character.name,
+        action_type: 'damage' as any, // Using damage as generic action type for spells
+        value: null,
+        details: `🔮 Lançou ${spellName} ${levelText}${concentrationText}`,
+      });
+    }
+  };
+
+  // Drop concentration
+  const handleDropConcentration = async () => {
+    if (!character) return;
+    
+    const droppedSpell = activeConcentration?.spellName;
+    
+    await updateCharacter.mutateAsync({
+      id: character.id,
+      spellcasting: {
+        ...(character.spellcasting as any),
+        activeConcentration: null,
+      },
+    });
+
+    // Log to combat if in active combat
+    if (combatInfo?.combatant && combatInfo?.encounter && droppedSpell) {
+      await addCombatLog.mutateAsync({
+        encounter_id: combatInfo.encounter.id,
+        combatant_id: combatInfo.combatant.id,
+        combatant_name: character.name,
+        action_type: 'condition_remove' as any,
+        value: null,
+        details: `💨 Perdeu concentração em ${droppedSpell}`,
+      });
+    }
   };
 
   // Recover all spell slots (long rest)
@@ -316,6 +380,7 @@ export function CharacterSheet() {
       spellcasting: {
         ...(character.spellcasting as any),
         usedSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+        activeConcentration: null, // Also clear concentration on long rest
       },
     });
     toast.success("Slots de magia recuperados!", {
@@ -1784,6 +1849,30 @@ export function CharacterSheet() {
                   </div>
                 )}
 
+                {/* Active Concentration Display */}
+                {activeConcentration && (
+                  <div className="mb-3 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Zap className="w-4 h-4 text-yellow-500" />
+                        <div>
+                          <p className="text-xs font-medium text-yellow-500">Concentração</p>
+                          <p className="text-sm font-semibold">{activeConcentration.spellName}</p>
+                        </div>
+                      </div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 text-xs text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10"
+                        onClick={handleDropConcentration}
+                      >
+                        <X className="w-3.5 h-3.5 mr-1" />
+                        Encerrar
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 {(() => {
                   // Get spellcasting ability from class features
                   const classData = CLASSES.find(c => c.name === character.class);
@@ -2099,6 +2188,8 @@ export function CharacterSheet() {
         usedSlots={usedSlots}
         onCast={handleCastSpell}
         characterLevel={character.level}
+        activeConcentration={activeConcentration}
+        onDropConcentration={handleDropConcentration}
       />
 
       {/* Campaign Chat - only show if character is in a campaign */}
