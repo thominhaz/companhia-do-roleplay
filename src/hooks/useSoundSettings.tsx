@@ -3,12 +3,14 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode 
 interface SoundSettings {
   enabled: boolean;
   volume: number; // 0 to 1
+  hapticEnabled: boolean;
 }
 
 interface SoundSettingsContextType {
   settings: SoundSettings;
   setEnabled: (enabled: boolean) => void;
   setVolume: (volume: number) => void;
+  setHapticEnabled: (enabled: boolean) => void;
   toggleSound: () => void;
 }
 
@@ -19,6 +21,7 @@ const STORAGE_KEY = 'go20-sound-settings';
 const defaultSettings: SoundSettings = {
   enabled: true,
   volume: 0.5,
+  hapticEnabled: true,
 };
 
 export function SoundSettingsProvider({ children }: { children: ReactNode }) {
@@ -51,12 +54,16 @@ export function SoundSettingsProvider({ children }: { children: ReactNode }) {
     setSettings(prev => ({ ...prev, volume: Math.max(0, Math.min(1, volume)) }));
   }, []);
 
+  const setHapticEnabled = useCallback((hapticEnabled: boolean) => {
+    setSettings(prev => ({ ...prev, hapticEnabled }));
+  }, []);
+
   const toggleSound = useCallback(() => {
     setSettings(prev => ({ ...prev, enabled: !prev.enabled }));
   }, []);
 
   return (
-    <SoundSettingsContext.Provider value={{ settings, setEnabled, setVolume, toggleSound }}>
+    <SoundSettingsContext.Provider value={{ settings, setEnabled, setVolume, setHapticEnabled, toggleSound }}>
       {children}
     </SoundSettingsContext.Provider>
   );
@@ -70,6 +77,7 @@ export function useSoundSettings() {
       settings: defaultSettings,
       setEnabled: () => {},
       setVolume: () => {},
+      setHapticEnabled: () => {},
       toggleSound: () => {},
     };
   }
