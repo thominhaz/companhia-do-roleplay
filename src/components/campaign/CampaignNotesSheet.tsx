@@ -16,8 +16,10 @@ import {
   EyeOff,
   Save,
   ArrowLeft,
-  Edit
+  Edit,
+  User
 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -199,13 +201,29 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
               </>
             ) : (
               <div className="space-y-4">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+                  {selectedNote?.profile && (
+                    <>
+                      <div className="flex items-center gap-1.5">
+                        <Avatar className="w-5 h-5">
+                          <AvatarImage src={selectedNote.profile.avatar_url || undefined} />
+                          <AvatarFallback className="text-[10px]">
+                            {selectedNote.profile.display_name?.charAt(0).toUpperCase() || 'U'}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span className="font-medium text-foreground">
+                          {selectedNote.profile.display_name || 'Jogador'}
+                        </span>
+                      </div>
+                      <span>•</span>
+                    </>
+                  )}
                   {selectedNote?.is_public ? (
                     <Eye className="w-4 h-4" />
                   ) : (
                     <EyeOff className="w-4 h-4" />
                   )}
-                  <span>{selectedNote?.is_public ? "Nota pública" : "Nota privada"}</span>
+                  <span>{selectedNote?.is_public ? "Pública" : "Privada"}</span>
                   <span>•</span>
                   <span>
                     {formatDistanceToNow(new Date(selectedNote?.updated_at || ""), { locale: ptBR, addSuffix: true })}
@@ -311,16 +329,28 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
                         onClick={() => openNote(note)}
                         className="bg-card rounded-xl p-4 border border-border cursor-pointer hover:border-primary/50 transition-colors"
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-2 mb-1">
                           <h4 className="font-semibold truncate">{note.title}</h4>
                           <Eye className="w-3 h-3 text-muted-foreground flex-shrink-0" />
                         </div>
-                        <p className="text-sm text-muted-foreground truncate mt-1">
+                        <p className="text-sm text-muted-foreground truncate">
                           {note.content || "Sem conteúdo"}
                         </p>
-                        <p className="text-xs text-muted-foreground/70 mt-2">
-                          {formatDistanceToNow(new Date(note.updated_at), { locale: ptBR, addSuffix: true })}
-                        </p>
+                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground/70">
+                          <div className="flex items-center gap-1.5">
+                            <Avatar className="w-4 h-4">
+                              <AvatarImage src={note.profile?.avatar_url || undefined} />
+                              <AvatarFallback className="text-[8px]">
+                                {note.profile?.display_name?.charAt(0).toUpperCase() || 'U'}
+                              </AvatarFallback>
+                            </Avatar>
+                            <span>{note.profile?.display_name || 'Jogador'}</span>
+                          </div>
+                          <span>•</span>
+                          <span>
+                            {formatDistanceToNow(new Date(note.updated_at), { locale: ptBR, addSuffix: true })}
+                          </span>
+                        </div>
                       </div>
                     ))}
                   </div>
