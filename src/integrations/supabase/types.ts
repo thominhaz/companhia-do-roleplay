@@ -981,6 +981,10 @@ export type Database = {
         Returns: string
       }
       generate_invite_code: { Args: never; Returns: string }
+      get_campaign_webhook_url: {
+        Args: { campaign_id: string }
+        Returns: string
+      }
       get_or_create_notification_preferences: {
         Args: { _user_id: string }
         Returns: {
