@@ -244,6 +244,24 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
         toast.success(result.message || "Código resgatado com sucesso!");
         setRedeemCode("");
         queryClient.invalidateQueries({ queryKey: ["subscription"] });
+        
+        // Auto-sync Discord role if Discord is linked
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('discord_user_id')
+            .eq('id', user.id)
+            .single();
+          
+          if (profile?.discord_user_id) {
+            await supabase.functions.invoke('sync-discord-role', {
+              body: { action: 'sync' },
+            });
+            toast.success("Cargo do Discord atualizado!");
+          }
+        } catch (discordError) {
+          console.error("Error syncing Discord role:", discordError);
+        }
       } else {
         toast.error(result.error || "Erro ao resgatar código");
       }
