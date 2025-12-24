@@ -1,5 +1,5 @@
-import { useState, useMemo } from "react";
-import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus } from "lucide-react";
+import { useState, useMemo, useEffect } from "react";
+import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, ChevronDown } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useUpdateCharacter, CharacterDB } from "@/hooks/useCharacters";
 import { useHomebrew } from "@/hooks/useHomebrew";
 import { getModifier, getAttributeName, CLASSES, RACES } from "@/data/srd";
@@ -82,6 +83,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
   const [improvementChoice, setImprovementChoice] = useState<'feat' | 'attributes'>('feat');
   const [attributePoints, setAttributePoints] = useState<Record<string, number>>({});
   const [pointsRemaining, setPointsRemaining] = useState(2);
+  const [selectedFeatAttribute, setSelectedFeatAttribute] = useState<string | null>(null);
   
   // Fetch homebrew feats
   const { homebrewContent: homebrewFeats, isLoading: loadingFeats } = useHomebrew('feat');
@@ -118,6 +120,38 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       f.name.toLowerCase().includes(featSearch.toLowerCase())
     );
   }, [homebrewFeats, featSearch]);
+
+  // Get the currently selected feat's data
+  const selectedFeatData = useMemo(() => {
+    if (!selectedFeat) return null;
+    return filteredFeats.find(f => f.name === selectedFeat) || null;
+  }, [selectedFeat, filteredFeats]);
+
+  // Check if selected feat requires attribute choice
+  const featRequiresAttributeChoice = useMemo(() => {
+    if (!selectedFeatData?.effects) return false;
+    const effects = selectedFeatData.effects as any;
+    return effects.attribute_choice && Array.isArray(effects.attribute_choice) && effects.attribute_choice.length > 0;
+  }, [selectedFeatData]);
+
+  // Get attribute choices for selected feat
+  const featAttributeChoices = useMemo(() => {
+    if (!selectedFeatData?.effects) return [];
+    const effects = selectedFeatData.effects as any;
+    return effects.attribute_choice || [];
+  }, [selectedFeatData]);
+
+  // Get attribute bonus for selected feat
+  const featAttributeBonus = useMemo(() => {
+    if (!selectedFeatData?.effects) return 0;
+    const effects = selectedFeatData.effects as any;
+    return effects.attribute_bonus || 0;
+  }, [selectedFeatData]);
+
+  // Reset attribute selection when feat changes
+  useEffect(() => {
+    setSelectedFeatAttribute(null);
+  }, [selectedFeat]);
 
   const classData = CLASS_HIT_DICE[character.class] || { dice: "d8", avg: 5 };
   const conMod = Math.floor((((character.attributes as any)?.constitution || 10) - 10) / 2);
@@ -206,6 +240,10 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
         toast.error('Selecione um talento');
         return;
       }
+      if (improvementChoice === 'feat' && featRequiresAttributeChoice && !selectedFeatAttribute) {
+        toast.error('Selecione o atributo para o bônus do talento');
+        return;
+      }
       if (improvementChoice === 'attributes' && pointsRemaining > 0) {
         toast.error('Distribua todos os pontos de atributo');
         return;
@@ -244,12 +282,18 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     if (grantsFeat && improvementChoice === 'feat' && selectedFeat) {
       const feat = STANDARD_FEATS.find(f => f.name === selectedFeat);
       if (feat?.effects) {
-        // Apply direct attribute bonuses
+        // Apply direct attribute bonuses (e.g., Ator +1 CAR, Durão +1 CON)
         ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'].forEach(attr => {
           if ((feat.effects as any)[attr]) {
             newAttributes[attr] = Math.min(20, (newAttributes[attr] || 10) + (feat.effects as any)[attr]);
           }
         });
+        
+        // Apply chosen attribute bonus (e.g., Atleta: escolhe FOR ou DES)
+        if (selectedFeatAttribute && (feat.effects as any).attribute_bonus) {
+          const bonus = (feat.effects as any).attribute_bonus;
+          newAttributes[selectedFeatAttribute] = Math.min(20, (newAttributes[selectedFeatAttribute] || 10) + bonus);
+        }
       }
     }
 
@@ -285,6 +329,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     setHpRoll(null);
     setHasRolledHp(false);
     setSelectedFeat(null);
+    setSelectedFeatAttribute(null);
     setImprovementChoice('feat');
     setAttributePoints({});
     setPointsRemaining(2);
@@ -298,6 +343,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       setHpRoll(null);
       setHasRolledHp(false);
       setSelectedFeat(null);
+      setSelectedFeatAttribute(null);
       setImprovementChoice('feat');
       setAttributePoints({});
       setPointsRemaining(2);
@@ -508,11 +554,42 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
                         </ScrollArea>
 
                         {selectedFeat && (
-                          <div className="bg-primary/10 rounded-lg p-3 border border-primary/30">
-                            <p className="text-sm">
-                              <span className="text-muted-foreground">Talento selecionado: </span>
-                              <span className="font-semibold text-primary">{selectedFeat}</span>
-                            </p>
+                          <div className="space-y-3">
+                            <div className="bg-primary/10 rounded-lg p-3 border border-primary/30">
+                              <p className="text-sm">
+                                <span className="text-muted-foreground">Talento selecionado: </span>
+                                <span className="font-semibold text-primary">{selectedFeat}</span>
+                              </p>
+                            </div>
+                            
+                            {/* Attribute choice for feats that require it */}
+                            {featRequiresAttributeChoice && (
+                              <div className="bg-amber-500/10 rounded-lg p-3 border border-amber-500/30">
+                                <Label className="text-sm text-amber-400 mb-2 block">
+                                  Escolha o atributo para +{featAttributeBonus}:
+                                </Label>
+                                <Select
+                                  value={selectedFeatAttribute || ""}
+                                  onValueChange={setSelectedFeatAttribute}
+                                >
+                                  <SelectTrigger className="bg-background/50">
+                                    <SelectValue placeholder="Selecione um atributo" />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {featAttributeChoices.map((attr: string) => (
+                                      <SelectItem key={attr} value={attr}>
+                                        {getAttributeName(attr)} ({((character.attributes as any)?.[attr] || 10)} → {Math.min(20, ((character.attributes as any)?.[attr] || 10) + featAttributeBonus)})
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                {selectedFeatAttribute && (
+                                  <p className="text-xs text-green-400 mt-2">
+                                    +{featAttributeBonus} {getAttributeName(selectedFeatAttribute)} será aplicado
+                                  </p>
+                                )}
+                              </div>
+                            )}
                           </div>
                         )}
                       </div>
@@ -590,6 +667,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
                     hpRoll === null || 
                     updateCharacter.isPending || 
                     (grantsFeat && improvementChoice === 'feat' && !selectedFeat) ||
+                    (grantsFeat && improvementChoice === 'feat' && featRequiresAttributeChoice && !selectedFeatAttribute) ||
                     (grantsFeat && improvementChoice === 'attributes' && pointsRemaining > 0)
                   }
                   onClick={handleLevelUp}
