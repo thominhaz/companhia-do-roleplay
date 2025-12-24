@@ -358,21 +358,25 @@ export function CampaignsScreen() {
   };
 
   const handleQuickChat = (campaign: CampaignDB) => {
+    console.log('handleQuickChat called with campaign:', campaign.id);
     setQuickActionCampaign(campaign);
     setShowQuickChat(true);
   };
 
   const handleQuickNotes = (campaign: CampaignDB) => {
+    console.log('handleQuickNotes called with campaign:', campaign.id);
     setQuickActionCampaign(campaign);
     setShowQuickNotes(true);
   };
 
   const handleQuickAgenda = (campaign: CampaignDB) => {
+    console.log('handleQuickAgenda called with campaign:', campaign.id);
     setQuickActionCampaign(campaign);
     setShowQuickAgenda(true);
   };
 
   const handleQuickCombat = (campaign: CampaignDB) => {
+    console.log('handleQuickCombat called with campaign:', campaign.id);
     setQuickActionCampaign(campaign);
     setShowQuickCombat(true);
   };
