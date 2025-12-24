@@ -113,6 +113,8 @@ const formatSpellName = (name: string): string => {
 export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsManagementSheetProps) {
   const updateCharacter = useUpdateCharacter();
   const [search, setSearch] = useState("");
+  const [compendiumSearch, setCompendiumSearch] = useState("");
+  const [compendiumLevelFilter, setCompendiumLevelFilter] = useState<number | null>(null);
   const [spells, setSpells] = useState<SpellData[]>([]);
   const [usedSlots, setUsedSlots] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0, 0]);
   const [activeTab, setActiveTab] = useState("prepared");
@@ -178,6 +180,15 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
 
   const spellSlots = SPELL_SLOTS_BY_LEVEL[character.level.toString()] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+  // Calculate max spell level based on character level (for full casters)
+  const maxSpellLevel = useMemo(() => {
+    // Find highest spell slot available
+    for (let i = 8; i >= 0; i--) {
+      if (spellSlots[i] > 0) return i + 1;
+    }
+    return 0; // Cantrips only if no slots
+  }, [spellSlots]);
+
   // Get full spell data for character spells
   const characterSpellsWithData = useMemo(() => {
     return spells.map(spell => {
@@ -213,6 +224,51 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
 
     return groups;
   }, [characterSpellsWithData, search]);
+
+  // Get existing spell names for deduplication
+  const existingSpellNames = useMemo(() => {
+    return new Set(spells.map(s => s.name.toLowerCase().replace(/_/g, ' ').trim()));
+  }, [spells]);
+
+  // Available compendium spells (not already known, filtered by level and search)
+  const availableCompendiumSpells = useMemo(() => {
+    return allSpellsData.filter(spell => {
+      // Check if already known
+      const spellNameLower = spell.name?.toLowerCase().trim() || '';
+      const spellNameEnLower = spell.name_en?.toLowerCase().trim() || '';
+      const spellId = (spell as any).id?.toLowerCase().replace(/_/g, ' ').trim() || '';
+      
+      const isKnown = existingSpellNames.has(spellNameLower) || 
+                      existingSpellNames.has(spellNameEnLower) ||
+                      existingSpellNames.has(spellId);
+      if (isKnown) return false;
+
+      // Check level filter
+      if (compendiumLevelFilter !== null && spell.level !== compendiumLevelFilter) return false;
+
+      // Check if spell level is accessible (0 = cantrips always allowed, or spell level <= maxSpellLevel)
+      if (spell.level > 0 && spell.level > maxSpellLevel) return false;
+
+      // Check search
+      if (compendiumSearch) {
+        const searchLower = compendiumSearch.toLowerCase();
+        return spellNameLower.includes(searchLower) || 
+               spellNameEnLower.includes(searchLower) ||
+               (spell.school?.toLowerCase().includes(searchLower));
+      }
+
+      return true;
+    });
+  }, [allSpellsData, existingSpellNames, compendiumSearch, compendiumLevelFilter, maxSpellLevel]);
+
+  const addSpellFromCompendium = (spell: FullSpellData) => {
+    const newSpell: SpellData = {
+      name: spell.name,
+      level: spell.level,
+      prepared: false,
+    };
+    setSpells(prev => [...prev, newSpell]);
+  };
 
   const availableHomebrewSpells = useMemo(() => {
     const existingNames = spells.map(s => s.name.toLowerCase());
@@ -449,10 +505,14 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
           </SheetHeader>
 
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
-            <TabsList className="grid grid-cols-3 mt-4">
+            <TabsList className="grid grid-cols-4 mt-4">
               <TabsTrigger value="prepared" className="text-xs">
                 <Sparkles className="w-3 h-3 mr-1" />
                 Magias
+              </TabsTrigger>
+              <TabsTrigger value="compendium" className="text-xs">
+                <Plus className="w-3 h-3 mr-1" />
+                Adicionar
               </TabsTrigger>
               <TabsTrigger value="slots" className="text-xs">
                 <Zap className="w-3 h-3 mr-1" />
@@ -495,6 +555,135 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                         Adicione magias durante a criação do personagem
                       </p>
                     </div>
+                  )}
+                </div>
+              </ScrollArea>
+            </TabsContent>
+
+            <TabsContent value="compendium" className="mt-4 space-y-4">
+              <div className="space-y-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar no compêndio..."
+                    value={compendiumSearch}
+                    onChange={(e) => setCompendiumSearch(e.target.value)}
+                    className="pl-9"
+                  />
+                </div>
+
+                <div className="flex gap-1 flex-wrap">
+                  <Button
+                    variant={compendiumLevelFilter === null ? "secondary" : "outline"}
+                    size="sm"
+                    className="text-xs h-7"
+                    onClick={() => setCompendiumLevelFilter(null)}
+                  >
+                    Todos
+                  </Button>
+                  <Button
+                    variant={compendiumLevelFilter === 0 ? "secondary" : "outline"}
+                    size="sm"
+                    className="text-xs h-7"
+                    onClick={() => setCompendiumLevelFilter(0)}
+                  >
+                    Truques
+                  </Button>
+                  {Array.from({ length: Math.min(maxSpellLevel, 9) }, (_, i) => i + 1).map(level => (
+                    <Button
+                      key={level}
+                      variant={compendiumLevelFilter === level ? "secondary" : "outline"}
+                      size="sm"
+                      className="text-xs h-7 w-7 p-0"
+                      onClick={() => setCompendiumLevelFilter(level)}
+                    >
+                      {level}º
+                    </Button>
+                  ))}
+                </div>
+
+                {maxSpellLevel === 0 && (
+                  <Card className="p-3 bg-amber-500/10 border-amber-500/30">
+                    <p className="text-xs text-amber-200">
+                      Seu personagem ainda não possui espaços de magia. Apenas truques estão disponíveis.
+                    </p>
+                  </Card>
+                )}
+              </div>
+
+              <ScrollArea className="h-[calc(90vh-320px)]">
+                <div className="space-y-2 pb-20">
+                  {availableCompendiumSpells.length === 0 ? (
+                    <div className="text-center py-12">
+                      <BookOpen className="w-16 h-16 mx-auto text-muted-foreground opacity-30 mb-4" />
+                      <p className="text-muted-foreground font-medium">
+                        {compendiumSearch ? "Nenhuma magia encontrada" : "Todas as magias disponíveis já foram adicionadas"}
+                      </p>
+                      <p className="text-xs text-muted-foreground/70 mt-1">
+                        {compendiumSearch ? "Tente uma busca diferente" : "Aumente seu nível para mais opções"}
+                      </p>
+                    </div>
+                  ) : (
+                    availableCompendiumSpells.slice(0, 50).map(spell => {
+                      const schoolInfo = getSchoolInfo(spell.school);
+                      return (
+                        <Card
+                          key={`${spell.name}-${spell.level}`}
+                          className="p-3 bg-card/50 hover:bg-card/80 transition-colors"
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <div 
+                              className="flex-1 min-w-0 cursor-pointer"
+                              onClick={() => setSelectedSpell(spell)}
+                            >
+                              <div className="flex items-center gap-2 mb-1">
+                                {schoolInfo && (
+                                  <span className="text-base" title={schoolInfo.name}>
+                                    {schoolInfo.icon}
+                                  </span>
+                                )}
+                                <span className="font-medium text-sm truncate">{spell.name}</span>
+                              </div>
+                              
+                              <div className="flex flex-wrap gap-1 mt-1">
+                                <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                                  {spell.level === 0 ? "Truque" : `${spell.level}º Círculo`}
+                                </Badge>
+                                {schoolInfo && (
+                                  <Badge variant="outline" className={cn("text-[10px] px-1.5 py-0", schoolInfo.color)}>
+                                    {schoolInfo.name}
+                                  </Badge>
+                                )}
+                                {spell.concentration && (
+                                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-orange-500/20 text-orange-400 border-orange-500/30">
+                                    Conc.
+                                  </Badge>
+                                )}
+                                {spell.ritual && (
+                                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-cyan-500/20 text-cyan-400 border-cyan-500/30">
+                                    Ritual
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
+
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="shrink-0 text-primary hover:text-primary hover:bg-primary/20"
+                              onClick={() => addSpellFromCompendium(spell)}
+                            >
+                              <Plus className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </Card>
+                      );
+                    })
+                  )}
+                  {availableCompendiumSpells.length > 50 && (
+                    <p className="text-xs text-muted-foreground text-center py-2">
+                      Mostrando 50 de {availableCompendiumSpells.length} magias. Use a busca para encontrar mais.
+                    </p>
                   )}
                 </div>
               </ScrollArea>
