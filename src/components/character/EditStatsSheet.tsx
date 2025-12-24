@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUpdateCharacter, CharacterDB } from "@/hooks/useCharacters";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { compressImage, getExtensionFromBlob } from "@/lib/imageCompression";
 
 interface EditStatsSheetProps {
   character: CharacterDB;
@@ -38,7 +39,7 @@ export function EditStatsSheet({ character, open, onOpenChange }: EditStatsSheet
       return;
     }
 
-    // Validate file size (max 5MB)
+    // Validate file size (max 5MB before compression)
     if (file.size > 5 * 1024 * 1024) {
       toast.error("A imagem deve ter no máximo 5MB");
       return;
@@ -47,15 +48,28 @@ export function EditStatsSheet({ character, open, onOpenChange }: EditStatsSheet
     setIsUploading(true);
 
     try {
-      // Create a unique file name
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${character.id}-${Date.now()}.${fileExt}`;
-      const filePath = `character-avatars/${fileName}`;
+      // Compress the image before upload (512x512 max, 80% quality)
+      toast.info("Comprimindo imagem...");
+      const compressedBlob = await compressImage(file, 512, 512, 0.8);
+      
+      // Get the appropriate extension based on compressed format
+      const fileExt = getExtensionFromBlob(compressedBlob);
+      
+      // Get current user for folder path
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error("Você precisa estar logado para enviar imagens");
+        return;
+      }
+      
+      // Create a unique file name with user folder for RLS
+      const fileName = `${user.id}/${character.id}-${Date.now()}.${fileExt}`;
 
-      // Upload to Supabase Storage
+      // Upload compressed image to Supabase Storage
       const { data, error } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file, {
+        .upload(fileName, compressedBlob, {
+          contentType: compressedBlob.type,
           cacheControl: '3600',
           upsert: true
         });
@@ -72,10 +86,12 @@ export function EditStatsSheet({ character, open, onOpenChange }: EditStatsSheet
       // Get public URL
       const { data: urlData } = supabase.storage
         .from('avatars')
-        .getPublicUrl(filePath);
+        .getPublicUrl(fileName);
 
       setImageUrl(urlData.publicUrl);
-      toast.success("Imagem enviada com sucesso!");
+      
+      const savedKB = ((file.size - compressedBlob.size) / 1024).toFixed(1);
+      toast.success(`Imagem enviada! Economizou ${savedKB}KB`);
     } catch (error: any) {
       console.error("Error uploading image:", error);
       toast.error("Erro ao enviar imagem. Tente usar uma URL externa.");
