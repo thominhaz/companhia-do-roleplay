@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import {
@@ -108,6 +108,7 @@ export function MenuScreen() {
   const { user, signOut } = useAuth();
   const { data: subscription } = useSubscription();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   
   const [profileOpen, setProfileOpen] = useState(false);
   const [changelogOpen, setChangelogOpen] = useState(false);
@@ -117,6 +118,17 @@ export function MenuScreen() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [discordOpen, setDiscordOpen] = useState(false);
+
+  // Handle Discord OAuth callback
+  useEffect(() => {
+    const discordStatus = searchParams.get('discord');
+    if (discordStatus === 'linked') {
+      toast.success("Discord vinculado com sucesso! 🎉");
+      searchParams.delete('discord');
+      setSearchParams(searchParams, { replace: true });
+      setDiscordOpen(true); // Open the Discord sheet to show linked status
+    }
+  }, [searchParams, setSearchParams]);
 
   const handleLogout = async () => {
     await signOut();
