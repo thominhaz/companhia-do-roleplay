@@ -3,12 +3,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCampaignMessages, useSendMessage, CampaignMessage } from "@/hooks/useChat";
+import { useCampaignImageUpload } from "@/hooks/useCampaignImageUpload";
 import { useAuth } from "@/hooks/useAuth";
 import { 
   MessageCircle, 
   Send, 
   Loader2,
-  Trash2
+  ImagePlus,
+  X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -29,11 +31,14 @@ interface CampaignChatSheetProps {
 export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignChatSheetProps) {
   const { user } = useAuth();
   const [message, setMessage] = useState("");
+  const [pendingImage, setPendingImage] = useState<{ file: File; preview: string } | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: messages, isLoading } = useCampaignMessages(campaignId);
   const sendMessage = useSendMessage();
+  const { uploadImage, isUploading, progress } = useCampaignImageUpload();
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -49,12 +54,51 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
     }
   }, [open]);
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setPendingImage({
+        file,
+        preview: e.target?.result as string,
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const removePendingImage = () => {
+    setPendingImage(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
   const handleSend = async () => {
-    if (!message.trim()) return;
+    if (!message.trim() && !pendingImage) return;
 
-    const content = message.trim();
+    let content = message.trim();
+    
+    // If there's an image, upload it first
+    if (pendingImage) {
+      const imageUrl = await uploadImage(pendingImage.file, { 
+        folder: `chat/${campaignId}`,
+        maxSizeKB: 500 
+      });
+      if (imageUrl) {
+        // Append image URL to message
+        content = content ? `${content}\n[img]${imageUrl}[/img]` : `[img]${imageUrl}[/img]`;
+      }
+      setPendingImage(null);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+
+    if (!content) return;
+
     setMessage("");
-
     await sendMessage.mutateAsync({
       campaignId,
       content,
@@ -94,6 +138,37 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
     if (dateStr === format(today, "yyyy-MM-dd")) return "Hoje";
     if (dateStr === format(yesterday, "yyyy-MM-dd")) return "Ontem";
     return format(date, "dd 'de' MMMM", { locale: ptBR });
+  };
+
+  // Parse message content to extract images
+  const parseMessageContent = (content: string) => {
+    const imgRegex = /\[img\](.*?)\[\/img\]/g;
+    const parts: { type: 'text' | 'image'; content: string }[] = [];
+    let lastIndex = 0;
+    let match;
+
+    while ((match = imgRegex.exec(content)) !== null) {
+      // Add text before the image
+      if (match.index > lastIndex) {
+        const text = content.slice(lastIndex, match.index).trim();
+        if (text) {
+          parts.push({ type: 'text', content: text });
+        }
+      }
+      // Add the image
+      parts.push({ type: 'image', content: match[1] });
+      lastIndex = match.index + match[0].length;
+    }
+
+    // Add remaining text
+    if (lastIndex < content.length) {
+      const text = content.slice(lastIndex).trim();
+      if (text) {
+        parts.push({ type: 'text', content: text });
+      }
+    }
+
+    return parts.length > 0 ? parts : [{ type: 'text' as const, content }];
   };
 
   const messageGroups = groupMessagesByDate(messages || []);
@@ -144,6 +219,7 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                   <div className="space-y-2">
                     {group.messages.map(msg => {
                       const isOwn = msg.user_id === user?.id;
+                      const parts = parseMessageContent(msg.content);
 
                       return (
                         <div
@@ -166,9 +242,23 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                                 {msg.profile?.display_name || 'Jogador'}
                               </p>
                             )}
-                            <p className="text-sm whitespace-pre-wrap break-words">
-                              {msg.content}
-                            </p>
+                            <div className="space-y-2">
+                              {parts.map((part, idx) => (
+                                part.type === 'image' ? (
+                                  <img 
+                                    key={idx}
+                                    src={part.content} 
+                                    alt="Imagem" 
+                                    className="rounded-lg max-w-full cursor-pointer"
+                                    onClick={() => window.open(part.content, '_blank')}
+                                  />
+                                ) : (
+                                  <p key={idx} className="text-sm whitespace-pre-wrap break-words">
+                                    {part.content}
+                                  </p>
+                                )
+                              ))}
+                            </div>
                             <p className={cn(
                               "text-[10px] mt-1",
                               isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
@@ -186,9 +276,51 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
           )}
         </div>
 
+        {/* Pending Image Preview */}
+        {pendingImage && (
+          <div className="px-4 pb-2">
+            <div className="relative inline-block">
+              <img 
+                src={pendingImage.preview} 
+                alt="Preview" 
+                className="h-20 rounded-lg object-cover"
+              />
+              {isUploading ? (
+                <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                  <Loader2 className="w-5 h-5 animate-spin text-white" />
+                </div>
+              ) : (
+                <Button
+                  variant="destructive"
+                  size="icon"
+                  className="absolute -top-2 -right-2 w-6 h-6"
+                  onClick={removePendingImage}
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Input Area */}
         <div className="p-4 border-t border-border flex-shrink-0">
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageSelect}
+            className="hidden"
+          />
           <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploading || sendMessage.isPending}
+            >
+              <ImagePlus className="w-5 h-5" />
+            </Button>
             <Input
               ref={inputRef}
               value={message}
@@ -196,13 +328,14 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
               onKeyPress={handleKeyPress}
               placeholder="Digite sua mensagem..."
               className="flex-1"
+              disabled={isUploading}
             />
             <Button 
               onClick={handleSend}
-              disabled={!message.trim() || sendMessage.isPending}
+              disabled={(!message.trim() && !pendingImage) || sendMessage.isPending || isUploading}
               size="icon"
             >
-              {sendMessage.isPending ? (
+              {sendMessage.isPending || isUploading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <Send className="w-4 h-4" />
