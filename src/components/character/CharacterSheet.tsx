@@ -28,8 +28,10 @@ import {
   Minus,
   Dices,
   History,
-  X
+  X,
+  Star
 } from "lucide-react";
+import advancementData from "@/data/rules/avanco-personagem.json";
 import { useCharacter, useUpdateCharacter } from "@/hooks/useCharacters";
 import { useCharacterActiveCombat } from "@/hooks/useCharacterCombat";
 import { useUpdateCombatant } from "@/hooks/useCombat";
@@ -251,6 +253,7 @@ export function CharacterSheet() {
   const [allSpellsData, setAllSpellsData] = useState<SpellData[]>([]);
   const [selectedSpellDetail, setSelectedSpellDetail] = useState<SpellData | null>(null);
   const [spellsLoading, setSpellsLoading] = useState(true);
+  const [xpInput, setXpInput] = useState('');
 
   const hasHistoryAccess = subscription?.limits.hasHistorico ?? false;
 
@@ -791,6 +794,126 @@ export function CharacterSheet() {
                   <p className="text-[10px] text-muted-foreground">Prof.</p>
                 </div>
               </div>
+
+              {/* XP & Level Up Section */}
+              {(() => {
+                const levels = advancementData.character_advancement.levels;
+                const currentLevel = character.level;
+                const nextLevel = Math.min(currentLevel + 1, 20);
+                const currentLevelData = levels.find(l => l.level === currentLevel);
+                const nextLevelData = levels.find(l => l.level === nextLevel);
+                const xpForNext = nextLevelData?.xp_required || 0;
+                const xpForCurrent = currentLevelData?.xp_required || 0;
+                const canLevelUp = character.experience >= xpForNext && currentLevel < 20;
+                const xpProgress = currentLevel < 20 
+                  ? Math.min(100, ((character.experience - xpForCurrent) / (xpForNext - xpForCurrent)) * 100)
+                  : 100;
+                
+                const handleAddXp = async () => {
+                  const value = parseInt(xpInput, 10);
+                  if (isNaN(value) || value <= 0) {
+                    toast.error('Digite um valor válido');
+                    return;
+                  }
+                  try {
+                    await updateCharacter.mutateAsync({
+                      id: character.id,
+                      experience: character.experience + value
+                    });
+                    toast.success(`+${value} XP adicionado!`);
+                    setXpInput('');
+                  } catch (error) {
+                    toast.error('Erro ao adicionar XP');
+                  }
+                };
+
+                return (
+                  <div className={`mt-4 rounded-xl p-3 border ${
+                    canLevelUp 
+                      ? 'bg-yellow-500/10 border-yellow-500/50' 
+                      : 'bg-primary/10 border-primary/30'
+                  }`}>
+                    <div className="flex items-center justify-between mb-2">
+                      <h3 className={`text-sm font-semibold flex items-center gap-2 ${
+                        canLevelUp ? 'text-yellow-400' : 'text-primary'
+                      }`}>
+                        <Star className="w-4 h-4" />
+                        Experiência
+                      </h3>
+                      <div className="text-right">
+                        <span className="text-lg font-bold">{character.experience.toLocaleString()}</span>
+                        <span className="text-xs text-muted-foreground ml-1">XP</span>
+                      </div>
+                    </div>
+
+                    {/* XP Progress Bar */}
+                    {currentLevel < 20 && (
+                      <div className="mb-3">
+                        <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
+                          <span>Nível {currentLevel}</span>
+                          <span>{xpForNext.toLocaleString()} XP</span>
+                        </div>
+                        <div className="h-2 bg-muted/50 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full transition-all ${canLevelUp ? 'bg-yellow-500' : 'bg-primary'}`}
+                            style={{ width: `${xpProgress}%` }}
+                          />
+                        </div>
+                        {!canLevelUp && (
+                          <p className="text-[10px] text-muted-foreground mt-1 text-center">
+                            Faltam {(xpForNext - character.experience).toLocaleString()} XP para nível {nextLevel}
+                          </p>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Add XP Input */}
+                    <div className="flex items-center gap-2 mb-2">
+                      <Input
+                        type="number"
+                        placeholder="Adicionar XP"
+                        value={xpInput}
+                        onChange={(e) => setXpInput(e.target.value)}
+                        className="flex-1 text-center h-9 text-sm"
+                        min="1"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' && xpInput) {
+                            handleAddXp();
+                          }
+                        }}
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-9 px-3 bg-primary/20 text-primary border-primary/30 hover:bg-primary/30"
+                        onClick={handleAddXp}
+                        disabled={!xpInput || updateCharacter.isPending}
+                      >
+                        <Plus className="w-4 h-4 mr-1" />
+                        XP
+                      </Button>
+                    </div>
+
+                    {/* Level Up Button */}
+                    {canLevelUp && (
+                      <Button
+                        className="w-full bg-yellow-500 hover:bg-yellow-600 text-yellow-950 font-bold"
+                        size="sm"
+                        onClick={() => setShowLevelUp(true)}
+                      >
+                        <TrendingUp className="w-4 h-4 mr-2" />
+                        Subir para Nível {nextLevel}!
+                      </Button>
+                    )}
+
+                    {currentLevel >= 20 && (
+                      <div className="text-center py-1">
+                        <span className="text-xs text-yellow-400 font-medium">Nível Máximo Alcançado!</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Conditions Section */}
               <div className="mt-4 bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
