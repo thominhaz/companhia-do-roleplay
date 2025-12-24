@@ -208,8 +208,11 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       speed: Math.floor(selectedRace.speed),
       proficiency_bonus: 2,
       attributes: finalAttributes,
-      saving_throws: {},
-      skills: data.selectedSkills.reduce((acc, skillId) => ({ ...acc, [skillId]: true }), {}),
+      saving_throws: selectedClass.saving_throw_proficiencies.reduce(
+        (acc, save) => ({ ...acc, [save]: { proficient: true } }), 
+        {}
+      ),
+      skills: data.selectedSkills.reduce((acc, skillId) => ({ ...acc, [skillId]: { proficient: true } }), {}),
       hit_dice: { total: 1, current: 1, diceType: `d${selectedClass.hit_die}` },
       death_saves: { successes: 0, failures: 0 },
       equipment: [

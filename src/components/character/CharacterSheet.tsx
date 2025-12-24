@@ -367,15 +367,38 @@ export function CharacterSheet() {
   }
 
   const attributes = character.attributes as Record<string, number>;
-  const saves = character.saving_throws as Record<string, { proficient: boolean }>;
-  const skills = character.skills as Record<string, { proficient?: boolean; expertise?: boolean }>;
+  const rawSaves = character.saving_throws as Record<string, { proficient: boolean } | boolean>;
+  const skills = character.skills as Record<string, { proficient?: boolean; expertise?: boolean } | boolean>;
   
-  // Calculate passive scores
+  // Infer saving throw proficiencies from class if not set
+  const classData = CLASSES.find(c => c.name === character.class);
+  const classSavingThrows = classData?.saving_throw_proficiencies || [];
+  
+  // Build saves object with fallback to class data
+  const saves: Record<string, { proficient: boolean }> = {};
+  ATTRIBUTES.forEach(attr => {
+    const savedData = rawSaves?.[attr];
+    if (typeof savedData === 'boolean') {
+      saves[attr] = { proficient: savedData };
+    } else if (savedData?.proficient) {
+      saves[attr] = { proficient: true };
+    } else if (classSavingThrows.includes(attr)) {
+      saves[attr] = { proficient: true };
+    } else {
+      saves[attr] = { proficient: false };
+    }
+  });
+  
+  // Calculate passive scores - support both old and new skill format
   const wisdomMod = getModifier(attributes.wisdom || 10);
   const intMod = getModifier(attributes.intelligence || 10);
-  const perceptionProf = skills?.perception?.proficient ? character.proficiency_bonus : 0;
-  const investigationProf = skills?.investigation?.proficient ? character.proficiency_bonus : 0;
-  const insightProf = skills?.insight?.proficient ? character.proficiency_bonus : 0;
+  const getSkillProficient = (skillId: string) => {
+    const skillData = skills?.[skillId];
+    return typeof skillData === 'boolean' ? skillData : (skillData?.proficient || false);
+  };
+  const perceptionProf = getSkillProficient('perception') ? character.proficiency_bonus : 0;
+  const investigationProf = getSkillProficient('investigation') ? character.proficiency_bonus : 0;
+  const insightProf = getSkillProficient('insight') ? character.proficiency_bonus : 0;
   
   const passivePerception = 10 + wisdomMod + perceptionProf;
   const passiveInvestigation = 10 + intMod + investigationProf;
@@ -1172,8 +1195,9 @@ export function CharacterSheet() {
                         const attrScore = attributes[skill.attr] || 10;
                         const mod = getModifier(attrScore);
                         const skillData = skills?.[skill.id];
-                        const isProficient = skillData?.proficient || false;
-                        const hasExpertise = skillData?.expertise || false;
+                        // Support both old format (true) and new format ({ proficient: true })
+                        const isProficient = typeof skillData === 'boolean' ? skillData : (skillData?.proficient || false);
+                        const hasExpertise = typeof skillData === 'object' ? (skillData?.expertise || false) : false;
                         const profBonus = (isProficient ? character.proficiency_bonus : 0) + (hasExpertise ? character.proficiency_bonus : 0);
                         const total = mod + profBonus;
                         return (
