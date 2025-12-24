@@ -624,6 +624,10 @@ export function CharacterSheet() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => setShowEditStats(true)}>
+                  <Edit3 className="w-4 h-4 mr-2" />
+                  Editar Personagem
+                </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => setShowLevelUp(true)}>
                   <TrendingUp className="w-4 h-4 mr-2" />
                   Subir de Nível
