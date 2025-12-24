@@ -162,13 +162,26 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
 
   const masterCampaigns = campaigns?.master || [];
 
-  // Quick dice buttons
+  // Quick dice buttons - combines same dice types (e.g., 1d4 + 1d4 = 2d4)
   const addDiceToExpression = (diceType: DiceType) => {
     const currentExpr = expression.trim();
     if (!currentExpr) {
       setExpression(`1${diceType}`);
     } else {
-      setExpression(`${currentExpr} + 1${diceType}`);
+      // Check if the last part of the expression is the same dice type
+      const regex = new RegExp(`(\\d+)${diceType}$`);
+      const match = currentExpr.match(regex);
+      
+      if (match) {
+        // Same dice type at the end - increment the count
+        const currentCount = parseInt(match[1], 10);
+        const newCount = currentCount + 1;
+        const newExpr = currentExpr.replace(regex, `${newCount}${diceType}`);
+        setExpression(newExpr);
+      } else {
+        // Different dice type or modifier - add new dice
+        setExpression(`${currentExpr} + 1${diceType}`);
+      }
     }
     inputRef.current?.focus();
   };
