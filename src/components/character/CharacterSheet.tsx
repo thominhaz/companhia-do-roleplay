@@ -992,7 +992,6 @@ export function CharacterSheet() {
                     size="sm"
                     className="h-10 px-3 bg-amber-500/20 text-amber-400 border-amber-500/30 hover:bg-amber-500/30"
                     onClick={() => setShowRestDialog('short')}
-                    disabled={hitDice.current === 0 || character.current_hp === character.max_hp}
                   >
                     <Moon className="w-4 h-4 mr-1" />
                     Curto
@@ -1769,7 +1768,7 @@ export function CharacterSheet() {
               <div className="space-y-4 pt-2">
                 {showRestDialog === 'short' ? (
                   <>
-                    <p>Durante um descanso curto (1 hora), você pode gastar dados de vida para recuperar HP.</p>
+                    <p>Durante um descanso curto (1 hora), você pode gastar dados de vida para recuperar HP ou apenas restaurar recursos de classe.</p>
                     <div className="bg-muted/50 rounded-lg p-3">
                       <p className="text-sm text-foreground mb-2">
                         Dados de vida disponíveis: <span className="font-bold text-primary">{hitDice.current}/{hitDice.total}</span> ({hitDice.diceType})
@@ -1781,17 +1780,25 @@ export function CharacterSheet() {
                         <label className="text-sm">Gastar dados:</label>
                         <Input
                           type="number"
-                          value={hitDiceToSpend || ''}
+                          value={hitDiceToSpend}
                           onChange={(e) => setHitDiceToSpend(Math.max(0, Math.min(hitDice.current, parseInt(e.target.value) || 0)))}
                           className="w-20 text-center"
                           min={0}
                           max={hitDice.current}
                         />
                         <span className="text-xs text-muted-foreground">
-                          (Recupera {hitDiceToSpend}{hitDice.diceType} + {conMod >= 0 ? '+' : ''}{conMod} por dado)
+                          {hitDiceToSpend > 0 
+                            ? `(Recupera ${hitDiceToSpend}${hitDice.diceType} + ${conMod >= 0 ? '+' : ''}${conMod} por dado)`
+                            : '(0 = só restaurar recursos)'
+                          }
                         </span>
                       </div>
                     </div>
+                    {character.current_hp === character.max_hp && hitDiceToSpend === 0 && (
+                      <p className="text-xs text-amber-400 italic">
+                        Você está com HP cheio. Descanso curto pode ser usado para restaurar habilidades de classe.
+                      </p>
+                    )}
                   </>
                 ) : (
                   <>
