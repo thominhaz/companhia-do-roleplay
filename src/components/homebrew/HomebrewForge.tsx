@@ -448,13 +448,20 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
                 key={type.type}
                 onClick={() => setSelectedType(type.type)}
                 className={cn(
-                  "flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all",
+                  "flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all duration-200",
+                  "hover:scale-105 active:scale-95",
                   isSelected 
-                    ? `bg-gradient-to-br ${type.color} text-white shadow-lg` 
+                    ? `bg-gradient-to-br ${type.color} text-white shadow-lg scale-105` 
                     : "bg-muted text-muted-foreground hover:bg-muted/80"
                 )}
+                style={isSelected ? {
+                  boxShadow: `0 0 20px hsl(var(--primary) / 0.4), 0 4px 12px hsl(0 0% 0% / 0.3)`
+                } : undefined}
               >
-                <Icon className={cn("w-5 h-5", isSelected && "drop-shadow-md")} />
+                <Icon className={cn(
+                  "w-5 h-5 transition-transform duration-200",
+                  isSelected && "drop-shadow-md scale-110"
+                )} />
                 <span className="text-[11px] font-medium leading-tight text-center">{type.label}</span>
               </button>
             );
