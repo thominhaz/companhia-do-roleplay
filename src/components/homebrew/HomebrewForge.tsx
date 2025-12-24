@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { 
   ArrowLeft, 
   Plus, 
@@ -446,9 +446,26 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
             return (
               <button
                 key={type.type}
-                onClick={() => setSelectedType(type.type)}
+                onClick={(e) => {
+                  // Ripple effect
+                  const btn = e.currentTarget;
+                  const rect = btn.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  const y = e.clientY - rect.top;
+                  const ripple = document.createElement('span');
+                  ripple.className = 'absolute rounded-full bg-white/40 animate-ping pointer-events-none';
+                  ripple.style.left = `${x}px`;
+                  ripple.style.top = `${y}px`;
+                  ripple.style.width = '20px';
+                  ripple.style.height = '20px';
+                  ripple.style.transform = 'translate(-50%, -50%)';
+                  btn.appendChild(ripple);
+                  setTimeout(() => ripple.remove(), 500);
+                  
+                  setSelectedType(type.type);
+                }}
                 className={cn(
-                  "flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all duration-200",
+                  "relative overflow-hidden flex flex-col items-center gap-1.5 p-3 rounded-xl transition-all duration-200",
                   "hover:scale-105 active:scale-95",
                   isSelected 
                     ? `bg-gradient-to-br ${type.color} text-white shadow-lg scale-105` 
