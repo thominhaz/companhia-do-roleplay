@@ -1025,3 +1025,170 @@ html.no-transitions *::after {
   transform: translateZ(20px);
   will-change: transform;
 }
+
+/* ========== MICRO-INTERACTIONS ========== */
+
+/* Interactive button with press effect */
+.btn-press {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-press:active {
+  transform: scale(0.95);
+}
+
+/* Hover lift effect */
+.hover-lift {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 30px hsl(var(--primary) / 0.2);
+}
+
+/* Interactive card with hover effects */
+.card-interactive {
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.card-interactive:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px hsl(0 0% 0% / 0.3);
+  border-color: hsl(var(--primary) / 0.3);
+}
+
+.card-interactive:active {
+  transform: translateY(0) scale(0.98);
+}
+
+/* Glow effect on hover */
+.hover-glow {
+  transition: box-shadow 0.3s ease;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 30px hsl(var(--primary) / 0.4);
+}
+
+/* Icon bounce on hover */
+.icon-bounce:hover svg {
+  animation: icon-bounce-animation 0.4s ease;
+}
+
+@keyframes icon-bounce-animation {
+  0%, 100% { transform: translateY(0); }
+  25% { transform: translateY(-4px); }
+  50% { transform: translateY(-2px); }
+  75% { transform: translateY(-3px); }
+}
+
+/* Shake animation for errors/damage */
+.shake {
+  animation: shake-animation 0.5s ease-in-out;
+}
+
+@keyframes shake-animation {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+/* Success pulse */
+.success-pulse {
+  animation: success-pulse-animation 0.6s ease-out;
+}
+
+@keyframes success-pulse-animation {
+  0% { 
+    box-shadow: 0 0 0 0 hsl(142 76% 36% / 0.7);
+  }
+  70% { 
+    box-shadow: 0 0 0 15px hsl(142 76% 36% / 0);
+  }
+  100% { 
+    box-shadow: 0 0 0 0 hsl(142 76% 36% / 0);
+  }
+}
+
+/* Skeleton loading animation */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--muted)) 0%,
+    hsl(var(--muted-foreground) / 0.1) 50%,
+    hsl(var(--muted)) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+}
+
+@keyframes skeleton-loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Stagger animation delays for lists */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+.stagger-5 { animation-delay: 0.25s; }
+.stagger-6 { animation-delay: 0.3s; }
+.stagger-7 { animation-delay: 0.35s; }
+.stagger-8 { animation-delay: 0.4s; }
+
+/* Number counter animation */
+.number-pop {
+  animation: number-pop-animation 0.3s ease-out;
+}
+
+@keyframes number-pop-animation {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
+/* HP bar damage flash */
+.damage-flash {
+  animation: damage-flash-animation 0.3s ease-out;
+}
+
+@keyframes damage-flash-animation {
+  0%, 100% { 
+    background-color: hsl(var(--destructive)); 
+  }
+  50% { 
+    background-color: hsl(0 0% 100%); 
+  }
+}
+
+/* Heal animation */
+.heal-glow {
+  animation: heal-glow-animation 0.5s ease-out;
+}
+
+@keyframes heal-glow-animation {
+  0% { 
+    box-shadow: 0 0 0 0 hsl(142 76% 36% / 0.8);
+  }
+  100% { 
+    box-shadow: 0 0 30px 10px hsl(142 76% 36% / 0);
+  }
+}
+
+/* Magic/spell cast effect */
+.magic-glow {
+  animation: magic-glow-animation 1s ease-in-out infinite alternate;
+}
+
+@keyframes magic-glow-animation {
+  0% { 
+    box-shadow: 0 0 10px hsl(var(--secondary) / 0.5);
+    filter: brightness(1);
+  }
+  100% { 
+    box-shadow: 0 0 25px hsl(var(--secondary) / 0.8);
+    filter: brightness(1.1);
+  }
+}
