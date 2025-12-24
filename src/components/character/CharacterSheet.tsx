@@ -375,18 +375,53 @@ export function CharacterSheet() {
   const proficiencies = character.proficiencies as { armor?: string[]; weapons?: string[]; tools?: string[] } || {};
   const languages = character.languages as string[] || [];
 
-  // HP modification handlers
+  // HP modification handlers - supports temporary HP absorption
   const handleHpChange = async (delta: number) => {
     if (delta === 0) return;
-    const newHp = Math.max(0, Math.min(character.max_hp, character.current_hp + delta));
+    
+    let newCurrentHp = character.current_hp;
+    let newTempHp = character.temporary_hp;
+    
+    if (delta < 0) {
+      // Taking damage - absorb with temp HP first
+      const damage = Math.abs(delta);
+      if (newTempHp > 0) {
+        if (newTempHp >= damage) {
+          // Temp HP absorbs all damage
+          newTempHp -= damage;
+        } else {
+          // Temp HP absorbs some, rest goes to HP
+          const remainingDamage = damage - newTempHp;
+          newTempHp = 0;
+          newCurrentHp = Math.max(0, newCurrentHp - remainingDamage);
+        }
+      } else {
+        newCurrentHp = Math.max(0, newCurrentHp - damage);
+      }
+    } else {
+      // Healing - only affects current HP, not temp
+      newCurrentHp = Math.min(character.max_hp, newCurrentHp + delta);
+    }
+    
     try {
       await updateCharacter.mutateAsync({
         id: character.id,
-        current_hp: newHp
+        current_hp: newCurrentHp,
+        temporary_hp: newTempHp
       });
       // Sync with combat
-      await syncHpWithCombat(newHp);
-      toast.success(delta > 0 ? `+${delta} HP` : `${delta} HP`);
+      await syncHpWithCombat(newCurrentHp);
+      
+      if (delta < 0) {
+        const absorbed = character.temporary_hp - newTempHp;
+        if (absorbed > 0) {
+          toast.success(`-${Math.abs(delta)} Dano (${absorbed} absorvido por HP temp)`);
+        } else {
+          toast.success(`-${Math.abs(delta)} Dano`);
+        }
+      } else {
+        toast.success(`+${delta} HP`);
+      }
       setHpModifier('');
     } catch (error) {
       toast.error('Erro ao atualizar HP');
@@ -395,11 +430,16 @@ export function CharacterSheet() {
 
   const handleHpModifierSubmit = (isDamage: boolean) => {
     const value = parseInt(hpModifier, 10);
-    if (isNaN(value) || value <= 0) {
+    if (isNaN(value) || value === 0) {
       toast.error('Digite um valor válido');
       return;
     }
-    handleHpChange(isDamage ? -value : value);
+    // Support negative values for damage
+    if (value < 0) {
+      handleHpChange(value); // Already negative = damage
+    } else {
+      handleHpChange(isDamage ? -value : value);
+    }
   };
 
   // Temporary HP handler
@@ -427,24 +467,30 @@ export function CharacterSheet() {
   const hitDice = character.hit_dice as { current: number; total: number; diceType: string };
   const conMod = getModifier(attributes.constitution || 10);
 
-  // Short rest handler
+  // Short rest handler - now supports 0 hit dice for resource recovery only
   const handleShortRest = async () => {
-    if (hitDiceToSpend <= 0 || hitDiceToSpend > hitDice.current) {
-      toast.error('Selecione uma quantidade válida de dados de vida');
+    // Allow 0 hit dice for resource-only recovery
+    if (hitDiceToSpend < 0 || hitDiceToSpend > hitDice.current) {
+      toast.error('Quantidade de dados inválida');
       return;
     }
 
-    // Roll hit dice
-    const diceValue = parseInt(hitDice.diceType.replace('d', ''), 10);
     let totalHealing = 0;
+    let newHitDice = hitDice;
     
-    for (let i = 0; i < hitDiceToSpend; i++) {
-      const roll = Math.floor(Math.random() * diceValue) + 1;
-      totalHealing += Math.max(1, roll + conMod);
+    if (hitDiceToSpend > 0) {
+      // Roll hit dice
+      const diceValue = parseInt(hitDice.diceType.replace('d', ''), 10);
+      
+      for (let i = 0; i < hitDiceToSpend; i++) {
+        const roll = Math.floor(Math.random() * diceValue) + 1;
+        totalHealing += Math.max(1, roll + conMod);
+      }
+      
+      newHitDice = { ...hitDice, current: hitDice.current - hitDiceToSpend };
     }
 
     const newHp = Math.min(character.max_hp, character.current_hp + totalHealing);
-    const newHitDice = { ...hitDice, current: hitDice.current - hitDiceToSpend };
 
     try {
       await updateCharacter.mutateAsync({
@@ -454,7 +500,12 @@ export function CharacterSheet() {
       });
       // Sync with combat
       await syncHpWithCombat(newHp);
-      toast.success(`Descanso Curto: +${totalHealing} HP (${hitDiceToSpend}${hitDice.diceType})`);
+      
+      if (hitDiceToSpend > 0) {
+        toast.success(`Descanso Curto: +${totalHealing} HP (${hitDiceToSpend}${hitDice.diceType})`);
+      } else {
+        toast.success('Descanso Curto: Recursos recuperados');
+      }
       setShowRestDialog(null);
       setHitDiceToSpend(0);
     } catch (error) {
@@ -1261,17 +1312,25 @@ export function CharacterSheet() {
                 </div>
               </div>
 
-              {/* Death Saves */}
+              {/* Death Saves - Now Clickable */}
               <div className="p-3 bg-muted/30 rounded-xl">
                 <p className="text-xs text-muted-foreground mb-2">Testes contra Morte</p>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-green-500 w-14">Sucessos</span>
                     {[0, 1, 2].map(i => (
-                      <div 
+                      <button 
                         key={i}
-                        className={`w-4 h-4 rounded-full border-2 ${
-                          i < ((character.death_saves as any)?.successes || 0) ? 'bg-green-500 border-green-500' : 'border-muted-foreground/50'
+                        onClick={async () => {
+                          const current = (character.death_saves as any)?.successes || 0;
+                          const newValue = i < current ? i : i + 1;
+                          await updateCharacter.mutateAsync({
+                            id: character.id,
+                            death_saves: { ...(character.death_saves as any), successes: Math.min(3, newValue) }
+                          });
+                        }}
+                        className={`w-5 h-5 rounded-full border-2 transition-colors hover:scale-110 ${
+                          i < ((character.death_saves as any)?.successes || 0) ? 'bg-green-500 border-green-500' : 'border-muted-foreground/50 hover:border-green-400'
                         }`}
                       />
                     ))}
@@ -1279,10 +1338,18 @@ export function CharacterSheet() {
                   <div className="flex items-center gap-2">
                     <span className="text-xs text-red-500 w-14">Falhas</span>
                     {[0, 1, 2].map(i => (
-                      <div 
+                      <button 
                         key={i}
-                        className={`w-4 h-4 rounded-full border-2 ${
-                          i < ((character.death_saves as any)?.failures || 0) ? 'bg-red-500 border-red-500' : 'border-muted-foreground/50'
+                        onClick={async () => {
+                          const current = (character.death_saves as any)?.failures || 0;
+                          const newValue = i < current ? i : i + 1;
+                          await updateCharacter.mutateAsync({
+                            id: character.id,
+                            death_saves: { ...(character.death_saves as any), failures: Math.min(3, newValue) }
+                          });
+                        }}
+                        className={`w-5 h-5 rounded-full border-2 transition-colors hover:scale-110 ${
+                          i < ((character.death_saves as any)?.failures || 0) ? 'bg-red-500 border-red-500' : 'border-muted-foreground/50 hover:border-red-400'
                         }`}
                       />
                     ))}
