@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { ArrowLeft, Dice6, RotateCcw, Sparkles, MessageSquare, Dices, Calculator, Trash2 } from "lucide-react";
+import { ArrowLeft, Dice6, RotateCcw, Sparkles, MessageSquare, Dices, Calculator, Trash2, TrendingUp, TrendingDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
@@ -33,6 +33,8 @@ interface DiceRollPart {
   results?: number[];
 }
 
+type RollMode = 'normal' | 'advantage' | 'disadvantage';
+
 interface RollResult {
   expression: string;
   parts: DiceRollPart[];
@@ -40,6 +42,8 @@ interface RollResult {
   timestamp: Date;
   isCritical?: boolean;
   isCriticalFail?: boolean;
+  rollMode?: RollMode;
+  advantageRolls?: { roll1: number; roll2: number; chosen: number };
 }
 
 const DICE_CONFIG: { type: DiceType; max: number; color: string; gradient: string }[] = [
@@ -172,6 +176,64 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
       setExpression(`${currentExpr} ${value >= 0 ? '+' : '-'} ${Math.abs(value)}`);
     }
     inputRef.current?.focus();
+  };
+
+  // Roll with advantage or disadvantage (2d20, take higher or lower)
+  const rollWithAdvantage = async (mode: 'advantage' | 'disadvantage', modifier: number = 0) => {
+    setIsRolling(true);
+
+    setTimeout(async () => {
+      const roll1 = Math.floor(Math.random() * 20) + 1;
+      const roll2 = Math.floor(Math.random() * 20) + 1;
+      const chosen = mode === 'advantage' ? Math.max(roll1, roll2) : Math.min(roll1, roll2);
+      const total = chosen + modifier;
+      
+      const isCritical = chosen === 20;
+      const isCriticalFail = chosen === 1;
+
+      const modeLabel = mode === 'advantage' ? 'Vantagem' : 'Desvantagem';
+      const expressionStr = modifier !== 0 
+        ? `1d20 (${modeLabel}) ${modifier >= 0 ? '+' : '-'} ${Math.abs(modifier)}`
+        : `1d20 (${modeLabel})`;
+
+      const result: RollResult = {
+        expression: expressionStr,
+        parts: [{
+          type: 'dice',
+          diceType: 'd20',
+          count: 1,
+          results: [chosen],
+        }],
+        total,
+        timestamp: new Date(),
+        isCritical,
+        isCriticalFail,
+        rollMode: mode,
+        advantageRolls: { roll1, roll2, chosen },
+      };
+
+      setCurrentResult(result);
+      setRollHistory((prev) => [result, ...prev.slice(0, 19)]);
+      setIsRolling(false);
+
+      // Send to Discord if enabled
+      if (sendToDiscord && selectedCampaignId && hasDiscordIntegration) {
+        const success = await sendDiceRoll(selectedCampaignId, {
+          username: user?.email?.split('@')[0] || 'Jogador',
+          diceType: 'd20',
+          diceCount: 2,
+          modifier,
+          results: [roll1, roll2],
+          total,
+          isCritical,
+          isCriticalFail,
+        });
+
+        if (success) {
+          toast.success("Rolagem enviada ao Discord!");
+        }
+      }
+    }, 600);
   };
 
   const rollDice = async () => {
@@ -335,6 +397,34 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
             
             {currentResult && !isRolling && (
               <div className="space-y-2 animate-fade-in">
+                {/* Show advantage/disadvantage rolls */}
+                {currentResult.advantageRolls && (
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <span className={cn(
+                      "px-3 py-1 rounded-lg font-mono text-lg",
+                      currentResult.advantageRolls.roll1 === currentResult.advantageRolls.chosen
+                        ? "bg-primary/20 text-primary ring-2 ring-primary/50"
+                        : "bg-muted/50 text-muted-foreground line-through"
+                    )}>
+                      {currentResult.advantageRolls.roll1}
+                    </span>
+                    <span className={cn(
+                      "px-3 py-1 rounded-lg font-mono text-lg",
+                      currentResult.advantageRolls.roll2 === currentResult.advantageRolls.chosen
+                        ? "bg-primary/20 text-primary ring-2 ring-primary/50"
+                        : "bg-muted/50 text-muted-foreground line-through"
+                    )}>
+                      {currentResult.advantageRolls.roll2}
+                    </span>
+                    {currentResult.rollMode === 'advantage' && (
+                      <TrendingUp className="w-5 h-5 text-emerald-400" />
+                    )}
+                    {currentResult.rollMode === 'disadvantage' && (
+                      <TrendingDown className="w-5 h-5 text-destructive" />
+                    )}
+                  </div>
+                )}
+                
                 <p className="text-sm font-mono">
                   {formatRollDetails(currentResult.parts)}
                 </p>
@@ -382,6 +472,45 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
           <p className="text-xs text-muted-foreground text-center">
             Use: d4, d6, d8, d10, d12, d20, d100 • Operadores: + -
           </p>
+        </section>
+
+        {/* Advantage/Disadvantage Quick Buttons */}
+        <section className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => rollWithAdvantage('advantage')}
+            disabled={isRolling}
+            className={cn(
+              "relative p-4 rounded-xl font-bold transition-all",
+              "bg-gradient-to-br from-emerald-500/20 to-emerald-600/10",
+              "border border-emerald-500/40 hover:border-emerald-400",
+              "hover:scale-[1.02] active:scale-[0.98]",
+              "disabled:opacity-50"
+            )}
+          >
+            <div className="flex items-center justify-center gap-2 text-emerald-400">
+              <TrendingUp className="w-5 h-5" />
+              <span>Vantagem</span>
+            </div>
+            <p className="text-xs text-emerald-400/70 mt-1">2d20, pega o maior</p>
+          </button>
+          
+          <button
+            onClick={() => rollWithAdvantage('disadvantage')}
+            disabled={isRolling}
+            className={cn(
+              "relative p-4 rounded-xl font-bold transition-all",
+              "bg-gradient-to-br from-destructive/20 to-destructive/10",
+              "border border-destructive/40 hover:border-destructive",
+              "hover:scale-[1.02] active:scale-[0.98]",
+              "disabled:opacity-50"
+            )}
+          >
+            <div className="flex items-center justify-center gap-2 text-destructive">
+              <TrendingDown className="w-5 h-5" />
+              <span>Desvantagem</span>
+            </div>
+            <p className="text-xs text-destructive/70 mt-1">2d20, pega o menor</p>
+          </button>
         </section>
 
         {/* Quick Add Tabs */}
