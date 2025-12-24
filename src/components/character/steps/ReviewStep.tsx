@@ -25,9 +25,15 @@ export function ReviewStep({ data }: ReviewStepProps) {
   // Calculate final attributes with racial bonuses
   const getFinalScore = (attr: Attribute): number => {
     let score = data.attributes[attr];
+    // Fixed racial bonuses
     if (selectedRace?.ability_bonuses[attr]) {
       score += (selectedRace.ability_bonuses[attr] as number) || 0;
     }
+    // Chosen racial bonuses (for races like Half-Elf)
+    if (data.abilityBonusChoices?.includes(attr)) {
+      score += 1;
+    }
+    // Subrace bonuses
     if (selectedSubrace?.ability_bonuses[attr]) {
       score += (selectedSubrace.ability_bonuses[attr] as number) || 0;
     }

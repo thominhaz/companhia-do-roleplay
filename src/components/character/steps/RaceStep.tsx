@@ -37,7 +37,7 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
         {RACES.map((race) => (
           <button
             key={race.id}
-            onClick={() => updateData({ race: race.id, subrace: null })}
+            onClick={() => updateData({ race: race.id, subrace: null, abilityBonusChoices: [] })}
             className={cn(
               "w-full p-4 rounded-xl border text-left transition-all",
               data.race === race.id
@@ -92,7 +92,7 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
               return (
                 <button
                   key={race.id}
-                  onClick={() => updateData({ race: race.id, subrace: null })}
+                  onClick={() => updateData({ race: race.id, subrace: null, abilityBonusChoices: [] })}
                   className={cn(
                     "w-full p-4 rounded-xl border text-left transition-all",
                     data.race === race.id
