@@ -15,58 +15,61 @@ interface SpellsStepProps {
   updateData: (updates: Partial<WizardData>) => void;
 }
 
+// New unified spell interface based on magias.json
 interface Spell {
-  id: string;
   name: string;
-  name_en: string;
+  originalName: string;
   level: number;
   school: string;
-  casting_time: string;
-  range: number;
-  range_type: string;
+  castingTime: string;
+  range: string;
   components: {
     verbal: boolean;
     somatic: boolean;
     material: boolean;
-    material_description?: string;
+    materialDescription?: string;
   };
   duration: string;
   concentration: boolean;
   ritual: boolean;
-  description_markdown: string;
+  description: string;
+  higherLevels: string | null;
+  classes: string[];
+  isHomebrew?: boolean;
 }
 
 const SCHOOLS: Record<string, string> = {
-  abjuration: "Abjuração",
-  conjuration: "Conjuração",
-  divination: "Adivinhação",
-  enchantment: "Encantamento",
-  evocation: "Evocação",
-  illusion: "Ilusão",
-  necromancy: "Necromancia",
-  transmutation: "Transmutação",
+  "Abjuração": "Abjuração",
+  "Conjuração": "Conjuração",
+  "Adivinhação": "Adivinhação",
+  "Encantamento": "Encantamento",
+  "Evocação": "Evocação",
+  "Ilusão": "Ilusão",
+  "Necromancia": "Necromancia",
+  "Transmutação": "Transmutação",
+};
+
+// Map class IDs to Portuguese class names used in spell data
+const CLASS_NAME_MAP: Record<string, string> = {
+  wizard: 'Mago',
+  sorcerer: 'Feiticeiro',
+  bard: 'Bardo',
+  cleric: 'Clérigo',
+  druid: 'Druida',
+  warlock: 'Bruxo',
+  paladin: 'Paladino',
+  ranger: 'Patrulheiro',
 };
 
 // Spellcasting classes and their cantrips/spells known at level 1
-const SPELLCASTING_CLASSES: Record<string, { cantrips: number; spells: number; spellList: string[] }> = {
-  wizard: { cantrips: 3, spells: 6, spellList: ['wizard'] },
-  sorcerer: { cantrips: 4, spells: 2, spellList: ['sorcerer'] },
-  bard: { cantrips: 2, spells: 4, spellList: ['bard'] },
-  cleric: { cantrips: 3, spells: 0, spellList: ['cleric'] }, // Cleric prepares spells
-  druid: { cantrips: 2, spells: 0, spellList: ['druid'] }, // Druid prepares spells
-  warlock: { cantrips: 2, spells: 2, spellList: ['warlock'] },
+const SPELLCASTING_CLASSES: Record<string, { cantrips: number; spells: number }> = {
+  wizard: { cantrips: 3, spells: 6 },
+  sorcerer: { cantrips: 4, spells: 2 },
+  bard: { cantrips: 2, spells: 4 },
+  cleric: { cantrips: 3, spells: 0 }, // Cleric prepares spells
+  druid: { cantrips: 2, spells: 0 }, // Druid prepares spells
+  warlock: { cantrips: 2, spells: 2 },
 };
-
-// Spell files will be loaded dynamically
-const spellFiles = [
-  () => import("@/data/spells/a-c.json"),
-  () => import("@/data/spells/d-f.json"),
-  () => import("@/data/spells/g-i.json"),
-  () => import("@/data/spells/j-l.json"),
-  () => import("@/data/spells/n-p.json"),
-  () => import("@/data/spells/q-s.json"),
-  () => import("@/data/spells/t-z.json"),
-];
 
 export function SpellsStep({ data, updateData }: SpellsStepProps) {
   const [allSpells, setAllSpells] = useState<Spell[]>([]);
@@ -79,6 +82,7 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
 
   const selectedClass = CLASSES.find(c => c.id === data.class);
   const spellcastingInfo = SPELLCASTING_CLASSES[data.class];
+  const className = CLASS_NAME_MAP[data.class] || '';
   
   const selectedCantrips = data.selectedCantrips || [];
   const selectedSpells = data.selectedSpells || [];
@@ -86,15 +90,8 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
   useEffect(() => {
     const loadSpells = async () => {
       try {
-        const results = await Promise.all(spellFiles.map(fn => fn()));
-        const spells: Spell[] = [];
-        results.forEach((mod: any) => {
-          if (mod.default?.magias) {
-            spells.push(...mod.default.magias);
-          } else if (mod.magias) {
-            spells.push(...mod.magias);
-          }
-        });
+        const mod = await import("@/data/spells/magias.json");
+        const spells = mod.default as Spell[];
         setAllSpells(spells);
       } catch (error) {
         console.error("Error loading spells:", error);
@@ -110,15 +107,12 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
     return homebrewSpells.map(hb => {
       const spellData = hb.data as HomebrewSpellData;
       return {
-        id: `homebrew-${hb.id}`,
         name: `${hb.icon} ${hb.name}`,
-        name_en: hb.name,
+        originalName: hb.name,
         level: spellData.level || 0,
-        school: spellData.school || 'evocation',
-        casting_time: spellData.casting_time || '1 ação',
-        range: parseInt(spellData.range?.replace(/\D/g, '') || '0') || 0,
-        range_type: spellData.range?.includes('Pessoal') ? 'self' : 
-                    spellData.range?.includes('Toque') ? 'touch' : 'ranged',
+        school: spellData.school || 'Evocação',
+        castingTime: spellData.casting_time || '1 ação',
+        range: spellData.range || 'Pessoal',
         components: {
           verbal: spellData.components?.includes('V') || false,
           somatic: spellData.components?.includes('S') || false,
@@ -127,43 +121,46 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
         duration: spellData.duration || 'Instantânea',
         concentration: spellData.duration?.toLowerCase().includes('concentração') || false,
         ritual: false,
-        description_markdown: hb.description || '',
+        description: hb.description || '',
+        higherLevels: null,
+        classes: [], // Homebrew spells available to all
         isHomebrew: true,
-      } as Spell & { isHomebrew?: boolean };
+      };
     });
   }, [homebrewSpells]);
 
-  // Filter spells by level (cantrips = 0, 1st level spells = 1) - include homebrew
+  // Filter spells by level and class
   const cantrips = useMemo(() => {
-    const srdCantrips = allSpells.filter(s => s.level === 0);
+    const srdCantrips = allSpells.filter(s => 
+      s.level === 0 && 
+      (s.classes.includes(className) || className === '')
+    );
     const homebrewCantrips = convertedHomebrewSpells.filter(s => s.level === 0);
-    const combined = [...homebrewCantrips, ...srdCantrips]; // Homebrew first
+    const combined = [...homebrewCantrips, ...srdCantrips];
     return combined.filter(s => 
       search === '' || s.name.toLowerCase().includes(search.toLowerCase())
     ).sort((a, b) => {
-      // Homebrew first, then alphabetical
-      const aIsHomebrew = a.id.startsWith('homebrew-');
-      const bIsHomebrew = b.id.startsWith('homebrew-');
-      if (aIsHomebrew && !bIsHomebrew) return -1;
-      if (!aIsHomebrew && bIsHomebrew) return 1;
+      if (a.isHomebrew && !b.isHomebrew) return -1;
+      if (!a.isHomebrew && b.isHomebrew) return 1;
       return a.name.localeCompare(b.name, 'pt-BR');
     });
-  }, [allSpells, convertedHomebrewSpells, search]);
+  }, [allSpells, convertedHomebrewSpells, search, className]);
 
   const firstLevelSpells = useMemo(() => {
-    const srdSpells = allSpells.filter(s => s.level === 1);
+    const srdSpells = allSpells.filter(s => 
+      s.level === 1 && 
+      (s.classes.includes(className) || className === '')
+    );
     const homebrewFirst = convertedHomebrewSpells.filter(s => s.level === 1);
     const combined = [...homebrewFirst, ...srdSpells];
     return combined.filter(s => 
       search === '' || s.name.toLowerCase().includes(search.toLowerCase())
     ).sort((a, b) => {
-      const aIsHomebrew = a.id.startsWith('homebrew-');
-      const bIsHomebrew = b.id.startsWith('homebrew-');
-      if (aIsHomebrew && !bIsHomebrew) return -1;
-      if (!aIsHomebrew && bIsHomebrew) return 1;
+      if (a.isHomebrew && !b.isHomebrew) return -1;
+      if (!a.isHomebrew && b.isHomebrew) return 1;
       return a.name.localeCompare(b.name, 'pt-BR');
     });
-  }, [allSpells, convertedHomebrewSpells, search]);
+  }, [allSpells, convertedHomebrewSpells, search, className]);
 
   if (!spellcastingInfo) {
     return (
@@ -177,27 +174,27 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
     );
   }
 
-  const handleToggleCantrip = (spellId: string) => {
+  const handleToggleCantrip = (spellName: string) => {
     const current = [...selectedCantrips];
-    const index = current.indexOf(spellId);
+    const index = current.indexOf(spellName);
     
     if (index > -1) {
       current.splice(index, 1);
     } else if (current.length < spellcastingInfo.cantrips) {
-      current.push(spellId);
+      current.push(spellName);
     }
     
     updateData({ selectedCantrips: current });
   };
 
-  const handleToggleSpell = (spellId: string) => {
+  const handleToggleSpell = (spellName: string) => {
     const current = [...selectedSpells];
-    const index = current.indexOf(spellId);
+    const index = current.indexOf(spellName);
     
     if (index > -1) {
       current.splice(index, 1);
     } else if (current.length < spellcastingInfo.spells) {
-      current.push(spellId);
+      current.push(spellName);
     }
     
     updateData({ selectedSpells: current });
@@ -245,13 +242,13 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
           </div>
           <div className="space-y-2 max-h-[200px] overflow-y-auto">
             {cantrips.map((spell) => {
-              const isSelected = selectedCantrips.includes(spell.id);
+              const isSelected = selectedCantrips.includes(spell.name);
               const isDisabled = !isSelected && selectedCantrips.length >= spellcastingInfo.cantrips;
 
               return (
                 <button
-                  key={spell.id}
-                  onClick={() => handleToggleCantrip(spell.id)}
+                  key={spell.name}
+                  onClick={() => handleToggleCantrip(spell.name)}
                   disabled={isDisabled}
                   className={cn(
                     "w-full glass rounded-xl p-3 text-left transition-all flex items-center gap-3",
@@ -272,7 +269,7 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                       <h4 className="text-sm font-semibold text-foreground truncate">
                         {spell.name}
                       </h4>
-                      {spell.id.startsWith('homebrew-') ? (
+                      {spell.isHomebrew ? (
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-primary/20 text-primary border-primary/30">
                           <Sword className="w-2.5 h-2.5 mr-0.5" />
                           Homebrew
@@ -292,7 +289,7 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                       </Tooltip>
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {SCHOOLS[spell.school]} • {spell.casting_time}
+                      {spell.school} • {spell.castingTime}
                     </p>
                   </div>
                 </button>
@@ -313,13 +310,13 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
           </div>
           <div className="space-y-2 max-h-[200px] overflow-y-auto">
             {firstLevelSpells.map((spell) => {
-              const isSelected = selectedSpells.includes(spell.id);
+              const isSelected = selectedSpells.includes(spell.name);
               const isDisabled = !isSelected && selectedSpells.length >= spellcastingInfo.spells;
 
               return (
                 <button
-                  key={spell.id}
-                  onClick={() => handleToggleSpell(spell.id)}
+                  key={spell.name}
+                  onClick={() => handleToggleSpell(spell.name)}
                   disabled={isDisabled}
                   className={cn(
                     "w-full glass rounded-xl p-3 text-left transition-all flex items-center gap-3",
@@ -340,7 +337,7 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                       <h4 className="text-sm font-semibold text-foreground truncate">
                         {spell.name}
                       </h4>
-                      {spell.id.startsWith('homebrew-') ? (
+                      {spell.isHomebrew ? (
                         <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-primary/20 text-primary border-primary/30">
                           <Sword className="w-2.5 h-2.5 mr-0.5" />
                           Homebrew
@@ -362,7 +359,7 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                       />
                     </div>
                     <p className="text-xs text-muted-foreground">
-                      {SCHOOLS[spell.school]} • {spell.casting_time}
+                      {spell.school} • {spell.castingTime}
                     </p>
                   </div>
                 </button>
@@ -379,13 +376,13 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
             <ScrollArea className="h-full pr-4">
               <SheetHeader className="pb-4">
                 <SheetTitle className="text-left">{selectedSpell.name}</SheetTitle>
-                <p className="text-xs text-muted-foreground">{selectedSpell.name_en}</p>
+                <p className="text-xs text-muted-foreground">{selectedSpell.originalName}</p>
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   <Badge variant="outline" className="text-xs">
                     {selectedSpell.level === 0 ? "Truque" : `${selectedSpell.level}º Nível`}
                   </Badge>
                   <Badge className="text-xs bg-primary/20 text-primary">
-                    {SCHOOLS[selectedSpell.school]}
+                    {selectedSpell.school}
                   </Badge>
                 </div>
               </SheetHeader>
@@ -394,15 +391,11 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                 <div className="grid grid-cols-2 gap-2 text-sm">
                   <div className="glass rounded-lg p-2">
                     <span className="text-xs text-muted-foreground">Tempo</span>
-                    <p className="font-medium">{selectedSpell.casting_time}</p>
+                    <p className="font-medium">{selectedSpell.castingTime}</p>
                   </div>
                   <div className="glass rounded-lg p-2">
                     <span className="text-xs text-muted-foreground">Alcance</span>
-                    <p className="font-medium">
-                      {selectedSpell.range_type === 'self' ? 'Pessoal' : 
-                       selectedSpell.range_type === 'touch' ? 'Toque' : 
-                       `${selectedSpell.range}m`}
-                    </p>
+                    <p className="font-medium">{selectedSpell.range}</p>
                   </div>
                   <div className="glass rounded-lg p-2">
                     <span className="text-xs text-muted-foreground">Duração</span>
@@ -420,14 +413,28 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                   </div>
                 </div>
 
+                {selectedSpell.components.material && selectedSpell.components.materialDescription && (
+                  <div className="glass rounded-lg p-2">
+                    <span className="text-xs text-muted-foreground">Materiais</span>
+                    <p className="text-sm">{selectedSpell.components.materialDescription}</p>
+                  </div>
+                )}
+
                 <div>
                   <h4 className="text-sm font-semibold mb-2">Descrição</h4>
                   <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">
-                    {selectedSpell.description_markdown
-                      .replace(/\*\*/g, "")
-                      .replace(/###\s*/g, "\n")}
+                    {selectedSpell.description}
                   </p>
                 </div>
+
+                {selectedSpell.higherLevels && (
+                  <div className="glass rounded-lg p-3">
+                    <p className="text-xs text-primary font-medium mb-1">Em Níveis Superiores</p>
+                    <p className="text-sm text-muted-foreground">
+                      {selectedSpell.higherLevels}
+                    </p>
+                  </div>
+                )}
               </div>
             </ScrollArea>
           )}

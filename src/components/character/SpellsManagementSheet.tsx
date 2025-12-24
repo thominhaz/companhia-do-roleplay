@@ -24,22 +24,25 @@ interface SpellData {
   prepared?: boolean;
 }
 
+// New unified spell interface based on magias.json
 interface FullSpellData {
   name: string;
-  name_en?: string;
+  originalName?: string;
   level: number;
   school?: string;
-  casting_time?: string;
-  range?: string | number;
-  components?: string | { verbal?: boolean; somatic?: boolean; material?: boolean; material_description?: string };
-  materials?: string;
+  castingTime?: string;
+  range?: string;
+  components?: {
+    verbal?: boolean;
+    somatic?: boolean;
+    material?: boolean;
+    materialDescription?: string;
+  };
   duration?: string;
   concentration?: boolean;
   ritual?: boolean;
   description?: string;
-  description_markdown?: string;
-  higher_levels?: string;
-  at_higher_levels?: string;
+  higherLevels?: string | null;
   classes?: string[];
 }
 
@@ -63,8 +66,8 @@ const formatRange = (range: FullSpellData['range']): string => {
 };
 
 const getMaterialDescription = (components: FullSpellData['components']): string | null => {
-  if (!components || typeof components === 'string') return null;
-  return components.material_description || null;
+  if (!components) return null;
+  return components.materialDescription || null;
 };
 
 const SPELL_SCHOOLS: Record<string, { name: string; color: string; icon: string }> = {
@@ -136,25 +139,13 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
 
   const { homebrewContent: homebrewSpells } = useHomebrew('spell');
 
-  // Load all spells data
+  // Load all spells data from unified magias.json
   useEffect(() => {
     const loadSpells = async () => {
       try {
-        const spellFiles: Promise<any>[] = [
-          import('@/data/spells/a-c.json'),
-          import('@/data/spells/d-f.json'),
-          import('@/data/spells/g-i.json'),
-          import('@/data/spells/j-l.json'),
-          import('@/data/spells/n-p.json'),
-          import('@/data/spells/q-s.json'),
-          import('@/data/spells/t-z.json'),
-        ];
-        const results = await Promise.all(spellFiles);
-        const allSpells = results.flatMap(result => {
-          const data = result.default || result;
-          return data.magias || data;
-        });
-        setAllSpellsData(allSpells as FullSpellData[]);
+        const mod = await import('@/data/spells/magias.json');
+        const spells = mod.default as FullSpellData[];
+        setAllSpellsData(spells);
       } catch (error) {
         console.error('Error loading spells:', error);
       }
@@ -208,11 +199,9 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
       const spellNameNormalized = spell.name.toLowerCase().replace(/_/g, ' ').trim();
       const fullData = allSpellsData.find(s => {
         const dbName = s.name?.toLowerCase().trim() || '';
-        const dbNameEn = s.name_en?.toLowerCase().trim() || '';
-        const dbId = (s as any).id?.toLowerCase().replace(/_/g, ' ').trim() || '';
+        const dbOriginalName = s.originalName?.toLowerCase().trim() || '';
         return dbName === spellNameNormalized || 
-               dbNameEn === spellNameNormalized ||
-               dbId === spellNameNormalized;
+               dbOriginalName === spellNameNormalized;
       });
       return {
         ...spell,
@@ -248,12 +237,10 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
     return allSpellsData.filter(spell => {
       // Check if already known
       const spellNameLower = spell.name?.toLowerCase().trim() || '';
-      const spellNameEnLower = spell.name_en?.toLowerCase().trim() || '';
-      const spellId = (spell as any).id?.toLowerCase().replace(/_/g, ' ').trim() || '';
+      const spellOriginalNameLower = spell.originalName?.toLowerCase().trim() || '';
       
       const isKnown = existingSpellNames.has(spellNameLower) || 
-                      existingSpellNames.has(spellNameEnLower) ||
-                      existingSpellNames.has(spellId);
+                      existingSpellNames.has(spellOriginalNameLower);
       if (isKnown) return false;
 
       // Check level filter
@@ -273,7 +260,7 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
       if (compendiumSearch) {
         const searchLower = compendiumSearch.toLowerCase();
         return spellNameLower.includes(searchLower) || 
-               spellNameEnLower.includes(searchLower) ||
+               spellOriginalNameLower.includes(searchLower) ||
                (spell.school?.toLowerCase().includes(searchLower));
       }
 
@@ -405,10 +392,10 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
 
             {spell.fullData && (
               <div className="flex items-center gap-3 mt-2 text-[10px] text-muted-foreground">
-                {spell.fullData.casting_time && (
+                {spell.fullData.castingTime && (
                   <span className="flex items-center gap-0.5">
                     <Clock className="w-2.5 h-2.5" />
-                    {spell.fullData.casting_time}
+                    {spell.fullData.castingTime}
                   </span>
                 )}
                 {spell.fullData.range && (
@@ -900,8 +887,8 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                 <div className="flex items-start justify-between">
                   <div>
                     <SheetTitle className="text-lg">{selectedSpell.name}</SheetTitle>
-                    {selectedSpell.name_en && (
-                      <p className="text-xs text-muted-foreground mt-0.5">{selectedSpell.name_en}</p>
+                    {selectedSpell.originalName && (
+                      <p className="text-xs text-muted-foreground mt-0.5">{selectedSpell.originalName}</p>
                     )}
                   </div>
                   <Button variant="ghost" size="icon" onClick={() => setSelectedSpell(null)}>
@@ -944,7 +931,7 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                         <Clock className="w-4 h-4 text-muted-foreground" />
                         <div>
                           <p className="text-[10px] text-muted-foreground uppercase">Tempo</p>
-                          <p className="text-xs font-medium">{selectedSpell.casting_time || "—"}</p>
+                          <p className="text-xs font-medium">{selectedSpell.castingTime || "—"}</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
@@ -972,12 +959,12 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                   </Card>
 
                   {/* Materials */}
-                  {(selectedSpell.materials || getMaterialDescription(selectedSpell.components)) && (
+                  {getMaterialDescription(selectedSpell.components) && (
                     <Card className="p-3 bg-amber-500/10 border-amber-500/30">
                       <div className="flex items-start gap-2">
                         <FlaskConical className="w-4 h-4 text-amber-500 mt-0.5 shrink-0" />
                         <p className="text-xs text-amber-200">
-                          {selectedSpell.materials || getMaterialDescription(selectedSpell.components)}
+                          {getMaterialDescription(selectedSpell.components)}
                         </p>
                       </div>
                     </Card>
@@ -987,19 +974,16 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                   <div>
                     <h4 className="text-sm font-semibold mb-2">Descrição</h4>
                     <div className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                      {(selectedSpell.description_markdown || selectedSpell.description || "Sem descrição.")
-                        .replace(/\*\*([^*]+)\*\*/g, '$1')
-                        .replace(/### /g, '')
-                        .replace(/- /g, '• ')}
+                      {(selectedSpell.description || "Sem descrição.")}
                     </div>
                   </div>
 
                   {/* Higher Levels */}
-                  {(selectedSpell.higher_levels || selectedSpell.at_higher_levels) && (
+                  {selectedSpell.higherLevels && (
                     <Card className="p-3 bg-primary/10 border-primary/30">
                       <h4 className="text-xs font-semibold mb-1 text-primary">Em Níveis Superiores</h4>
                       <p className="text-xs text-muted-foreground">
-                        {selectedSpell.higher_levels || selectedSpell.at_higher_levels}
+                        {selectedSpell.higherLevels}
                       </p>
                     </Card>
                   )}
