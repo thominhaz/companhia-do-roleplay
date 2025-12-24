@@ -69,8 +69,8 @@ export function CreateCampaignSheet({ open, onOpenChange }: CreateCampaignSheetP
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
-        <SheetHeader className="text-left mb-6">
+      <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl flex flex-col">
+        <SheetHeader className="text-left mb-4 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
               <Wand2 className="w-6 h-6 text-primary" />
@@ -82,7 +82,7 @@ export function CreateCampaignSheet({ open, onOpenChange }: CreateCampaignSheetP
           </div>
         </SheetHeader>
 
-        <div className="space-y-6">
+        <div className="flex-1 overflow-y-auto space-y-4 pb-4">
           {/* Image Upload */}
           <div className="space-y-2">
             <Label>Imagem de Capa</Label>
@@ -95,7 +95,7 @@ export function CreateCampaignSheet({ open, onOpenChange }: CreateCampaignSheetP
             />
             
             {imagePreview ? (
-              <div className="relative rounded-xl overflow-hidden aspect-video bg-muted">
+              <div className="relative rounded-xl overflow-hidden h-40 bg-muted">
                 <img 
                   src={imagePreview} 
                   alt="Preview" 
@@ -123,7 +123,7 @@ export function CreateCampaignSheet({ open, onOpenChange }: CreateCampaignSheetP
               <button
                 onClick={() => fileInputRef.current?.click()}
                 className={cn(
-                  "w-full aspect-video rounded-xl border-2 border-dashed border-muted-foreground/30",
+                  "w-full h-32 rounded-xl border-2 border-dashed border-muted-foreground/30",
                   "flex flex-col items-center justify-center gap-2",
                   "hover:border-primary/50 hover:bg-muted/30 transition-colors"
                 )}
@@ -152,7 +152,7 @@ export function CreateCampaignSheet({ open, onOpenChange }: CreateCampaignSheetP
               placeholder="Descreva a premissa da sua campanha..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              className="bg-muted/50 border-0 min-h-[100px]"
+              className="bg-muted/50 border-0 min-h-[80px]"
             />
           </div>
 
@@ -164,7 +164,9 @@ export function CreateCampaignSheet({ open, onOpenChange }: CreateCampaignSheetP
               <li>• Use as notas para guardar informações importantes</li>
             </ul>
           </div>
+        </div>
 
+        <div className="flex-shrink-0 pt-4 border-t border-border">
           <Button 
             onClick={handleCreate} 
             disabled={!name.trim() || createCampaign.isPending || isUploading}
