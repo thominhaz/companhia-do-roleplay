@@ -145,12 +145,13 @@ serve(async (req) => {
     console.log(`Synced role ${roleToAdd} for Discord user ${discordUser.id}`);
 
     // Redirect back to the app with success message
-    const appUrl = Deno.env.get('SITE_URL') || 'https://go20.lovable.app';
+    // Use the app's production URL - the app uses tab navigation, not routes
+    const appUrl = 'https://go20.lovable.app';
     
     return new Response(null, {
       status: 302,
       headers: {
-        'Location': `${appUrl}/menu?discord=linked`,
+        'Location': `${appUrl}/?discord=linked`,
       },
     });
 
