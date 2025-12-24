@@ -17,6 +17,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AnimatedDice } from "@/components/ui/animated-dice";
 
 interface DiceRollerProps {
   onBack: () => void;
@@ -373,30 +374,37 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
       </header>
 
       <main className="px-4 py-4 max-w-lg mx-auto space-y-5">
-        {/* Current Result Display */}
+        {/* Current Result Display with 3D Dice */}
         <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-card via-card to-muted/30 border border-border/50 p-6">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-secondary/5" />
-          <div className="relative text-center">
+          <div className="relative flex flex-col items-center">
+            {/* Animated 3D Dice */}
+            <div className="mb-4">
+              <AnimatedDice
+                isRolling={isRolling}
+                result={currentResult?.total}
+                diceType={currentResult?.parts.find(p => p.type === 'dice')?.diceType || 'd20'}
+                size="lg"
+                isCritical={currentResult?.isCritical}
+                isCriticalFail={currentResult?.isCriticalFail}
+              />
+            </div>
+
+            {/* Total Display */}
             <div
               className={cn(
-                "text-7xl font-black mb-3 transition-all duration-300 tabular-nums",
-                isRolling && "animate-pulse scale-110 text-muted-foreground",
+                "text-5xl font-black mb-3 transition-all duration-300 tabular-nums",
+                isRolling && "animate-pulse text-muted-foreground",
                 currentResult?.isCritical && "text-gold drop-shadow-[0_0_20px_hsl(var(--gold)/0.5)]",
                 currentResult?.isCriticalFail && "text-destructive",
                 !isRolling && !currentResult?.isCritical && !currentResult?.isCriticalFail && "text-foreground"
               )}
             >
-              {isRolling ? (
-                <span className="inline-flex items-center gap-1">
-                  <Dice6 className="w-12 h-12 animate-spin" />
-                </span>
-              ) : (
-                currentResult?.total ?? "—"
-              )}
+              {isRolling ? "..." : currentResult?.total ?? "—"}
             </div>
             
             {currentResult && !isRolling && (
-              <div className="space-y-2 animate-fade-in">
+              <div className="space-y-2 animate-fade-in text-center">
                 {/* Show advantage/disadvantage rolls */}
                 {currentResult.advantageRolls && (
                   <div className="flex items-center justify-center gap-3 mb-2">
