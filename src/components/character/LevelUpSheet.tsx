@@ -108,7 +108,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
   }, [homebrewFeats, featSearch]);
 
   const classData = CLASS_HIT_DICE[character.class] || { dice: "d8", avg: 5 };
-  const conMod = Math.floor(((character.attributes as any)?.constitution || 10) - 10) / 2;
+  const conMod = Math.floor((((character.attributes as any)?.constitution || 10) - 10) / 2);
 
   const rollHitDie = () => {
     const diceValue = parseInt(classData.dice.replace("d", ""));
