@@ -18,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedDice } from "@/components/ui/animated-dice";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 interface DiceRollerProps {
   onBack: () => void;
@@ -155,6 +156,7 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
   const { user } = useAuth();
   const { data: campaigns } = useAllCampaigns();
   const { sendDiceRoll, hasDiscordIntegration } = useDiscordNotification();
+  const { playDiceRoll, playSuccess, playClick } = useSoundEffects();
 
   const masterCampaigns = campaigns?.master || [];
 
@@ -182,6 +184,7 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
   // Roll with advantage or disadvantage (2d20, take higher or lower)
   const rollWithAdvantage = async (mode: 'advantage' | 'disadvantage', modifier: number = 0) => {
     setIsRolling(true);
+    playDiceRoll(); // Sound effect
 
     setTimeout(async () => {
       const roll1 = Math.floor(Math.random() * 20) + 1;
@@ -191,6 +194,8 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
       
       const isCritical = chosen === 20;
       const isCriticalFail = chosen === 1;
+
+      if (isCritical) playSuccess();
 
       const modeLabel = mode === 'advantage' ? 'Vantagem' : 'Desvantagem';
       const expressionStr = modifier !== 0 
@@ -245,9 +250,12 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
     }
 
     setIsRolling(true);
+    playDiceRoll(); // Sound effect
 
     setTimeout(async () => {
       const { rolledParts, total, isCritical, isCriticalFail } = rollParts(parts);
+
+      if (isCritical) playSuccess();
 
       const result: RollResult = {
         expression: expression.trim(),
@@ -308,8 +316,13 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
       if (!parts) return;
 
       setIsRolling(true);
+      playDiceRoll(); // Sound effect
+      
       setTimeout(() => {
         const { rolledParts, total, isCritical, isCriticalFail } = rollParts(parts);
+        
+        if (isCritical) playSuccess();
+        
         const result: RollResult = {
           expression: expr,
           parts: rolledParts,

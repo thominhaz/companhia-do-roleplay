@@ -2,6 +2,7 @@ import { Home, Users, Map, Wrench, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TabRoute } from "@/types";
 import { motion } from "framer-motion";
+import { useSoundEffects } from "@/hooks/useSoundEffects";
 
 interface TabBarProps {
   activeTab: TabRoute;
@@ -17,6 +18,15 @@ const tabs = [
 ];
 
 export function TabBar({ activeTab, onTabChange }: TabBarProps) {
+  const { playClick } = useSoundEffects();
+
+  const handleTabChange = (tabId: TabRoute) => {
+    if (tabId !== activeTab) {
+      playClick();
+      onTabChange(tabId);
+    }
+  };
+
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-border/50">
       <div className="flex items-center justify-around px-2 py-2 max-w-lg mx-auto">
@@ -28,7 +38,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
           return (
             <motion.button
               key={tab.id}
-              onClick={() => onTabChange(tab.id)}
+              onClick={() => handleTabChange(tab.id)}
               whileTap={{ scale: 0.9 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
               className={cn(
