@@ -1664,6 +1664,12 @@ export function CharacterSheet() {
                     <p className="text-xs text-muted-foreground">{proficiencies.weapons.join(', ')}</p>
                   </div>
                 )}
+                {proficiencies.tools && proficiencies.tools.length > 0 && (
+                  <div className="p-2 bg-muted/30 rounded-lg">
+                    <p className="text-[10px] uppercase text-primary font-semibold mb-1">Ferramentas</p>
+                    <p className="text-xs text-muted-foreground">{proficiencies.tools.join(', ')}</p>
+                  </div>
+                )}
                 {languages.length > 0 && (
                   <div className="p-2 bg-muted/30 rounded-lg">
                     <p className="text-[10px] uppercase text-primary font-semibold mb-1">Idiomas</p>
