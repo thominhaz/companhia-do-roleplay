@@ -5,11 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { CampaignDB, useDeleteCampaign } from "@/hooks/useCampaigns";
-import { useCampaignSessions, useCreateSession, useCampaignPlayers, useInvitePlayer, useLeaveCampaign } from "@/hooks/useSessions";
+import { useCampaignSessions, useCreateSession, useCampaignPlayers, useInvitePlayer, useLeaveCampaign, useRemovePlayer } from "@/hooks/useSessions";
 import { 
   Crown, Users, Calendar, Settings, Plus, Trash2, 
   Copy, User, Loader2, ChevronRight, Clock, MapPin,
-  UserPlus, Share2, Swords, StickyNote, MessageCircle, LogOut
+  UserPlus, Share2, Swords, StickyNote, MessageCircle, LogOut, UserMinus
 } from "lucide-react";
 import { format, formatDistanceToNow, isFuture, isPast } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -55,6 +55,7 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
   const { data: players, isLoading: loadingPlayers } = useCampaignPlayers(campaign?.id || '');
   const deleteCampaign = useDeleteCampaign();
   const leaveCampaign = useLeaveCampaign();
+  const removePlayer = useRemovePlayer();
   const { data: subscription } = useSubscription();
 
   if (!campaign) return null;
@@ -360,21 +361,51 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
                             <User className="w-5 h-5 text-primary" />
                           )}
                         </div>
-                        <div className="flex-1">
-                          <p className="font-medium text-sm">
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-sm truncate">
                             {player.profile?.display_name || 'Jogador'}
                           </p>
-                          <p className="text-xs text-muted-foreground">
+                          <p className="text-xs text-muted-foreground truncate">
                             {player.character?.name 
                               ? `${player.character.name} • ${player.character.class} Nv.${player.character.level}`
                               : 'Sem personagem vinculado'}
                           </p>
                         </div>
-                        <span className={`text-xs px-2 py-1 rounded-full ${
+                        <span className={`text-xs px-2 py-1 rounded-full flex-shrink-0 ${
                           player.role === 'master' ? 'bg-amber-500/20 text-amber-500' : 'bg-primary/20 text-primary'
                         }`}>
                           {player.role === 'master' ? 'Mestre' : 'Jogador'}
                         </span>
+                        {isMaster && player.role !== 'master' && (
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="flex-shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              >
+                                <UserMinus className="w-4 h-4" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Remover jogador?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  {player.profile?.display_name || 'Este jogador'} será removido da campanha e perderá acesso às sessões e notas.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={() => removePlayer.mutate({ playerId: player.id, campaignId: campaign.id })}
+                                  className="bg-destructive text-destructive-foreground"
+                                >
+                                  Remover
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        )}
                       </div>
                     ))}
 
