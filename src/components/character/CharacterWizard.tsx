@@ -250,6 +250,21 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     // Combine selected skills with racial skill proficiencies
     const allSkillProficiencies = [...new Set([...data.selectedSkills, ...racialSkillProficiencies])];
 
+    // Build structured proficiencies object combining class and racial proficiencies
+    const classProficiencies = selectedClass.proficiencies as { armor?: string[]; weapons?: string[]; tools?: string[] } || {};
+    const allWeaponProficiencies = [
+      ...(classProficiencies.weapons || []),
+      ...racialWeaponProficiencies
+    ];
+    const allArmorProficiencies = classProficiencies.armor || [];
+    const allToolProficiencies = classProficiencies.tools || [];
+
+    const proficienciesObject = {
+      armor: allArmorProficiencies,
+      weapons: [...new Set(allWeaponProficiencies)],
+      tools: allToolProficiencies
+    } as unknown as any[];
+
     const character: CharacterInsert = {
       name: data.name,
       race: selectedRace.name,
@@ -292,7 +307,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       flaws: data.flaws,
       backstory: data.backstory || null,
       features: [],
-      proficiencies: racialWeaponProficiencies,
+      proficiencies: proficienciesObject,
       languages: [...selectedRace.languages, ...data.extraLanguages],
       image_url: null,
       conditions: [],
