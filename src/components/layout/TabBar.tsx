@@ -1,7 +1,7 @@
 import { Home, Users, Map, Wrench, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TabRoute } from "@/types";
-import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 
 interface TabBarProps {
   activeTab: TabRoute;
@@ -17,16 +17,6 @@ const tabs = [
 ];
 
 export function TabBar({ activeTab, onTabChange }: TabBarProps) {
-  const [animatingTab, setAnimatingTab] = useState<TabRoute | null>(null);
-
-  const handleClick = (tabId: TabRoute) => {
-    if (tabId !== activeTab) {
-      setAnimatingTab(tabId);
-      onTabChange(tabId);
-      setTimeout(() => setAnimatingTab(null), 300);
-    }
-  };
-
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-border/50">
       <div className="flex items-center justify-around px-2 py-2 max-w-lg mx-auto">
@@ -34,43 +24,70 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
           const Icon = tab.icon;
           const isActive = activeTab === tab.id;
           const isCampaigns = tab.id === "campaigns";
-          const isAnimating = animatingTab === tab.id;
 
           return (
-            <button
+            <motion.button
               key={tab.id}
-              onClick={() => handleClick(tab.id)}
+              onClick={() => onTabChange(tab.id)}
+              whileTap={{ scale: 0.9 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
               className={cn(
-                "flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-all duration-300 min-w-[60px]",
+                "relative flex flex-col items-center justify-center px-3 py-2 rounded-xl transition-colors duration-200 min-w-[60px]",
                 isActive
-                  ? "bg-primary/20 text-primary"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                  ? "text-primary"
+                  : "text-muted-foreground hover:text-foreground"
               )}
             >
-              <div className="relative">
-                <Icon
-                  className={cn(
-                    "w-5 h-5 transition-all duration-300",
-                    isActive && "scale-110",
-                    isAnimating && "icon-animate"
-                  )}
+              {/* Active background indicator */}
+              {isActive && (
+                <motion.div
+                  layoutId="activeTab"
+                  className="absolute inset-0 bg-primary/15 rounded-xl"
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
+              )}
+              
+              <div className="relative z-10">
+                <motion.div
+                  animate={{ 
+                    scale: isActive ? 1.15 : 1,
+                    y: isActive ? -2 : 0,
+                  }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                  <Icon className="w-5 h-5" />
+                </motion.div>
+                
                 {isCampaigns && (
-                  <span className="absolute -top-1 -right-1 w-2 h-2 bg-secondary rounded-full animate-pulse" />
-                )}
-                {isActive && (
-                  <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-primary rounded-full" />
+                  <motion.span 
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute -top-1 -right-1 w-2 h-2 bg-secondary rounded-full"
+                  >
+                    <span className="absolute inset-0 bg-secondary rounded-full animate-ping opacity-75" />
+                  </motion.span>
                 )}
               </div>
-              <span
-                className={cn(
-                  "text-[10px] font-medium mt-1 transition-all duration-300",
-                  isActive ? "opacity-100" : "opacity-70"
-                )}
+              
+              <motion.span
+                animate={{ 
+                  opacity: isActive ? 1 : 0.6,
+                  fontWeight: isActive ? 600 : 500,
+                }}
+                className="relative z-10 text-[10px] mt-1"
               >
                 {tab.label}
-              </span>
-            </button>
+              </motion.span>
+              
+              {/* Active dot indicator */}
+              {isActive && (
+                <motion.div
+                  layoutId="activeIndicator"
+                  className="absolute -bottom-0.5 w-1 h-1 bg-primary rounded-full"
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+            </motion.button>
           );
         })}
       </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
 import { TabBar } from "@/components/layout/TabBar";
 import { HomeScreen } from "@/components/screens/HomeScreen";
 import { CharactersScreen } from "@/components/screens/CharactersScreen";
@@ -16,15 +17,15 @@ const Index = () => {
   useSubscriptionSync();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabRoute>("home");
-  const [displayedTab, setDisplayedTab] = useState<TabRoute>("home");
-  const [isAnimating, setIsAnimating] = useState(false);
+  const [direction, setDirection] = useState(0);
+
+  const tabOrder: TabRoute[] = ["home", "characters", "campaigns", "tools", "menu"];
 
   // Handle tab from URL query param
   useEffect(() => {
     const tabParam = searchParams.get('tab');
     if (tabParam && ['home', 'characters', 'campaigns', 'tools', 'menu'].includes(tabParam)) {
       setActiveTab(tabParam as TabRoute);
-      setDisplayedTab(tabParam as TabRoute);
       // Keep other params like tool=notes, create=true, join=true
       const newParams = new URLSearchParams();
       searchParams.forEach((value, key) => {
@@ -36,27 +37,39 @@ const Index = () => {
     }
   }, [searchParams, setSearchParams]);
 
-  // Handle tab transitions with fade animation
+  // Handle tab transitions with direction
   const handleTabChange = (newTab: TabRoute) => {
-    if (newTab === activeTab || isAnimating) return;
+    if (newTab === activeTab) return;
     
-    setIsAnimating(true);
+    const currentIndex = tabOrder.indexOf(activeTab);
+    const newIndex = tabOrder.indexOf(newTab);
+    setDirection(newIndex > currentIndex ? 1 : -1);
     setActiveTab(newTab);
-    
-    // Wait for animation to complete
-    setTimeout(() => {
-      setDisplayedTab(newTab);
-      setIsAnimating(false);
-    }, 250);
   };
 
-  // Sync displayedTab with activeTab on initial load
-  useEffect(() => {
-    setDisplayedTab(activeTab);
-  }, []);
+  const pageVariants = {
+    initial: (direction: number) => ({
+      x: direction > 0 ? 100 : -100,
+      opacity: 0,
+    }),
+    in: {
+      x: 0,
+      opacity: 1,
+    },
+    out: (direction: number) => ({
+      x: direction > 0 ? -100 : 100,
+      opacity: 0,
+    }),
+  };
+
+  const pageTransition = {
+    type: "tween" as const,
+    ease: "easeInOut" as const,
+    duration: 0.2,
+  };
 
   const renderScreen = () => {
-    switch (displayedTab) {
+    switch (activeTab) {
       case "home":
         return <HomeScreen onNavigate={handleTabChange} />;
       case "characters":
@@ -84,10 +97,21 @@ const Index = () => {
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
       </Helmet>
 
-      <div className="min-h-screen bg-darker">
-        <div className={cn("min-h-screen", isAnimating ? "animate-page-enter" : "")}>
-          {renderScreen()}
-        </div>
+      <div className="min-h-screen bg-darker overflow-hidden">
+        <AnimatePresence mode="wait" custom={direction}>
+          <motion.div
+            key={activeTab}
+            custom={direction}
+            variants={pageVariants}
+            initial="initial"
+            animate="in"
+            exit="out"
+            transition={pageTransition}
+            className="min-h-screen"
+          >
+            {renderScreen()}
+          </motion.div>
+        </AnimatePresence>
         <TabBar activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
     </>
