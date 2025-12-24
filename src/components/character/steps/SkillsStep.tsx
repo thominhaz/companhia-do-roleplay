@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Check, Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
 import skillsData from '@/data/rules/pericias.json';
+import { useHomebrew } from '@/hooks/useHomebrew';
 
 interface SkillsStepProps {
   data: WizardData;
@@ -32,6 +33,12 @@ const SKILL_MAP: Record<string, string> = {
   survival: 'Sobrevivência',
 };
 
+// Reverse map: Portuguese to English ID
+const SKILL_NAME_TO_ID: Record<string, string> = Object.entries(SKILL_MAP).reduce(
+  (acc, [id, name]) => ({ ...acc, [name]: id }),
+  {}
+);
+
 const ABILITY_COLORS: Record<string, string> = {
   'Força': 'text-red-400',
   'Destreza': 'text-green-400',
@@ -41,10 +48,35 @@ const ABILITY_COLORS: Record<string, string> = {
 };
 
 export function SkillsStep({ data, updateData }: SkillsStepProps) {
-  const selectedClass = CLASSES.find(c => c.id === data.class);
-  const skillOptions = selectedClass?.proficiencies?.skills;
+  const { homebrewContent: homebrewClasses } = useHomebrew('class');
   
-  if (!skillOptions) {
+  // Check for official class first
+  const selectedClass = CLASSES.find(c => c.id === data.class);
+  const selectedHomebrewClass = homebrewClasses.find(c => c.id === data.class);
+  
+  let availableSkillIds: string[] = [];
+  let maxChoices = 2;
+  
+  if (selectedClass) {
+    // Official class
+    const skillOptions = selectedClass.proficiencies?.skills;
+    if (skillOptions) {
+      availableSkillIds = Array.isArray(skillOptions.from) ? skillOptions.from : [];
+      maxChoices = skillOptions.choose || 2;
+    }
+  } else if (selectedHomebrewClass) {
+    // Homebrew class
+    const classData = selectedHomebrewClass.data as any;
+    if (classData?.available_skills && Array.isArray(classData.available_skills)) {
+      // Homebrew skills are stored in Portuguese, convert to IDs
+      availableSkillIds = classData.available_skills.map((skillName: string) => {
+        return SKILL_NAME_TO_ID[skillName] || skillName.toLowerCase().replace(/ /g, '_');
+      });
+      maxChoices = classData.skill_choices || 2;
+    }
+  }
+  
+  if (availableSkillIds.length === 0) {
     return (
       <div className="p-4 text-center text-muted-foreground">
         Nenhuma perícia disponível para esta classe.
@@ -52,16 +84,14 @@ export function SkillsStep({ data, updateData }: SkillsStepProps) {
     );
   }
 
-  const availableSkillIds = Array.isArray(skillOptions.from) ? skillOptions.from : [];
-  const maxChoices = skillOptions.choose || 2;
   const selectedSkills = data.selectedSkills || [];
 
   const availableSkills = availableSkillIds.map((skillId: string) => {
-    const skillName = SKILL_MAP[skillId];
+    const skillName = SKILL_MAP[skillId] || skillId;
     const skillInfo = skillsData.skills.find(s => s.name === skillName);
     return {
       id: skillId,
-      name: skillName || skillId,
+      name: skillName,
       ability: skillInfo?.ability || 'Desconhecido',
       description: skillInfo?.description || '',
     };

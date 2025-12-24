@@ -376,7 +376,7 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
                   )}
                 </div>
 
-                {classData?.saving_throws && (
+                {classData?.saving_throws && classData.saving_throws.length > 0 && (
                   <div>
                     <p className="text-sm font-medium mb-2">Salvaguardas</p>
                     <div className="flex flex-wrap gap-2">
@@ -386,6 +386,31 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
                         </span>
                       ))}
                     </div>
+                  </div>
+                )}
+
+                {classData?.armor_proficiencies && (
+                  <div>
+                    <p className="text-sm font-medium mb-2">Proficiências com Armaduras</p>
+                    <p className="text-sm text-muted-foreground">{classData.armor_proficiencies || 'Nenhuma'}</p>
+                  </div>
+                )}
+
+                {classData?.weapon_proficiencies && (
+                  <div>
+                    <p className="text-sm font-medium mb-2">Proficiências com Armas</p>
+                    <p className="text-sm text-muted-foreground">{classData.weapon_proficiencies}</p>
+                  </div>
+                )}
+
+                {classData?.available_skills && classData.available_skills.length > 0 && (
+                  <div>
+                    <p className="text-sm font-medium mb-2">
+                      Perícias ({classData.skill_choices || 2} escolhas)
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {classData.available_skills.join(', ')}
+                    </p>
                   </div>
                 )}
 
