@@ -22,7 +22,7 @@ const faqCategories = [
       },
       {
         question: "Quantos personagens posso criar?",
-        answer: "Usuários gratuitos podem criar até 3 personagens. Assinantes do plano Aldeão têm até 10 personagens, enquanto Heróis e Mestres têm personagens ilimitados."
+        answer: "No plano Aldeão (gratuito) você pode criar até 3 personagens. Assinantes do plano Herói têm até 10 personagens, enquanto Mestres têm personagens ilimitados."
       },
       {
         question: "Como subir de nível?",
@@ -122,7 +122,7 @@ const faqCategories = [
     faqs: [
       {
         question: "Quais são os planos disponíveis?",
-        answer: "Oferecemos: Gratuito (recursos básicos), Aldeão (mais personagens e campanhas), Herói (Combat Tracker e Homebrew) e Mestre (todos os recursos + prioridade)."
+        answer: "Oferecemos: Aldeão (gratuito, recursos básicos), Herói (mais personagens, Combat Tracker e Homebrew) e Mestre (todos os recursos + prioridade + personagens ilimitados)."
       },
       {
         question: "Como assinar um plano?",
