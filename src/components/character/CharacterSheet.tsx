@@ -48,6 +48,7 @@ import { NotesSheet } from "./NotesSheet";
 import { CharacterHistorySheet } from "./CharacterHistorySheet";
 import { CombatStatusCard } from "./CombatStatusCard";
 import { InventoryManagementSheet } from "./InventoryManagementSheet";
+import { SpellCastDialog, SPELL_SLOTS_BY_LEVEL } from "./SpellCastDialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
@@ -275,6 +276,53 @@ export function CharacterSheet() {
   const [xpInput, setXpInput] = useState('');
   const [useMilestone, setUseMilestone] = useState(false);
   const [showInventory, setShowInventory] = useState(false);
+  const [spellToCast, setSpellToCast] = useState<SpellData | null>(null);
+  const [showSpellCastDialog, setShowSpellCastDialog] = useState(false);
+
+  // Get spell slots for character
+  const spellSlots = useMemo(() => {
+    if (!character) return [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    return SPELL_SLOTS_BY_LEVEL[character.level.toString()] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  }, [character?.level]);
+
+  // Get used slots from character spellcasting
+  const usedSlots = useMemo(() => {
+    if (!character?.spellcasting) return [0, 0, 0, 0, 0, 0, 0, 0, 0];
+    return (character.spellcasting as any)?.usedSlots || [0, 0, 0, 0, 0, 0, 0, 0, 0];
+  }, [character?.spellcasting]);
+
+  // Cast spell and consume slot
+  const handleCastSpell = async (spellLevel: number, castAtLevel: number) => {
+    if (!character) return;
+    
+    const newUsedSlots = [...usedSlots];
+    newUsedSlots[castAtLevel - 1] = (newUsedSlots[castAtLevel - 1] || 0) + 1;
+    
+    await updateCharacter.mutateAsync({
+      id: character.id,
+      spellcasting: {
+        ...(character.spellcasting as any),
+        usedSlots: newUsedSlots,
+      },
+    });
+  };
+
+  // Recover all spell slots (long rest)
+  const handleRecoverAllSlots = async () => {
+    if (!character) return;
+    
+    await updateCharacter.mutateAsync({
+      id: character.id,
+      spellcasting: {
+        ...(character.spellcasting as any),
+        usedSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+      },
+    });
+    toast.success("Slots de magia recuperados!", {
+      description: "Descanso longo completo",
+      icon: "✨",
+    });
+  };
 
   const hasHistoryAccess = subscription?.limits.hasHistorico ?? false;
 
@@ -1687,16 +1735,55 @@ export function CharacterSheet() {
                     <Sparkles className="w-4 h-4 text-primary" />
                     Magias
                   </h3>
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    className="h-7 text-xs text-primary"
-                    onClick={() => setShowSpells(true)}
-                  >
-                    Gerenciar
-                  </Button>
+                  <div className="flex items-center gap-1">
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-7 text-xs text-primary"
+                      onClick={handleRecoverAllSlots}
+                      title="Recuperar slots (Descanso Longo)"
+                    >
+                      <Moon className="w-3.5 h-3.5 mr-1" />
+                      Descanso
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      className="h-7 text-xs text-primary"
+                      onClick={() => setShowSpells(true)}
+                    >
+                      Gerenciar
+                    </Button>
+                  </div>
                 </div>
                 
+                {/* Spell Slots Display */}
+                {spellSlots.some(s => s > 0) && (
+                  <div className="mb-3 p-2 bg-muted/20 rounded-xl">
+                    <p className="text-[10px] text-muted-foreground mb-2 text-center">Slots de Magia</p>
+                    <div className="flex flex-wrap gap-1 justify-center">
+                      {spellSlots.map((max, index) => {
+                        if (max === 0) return null;
+                        const used = usedSlots[index] || 0;
+                        const available = max - used;
+                        return (
+                          <div 
+                            key={index} 
+                            className={`px-2 py-1 rounded-lg text-center min-w-[40px] ${
+                              available > 0 ? 'bg-primary/20' : 'bg-muted/30'
+                            }`}
+                          >
+                            <div className={`text-xs font-bold ${available > 0 ? 'text-primary' : 'text-muted-foreground'}`}>
+                              {available}/{max}
+                            </div>
+                            <div className="text-[9px] text-muted-foreground">{index + 1}º</div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {(() => {
                   // Get spellcasting ability from class features
                   const classData = CLASSES.find(c => c.name === character.class);
@@ -1736,14 +1823,21 @@ export function CharacterSheet() {
                         const levelLabel = spell.fullData?.level === 0 ? "Truque" : `${spell.fullData?.level || '?'}º`;
                         const school = spell.fullData?.school;
                         const schoolInfo = school ? SPELL_SCHOOLS[school] : null;
+                        const spellLevel = spell.fullData?.level || 0;
+                        const canCastSpell = spellLevel === 0 || spellSlots.slice(spellLevel - 1).some((max, idx) => {
+                          const used = usedSlots[spellLevel - 1 + idx] || 0;
+                          return max - used > 0;
+                        });
                         
                         return (
-                          <button
+                          <div
                             key={i}
-                            onClick={() => spell.fullData && setSelectedSpellDetail(spell.fullData)}
-                            className="w-full flex items-center gap-2 p-2 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors text-left"
+                            className="flex items-center gap-2 p-2 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
                           >
-                            <div className="flex-1 min-w-0">
+                            <button
+                              onClick={() => spell.fullData && setSelectedSpellDetail(spell.fullData)}
+                              className="flex-1 min-w-0 text-left"
+                            >
                               <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium truncate">{spell.displayName}</span>
                                 {spell.fullData?.concentration && (
@@ -1758,9 +1852,24 @@ export function CharacterSheet() {
                                   </Badge>
                                 )}
                               </div>
-                            </div>
-                            <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                          </button>
+                            </button>
+                            <Button
+                              size="sm"
+                              variant={canCastSpell ? "default" : "secondary"}
+                              disabled={!canCastSpell && spellLevel > 0}
+                              className="h-7 text-xs px-2 shrink-0"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                if (spell.fullData) {
+                                  setSpellToCast(spell.fullData);
+                                  setShowSpellCastDialog(true);
+                                }
+                              }}
+                            >
+                              <Zap className="w-3 h-3 mr-1" />
+                              Lançar
+                            </Button>
+                          </div>
                         );
                       })
                     ) : (
@@ -1979,6 +2088,17 @@ export function CharacterSheet() {
         open={showInventory}
         onOpenChange={setShowInventory}
         character={character}
+      />
+
+      {/* Spell Cast Dialog */}
+      <SpellCastDialog
+        open={showSpellCastDialog}
+        onOpenChange={setShowSpellCastDialog}
+        spell={spellToCast}
+        spellSlots={spellSlots}
+        usedSlots={usedSlots}
+        onCast={handleCastSpell}
+        characterLevel={character.level}
       />
 
       {/* Campaign Chat - only show if character is in a campaign */}
