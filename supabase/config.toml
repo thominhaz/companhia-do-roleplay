@@ -2,3 +2,9 @@ project_id = "fnolqjgjzxgqvxvxllog"
 
 [functions.send-discord-notification]
 verify_jwt = true
+
+[functions.sync-discord-role]
+verify_jwt = true
+
+[functions.discord-oauth-callback]
+verify_jwt = false
