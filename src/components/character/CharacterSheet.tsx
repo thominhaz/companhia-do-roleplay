@@ -32,6 +32,7 @@ import {
   Star
 } from "lucide-react";
 import advancementData from "@/data/rules/avanco-personagem.json";
+import { calculateFeatBonuses } from "@/lib/featEffects";
 import { useCharacter, useUpdateCharacter } from "@/hooks/useCharacters";
 import { useCharacterActiveCombat } from "@/hooks/useCharacterCombat";
 import { useUpdateCombatant } from "@/hooks/useCombat";
@@ -389,6 +390,15 @@ export function CharacterSheet() {
     }
   });
   
+  // Calculate feat bonuses (initiative, AC, speed, passive bonuses, HP)
+  const features = character.features as Array<{ name: string; source?: string; level?: number; description?: string }> | undefined;
+  const featBonuses = calculateFeatBonuses(features, character.level);
+  
+  // Calculate effective stats with feat bonuses
+  const effectiveInitiative = character.initiative + featBonuses.initiative;
+  const effectiveAC = character.armor_class + featBonuses.ac;
+  const effectiveSpeed = character.speed + featBonuses.speed;
+  
   // Calculate passive scores - support both old and new skill format
   const wisdomMod = getModifier(attributes.wisdom || 10);
   const intMod = getModifier(attributes.intelligence || 10);
@@ -400,9 +410,9 @@ export function CharacterSheet() {
   const investigationProf = getSkillProficient('investigation') ? character.proficiency_bonus : 0;
   const insightProf = getSkillProficient('insight') ? character.proficiency_bonus : 0;
   
-  const passivePerception = 10 + wisdomMod + perceptionProf;
-  const passiveInvestigation = 10 + intMod + investigationProf;
-  const passiveInsight = 10 + wisdomMod + insightProf;
+  const passivePerception = 10 + wisdomMod + perceptionProf + featBonuses.passive_perception;
+  const passiveInvestigation = 10 + intMod + investigationProf + featBonuses.passive_investigation;
+  const passiveInsight = 10 + wisdomMod + insightProf + featBonuses.passive_insight;
 
   const hpPercent = Math.max(0, Math.min(100, (character.current_hp / character.max_hp) * 100));
 
@@ -1003,17 +1013,17 @@ export function CharacterSheet() {
               <div className="grid grid-cols-4 gap-2 mt-4">
                 <div className="bg-muted/30 rounded-xl p-2 text-center">
                   <Shield className="w-4 h-4 mx-auto mb-1 text-primary" />
-                  <p className="text-lg font-bold">{character.armor_class}</p>
+                  <p className="text-lg font-bold">{effectiveAC}</p>
                   <p className="text-[10px] text-muted-foreground">CA</p>
                 </div>
                 <div className="bg-muted/30 rounded-xl p-2 text-center">
                   <Zap className="w-4 h-4 mx-auto mb-1 text-primary" />
-                  <p className="text-lg font-bold">{character.initiative >= 0 ? '+' : ''}{character.initiative}</p>
+                  <p className="text-lg font-bold">{effectiveInitiative >= 0 ? '+' : ''}{effectiveInitiative}</p>
                   <p className="text-[10px] text-muted-foreground">Iniciativa</p>
                 </div>
                 <div className="bg-muted/30 rounded-xl p-2 text-center">
                   <Footprints className="w-4 h-4 mx-auto mb-1 text-primary" />
-                  <p className="text-lg font-bold">{character.speed}m</p>
+                  <p className="text-lg font-bold">{effectiveSpeed}m</p>
                   <p className="text-[10px] text-muted-foreground">Desl.</p>
                 </div>
                 <div className="bg-muted/30 rounded-xl p-2 text-center">
