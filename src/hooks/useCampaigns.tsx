@@ -189,3 +189,26 @@ export function useDeleteCampaign() {
     },
   });
 }
+
+// Hook to get campaign for a specific character
+export function useCharacterCampaign(characterId: string | undefined) {
+  return useQuery({
+    queryKey: ['character-campaign', characterId],
+    queryFn: async () => {
+      if (!characterId) return null;
+
+      const { data, error } = await supabase
+        .from('campaign_players')
+        .select(`
+          campaign_id,
+          campaigns(id, name, description, image_url)
+        `)
+        .eq('character_id', characterId)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data?.campaigns as { id: string; name: string; description: string | null; image_url: string | null } | null;
+    },
+    enabled: !!characterId,
+  });
+}
