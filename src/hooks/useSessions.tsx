@@ -401,3 +401,115 @@ export function useUpdateCampaignPlayer() {
     },
   });
 }
+
+// Session Attendance Types
+export interface SessionAttendance {
+  id: string;
+  session_id: string;
+  user_id: string;
+  status: 'pending' | 'confirmed' | 'declined' | 'tentative';
+  responded_at: string | null;
+  created_at: string;
+  profile?: {
+    display_name: string | null;
+    avatar_url: string | null;
+  };
+}
+
+// Fetch attendance for a session
+export function useSessionAttendance(sessionId: string) {
+  return useQuery({
+    queryKey: ['session-attendance', sessionId],
+    queryFn: async () => {
+      if (!sessionId) return [];
+
+      const { data, error } = await supabase
+        .from('session_attendance')
+        .select('*')
+        .eq('session_id', sessionId);
+
+      if (error) throw error;
+
+      if (!data || data.length === 0) return [];
+
+      // Get profiles for users
+      const userIds = [...new Set(data.map(a => a.user_id))];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, display_name, avatar_url')
+        .in('id', userIds);
+
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+      return data.map(attendance => ({
+        ...attendance,
+        profile: profileMap.get(attendance.user_id) || null,
+      })) as SessionAttendance[];
+    },
+    enabled: !!sessionId,
+  });
+}
+
+// Update or create attendance
+export function useUpdateAttendance() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ sessionId, status }: { sessionId: string; status: 'confirmed' | 'declined' | 'tentative' }) => {
+      if (!user) throw new Error('Usuário não autenticado');
+
+      // Upsert attendance
+      const { data, error } = await supabase
+        .from('session_attendance')
+        .upsert({
+          session_id: sessionId,
+          user_id: user.id,
+          status,
+          responded_at: new Date().toISOString(),
+        }, {
+          onConflict: 'session_id,user_id',
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['session-attendance', data.session_id] });
+      const statusMessages = {
+        confirmed: 'Presença confirmada!',
+        declined: 'Ausência registrada',
+        tentative: 'Resposta registrada como incerta',
+      };
+      toast.success(statusMessages[data.status as keyof typeof statusMessages]);
+    },
+    onError: () => {
+      toast.error('Erro ao atualizar presença');
+    },
+  });
+}
+
+// Get user's attendance for a session
+export function useMyAttendance(sessionId: string) {
+  const { user } = useAuth();
+
+  return useQuery({
+    queryKey: ['my-attendance', sessionId, user?.id],
+    queryFn: async () => {
+      if (!sessionId || !user) return null;
+
+      const { data, error } = await supabase
+        .from('session_attendance')
+        .select('*')
+        .eq('session_id', sessionId)
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (error) throw error;
+      return data as SessionAttendance | null;
+    },
+    enabled: !!sessionId && !!user,
+  });
+}

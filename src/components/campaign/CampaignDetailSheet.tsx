@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { CreateSessionSheet } from "./CreateSessionSheet";
 import { AddPlayerSheet } from "./AddPlayerSheet";
+import { SessionAttendanceCard } from "./SessionAttendanceCard";
 import { CombatTracker } from "./CombatTracker";
 import { CampaignNotesSheet } from "./CampaignNotesSheet";
 import { CampaignChatSheet } from "./CampaignChatSheet";
@@ -277,28 +278,13 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
                     {upcomingSessions.length > 0 && (
                       <div className="mb-6">
                         <h3 className="text-sm font-semibold text-muted-foreground mb-3">Próximas Sessões</h3>
-                        <div className="space-y-2">
+                        <div className="space-y-3">
                           {upcomingSessions.map(session => (
-                            <div key={session.id} className="bg-card rounded-xl p-4 border border-primary/30">
-                              <div className="flex items-center justify-between mb-2">
-                                <h4 className="font-semibold">{session.title}</h4>
-                                <span className="text-xs bg-primary/20 text-primary px-2 py-1 rounded-full">
-                                  {formatDistanceToNow(new Date(session.scheduled_at), { locale: ptBR, addSuffix: true })}
-                                </span>
-                              </div>
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-1">
-                                  <Calendar className="w-3 h-3" />
-                                  {format(new Date(session.scheduled_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
-                                </div>
-                                {session.location && (
-                                  <div className="flex items-center gap-1">
-                                    <MapPin className="w-3 h-3" />
-                                    {session.location}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
+                            <SessionAttendanceCard 
+                              key={session.id} 
+                              session={session} 
+                              isUpcoming={true}
+                            />
                           ))}
                         </div>
                       </div>
@@ -309,15 +295,11 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
                         <h3 className="text-sm font-semibold text-muted-foreground mb-3">Sessões Anteriores</h3>
                         <div className="space-y-2">
                           {pastSessions.map(session => (
-                            <div key={session.id} className="bg-muted/30 rounded-xl p-4">
-                              <div className="flex items-center justify-between mb-1">
-                                <h4 className="font-medium text-sm">{session.title}</h4>
-                                <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                              </div>
-                              <p className="text-xs text-muted-foreground">
-                                {format(new Date(session.scheduled_at), "dd/MM/yyyy", { locale: ptBR })}
-                              </p>
-                            </div>
+                            <SessionAttendanceCard 
+                              key={session.id} 
+                              session={session} 
+                              isUpcoming={false}
+                            />
                           ))}
                         </div>
                       </div>
