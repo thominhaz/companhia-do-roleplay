@@ -121,13 +121,18 @@ export function SpellGrimoire() {
       const matchesSchool = selectedSchool === null || spell.school === selectedSchool;
       const matchesConcentration = showConcentration === null || spell.concentration === showConcentration;
       const matchesRitual = showRitual === null || spell.ritual === showRitual;
+      
+      // Filter by class - check if spell's classes array includes selected class
+      const spellClasses = (spell as any).classes as string[] | undefined;
+      const matchesClass = selectedClass === null || 
+        (spellClasses && spellClasses.some(c => c.toLowerCase() === selectedClass.toLowerCase()));
 
-      return matchesSearch && matchesLevel && matchesSchool && matchesConcentration && matchesRitual;
+      return matchesSearch && matchesLevel && matchesSchool && matchesConcentration && matchesRitual && matchesClass;
     }).sort((a, b) => {
       if (a.level !== b.level) return a.level - b.level;
       return a.name.localeCompare(b.name, "pt-BR");
     });
-  }, [search, selectedLevel, selectedSchool, showConcentration, showRitual, allSpells]);
+  }, [search, selectedLevel, selectedSchool, showConcentration, showRitual, selectedClass, allSpells]);
 
 
   const formatRange = (range: number, rangeType: string) => {

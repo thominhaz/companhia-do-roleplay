@@ -78,6 +78,18 @@ const SPELL_SCHOOLS: Record<string, { name: string; color: string; icon: string 
   "transmutation": { name: "Transmutação", color: "bg-green-500/20 text-green-400 border-green-500/30", icon: "🔄" },
 };
 
+// Spellcaster classes for filtering
+const SPELLCASTER_CLASSES = [
+  { id: 'mago', name: 'Mago' },
+  { id: 'clerigo', name: 'Clérigo' },
+  { id: 'druida', name: 'Druida' },
+  { id: 'bardo', name: 'Bardo' },
+  { id: 'paladino', name: 'Paladino' },
+  { id: 'patrulheiro', name: 'Patrulheiro' },
+  { id: 'feiticeiro', name: 'Feiticeiro' },
+  { id: 'bruxo', name: 'Bruxo' },
+];
+
 const SPELL_SLOTS_BY_LEVEL: Record<string, number[]> = {
   "1": [2, 0, 0, 0, 0, 0, 0, 0, 0],
   "2": [3, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -115,6 +127,7 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
   const [search, setSearch] = useState("");
   const [compendiumSearch, setCompendiumSearch] = useState("");
   const [compendiumLevelFilter, setCompendiumLevelFilter] = useState<number | null>(null);
+  const [compendiumClassFilter, setCompendiumClassFilter] = useState<string | null>(null);
   const [spells, setSpells] = useState<SpellData[]>([]);
   const [usedSlots, setUsedSlots] = useState<number[]>([0, 0, 0, 0, 0, 0, 0, 0, 0]);
   const [activeTab, setActiveTab] = useState("prepared");
@@ -230,7 +243,7 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
     return new Set(spells.map(s => s.name.toLowerCase().replace(/_/g, ' ').trim()));
   }, [spells]);
 
-  // Available compendium spells (not already known, filtered by level and search)
+  // Available compendium spells (not already known, filtered by level, class, and search)
   const availableCompendiumSpells = useMemo(() => {
     return allSpellsData.filter(spell => {
       // Check if already known
@@ -249,6 +262,13 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
       // Check if spell level is accessible (0 = cantrips always allowed, or spell level <= maxSpellLevel)
       if (spell.level > 0 && spell.level > maxSpellLevel) return false;
 
+      // Check class filter
+      if (compendiumClassFilter !== null) {
+        const spellClasses = spell.classes || [];
+        const matchesClass = spellClasses.some(c => c.toLowerCase() === compendiumClassFilter.toLowerCase());
+        if (!matchesClass) return false;
+      }
+
       // Check search
       if (compendiumSearch) {
         const searchLower = compendiumSearch.toLowerCase();
@@ -259,7 +279,7 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
 
       return true;
     });
-  }, [allSpellsData, existingSpellNames, compendiumSearch, compendiumLevelFilter, maxSpellLevel]);
+  }, [allSpellsData, existingSpellNames, compendiumSearch, compendiumLevelFilter, compendiumClassFilter, maxSpellLevel]);
 
   const addSpellFromCompendium = (spell: FullSpellData) => {
     const newSpell: SpellData = {
@@ -598,6 +618,29 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                       onClick={() => setCompendiumLevelFilter(level)}
                     >
                       {level}º
+                    </Button>
+                  ))}
+                </div>
+
+                {/* Class Filter */}
+                <div className="flex gap-1 flex-wrap">
+                  <Button
+                    variant={compendiumClassFilter === null ? "secondary" : "outline"}
+                    size="sm"
+                    className="text-xs h-7"
+                    onClick={() => setCompendiumClassFilter(null)}
+                  >
+                    Todas Classes
+                  </Button>
+                  {SPELLCASTER_CLASSES.map(cls => (
+                    <Button
+                      key={cls.id}
+                      variant={compendiumClassFilter === cls.id ? "secondary" : "outline"}
+                      size="sm"
+                      className="text-xs h-7"
+                      onClick={() => setCompendiumClassFilter(compendiumClassFilter === cls.id ? null : cls.id)}
+                    >
+                      {cls.name}
                     </Button>
                   ))}
                 </div>
