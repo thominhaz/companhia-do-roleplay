@@ -225,8 +225,8 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
       name: weapon.name,
       type: 'weapon',
       equipped: false,
-      damage: weapon.damage.dice,
-      damageType: weapon.damage.type,
+      damage: weapon.damage?.dice || null,
+      damageType: weapon.damage?.type || null,
       properties: weapon.properties,
       weight: weapon.weight,
       cost: weapon.cost,
@@ -562,9 +562,9 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
                         <div className="flex-1">
                           <p className="text-sm font-medium">{weapon.name}</p>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs text-primary">{weapon.damage.dice}</span>
+                            <span className="text-xs text-primary">{weapon.damage?.dice || 'Especial'}</span>
                             <span className="text-xs text-muted-foreground">
-                              {getDamageTypeLabel(weapon.damage.type)}
+                              {weapon.damage ? getDamageTypeLabel(weapon.damage.type) : ''}
                             </span>
                             {weapon.properties.slice(0, 2).map(prop => (
                               <Badge key={prop} variant="outline" className="text-[9px] px-1 py-0">
