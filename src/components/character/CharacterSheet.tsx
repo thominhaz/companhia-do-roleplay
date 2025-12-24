@@ -137,37 +137,27 @@ const SPELL_SCHOOLS: Record<string, { name: string; color: string }> = {
   transmutation: { name: "Transmutação", color: "bg-orange-500/20 text-orange-400" },
 };
 
+// New unified spell interface based on magias.json
 interface SpellData {
-  id: string;
   name: string;
-  name_en: string;
+  originalName: string;
   level: number;
   school: string;
-  casting_time: string;
-  range: number;
-  range_type: string;
+  castingTime: string;
+  range: string;
   components: {
     verbal: boolean;
     somatic: boolean;
     material: boolean;
-    material_description?: string;
+    materialDescription?: string;
   };
   duration: string;
   concentration: boolean;
   ritual: boolean;
-  description_markdown: string;
-  at_higher_levels?: string;
+  description: string;
+  higherLevels: string | null;
+  classes: string[];
 }
-
-const spellFiles = [
-  () => import("@/data/spells/a-c.json"),
-  () => import("@/data/spells/d-f.json"),
-  () => import("@/data/spells/g-i.json"),
-  () => import("@/data/spells/j-l.json"),
-  () => import("@/data/spells/n-p.json"),
-  () => import("@/data/spells/q-s.json"),
-  () => import("@/data/spells/t-z.json"),
-];
 
 function SheetCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   return (
@@ -391,19 +381,12 @@ export function CharacterSheet() {
 
   const hasHistoryAccess = subscription?.limits.hasHistorico ?? false;
 
-  // Load all spells data
+  // Load all spells data from unified magias.json
   useEffect(() => {
     const loadSpells = async () => {
       try {
-        const results = await Promise.all(spellFiles.map(fn => fn()));
-        const spells: SpellData[] = [];
-        results.forEach((mod: any) => {
-          if (mod.default?.magias) {
-            spells.push(...mod.default.magias);
-          } else if (mod.magias) {
-            spells.push(...mod.magias);
-          }
-        });
+        const mod = await import("@/data/spells/magias.json");
+        const spells = mod.default as SpellData[];
         setAllSpellsData(spells);
       } catch (error) {
         console.error("Error loading spells:", error);
@@ -419,14 +402,17 @@ export function CharacterSheet() {
     if (!character?.spells) return [];
     const charSpells = character.spells as any[];
     return charSpells.map((spell: any) => {
-      const spellId = typeof spell === 'string' ? spell : spell.id || spell.name;
-      const fullData = allSpellsData.find(s => s.id === spellId || s.name_en?.toLowerCase().replace(/\s+/g, '_') === spellId);
+      const spellName = typeof spell === 'string' ? spell : spell.name;
+      const fullData = allSpellsData.find(s => 
+        s.name.toLowerCase() === spellName.toLowerCase() || 
+        s.originalName?.toLowerCase() === spellName.toLowerCase()
+      );
       return {
-        id: spellId,
+        id: spellName,
         fullData,
-        displayName: fullData?.name || (typeof spellId === 'string' 
-          ? spellId.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
-          : spellId),
+        displayName: fullData?.name || (typeof spellName === 'string' 
+          ? spellName.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
+          : spellName),
       };
     });
   }, [character?.spells, allSpellsData]);
@@ -2046,7 +2032,7 @@ export function CharacterSheet() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <SheetTitle className="text-left text-lg">{selectedSpellDetail.name}</SheetTitle>
-                    <p className="text-xs text-muted-foreground">{selectedSpellDetail.name_en}</p>
+                    <p className="text-xs text-muted-foreground">{selectedSpellDetail.originalName}</p>
                     <div className="flex flex-wrap gap-1.5 mt-2">
                       <Badge variant="outline" className="text-xs">
                         {selectedSpellDetail.level === 0 ? "Truque" : `${selectedSpellDetail.level}º Círculo`}
@@ -2061,19 +2047,19 @@ export function CharacterSheet() {
                 </div>
               </SheetHeader>
               <div className="grid grid-cols-2 gap-2 mb-4">
-                <div className="glass rounded-lg p-3"><p className="text-xs text-muted-foreground">Tempo</p><p className="text-sm font-medium">{selectedSpellDetail.casting_time}</p></div>
-                <div className="glass rounded-lg p-3"><p className="text-xs text-muted-foreground">Alcance</p><p className="text-sm font-medium">{selectedSpellDetail.range_type === "self" ? "Pessoal" : selectedSpellDetail.range_type === "touch" ? "Toque" : `${selectedSpellDetail.range}m`}</p></div>
+                <div className="glass rounded-lg p-3"><p className="text-xs text-muted-foreground">Tempo</p><p className="text-sm font-medium">{selectedSpellDetail.castingTime}</p></div>
+                <div className="glass rounded-lg p-3"><p className="text-xs text-muted-foreground">Alcance</p><p className="text-sm font-medium">{selectedSpellDetail.range}</p></div>
                 <div className="glass rounded-lg p-3"><p className="text-xs text-muted-foreground">Duração</p><p className="text-sm font-medium">{selectedSpellDetail.duration}</p></div>
                 <div className="glass rounded-lg p-3"><p className="text-xs text-muted-foreground">Componentes</p><p className="text-sm font-medium">{[selectedSpellDetail.components.verbal && "V", selectedSpellDetail.components.somatic && "S", selectedSpellDetail.components.material && "M"].filter(Boolean).join(", ")}</p></div>
               </div>
               <div className="mb-4">
                 <h3 className="text-sm font-semibold mb-2">Descrição</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{selectedSpellDetail.description_markdown.replace(/\*\*/g, "").replace(/###\s*/g, "\n").replace(/\n-\s/g, "\n• ")}</p>
+                <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-line">{selectedSpellDetail.description}</p>
               </div>
-              {selectedSpellDetail.at_higher_levels && (
+              {selectedSpellDetail.higherLevels && (
                 <div className="glass rounded-lg p-3 mb-6">
                   <p className="text-xs text-primary font-medium mb-1">Em Níveis Superiores</p>
-                  <p className="text-sm text-muted-foreground">{selectedSpellDetail.at_higher_levels.replace(/\*\*/g, "")}</p>
+                  <p className="text-sm text-muted-foreground">{selectedSpellDetail.higherLevels}</p>
                 </div>
               )}
             </ScrollArea>
