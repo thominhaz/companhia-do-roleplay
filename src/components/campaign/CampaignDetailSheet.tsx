@@ -5,11 +5,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { CampaignDB, useDeleteCampaign } from "@/hooks/useCampaigns";
-import { useCampaignSessions, useCreateSession, useCampaignPlayers, useInvitePlayer } from "@/hooks/useSessions";
+import { useCampaignSessions, useCreateSession, useCampaignPlayers, useInvitePlayer, useLeaveCampaign } from "@/hooks/useSessions";
 import { 
   Crown, Users, Calendar, Settings, Plus, Trash2, 
   Copy, User, Loader2, ChevronRight, Clock, MapPin,
-  UserPlus, Share2, Swords, StickyNote, MessageCircle
+  UserPlus, Share2, Swords, StickyNote, MessageCircle, LogOut
 } from "lucide-react";
 import { format, formatDistanceToNow, isFuture, isPast } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -54,6 +54,7 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
   const { data: sessions, isLoading: loadingSessions } = useCampaignSessions(campaign?.id || '');
   const { data: players, isLoading: loadingPlayers } = useCampaignPlayers(campaign?.id || '');
   const deleteCampaign = useDeleteCampaign();
+  const leaveCampaign = useLeaveCampaign();
   const { data: subscription } = useSubscription();
 
   if (!campaign) return null;
@@ -71,6 +72,15 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
   const handleDeleteCampaign = async () => {
     try {
       await deleteCampaign.mutateAsync(campaign.id);
+      onOpenChange(false);
+    } catch (error) {
+      // Error handled by mutation
+    }
+  };
+
+  const handleLeaveCampaign = async () => {
+    try {
+      await leaveCampaign.mutateAsync(campaign.id);
       onOpenChange(false);
     } catch (error) {
       // Error handled by mutation
@@ -95,7 +105,7 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
                   </p>
                 </div>
               </div>
-              {isMaster && (
+              {isMaster ? (
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button variant="ghost" size="icon" className="text-destructive">
@@ -116,6 +126,31 @@ export function CampaignDetailSheet({ campaign, open, onOpenChange, isMaster }: 
                         className="bg-destructive text-destructive-foreground"
                       >
                         Excluir
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              ) : (
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button variant="ghost" size="icon" className="text-destructive">
+                      <LogOut className="w-5 h-5" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Sair da campanha?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Você será removido da campanha e perderá acesso às sessões e notas.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction 
+                        onClick={handleLeaveCampaign}
+                        className="bg-destructive text-destructive-foreground"
+                      >
+                        Sair
                       </AlertDialogAction>
                     </AlertDialogFooter>
                   </AlertDialogContent>
