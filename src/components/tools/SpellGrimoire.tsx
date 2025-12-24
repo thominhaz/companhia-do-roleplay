@@ -53,9 +53,22 @@ const LEVELS = [
   { value: 9, label: "9º Círculo" },
 ];
 
+// Spellcaster classes with their spell lists
+const SPELLCASTER_CLASSES = [
+  { id: 'mago', name: 'Mago' },
+  { id: 'clerigo', name: 'Clérigo' },
+  { id: 'druida', name: 'Druida' },
+  { id: 'bardo', name: 'Bardo' },
+  { id: 'paladino', name: 'Paladino' },
+  { id: 'patrulheiro', name: 'Patrulheiro' },
+  { id: 'feiticeiro', name: 'Feiticeiro' },
+  { id: 'bruxo', name: 'Bruxo' },
+];
+
 // Spell files will be loaded dynamically
 const spellFiles = [
   () => import("@/data/spells/a-c.json"),
+  () => import("@/data/spells/d-f.json"),
   () => import("@/data/spells/g-i.json"),
   () => import("@/data/spells/j-l.json"),
   () => import("@/data/spells/n-p.json"),
@@ -68,6 +81,7 @@ export function SpellGrimoire() {
   const [search, setSearch] = useState("");
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
   const [selectedSchool, setSelectedSchool] = useState<string | null>(null);
+  const [selectedClass, setSelectedClass] = useState<string | null>(null);
   const [showConcentration, setShowConcentration] = useState<boolean | null>(null);
   const [showRitual, setShowRitual] = useState<boolean | null>(null);
   const [selectedSpell, setSelectedSpell] = useState<Spell | null>(null);
@@ -201,6 +215,32 @@ export function SpellGrimoire() {
                   onClick={() => setSelectedSchool(selectedSchool === key ? null : key)}
                 >
                   {school.name}
+                </Button>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Class Filter */}
+        <div className="px-4 pb-3">
+          <p className="text-xs text-muted-foreground mb-2">Classe Conjuradora</p>
+          <ScrollArea className="w-full whitespace-nowrap">
+            <div className="flex gap-2">
+              <Button
+                variant={selectedClass === null ? "default" : "outline"}
+                size="sm"
+                onClick={() => setSelectedClass(null)}
+              >
+                Todas
+              </Button>
+              {SPELLCASTER_CLASSES.map((cls) => (
+                <Button
+                  key={cls.id}
+                  variant={selectedClass === cls.id ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setSelectedClass(selectedClass === cls.id ? null : cls.id)}
+                >
+                  {cls.name}
                 </Button>
               ))}
             </div>

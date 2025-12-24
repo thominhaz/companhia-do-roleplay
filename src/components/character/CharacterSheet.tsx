@@ -35,7 +35,7 @@ import advancementData from "@/data/rules/avanco-personagem.json";
 import { useCharacter, useUpdateCharacter } from "@/hooks/useCharacters";
 import { useCharacterActiveCombat } from "@/hooks/useCharacterCombat";
 import { useUpdateCombatant } from "@/hooks/useCombat";
-import { getModifier, getAttributeAbbr } from "@/data/srd";
+import { getModifier, getAttributeAbbr, CLASSES } from "@/data/srd";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -210,22 +210,34 @@ function SkillRow({
   bonus: number;
 }) {
   return (
-    <div className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-muted/30 transition-colors">
+    <div className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-colors ${
+      hasExpertise 
+        ? 'bg-yellow-500/10 border border-yellow-500/30 hover:bg-yellow-500/20' 
+        : isProficient 
+          ? 'bg-primary/10 border border-primary/30 hover:bg-primary/20' 
+          : 'hover:bg-muted/30'
+    }`}>
       <div className={`w-3 h-3 rounded-full border-2 flex-shrink-0 ${
         hasExpertise ? 'bg-yellow-500 border-yellow-500' :
         isProficient ? 'bg-primary border-primary' : 'border-muted-foreground/50'
       }`} />
       <div className="flex-1 min-w-0">
-        <span className="text-sm font-medium">{skill.name}</span>
-        <span className="text-xs text-primary ml-2">{attrAbbr}</span>
+        <span className={`text-sm ${isProficient || hasExpertise ? 'font-semibold' : 'font-medium'} ${
+          hasExpertise ? 'text-yellow-400' : isProficient ? 'text-primary' : ''
+        }`}>{skill.name}</span>
+        <span className="text-xs text-muted-foreground ml-2">{attrAbbr}</span>
+        {hasExpertise && <span className="text-[10px] text-yellow-400 ml-2">(Expertise)</span>}
+        {isProficient && !hasExpertise && <span className="text-[10px] text-primary ml-2">(Prof.)</span>}
       </div>
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
         <span>{base}</span>
         <span>+</span>
         <span>{bonus}</span>
         <span>=</span>
-        <span className="bg-primary/20 text-primary font-bold px-2 py-1 rounded-lg min-w-[32px] text-center">
-          {total}
+        <span className={`font-bold px-2 py-1 rounded-lg min-w-[32px] text-center ${
+          hasExpertise ? 'bg-yellow-500/20 text-yellow-400' : 'bg-primary/20 text-primary'
+        }`}>
+          {total >= 0 ? '+' : ''}{total}
         </span>
       </div>
     </div>
@@ -568,15 +580,6 @@ export function CharacterSheet() {
           </div>
           
           <div className="flex items-center gap-2">
-            <Button 
-              variant="outline" 
-              size="sm"
-              onClick={() => setShowEditStats(true)}
-              className="gap-1"
-            >
-              <Edit3 className="w-4 h-4" />
-              Editar
-            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full">
@@ -1096,12 +1099,20 @@ export function CharacterSheet() {
                   const isProficient = saves?.[attr]?.proficient || false;
                   const total = mod + (isProficient ? character.proficiency_bonus : 0);
                   return (
-                    <div key={attr} className="flex items-center gap-2 p-2 bg-muted/30 rounded-lg">
-                      <div className={`w-3 h-3 rounded-full border-2 ${
+                    <div key={attr} className={`flex items-center gap-2 p-2 rounded-lg transition-colors ${
+                      isProficient 
+                        ? 'bg-primary/20 border border-primary/40' 
+                        : 'bg-muted/30'
+                    }`}>
+                      <div className={`w-3 h-3 rounded-full border-2 flex-shrink-0 ${
                         isProficient ? 'bg-primary border-primary' : 'border-muted-foreground/50'
                       }`} />
-                      <span className="text-xs flex-1">{ATTR_NAMES[attr]}</span>
-                      <span className="text-sm font-bold">{total >= 0 ? '+' : ''}{total}</span>
+                      <span className={`text-xs flex-1 ${isProficient ? 'text-primary font-medium' : ''}`}>
+                        {ATTR_NAMES[attr]}
+                      </span>
+                      <span className={`text-sm font-bold ${isProficient ? 'text-primary' : ''}`}>
+                        {total >= 0 ? '+' : ''}{total}
+                      </span>
                     </div>
                   );
                 })}
@@ -1186,21 +1197,70 @@ export function CharacterSheet() {
               {skillsTab === 'habilidades' && (
                 <ScrollArea className="h-[380px]">
                   <div className="space-y-2">
-                    {(character.features as any[])?.length > 0 ? (
-                      (character.features as any[]).map((feature: any, i: number) => (
-                        <div key={i} className="p-3 bg-muted/30 rounded-xl">
-                          <div className="flex items-center justify-between mb-1">
-                            <p className="text-sm font-semibold">{feature.name}</p>
-                            {feature.source && (
-                              <span className="text-xs text-primary">{feature.source}</span>
-                            )}
-                          </div>
-                          <p className="text-xs text-muted-foreground">{feature.description}</p>
-                        </div>
-                      ))
-                    ) : (
-                      <p className="text-sm text-muted-foreground text-center py-8">Nenhuma habilidade</p>
-                    )}
+                    {/* Feats Section */}
+                    {(() => {
+                      const features = character.features as any[];
+                      const feats = features?.filter(f => f.type === 'feat' || f.source === 'Talento') || [];
+                      const classFeatures = features?.filter(f => f.type !== 'feat' && f.source !== 'Talento') || [];
+                      
+                      return (
+                        <>
+                          {feats.length > 0 && (
+                            <div className="mb-4">
+                              <h4 className="text-xs font-semibold text-yellow-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <Star className="w-3 h-3" />
+                                Talentos ({feats.length})
+                              </h4>
+                              {feats.map((feat: any, i: number) => (
+                                <div key={`feat-${i}`} className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl mb-2">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <p className="text-sm font-semibold text-yellow-400">{feat.name}</p>
+                                    <Badge variant="outline" className="text-[10px] bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                                      Talento
+                                    </Badge>
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">{feat.description}</p>
+                                  {feat.effects && (
+                                    <div className="mt-2 pt-2 border-t border-yellow-500/20">
+                                      <p className="text-[10px] text-yellow-400/70">Efeitos aplicados:</p>
+                                      <ul className="text-[10px] text-muted-foreground mt-1 space-y-0.5">
+                                        {Object.entries(feat.effects || {}).map(([key, value]) => (
+                                          <li key={key}>• {key}: {String(value)}</li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {classFeatures.length > 0 && (
+                            <div>
+                              <h4 className="text-xs font-semibold text-primary uppercase tracking-wider mb-2 flex items-center gap-2">
+                                <Sparkles className="w-3 h-3" />
+                                Habilidades de Classe ({classFeatures.length})
+                              </h4>
+                              {classFeatures.map((feature: any, i: number) => (
+                                <div key={`feature-${i}`} className="p-3 bg-muted/30 rounded-xl mb-2">
+                                  <div className="flex items-center justify-between mb-1">
+                                    <p className="text-sm font-semibold">{feature.name}</p>
+                                    {feature.source && (
+                                      <span className="text-xs text-primary">{feature.source}</span>
+                                    )}
+                                  </div>
+                                  <p className="text-xs text-muted-foreground">{feature.description}</p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {(!features || features.length === 0) && (
+                            <p className="text-sm text-muted-foreground text-center py-8">Nenhuma habilidade ou talento</p>
+                          )}
+                        </>
+                      );
+                    })()}
                   </div>
                 </ScrollArea>
               )}
@@ -1213,21 +1273,119 @@ export function CharacterSheet() {
                 Inventário
               </h3>
               
-              {/* Equipment with damage */}
-              {(character.equipment as any[])?.filter((item: any) => item.damage).map((item: any, i: number) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-xl mb-2">
-                  <span className="text-sm font-medium">{item.name}</span>
-                  <span className="text-sm text-primary font-mono">{item.damage}</span>
+              {/* Weapons */}
+              {(character.equipment as any[])?.filter((item: any) => item.type === 'weapon').length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[10px] uppercase text-primary font-semibold mb-1">Armas</p>
+                  {(character.equipment as any[]).filter((item: any) => item.type === 'weapon').map((item: any, i: number) => (
+                    <div 
+                      key={`weapon-${i}`} 
+                      className={`flex items-center justify-between p-3 rounded-xl mb-2 cursor-pointer transition-colors ${
+                        item.equipped 
+                          ? 'bg-primary/20 border border-primary/40' 
+                          : 'bg-muted/30 hover:bg-muted/50'
+                      }`}
+                      onClick={async () => {
+                        const equipment = [...(character.equipment as any[])];
+                        const itemIndex = equipment.findIndex(e => e.id === item.id || (e.name === item.name && e.type === item.type));
+                        if (itemIndex >= 0) {
+                          equipment[itemIndex] = { ...equipment[itemIndex], equipped: !equipment[itemIndex].equipped };
+                          await updateCharacter.mutateAsync({
+                            id: character.id,
+                            equipment: equipment
+                          });
+                          toast.success(equipment[itemIndex].equipped ? `${item.name} equipado` : `${item.name} desequipado`);
+                        }
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Swords className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">{item.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {item.damage && <span className="text-xs text-primary font-mono">{item.damage}</span>}
+                        {item.equipped && (
+                          <Badge variant="outline" className="text-[10px] bg-primary/20 text-primary border-primary/40">
+                            Equipado
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-              
-              {/* Other equipment */}
-              {(character.equipment as any[])?.filter((item: any) => !item.damage).slice(0, 3).map((item: any, i: number) => (
-                <div key={i} className="flex items-center justify-between p-3 bg-muted/30 rounded-xl mb-2">
-                  <span className="text-sm font-medium">{item.name}</span>
-                  {item.equipped && <span className="text-xs text-primary">Equipado</span>}
+              )}
+
+              {/* Armor */}
+              {(character.equipment as any[])?.filter((item: any) => item.type === 'armor' || item.type === 'shield').length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[10px] uppercase text-primary font-semibold mb-1">Armaduras</p>
+                  {(character.equipment as any[]).filter((item: any) => item.type === 'armor' || item.type === 'shield').map((item: any, i: number) => (
+                    <div 
+                      key={`armor-${i}`} 
+                      className={`flex items-center justify-between p-3 rounded-xl mb-2 cursor-pointer transition-colors ${
+                        item.equipped 
+                          ? 'bg-cyan-500/20 border border-cyan-500/40' 
+                          : 'bg-muted/30 hover:bg-muted/50'
+                      }`}
+                      onClick={async () => {
+                        const equipment = [...(character.equipment as any[])];
+                        const itemIndex = equipment.findIndex(e => e.id === item.id || (e.name === item.name && e.type === item.type));
+                        if (itemIndex >= 0) {
+                          const newEquipped = !equipment[itemIndex].equipped;
+                          equipment[itemIndex] = { ...equipment[itemIndex], equipped: newEquipped };
+                          
+                          // Recalculate AC when armor is equipped/unequipped
+                          let newAC = 10 + getModifier((attributes as any)?.dexterity || 10);
+                          if (newEquipped && item.armorClass) {
+                            // Use armor AC + DEX mod (simplified)
+                            newAC = item.armorClass + (item.maxDexBonus !== undefined 
+                              ? Math.min(getModifier((attributes as any)?.dexterity || 10), item.maxDexBonus)
+                              : getModifier((attributes as any)?.dexterity || 10));
+                          }
+                          
+                          await updateCharacter.mutateAsync({
+                            id: character.id,
+                            equipment: equipment,
+                            ...(item.armorClass ? { armor_class: newAC } : {})
+                          });
+                          toast.success(newEquipped ? `${item.name} equipado` : `${item.name} desequipado`);
+                        }
+                      }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <Shield className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-sm font-medium">{item.name}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {item.armorClass && <span className="text-xs text-cyan-400 font-mono">CA {item.armorClass}</span>}
+                        {item.equipped && (
+                          <Badge variant="outline" className="text-[10px] bg-cyan-500/20 text-cyan-400 border-cyan-500/40">
+                            Equipado
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
+
+              {/* Other Items */}
+              {(character.equipment as any[])?.filter((item: any) => item.type !== 'weapon' && item.type !== 'armor' && item.type !== 'shield').length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[10px] uppercase text-muted-foreground font-semibold mb-1">Outros Itens</p>
+                  <div className="flex flex-wrap gap-1">
+                    {(character.equipment as any[]).filter((item: any) => item.type !== 'weapon' && item.type !== 'armor' && item.type !== 'shield').slice(0, 6).map((item: any, i: number) => (
+                      <Badge key={`item-${i}`} variant="outline" className="text-xs">
+                        {item.name} {item.quantity > 1 && `(${item.quantity})`}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {(!character.equipment || (character.equipment as any[]).length === 0) && (
+                <p className="text-sm text-muted-foreground text-center py-4">Nenhum equipamento</p>
+              )}
 
               {/* Currency */}
               <div className="flex gap-2 mt-3">
@@ -1376,16 +1534,33 @@ export function CharacterSheet() {
                   </Button>
                 </div>
                 
-                <div className="grid grid-cols-2 gap-2 mb-3">
-                  <div className="p-2 bg-muted/30 rounded-xl text-center">
-                    <p className="text-lg font-bold">{(character.spellcasting as any)?.spellSaveDC || 8 + character.proficiency_bonus}</p>
-                    <p className="text-[10px] text-muted-foreground">CD Resistência</p>
-                  </div>
-                  <div className="p-2 bg-muted/30 rounded-xl text-center">
-                    <p className="text-lg font-bold">+{(character.spellcasting as any)?.spellAttackBonus || character.proficiency_bonus}</p>
-                    <p className="text-[10px] text-muted-foreground">Ataque</p>
-                  </div>
-                </div>
+                {(() => {
+                  // Get spellcasting ability from class
+                  const classData = CLASSES.find(c => c.name === character.class);
+                  const spellcastingAbility = (classData as any)?.spellcasting?.ability || 'intelligence';
+                  const abilityMod = getModifier((attributes as any)?.[spellcastingAbility] || 10);
+                  const spellSaveDC = 8 + character.proficiency_bonus + abilityMod;
+                  const spellAttackBonus = character.proficiency_bonus + abilityMod;
+                  const abilityName = ATTR_NAMES[spellcastingAbility] || spellcastingAbility;
+                  
+                  return (
+                    <div className="space-y-2 mb-3">
+                      <div className="text-[10px] text-center text-muted-foreground mb-1">
+                        Habilidade: <span className="text-primary font-medium">{abilityName}</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div className="p-2 bg-muted/30 rounded-xl text-center">
+                          <p className="text-lg font-bold">{spellSaveDC}</p>
+                          <p className="text-[10px] text-muted-foreground">CD Resistência</p>
+                        </div>
+                        <div className="p-2 bg-muted/30 rounded-xl text-center">
+                          <p className="text-lg font-bold">+{spellAttackBonus}</p>
+                          <p className="text-[10px] text-muted-foreground">Ataque</p>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })()}
 
                 <ScrollArea className="h-[180px]">
                   <div className="space-y-1">
@@ -1610,7 +1785,6 @@ export function CharacterSheet() {
             </AlertDialogCancel>
             <AlertDialogAction 
               onClick={showRestDialog === 'short' ? handleShortRest : handleLongRest}
-              disabled={showRestDialog === 'short' && hitDiceToSpend === 0}
               className={showRestDialog === 'short' ? 'bg-amber-500 hover:bg-amber-600' : 'bg-indigo-500 hover:bg-indigo-600'}
             >
               {showRestDialog === 'short' ? 'Descansar' : 'Descansar'}

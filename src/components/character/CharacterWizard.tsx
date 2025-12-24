@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, X, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
 import { useCreateCharacter, CharacterInsert } from '@/hooks/useCharacters';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useAuth } from '@/hooks/useAuth';
@@ -16,6 +17,11 @@ import { BackgroundStep } from './steps/BackgroundStep';
 import { BackstoryStep } from './steps/BackstoryStep';
 import { SpellsStep } from './steps/SpellsStep';
 import { ReviewStep } from './steps/ReviewStep';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 export type WizardData = {
   race: string;
@@ -126,27 +132,29 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
   const { data: subscription } = useSubscription();
   const createCharacter = useCreateCharacter();
 
-  const canProceed = () => {
+  // Calculate missing items for checklist
+  const missingItems = useMemo(() => {
     const selectedClass = CLASSES.find(c => c.id === data.class);
     const requiredSkills = selectedClass?.proficiencies?.skills?.choose || 2;
+    const items: { step: number; label: string }[] = [];
     
-    switch (step) {
-      case 0: return !!data.race;
-      case 1: return !!data.class;
-      case 2: return true; // Attributes
-      case 3: return data.selectedSkills.length === requiredSkills; // Skills
-      case 4: return true; // Languages (optional or auto-skip)
-      case 5: return !!data.equipmentPack; // Equipment
-      case 6: return true; // Spells (optional for non-casters)
-      case 7: return !!data.name && !!data.background && !!data.alignment; // Background
-      case 8: return true; // Backstory (optional)
-      case 9: return true; // Review
-      default: return false;
+    if (!data.race) items.push({ step: 0, label: 'Raça' });
+    if (!data.class) items.push({ step: 1, label: 'Classe' });
+    if (data.selectedSkills.length < requiredSkills) {
+      items.push({ step: 3, label: `Perícias (${data.selectedSkills.length}/${requiredSkills})` });
     }
-  };
+    if (!data.equipmentPack) items.push({ step: 5, label: 'Equipamento inicial' });
+    if (!data.name) items.push({ step: 7, label: 'Nome do personagem' });
+    if (!data.background) items.push({ step: 7, label: 'Antecedente' });
+    if (!data.alignment) items.push({ step: 7, label: 'Alinhamento' });
+    
+    return items;
+  }, [data]);
+
+  const canCreate = missingItems.length === 0;
 
   const handleNext = () => {
-    if (step < STEPS.length - 1 && canProceed()) {
+    if (step < STEPS.length - 1) {
       setStep(step + 1);
     }
   };
@@ -307,27 +315,56 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
             </button>
           )}
           <h1 className="text-lg font-semibold">Novo Personagem</h1>
-          {step < STEPS.length - 1 ? (
-            <Button
-              onClick={handleNext}
-              disabled={!canProceed()}
-              size="sm"
-              className="bg-gradient-primary px-4"
-            >
-              Próximo
-              <ArrowRight className="w-4 h-4 ml-1" />
-            </Button>
-          ) : (
-            <Button
-              onClick={handleCreate}
-              disabled={createCharacter.isPending}
-              size="sm"
-              className="bg-gradient-primary px-4"
-            >
-              <Check className="w-4 h-4 mr-1" />
-              {createCharacter.isPending ? 'Criando...' : 'Criar'}
-            </Button>
-          )}
+          <div className="flex items-center gap-2">
+            {/* Missing Items Indicator */}
+            {missingItems.length > 0 && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-1 text-yellow-500 border-yellow-500/30">
+                    <AlertTriangle className="w-3 h-3" />
+                    <span className="text-xs">{missingItems.length}</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-64 p-3" align="end">
+                  <p className="text-sm font-semibold mb-2 text-yellow-500">Itens Faltando</p>
+                  <ul className="space-y-1">
+                    {missingItems.map((item, i) => (
+                      <li key={i} className="flex items-center gap-2">
+                        <button
+                          onClick={() => setStep(item.step)}
+                          className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                        >
+                          <X className="w-3 h-3 text-red-400" />
+                          {item.label}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </PopoverContent>
+              </Popover>
+            )}
+            
+            {step < STEPS.length - 1 ? (
+              <Button
+                onClick={handleNext}
+                size="sm"
+                className="bg-gradient-primary px-4"
+              >
+                Próximo
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Button>
+            ) : (
+              <Button
+                onClick={handleCreate}
+                disabled={createCharacter.isPending || !canCreate}
+                size="sm"
+                className="bg-gradient-primary px-4"
+              >
+                <Check className="w-4 h-4 mr-1" />
+                {createCharacter.isPending ? 'Criando...' : 'Criar'}
+              </Button>
+            )}
+          </div>
         </div>
         
         {/* Progress */}
