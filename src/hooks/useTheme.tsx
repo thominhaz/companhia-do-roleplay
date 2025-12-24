@@ -55,6 +55,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const root = document.documentElement;
     
+    // Disable transitions on initial load
+    root.classList.add('no-transitions');
+    
     // Remove all theme classes
     root.classList.remove('theme-default', 'theme-neon', 'theme-vintage', 'theme-dark-elf');
     root.classList.remove('light', 'dark');
@@ -70,6 +73,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // While subscription is loading, apply stored style without resetting
     if (isLoadingSubscription) {
       root.classList.add(`theme-${style}`);
+      // Re-enable transitions after a brief delay
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          root.classList.remove('no-transitions');
+        });
+      });
       return;
     }
     
@@ -84,6 +93,13 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('go20-theme-style', 'default');
       }
     }
+    
+    // Re-enable transitions after theme is applied
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        root.classList.remove('no-transitions');
+      });
+    });
   }, [mode, style, hasThemeAccess, isLoadingSubscription]);
 
   // Listen for system theme changes
