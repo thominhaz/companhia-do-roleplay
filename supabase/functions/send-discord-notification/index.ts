@@ -36,6 +36,36 @@ interface NotificationPayload {
   };
 }
 
+// ==========================================
+// INPUT SANITIZATION: Prevent Discord markdown injection
+// ==========================================
+
+/**
+ * Sanitizes a string by removing markdown special characters and limiting length
+ * Prevents injection of fake links, impersonation, and visual manipulation
+ */
+const sanitizeString = (str: string | undefined | null, maxLength: number = 100): string => {
+  if (!str || typeof str !== 'string') return '';
+  // Remove markdown link syntax brackets/parentheses and limit length
+  return str.slice(0, maxLength).replace(/[\[\]()]/g, '');
+};
+
+/**
+ * Escapes Discord markdown formatting characters
+ * Prevents bold, italic, code, strikethrough, and spoiler injection
+ */
+const escapeMarkdown = (text: string): string => {
+  if (!text || typeof text !== 'string') return '';
+  return text.replace(/([*_`~|\\])/g, '\\$1');
+};
+
+/**
+ * Combines sanitization and markdown escaping for user-supplied content
+ */
+const sanitizeUserInput = (str: string | undefined | null, maxLength: number = 100): string => {
+  return escapeMarkdown(sanitizeString(str, maxLength));
+};
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -143,10 +173,11 @@ serve(async (req) => {
       case 'dice_roll':
         const diceEmoji = data.isCritical ? '🎉' : data.isCriticalFail ? '💀' : '🎲';
         const color = data.isCritical ? 0xFFD700 : data.isCriticalFail ? 0xFF0000 : 0x7C3AED;
+        const playerName = sanitizeUserInput(data.characterName || data.username, 50);
         
         embed = {
           title: `${diceEmoji} Rolagem de Dados`,
-          description: `**${data.characterName || data.username}** rolou ${data.diceCount}${data.diceType}${data.modifier && data.modifier !== 0 ? (data.modifier > 0 ? `+${data.modifier}` : data.modifier) : ''}`,
+          description: `**${playerName}** rolou ${data.diceCount}${data.diceType}${data.modifier && data.modifier !== 0 ? (data.modifier > 0 ? `+${data.modifier}` : data.modifier) : ''}`,
           color,
           fields: [
             {
@@ -160,7 +191,7 @@ serve(async (req) => {
               inline: true,
             },
           ],
-          footer: { text: campaign.name },
+          footer: { text: sanitizeUserInput(campaign.name, 50) },
           timestamp: new Date().toISOString(),
         };
 
@@ -172,49 +203,52 @@ serve(async (req) => {
         break;
 
       case 'session_reminder':
+        const sessionTitle = sanitizeUserInput(data.sessionTitle, 100);
         embed = {
           title: '📅 Lembrete de Sessão',
-          description: `A sessão **${data.sessionTitle}** está chegando!`,
+          description: `A sessão **${sessionTitle}** está chegando!`,
           color: 0x22C55E,
           fields: [
             {
               name: 'Data',
-              value: data.sessionDate || 'A definir',
+              value: sanitizeUserInput(data.sessionDate, 50) || 'A definir',
               inline: true,
             },
           ],
-          footer: { text: campaign.name },
+          footer: { text: sanitizeUserInput(campaign.name, 50) },
           timestamp: new Date().toISOString(),
         };
         content = '@here';
         break;
 
       case 'combat_start':
+        const combatStartName = sanitizeUserInput(data.combatName, 100);
         embed = {
           title: '⚔️ Combate Iniciado!',
-          description: data.combatName ? `**${data.combatName}**` : 'Um novo combate começou!',
+          description: combatStartName ? `**${combatStartName}**` : 'Um novo combate começou!',
           color: 0xEF4444,
-          footer: { text: campaign.name },
+          footer: { text: sanitizeUserInput(campaign.name, 50) },
           timestamp: new Date().toISOString(),
         };
         break;
 
       case 'combat_end':
+        const combatEndName = sanitizeUserInput(data.combatName, 100);
         embed = {
           title: '🏆 Combate Encerrado',
-          description: data.combatName ? `**${data.combatName}** terminou!` : 'O combate terminou!',
+          description: combatEndName ? `**${combatEndName}** terminou!` : 'O combate terminou!',
           color: 0x22C55E,
-          footer: { text: campaign.name },
+          footer: { text: sanitizeUserInput(campaign.name, 50) },
           timestamp: new Date().toISOString(),
         };
         break;
 
       case 'custom':
         embed = {
-          title: data.customTitle || '📢 Notificação',
-          description: data.customMessage || '',
+          title: sanitizeUserInput(data.customTitle, 100) || '📢 Notificação',
+          description: sanitizeUserInput(data.customMessage, 500) || '',
           color: 0x7C3AED,
-          footer: { text: campaign.name },
+          footer: { text: sanitizeUserInput(campaign.name, 50) },
           timestamp: new Date().toISOString(),
         };
         break;
