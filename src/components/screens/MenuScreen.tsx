@@ -14,6 +14,7 @@ import {
   ExternalLink,
   LogIn,
   History,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/layout/AppHeader";
@@ -25,6 +26,7 @@ import { SubscriptionSheet } from "@/components/menu/SubscriptionSheet";
 import { AppearanceSheet } from "@/components/menu/AppearanceSheet";
 import { HelpSheet } from "@/components/menu/HelpSheet";
 import { PrivacySheet } from "@/components/menu/PrivacySheet";
+import { DiscordLinkSheet } from "@/components/menu/DiscordLinkSheet";
 
 const menuSections = [
   {
@@ -61,6 +63,13 @@ const menuSections = [
         label: "Aparência",
         description: "Tema escuro",
         icon: Moon,
+        hasArrow: true,
+      },
+      {
+        id: "discord",
+        label: "Discord",
+        description: "Vincular conta e cargos",
+        icon: MessageCircle,
         hasArrow: true,
       },
     ],
@@ -107,6 +116,7 @@ export function MenuScreen() {
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [helpOpen, setHelpOpen] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [discordOpen, setDiscordOpen] = useState(false);
 
   const handleLogout = async () => {
     await signOut();
@@ -139,6 +149,13 @@ export function MenuScreen() {
         break;
       case "appearance":
         setAppearanceOpen(true);
+        break;
+      case "discord":
+        if (user) {
+          setDiscordOpen(true);
+        } else {
+          navigate("/auth");
+        }
         break;
       case "changelog":
         setChangelogOpen(true);
@@ -305,6 +322,7 @@ export function MenuScreen() {
       <AppearanceSheet open={appearanceOpen} onOpenChange={setAppearanceOpen} />
       <HelpSheet open={helpOpen} onOpenChange={setHelpOpen} />
       <PrivacySheet open={privacyOpen} onOpenChange={setPrivacyOpen} />
+      <DiscordLinkSheet open={discordOpen} onOpenChange={setDiscordOpen} />
     </div>
   );
 }
