@@ -19,6 +19,7 @@ import { toast } from "sonner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AnimatedDice } from "@/components/ui/animated-dice";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+import { useHaptics } from "@/hooks/useHaptics";
 
 interface DiceRollerProps {
   onBack: () => void;
@@ -157,6 +158,7 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
   const { data: campaigns } = useAllCampaigns();
   const { sendDiceRoll, hasDiscordIntegration } = useDiscordNotification();
   const { playDiceRoll, playSuccess, playClick } = useSoundEffects();
+  const { mediumTap, successVibration } = useHaptics();
 
   const masterCampaigns = campaigns?.master || [];
 
@@ -185,6 +187,7 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
   const rollWithAdvantage = async (mode: 'advantage' | 'disadvantage', modifier: number = 0) => {
     setIsRolling(true);
     playDiceRoll(); // Sound effect
+    mediumTap(); // Haptic feedback
 
     setTimeout(async () => {
       const roll1 = Math.floor(Math.random() * 20) + 1;
@@ -195,7 +198,10 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
       const isCritical = chosen === 20;
       const isCriticalFail = chosen === 1;
 
-      if (isCritical) playSuccess();
+      if (isCritical) {
+        playSuccess();
+        successVibration();
+      }
 
       const modeLabel = mode === 'advantage' ? 'Vantagem' : 'Desvantagem';
       const expressionStr = modifier !== 0 
@@ -251,11 +257,15 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
 
     setIsRolling(true);
     playDiceRoll(); // Sound effect
+    mediumTap(); // Haptic feedback
 
     setTimeout(async () => {
       const { rolledParts, total, isCritical, isCriticalFail } = rollParts(parts);
 
-      if (isCritical) playSuccess();
+      if (isCritical) {
+        playSuccess();
+        successVibration();
+      }
 
       const result: RollResult = {
         expression: expression.trim(),
@@ -317,11 +327,15 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
 
       setIsRolling(true);
       playDiceRoll(); // Sound effect
+      mediumTap(); // Haptic feedback
       
       setTimeout(() => {
         const { rolledParts, total, isCritical, isCriticalFail } = rollParts(parts);
         
-        if (isCritical) playSuccess();
+        if (isCritical) {
+          playSuccess();
+          successVibration();
+        }
         
         const result: RollResult = {
           expression: expr,

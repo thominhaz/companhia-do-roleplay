@@ -1,9 +1,10 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { Moon, Sun, Monitor, Sparkles, Lock, Crown, Palette, Volume2, VolumeX } from "lucide-react";
+import { Moon, Sun, Monitor, Sparkles, Lock, Crown, Palette, Volume2, VolumeX, Vibrate } from "lucide-react";
 import { useTheme, ThemeMode, ThemeStyle } from "@/hooks/useTheme";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useSoundSettings } from "@/hooks/useSoundSettings";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+import { useHaptics } from "@/hooks/useHaptics";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
@@ -31,8 +32,14 @@ interface ThemeStyleOption {
 export function AppearanceSheet({ open, onOpenChange }: AppearanceSheetProps) {
   const { mode, style, setMode, setStyle, canUseTheme } = useTheme();
   const { data: subscription } = useSubscription();
-  const { settings: soundSettings, setEnabled: setSoundEnabled, setVolume: setSoundVolume } = useSoundSettings();
+  const { 
+    settings: soundSettings, 
+    setEnabled: setSoundEnabled, 
+    setVolume: setSoundVolume,
+    setHapticEnabled 
+  } = useSoundSettings();
   const { playClick } = useSoundEffects();
+  const { canVibrate, lightTap } = useHaptics();
 
   const modes: ThemeModeOption[] = [
     { id: "dark", label: "Escuro", icon: Moon, description: "Tema escuro para ambientes com pouca luz" },
@@ -220,6 +227,29 @@ export function AppearanceSheet({ open, onOpenChange }: AppearanceSheetProps) {
                   />
                 </div>
               )}
+
+              {/* Haptic Toggle */}
+              <div className="flex items-center justify-between pt-2 border-t border-border/30">
+                <div>
+                  <p className="text-sm font-medium text-foreground flex items-center gap-2">
+                    <Vibrate className="w-4 h-4" />
+                    Vibração
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {canVibrate ? "Feedback tátil ao tocar" : "Não suportado neste dispositivo"}
+                  </p>
+                </div>
+                <Switch
+                  checked={soundSettings.hapticEnabled}
+                  onCheckedChange={(checked) => {
+                    setHapticEnabled(checked);
+                    if (checked) {
+                      setTimeout(lightTap, 50);
+                    }
+                  }}
+                  disabled={!canVibrate}
+                />
+              </div>
             </div>
           </div>
 

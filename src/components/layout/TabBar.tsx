@@ -3,6 +3,7 @@ import { cn } from "@/lib/utils";
 import type { TabRoute } from "@/types";
 import { motion } from "framer-motion";
 import { useSoundEffects } from "@/hooks/useSoundEffects";
+import { useHaptics } from "@/hooks/useHaptics";
 
 interface TabBarProps {
   activeTab: TabRoute;
@@ -19,10 +20,12 @@ const tabs = [
 
 export function TabBar({ activeTab, onTabChange }: TabBarProps) {
   const { playClick } = useSoundEffects();
+  const { lightTap } = useHaptics();
 
   const handleTabChange = (tabId: TabRoute) => {
     if (tabId !== activeTab) {
       playClick();
+      lightTap();
       onTabChange(tabId);
     }
   };
