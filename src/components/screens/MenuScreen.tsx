@@ -27,6 +27,7 @@ import { AppearanceSheet } from "@/components/menu/AppearanceSheet";
 import { HelpSheet } from "@/components/menu/HelpSheet";
 import { PrivacySheet } from "@/components/menu/PrivacySheet";
 import { DiscordLinkSheet } from "@/components/menu/DiscordLinkSheet";
+import { supabase } from "@/integrations/supabase/client";
 
 const menuSections = [
   {
@@ -118,6 +119,26 @@ export function MenuScreen() {
   const [helpOpen, setHelpOpen] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [discordOpen, setDiscordOpen] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  // Fetch user profile avatar
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) return;
+      
+      const { data } = await supabase
+        .from('profiles')
+        .select('avatar_url')
+        .eq('id', user.id)
+        .single();
+      
+      if (data?.avatar_url) {
+        setAvatarUrl(data.avatar_url);
+      }
+    };
+    
+    fetchProfile();
+  }, [user, profileOpen]); // Re-fetch when profile sheet closes (in case avatar was updated)
 
   // Handle Discord OAuth callback
   useEffect(() => {
@@ -205,11 +226,19 @@ export function MenuScreen() {
               onClick={() => setProfileOpen(true)}
               className="w-full glass-card-solar rounded-2xl p-4 flex items-center gap-4 card-hover-subtle"
             >
-              <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
-                <span className="text-xl font-bold text-foreground">
-                  {displayName[0].toUpperCase()}
-                </span>
-              </div>
+              {avatarUrl ? (
+                <img 
+                  src={avatarUrl} 
+                  alt={displayName}
+                  className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+                />
+              ) : (
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-secondary flex items-center justify-center flex-shrink-0">
+                  <span className="text-xl font-bold text-foreground">
+                    {displayName[0].toUpperCase()}
+                  </span>
+                </div>
+              )}
               <div className="flex-1 text-left">
                 <div className="flex items-center gap-2">
                   <h2 className="text-base font-semibold text-foreground">
