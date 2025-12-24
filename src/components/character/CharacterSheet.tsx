@@ -1535,9 +1535,13 @@ export function CharacterSheet() {
                 </div>
                 
                 {(() => {
-                  // Get spellcasting ability from class
+                  // Get spellcasting ability from class features
                   const classData = CLASSES.find(c => c.name === character.class);
-                  const spellcastingAbility = (classData as any)?.spellcasting?.ability || 'intelligence';
+                  const spellcastingFeature = (classData as any)?.features?.find((f: any) => f.id === 'spellcasting');
+                  const spellcastingAbility = spellcastingFeature?.mechanical?.spellcasting_ability || 
+                    (classData?.primary_abilities?.[0] === 'wisdom' ? 'wisdom' : 
+                     classData?.primary_abilities?.[0] === 'charisma' ? 'charisma' : 
+                     classData?.primary_abilities?.[0] === 'intelligence' ? 'intelligence' : 'intelligence');
                   const abilityMod = getModifier((attributes as any)?.[spellcastingAbility] || 10);
                   const spellSaveDC = 8 + character.proficiency_bonus + abilityMod;
                   const spellAttackBonus = character.proficiency_bonus + abilityMod;
