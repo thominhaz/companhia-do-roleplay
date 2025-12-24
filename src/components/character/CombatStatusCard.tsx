@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Swords, Clock, Heart, Shield, Users, Zap, Plus, Minus, ChevronDown, ChevronUp } from "lucide-react";
 import { useCharacterActiveCombat } from "@/hooks/useCharacterCombat";
 import { useUpdateCombatant } from "@/hooks/useCombat";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { AnimatedHPBar } from "@/components/ui/animated-dice";
 
 interface CombatStatusCardProps {
   characterId: string;
@@ -124,26 +125,19 @@ export function CombatStatusCard({ characterId }: CombatStatusCardProps) {
 
       {/* HP Display with Quick Actions */}
       <div className="bg-card/50 rounded-xl p-4 mb-3">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Heart className={`w-5 h-5 ${myHpPercent <= 25 ? 'text-red-400' : myHpPercent <= 50 ? 'text-yellow-400' : 'text-green-400'}`} />
-            <span className="text-sm font-medium">Pontos de Vida</span>
-          </div>
-          <div className="text-right">
-            <span className="text-2xl font-bold">{combatant.current_hp}</span>
-            <span className="text-muted-foreground">/{combatant.max_hp}</span>
-          </div>
+        <div className="flex items-center gap-2 mb-3">
+          <Heart className={`w-5 h-5 ${myHpPercent <= 25 ? 'text-red-400 animate-pulse' : myHpPercent <= 50 ? 'text-yellow-400' : 'text-green-400'}`} />
+          <span className="text-sm font-medium">Pontos de Vida</span>
         </div>
 
-        {/* HP Bar */}
-        <div className="h-3 bg-muted rounded-full overflow-hidden mb-3">
-          <motion.div
-            className={`h-full rounded-full ${
-              myHpPercent <= 25 ? 'bg-red-500' : myHpPercent <= 50 ? 'bg-yellow-500' : 'bg-green-500'
-            }`}
-            initial={{ width: 0 }}
-            animate={{ width: `${myHpPercent}%` }}
-            transition={{ duration: 0.3 }}
+        {/* Animated HP Bar */}
+        <div className="mb-3">
+          <AnimatedHPBar
+            currentHp={combatant.current_hp}
+            maxHp={combatant.max_hp}
+            showNumbers={true}
+            size="lg"
+            animate={true}
           />
         </div>
 
