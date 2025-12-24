@@ -1,10 +1,11 @@
-import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Wand2, Skull, Check, Lock, Loader2, LogIn, Swords } from "lucide-react";
+import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Wand2, Skull, Check, Lock, Loader2, LogIn, Swords, Trash2, LogOut, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
-import { useMasterCampaigns, usePlayerCampaigns, CampaignDB } from "@/hooks/useCampaigns";
+import { useMasterCampaigns, usePlayerCampaigns, CampaignDB, useDeleteCampaign } from "@/hooks/useCampaigns";
+import { useLeaveCampaign } from "@/hooks/useSessions";
 import { toast } from "sonner";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -17,6 +18,23 @@ import { CampaignChatSheet } from "@/components/campaign/CampaignChatSheet";
 import { CreateSessionSheet } from "@/components/campaign/CreateSessionSheet";
 import { PlayerCombatView } from "@/components/campaign/PlayerCombatView";
 import { AppHeader } from "@/components/layout/AppHeader";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 type FilterType = 'all' | 'mastering' | 'playing';
 
@@ -94,7 +112,8 @@ function MasterCampaignCard({
   onClick,
   onChatClick,
   onNotesClick,
-  onAgendaClick
+  onAgendaClick,
+  onDeleteClick
 }: { 
   campaign: CampaignDB; 
   playerCount: number;
@@ -103,6 +122,7 @@ function MasterCampaignCard({
   onChatClick: () => void;
   onNotesClick: () => void;
   onAgendaClick: () => void;
+  onDeleteClick: () => void;
 }) {
   const isActive = !!nextSession;
   const gradient = isActive ? "emerald" : "orange";
@@ -175,12 +195,39 @@ function MasterCampaignCard({
               </p>
             </div>
           </div>
-          <button 
-            className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <MoreVertical className={cn("w-4 h-4", textColorClasses[gradient])} />
-          </button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button 
+                className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <MoreVertical className={cn("w-4 h-4", textColorClasses[gradient])} />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+              <DropdownMenuItem onClick={onClick}>
+                <Eye className="w-4 h-4 mr-2" />
+                Ver Detalhes
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onChatClick}>
+                <MessageCircle className="w-4 h-4 mr-2" />
+                Chat
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onNotesClick}>
+                <StickyNote className="w-4 h-4 mr-2" />
+                Notas
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={onAgendaClick}>
+                <Calendar className="w-4 h-4 mr-2" />
+                Agendar Sessão
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={onDeleteClick} className="text-destructive focus:text-destructive">
+                <Trash2 className="w-4 h-4 mr-2" />
+                Excluir Campanha
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         <div className="grid grid-cols-2 gap-2 mb-4">
@@ -234,7 +281,7 @@ function MasterCampaignCard({
   );
 }
 
-function PlayerCampaignCard({ campaign, masterName, onClick, onChatClick, onNotesClick, onCombatClick }: { campaign: CampaignDB; masterName?: string; onClick: () => void; onChatClick: () => void; onNotesClick: () => void; onCombatClick: () => void }) {
+function PlayerCampaignCard({ campaign, masterName, onClick, onChatClick, onNotesClick, onCombatClick, onLeaveClick }: { campaign: CampaignDB; masterName?: string; onClick: () => void; onChatClick: () => void; onNotesClick: () => void; onCombatClick: () => void; onLeaveClick: () => void }) {
   const colors = {
     iconBg: "from-blue-600 to-blue-800",
     buttonBg: "bg-blue-600/20",
@@ -258,12 +305,39 @@ function PlayerCampaignCard({ campaign, masterName, onClick, onChatClick, onNote
           </div>
           <p className="text-xs text-muted-foreground">Mestre: {masterName || "Desconhecido"} • D&D 5e</p>
         </div>
-        <button 
-          className="w-8 h-8 rounded-lg bg-darker flex items-center justify-center"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <MoreVertical className="w-4 h-4 text-muted-foreground" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <button 
+              className="w-8 h-8 rounded-lg bg-darker flex items-center justify-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <MoreVertical className="w-4 h-4 text-muted-foreground" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
+            <DropdownMenuItem onClick={onClick}>
+              <Eye className="w-4 h-4 mr-2" />
+              Ver Detalhes
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onChatClick}>
+              <MessageCircle className="w-4 h-4 mr-2" />
+              Chat
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onNotesClick}>
+              <StickyNote className="w-4 h-4 mr-2" />
+              Notas
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={onCombatClick}>
+              <Swords className="w-4 h-4 mr-2" />
+              Ver Combate
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={onLeaveClick} className="text-destructive focus:text-destructive">
+              <LogOut className="w-4 h-4 mr-2" />
+              Sair da Campanha
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       
       <div className="flex gap-2 mb-3">
@@ -315,11 +389,19 @@ export function CampaignsScreen() {
   const [showQuickAgenda, setShowQuickAgenda] = useState(false);
   const [showQuickCombat, setShowQuickCombat] = useState(false);
   const [quickActionCampaign, setQuickActionCampaign] = useState<CampaignDB | null>(null);
+  
+  // Delete/Leave confirmation dialog
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+  const [campaignToDelete, setCampaignToDelete] = useState<CampaignDB | null>(null);
+  const [campaignToLeave, setCampaignToLeave] = useState<CampaignDB | null>(null);
 
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
   const canCreateCampaign = subscription?.canCreateCampaign ?? false;
+  const deleteCampaign = useDeleteCampaign();
+  const leaveCampaign = useLeaveCampaign();
 
   const { data: masterData, isLoading: loadingMaster } = useMasterCampaigns();
   const { data: playerData, isLoading: loadingPlayer } = usePlayerCampaigns();
@@ -358,27 +440,57 @@ export function CampaignsScreen() {
   };
 
   const handleQuickChat = (campaign: CampaignDB) => {
-    console.log('handleQuickChat called with campaign:', campaign.id);
     setQuickActionCampaign(campaign);
     setShowQuickChat(true);
   };
 
   const handleQuickNotes = (campaign: CampaignDB) => {
-    console.log('handleQuickNotes called with campaign:', campaign.id);
     setQuickActionCampaign(campaign);
     setShowQuickNotes(true);
   };
 
   const handleQuickAgenda = (campaign: CampaignDB) => {
-    console.log('handleQuickAgenda called with campaign:', campaign.id);
     setQuickActionCampaign(campaign);
     setShowQuickAgenda(true);
   };
 
   const handleQuickCombat = (campaign: CampaignDB) => {
-    console.log('handleQuickCombat called with campaign:', campaign.id);
     setQuickActionCampaign(campaign);
     setShowQuickCombat(true);
+  };
+
+  const handleDeleteClick = (campaign: CampaignDB) => {
+    setCampaignToDelete(campaign);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleLeaveClick = (campaign: CampaignDB) => {
+    setCampaignToLeave(campaign);
+    setLeaveDialogOpen(true);
+  };
+
+  const confirmDelete = async () => {
+    if (campaignToDelete) {
+      try {
+        await deleteCampaign.mutateAsync(campaignToDelete.id);
+        setDeleteDialogOpen(false);
+        setCampaignToDelete(null);
+      } catch (error) {
+        // Error handled by mutation
+      }
+    }
+  };
+
+  const confirmLeave = async () => {
+    if (campaignToLeave) {
+      try {
+        await leaveCampaign.mutateAsync(campaignToLeave.id);
+        setLeaveDialogOpen(false);
+        setCampaignToLeave(null);
+      } catch (error) {
+        // Error handled by mutation
+      }
+    }
   };
 
   const filteredMasterCampaigns = activeFilter === 'playing' ? [] : masterCampaigns;
@@ -512,6 +624,7 @@ export function CampaignsScreen() {
                     onChatClick={() => handleQuickChat(campaign)}
                     onNotesClick={() => handleQuickNotes(campaign)}
                     onAgendaClick={() => handleQuickAgenda(campaign)}
+                    onDeleteClick={() => handleDeleteClick(campaign)}
                   />
                 ))}
               </div>
@@ -535,6 +648,7 @@ export function CampaignsScreen() {
                     onChatClick={() => handleQuickChat(campaign)}
                     onNotesClick={() => handleQuickNotes(campaign)}
                     onCombatClick={() => handleQuickCombat(campaign)}
+                    onLeaveClick={() => handleLeaveClick(campaign)}
                   />
                 ))}
               </div>
@@ -591,6 +705,48 @@ export function CampaignsScreen() {
           />
         </>
       )}
+
+      {/* Delete Campaign Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir campanha?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. Todas as sessões, notas e dados de "{campaignToDelete?.name}" serão perdidos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Leave Campaign Confirmation Dialog */}
+      <AlertDialog open={leaveDialogOpen} onOpenChange={setLeaveDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sair da campanha?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você será removido de "{campaignToLeave?.name}" e perderá acesso às sessões e notas.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={confirmLeave}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Sair
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
