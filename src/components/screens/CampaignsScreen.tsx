@@ -11,7 +11,7 @@ import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
 import { CreateCampaignSheet } from "@/components/campaign/CreateCampaignSheet";
-import { CampaignDetailSheet } from "@/components/campaign/CampaignDetailSheet";
+import { CampaignDashboard } from "@/components/campaign/CampaignDashboard";
 import { JoinCampaignSheet } from "@/components/campaign/JoinCampaignSheet";
 import { CampaignNotesSheet } from "@/components/campaign/CampaignNotesSheet";
 import { CampaignChatSheet } from "@/components/campaign/CampaignChatSheet";
@@ -673,7 +673,7 @@ export function CampaignsScreen() {
         onOpenChange={setShowJoinSheet}
       />
 
-      <CampaignDetailSheet
+      <CampaignDashboard
         campaign={selectedCampaign}
         open={showDetailSheet}
         onOpenChange={setShowDetailSheet}
