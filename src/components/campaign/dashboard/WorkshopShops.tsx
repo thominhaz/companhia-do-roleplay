@@ -17,11 +17,24 @@ import {
   Package,
 } from "lucide-react";
 
-interface WorkshopShopsProps {
-  campaign: CampaignDB;
+interface CampaignPlayer {
+  id: string;
+  user_id: string;
+  character_id: string | null;
+  character?: {
+    id: string;
+    name: string;
+    class: string;
+    level: number;
+  } | null;
 }
 
-export function WorkshopShops({ campaign }: WorkshopShopsProps) {
+interface WorkshopShopsProps {
+  campaign: CampaignDB;
+  players?: CampaignPlayer[];
+}
+
+export function WorkshopShops({ campaign, players = [] }: WorkshopShopsProps) {
   const { shops, isLoading, createShop, updateShop, deleteShop } = useShops(campaign.id);
   const [searchQuery, setSearchQuery] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -194,6 +207,7 @@ export function WorkshopShops({ campaign }: WorkshopShopsProps) {
           shop={selectedShop}
           onEdit={handleEditFromDetail}
           onDelete={handleDeleteShop}
+          players={players}
         />
       )}
     </div>
