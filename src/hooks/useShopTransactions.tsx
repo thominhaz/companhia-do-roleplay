@@ -52,13 +52,13 @@ export interface CreateTransactionData {
 }
 
 // Hook for master to manage transactions in a campaign
-export function useCampaignTransactions(campaignId: string) {
+export function useCampaignTransactions(campaignId: string, shopId?: string) {
   const queryClient = useQueryClient();
 
   const transactionsQuery = useQuery({
-    queryKey: ["shop-transactions", campaignId],
+    queryKey: ["shop-transactions", campaignId, shopId],
     queryFn: async () => {
-      const { data, error } = await supabase
+      let query = supabase
         .from("shop_transactions")
         .select(`
           *,
@@ -67,6 +67,12 @@ export function useCampaignTransactions(campaignId: string) {
         `)
         .eq("campaign_id", campaignId)
         .order("created_at", { ascending: false });
+
+      if (shopId) {
+        query = query.eq("shop_id", shopId);
+      }
+
+      const { data, error } = await query;
 
       if (error) throw error;
       return data as ShopTransaction[];
