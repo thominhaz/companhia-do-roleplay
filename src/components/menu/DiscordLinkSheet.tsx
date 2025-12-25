@@ -12,6 +12,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
 import { toast } from "sonner";
+import { getFunctionsErrorMessage } from "@/lib/functionsError";
 import { Loader2, Link2, Unlink, RefreshCw, ExternalLink, Crown } from "lucide-react";
 
 interface DiscordLinkSheetProps {
@@ -119,17 +120,20 @@ export function DiscordLinkSheet({ open, onOpenChange }: DiscordLinkSheetProps) 
 
     setLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('sync-discord-role', {
+      const { data, error, response } = await supabase.functions.invoke('sync-discord-role', {
         body: { action: 'unlink' },
       });
 
-      if (error) throw error;
+      if (error) {
+        toast.error(await getFunctionsErrorMessage(error, response));
+        return;
+      }
 
       if (data?.success) {
         toast.success(data.message);
         setDiscordId(null);
       } else {
-        toast.error(data?.error || "Erro ao desvincular Discord");
+        toast.error(data?.error || data?.message || "Erro ao desvincular Discord");
       }
     } catch (error) {
       console.error("Error unlinking Discord:", error);
@@ -144,16 +148,19 @@ export function DiscordLinkSheet({ open, onOpenChange }: DiscordLinkSheetProps) 
 
     setSyncing(true);
     try {
-      const { data, error } = await supabase.functions.invoke('sync-discord-role', {
+      const { data, error, response } = await supabase.functions.invoke('sync-discord-role', {
         body: { action: 'sync' },
       });
 
-      if (error) throw error;
+      if (error) {
+        toast.error(await getFunctionsErrorMessage(error, response));
+        return;
+      }
 
       if (data?.success) {
         toast.success(data.message);
       } else {
-        toast.error(data?.error || "Erro ao sincronizar cargo");
+        toast.error(data?.error || data?.message || "Erro ao sincronizar cargo");
       }
     } catch (error) {
       console.error("Error syncing role:", error);

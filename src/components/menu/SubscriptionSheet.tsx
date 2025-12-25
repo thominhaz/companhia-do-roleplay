@@ -7,6 +7,7 @@ import { Crown, Sparkles, Users, Wand2, Shield, Gift, Loader2, Sword, ScrollText
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { getFunctionsErrorMessage } from "@/lib/functionsError";
 import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -252,12 +253,19 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
             .select('discord_user_id')
             .eq('id', user.id)
             .single();
-          
+
           if (profile?.discord_user_id) {
-            await supabase.functions.invoke('sync-discord-role', {
+            const { data: syncData, error: syncError, response: syncResponse } = await supabase.functions.invoke('sync-discord-role', {
               body: { action: 'sync' },
             });
-            toast.success("Cargo do Discord atualizado!");
+
+            if (syncError) {
+              toast.error(await getFunctionsErrorMessage(syncError, syncResponse));
+            } else if (syncData?.success) {
+              toast.success(syncData.message || "Cargo do Discord atualizado!");
+            } else {
+              toast.error(syncData?.error || syncData?.message || "Erro ao atualizar cargo do Discord");
+            }
           }
         } catch (discordError) {
           console.error("Error syncing Discord role:", discordError);
