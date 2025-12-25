@@ -30,6 +30,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Shop, ShopItem, ShopItemFormData, useShopItems } from "@/hooks/useShops";
+import { useCampaignTransactions } from "@/hooks/useShopTransactions";
 import {
   Store,
   MapPin,
@@ -45,9 +46,11 @@ import {
   X,
   ShoppingCart,
   BookOpen,
+  History,
 } from "lucide-react";
 import { PredefinedItemsSheet } from "./PredefinedItemsSheet";
 import { SellItemSheet } from "./SellItemSheet";
+import { ShopTransactionHistory } from "./ShopTransactionHistory";
 
 interface CampaignPlayer {
   id: string;
@@ -104,9 +107,11 @@ export function ShopDetailSheet({
   players = [],
 }: ShopDetailSheetProps) {
   const { items, isLoading, createItem, updateItem, deleteItem } = useShopItems(shop.id);
+  const { transactions } = useCampaignTransactions(shop.campaign_id, shop.id);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showItemForm, setShowItemForm] = useState(false);
   const [showPredefinedItems, setShowPredefinedItems] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [editingItem, setEditingItem] = useState<ShopItem | null>(null);
   const [sellItem, setSellItem] = useState<ShopItem | null>(null);
   const [itemForm, setItemForm] = useState<ShopItemFormData>({
@@ -273,6 +278,12 @@ export function ShopDetailSheet({
                   Inventário ({items.length})
                 </h3>
                 <div className="flex gap-2">
+                  {transactions.length > 0 && (
+                    <Button size="sm" variant="ghost" onClick={() => setShowHistory(true)}>
+                      <History className="w-4 h-4 mr-1" />
+                      {transactions.length}
+                    </Button>
+                  )}
                   <Button size="sm" variant="outline" onClick={() => setShowPredefinedItems(true)}>
                     <BookOpen className="w-4 h-4 mr-1" />
                     SRD
@@ -606,6 +617,14 @@ export function ShopDetailSheet({
           players={players}
         />
       )}
+
+      {/* Transaction History */}
+      <ShopTransactionHistory
+        open={showHistory}
+        onOpenChange={setShowHistory}
+        transactions={transactions}
+        shopName={shop.name}
+      />
     </>
   );
 }
