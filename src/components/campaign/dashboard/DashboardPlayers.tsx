@@ -139,6 +139,13 @@ export function DashboardPlayers({ campaign, isMaster }: DashboardPlayersProps) 
         onOpenChange={setShowAddPlayer}
         campaignId={campaign.id}
       />
+
+      <MasterGiftSheet
+        open={showGiftSheet}
+        onOpenChange={setShowGiftSheet}
+        campaignId={campaign.id}
+        players={players || []}
+      />
     </div>
   );
 }

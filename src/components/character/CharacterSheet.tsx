@@ -29,7 +29,8 @@ import {
   Dices,
   History,
   X,
-  Star
+  Star,
+  ArrowRightLeft
 } from "lucide-react";
 import advancementData from "@/data/rules/avanco-personagem.json";
 import { calculateFeatBonuses } from "@/lib/featEffects";
@@ -59,9 +60,11 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useCharacterCampaign } from "@/hooks/useCampaigns";
+import { useCampaignPlayers } from "@/hooks/useSessions";
 import { InlineCampaignChat } from "./InlineCampaignChat";
 import { TradeOfferModal } from "./TradeOfferModal";
 import { PlayerTradeModal } from "./PlayerTradeModal";
+import { InitiateTradeSheet } from "./InitiateTradeSheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -251,6 +254,7 @@ export function CharacterSheet() {
   const updateCombatant = useUpdateCombatant();
   const { data: subscription } = useSubscription();
   const { data: characterCampaign } = useCharacterCampaign(id);
+  const { data: campaignPlayers } = useCampaignPlayers(characterCampaign?.id || '');
   const [activeTab, setActiveTab] = useState('geral');
   const [skillsTab, setSkillsTab] = useState('pericias');
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -258,6 +262,7 @@ export function CharacterSheet() {
   const [showSpells, setShowSpells] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
+  const [showTradeSheet, setShowTradeSheet] = useState(false);
   const [skillSearch, setSkillSearch] = useState('');
   const [hpModifier, setHpModifier] = useState('');
   const [tempHpInput, setTempHpInput] = useState('');
@@ -751,6 +756,12 @@ export function CharacterSheet() {
                   <DropdownMenuItem onClick={() => setShowSpells(true)}>
                     <Sparkles className="w-4 h-4 mr-2" />
                     Gerenciar Magias
+                  </DropdownMenuItem>
+                )}
+                {characterCampaign && campaignPlayers && campaignPlayers.length > 1 && (
+                  <DropdownMenuItem onClick={() => setShowTradeSheet(true)}>
+                    <ArrowRightLeft className="w-4 h-4 mr-2" />
+                    Propor Troca
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -2203,6 +2214,18 @@ export function CharacterSheet() {
         characterId={character.id}
         characterInventory={(character.inventory as any[]) || []}
       />
+
+      {/* Initiate Trade Sheet - for players to start trades */}
+      {characterCampaign && (
+        <InitiateTradeSheet
+          open={showTradeSheet}
+          onOpenChange={setShowTradeSheet}
+          campaignId={characterCampaign.id}
+          characterId={character.id}
+          characterInventory={(character.inventory as any[]) || []}
+          campaignPlayers={campaignPlayers || []}
+        />
+      )}
     </div>
   );
 }
