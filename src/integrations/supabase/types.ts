@@ -1143,6 +1143,89 @@ export type Database = {
           },
         ]
       }
+      shop_transactions: {
+        Row: {
+          buyer_character_id: string
+          buyer_user_id: string
+          campaign_id: string
+          created_at: string
+          id: string
+          item_data: Json
+          price_copper: number
+          price_gold: number
+          price_silver: number
+          quantity: number
+          responded_at: string | null
+          seller_user_id: string
+          shop_id: string
+          shop_item_id: string
+          status: string
+        }
+        Insert: {
+          buyer_character_id: string
+          buyer_user_id: string
+          campaign_id: string
+          created_at?: string
+          id?: string
+          item_data?: Json
+          price_copper?: number
+          price_gold?: number
+          price_silver?: number
+          quantity?: number
+          responded_at?: string | null
+          seller_user_id: string
+          shop_id: string
+          shop_item_id: string
+          status?: string
+        }
+        Update: {
+          buyer_character_id?: string
+          buyer_user_id?: string
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          item_data?: Json
+          price_copper?: number
+          price_gold?: number
+          price_silver?: number
+          quantity?: number
+          responded_at?: string | null
+          seller_user_id?: string
+          shop_id?: string
+          shop_item_id?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shop_transactions_buyer_character_id_fkey"
+            columns: ["buyer_character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_transactions_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_transactions_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_shops"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shop_transactions_shop_item_id_fkey"
+            columns: ["shop_item_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_shop_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           created_at: string

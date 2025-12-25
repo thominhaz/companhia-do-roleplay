@@ -43,7 +43,26 @@ import {
   Coins,
   Package,
   X,
+  ShoppingCart,
+  BookOpen,
 } from "lucide-react";
+import { PredefinedItemsSheet } from "./PredefinedItemsSheet";
+import { SellItemSheet } from "./SellItemSheet";
+
+interface CampaignPlayer {
+  id: string;
+  user_id: string;
+  character_id: string | null;
+  character?: {
+    id: string;
+    name: string;
+    class: string;
+    level: number;
+  } | null;
+  profile?: {
+    display_name: string | null;
+  } | null;
+}
 
 interface ShopDetailSheetProps {
   open: boolean;
@@ -51,6 +70,7 @@ interface ShopDetailSheetProps {
   shop: Shop;
   onEdit: () => void;
   onDelete: () => void;
+  players?: CampaignPlayer[];
 }
 
 const RARITIES = [
@@ -81,11 +101,14 @@ export function ShopDetailSheet({
   shop,
   onEdit,
   onDelete,
+  players = [],
 }: ShopDetailSheetProps) {
   const { items, isLoading, createItem, updateItem, deleteItem } = useShopItems(shop.id);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [showItemForm, setShowItemForm] = useState(false);
+  const [showPredefinedItems, setShowPredefinedItems] = useState(false);
   const [editingItem, setEditingItem] = useState<ShopItem | null>(null);
+  const [sellItem, setSellItem] = useState<ShopItem | null>(null);
   const [itemForm, setItemForm] = useState<ShopItemFormData>({
     name: "",
     description: "",
@@ -249,10 +272,16 @@ export function ShopDetailSheet({
                   <Package className="w-5 h-5" />
                   Inventário ({items.length})
                 </h3>
-                <Button size="sm" onClick={handleAddItem}>
-                  <Plus className="w-4 h-4 mr-1" />
-                  Adicionar Item
-                </Button>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" onClick={() => setShowPredefinedItems(true)}>
+                    <BookOpen className="w-4 h-4 mr-1" />
+                    SRD
+                  </Button>
+                  <Button size="sm" onClick={handleAddItem}>
+                    <Plus className="w-4 h-4 mr-1" />
+                    Novo
+                  </Button>
+                </div>
               </div>
 
               {isLoading ? (
@@ -317,6 +346,16 @@ export function ShopDetailSheet({
                                 </div>
                               </div>
                               <div className="flex gap-1">
+                                {players.length > 0 && item.is_available && (
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-8 w-8 text-primary"
+                                    onClick={() => setSellItem(item)}
+                                  >
+                                    <ShoppingCart className="w-3 h-3" />
+                                  </Button>
+                                )}
                                 <Button
                                   variant="ghost"
                                   size="icon"
@@ -545,6 +584,28 @@ export function ShopDetailSheet({
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Predefined Items Sheet */}
+      <PredefinedItemsSheet
+        open={showPredefinedItems}
+        onOpenChange={setShowPredefinedItems}
+        onSelectItem={async (item) => {
+          await createItem.mutateAsync(item);
+        }}
+      />
+
+      {/* Sell Item Sheet */}
+      {sellItem && (
+        <SellItemSheet
+          open={!!sellItem}
+          onOpenChange={(open) => !open && setSellItem(null)}
+          shopId={shop.id}
+          shopName={shop.name}
+          campaignId={shop.campaign_id}
+          item={sellItem}
+          players={players}
+        />
+      )}
     </>
   );
 }
