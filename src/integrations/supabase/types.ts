@@ -182,6 +182,129 @@ export type Database = {
           },
         ]
       }
+      campaign_npc_relationships: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          description: string | null
+          id: string
+          is_mutual: boolean
+          npc_id: string
+          related_npc_id: string
+          relationship_type: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_mutual?: boolean
+          npc_id: string
+          related_npc_id: string
+          relationship_type: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_mutual?: boolean
+          npc_id?: string
+          related_npc_id?: string
+          relationship_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_npc_relationships_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_npc_relationships_npc_id_fkey"
+            columns: ["npc_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_npcs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_npc_relationships_related_npc_id_fkey"
+            columns: ["related_npc_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_npcs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaign_npcs: {
+        Row: {
+          appearance: string | null
+          campaign_id: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_hidden: boolean
+          location: string | null
+          motivations: string | null
+          name: string
+          notes: string | null
+          occupation: string | null
+          personality: string | null
+          secrets: string | null
+          status: string
+          tags: string[] | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          appearance?: string | null
+          campaign_id: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_hidden?: boolean
+          location?: string | null
+          motivations?: string | null
+          name: string
+          notes?: string | null
+          occupation?: string | null
+          personality?: string | null
+          secrets?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appearance?: string | null
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_hidden?: boolean
+          location?: string | null
+          motivations?: string | null
+          name?: string
+          notes?: string | null
+          occupation?: string | null
+          personality?: string | null
+          secrets?: string | null
+          status?: string
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_npcs_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign_players: {
         Row: {
           campaign_id: string
