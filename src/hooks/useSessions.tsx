@@ -29,6 +29,7 @@ export interface CampaignPlayerDB {
     avatar_url: string | null;
   };
   character?: {
+    id: string;
     name: string;
     class: string;
     level: number;

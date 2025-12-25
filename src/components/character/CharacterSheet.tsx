@@ -60,6 +60,7 @@ import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useCharacterCampaign } from "@/hooks/useCampaigns";
 import { InlineCampaignChat } from "./InlineCampaignChat";
+import { TradeOfferModal } from "./TradeOfferModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -2185,6 +2186,16 @@ export function CharacterSheet() {
           campaignName={characterCampaign.name}
         />
       )}
+
+      {/* Trade Offer Modal - shows pending shop offers */}
+      <TradeOfferModal
+        characterId={character.id}
+        characterCurrency={{
+          gold: (character.currency as any)?.gold || 0,
+          silver: (character.currency as any)?.silver || 0,
+          copper: (character.currency as any)?.copper || 0,
+        }}
+      />
     </div>
   );
 }

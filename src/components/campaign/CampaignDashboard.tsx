@@ -173,7 +173,7 @@ export function CampaignDashboard({ campaign, open, onOpenChange, isMaster }: Ca
       case 'npcs':
         return <WorkshopNPCs campaign={campaign} />;
       case 'shops':
-        return <WorkshopShops campaign={campaign} />;
+        return <WorkshopShops campaign={campaign} players={players} />;
       case 'documents':
         return <WorkshopDocuments campaign={campaign} />;
       case 'factions':
