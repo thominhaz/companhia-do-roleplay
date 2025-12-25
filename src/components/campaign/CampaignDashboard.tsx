@@ -69,7 +69,7 @@ const navItems: NavItem[] = [
   { id: 'compendium', label: 'Compêndio', icon: Library, category: 'main' },
   
   // Workshops (Master only)
-  { id: 'npcs', label: 'NPCs', icon: UserSquare2, masterOnly: true, comingSoon: true, category: 'workshops' },
+  { id: 'npcs', label: 'NPCs', icon: UserSquare2, masterOnly: true, category: 'workshops' },
   { id: 'shops', label: 'Lojas', icon: Store, masterOnly: true, comingSoon: true, category: 'workshops' },
   { id: 'documents', label: 'Documentos', icon: FileText, masterOnly: true, comingSoon: true, category: 'workshops' },
   { id: 'factions', label: 'Facções', icon: Flag, masterOnly: true, comingSoon: true, category: 'workshops' },
