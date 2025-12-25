@@ -2,8 +2,9 @@ import { useState } from "react";
 import { CampaignDB } from "@/hooks/useCampaigns";
 import { useCampaignPlayers, useRemovePlayer } from "@/hooks/useSessions";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, Crown, User, Loader2, UserMinus } from "lucide-react";
+import { Users, UserPlus, Crown, User, Loader2, UserMinus, Gift } from "lucide-react";
 import { AddPlayerSheet } from "../AddPlayerSheet";
+import { MasterGiftSheet } from "./MasterGiftSheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +24,7 @@ interface DashboardPlayersProps {
 
 export function DashboardPlayers({ campaign, isMaster }: DashboardPlayersProps) {
   const [showAddPlayer, setShowAddPlayer] = useState(false);
+  const [showGiftSheet, setShowGiftSheet] = useState(false);
   const { data: players, isLoading } = useCampaignPlayers(campaign.id);
   const removePlayer = useRemovePlayer();
 
@@ -42,10 +44,16 @@ export function DashboardPlayers({ campaign, isMaster }: DashboardPlayersProps) 
           <p className="text-sm text-muted-foreground">{players?.length || 0} membros na campanha</p>
         </div>
         {isMaster && (
-          <Button onClick={() => setShowAddPlayer(true)} variant="outline" className="gap-2">
-            <UserPlus className="w-4 h-4" />
-            Adicionar
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => setShowGiftSheet(true)} variant="outline" className="gap-2">
+              <Gift className="w-4 h-4" />
+              Entregar Item
+            </Button>
+            <Button onClick={() => setShowAddPlayer(true)} variant="outline" className="gap-2">
+              <UserPlus className="w-4 h-4" />
+              Adicionar
+            </Button>
+          </div>
         )}
       </div>
 

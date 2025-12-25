@@ -1,0 +1,452 @@
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useEffect } from "react";
+
+export interface ItemData {
+  id?: string;
+  name: string;
+  description?: string;
+  category?: string;
+  rarity?: string;
+  quantity?: number;
+}
+
+export interface PlayerTrade {
+  id: string;
+  campaign_id: string;
+  trade_type: 'master_gift' | 'player_trade';
+  initiator_user_id: string;
+  initiator_character_id: string | null;
+  initiator_item_data: ItemData;
+  initiator_confirmed: boolean;
+  receiver_user_id: string;
+  receiver_character_id: string;
+  receiver_item_data: ItemData | null;
+  receiver_confirmed: boolean;
+  status: 'pending_receiver' | 'pending_confirmations' | 'completed' | 'cancelled' | 'rejected';
+  created_at: string;
+  updated_at: string;
+  // Joined data
+  initiator_character?: { name: string } | null;
+  receiver_character?: { name: string } | null;
+}
+
+// Hook for masters to manage gifts and view trades
+export function useCampaignTrades(campaignId: string) {
+  const queryClient = useQueryClient();
+
+  const tradesQuery = useQuery({
+    queryKey: ["player-trades", campaignId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("player_trades")
+        .select(`
+          *,
+          initiator_character:characters!player_trades_initiator_character_id_fkey(name),
+          receiver_character:characters!player_trades_receiver_character_id_fkey(name)
+        `)
+        .eq("campaign_id", campaignId)
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return (data || []) as unknown as PlayerTrade[];
+    },
+    enabled: !!campaignId,
+  });
+
+  // Master gift - directly give item to player
+  const createMasterGift = useMutation({
+    mutationFn: async (data: {
+      receiver_user_id: string;
+      receiver_character_id: string;
+      item_data: ItemData;
+    }) => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error("Não autenticado");
+
+      const insertData = {
+        campaign_id: campaignId,
+        trade_type: 'master_gift' as const,
+        initiator_user_id: user.user.id,
+        initiator_character_id: null,
+        initiator_item_data: data.item_data as unknown as Record<string, unknown>,
+        initiator_confirmed: true,
+        receiver_user_id: data.receiver_user_id,
+        receiver_character_id: data.receiver_character_id,
+        receiver_item_data: null,
+        receiver_confirmed: false,
+        status: 'pending_receiver' as const,
+      };
+
+      const { data: result, error } = await supabase
+        .from("player_trades")
+        .insert(insertData as any)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["player-trades", campaignId] });
+      toast.success("Item enviado ao jogador!");
+    },
+    onError: (error: Error) => {
+      toast.error("Erro ao enviar item: " + error.message);
+    },
+  });
+
+  return {
+    trades: tradesQuery.data || [],
+    isLoading: tradesQuery.isLoading,
+    createMasterGift,
+  };
+}
+
+// Hook for players to manage their trades
+export function useCharacterTrades(characterId: string) {
+  const queryClient = useQueryClient();
+
+  // Fetch pending trades for this character
+  const tradesQuery = useQuery({
+    queryKey: ["character-trades", characterId],
+    queryFn: async () => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) return [];
+
+      const { data, error } = await supabase
+        .from("player_trades")
+        .select(`
+          *,
+          initiator_character:characters!player_trades_initiator_character_id_fkey(name),
+          receiver_character:characters!player_trades_receiver_character_id_fkey(name)
+        `)
+        .or(`receiver_character_id.eq.${characterId},initiator_character_id.eq.${characterId}`)
+        .in("status", ["pending_receiver", "pending_confirmations"])
+        .order("created_at", { ascending: false });
+
+      if (error) throw error;
+      return (data || []) as unknown as PlayerTrade[];
+    },
+    enabled: !!characterId,
+  });
+
+  // Real-time subscription
+  useEffect(() => {
+    if (!characterId) return;
+
+    const channel = supabase
+      .channel(`character-trades-${characterId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'player_trades',
+        },
+        (payload) => {
+          const trade = payload.new as PlayerTrade;
+          if (trade?.receiver_character_id === characterId || trade?.initiator_character_id === characterId) {
+            queryClient.invalidateQueries({ queryKey: ["character-trades", characterId] });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [characterId, queryClient]);
+
+  // Initiate a trade with another player
+  const initiateTrade = useMutation({
+    mutationFn: async (data: {
+      campaign_id: string;
+      receiver_user_id: string;
+      receiver_character_id: string;
+      item_data: ItemData;
+    }) => {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error("Não autenticado");
+
+      const insertData = {
+        campaign_id: data.campaign_id,
+        trade_type: 'player_trade' as const,
+        initiator_user_id: user.user.id,
+        initiator_character_id: characterId,
+        initiator_item_data: data.item_data as unknown as Record<string, unknown>,
+        initiator_confirmed: false,
+        receiver_user_id: data.receiver_user_id,
+        receiver_character_id: data.receiver_character_id,
+        receiver_item_data: null,
+        receiver_confirmed: false,
+        status: 'pending_receiver' as const,
+      };
+
+      const { data: result, error } = await supabase
+        .from("player_trades")
+        .insert(insertData as any)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return result;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["character-trades", characterId] });
+      toast.success("Proposta de troca enviada!");
+    },
+    onError: (error: Error) => {
+      toast.error("Erro ao propor troca: " + error.message);
+    },
+  });
+
+  // Receiver selects their item for trade
+  const selectReceiverItem = useMutation({
+    mutationFn: async (data: { tradeId: string; item_data: ItemData }) => {
+      const { error } = await supabase
+        .from("player_trades")
+        .update({
+          receiver_item_data: data.item_data as any,
+          status: 'pending_confirmations',
+        })
+        .eq("id", data.tradeId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["character-trades", characterId] });
+      toast.success("Item selecionado! Aguardando confirmações.");
+    },
+    onError: (error: Error) => {
+      toast.error("Erro ao selecionar item: " + error.message);
+    },
+  });
+
+  // Confirm trade (both parties must confirm)
+  const confirmTrade = useMutation({
+    mutationFn: async (data: { tradeId: string; isInitiator: boolean }) => {
+      const updateField = data.isInitiator ? 'initiator_confirmed' : 'receiver_confirmed';
+      
+      // First update confirmation
+      const { error: updateError } = await supabase
+        .from("player_trades")
+        .update({ [updateField]: true })
+        .eq("id", data.tradeId);
+
+      if (updateError) throw updateError;
+
+      // Check if both confirmed
+      const { data: trade, error: fetchError } = await supabase
+        .from("player_trades")
+        .select("*, initiator_character:characters!player_trades_initiator_character_id_fkey(*), receiver_character:characters!player_trades_receiver_character_id_fkey(*)")
+        .eq("id", data.tradeId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      // If both confirmed, execute the trade
+      if (trade.initiator_confirmed && trade.receiver_confirmed) {
+        await executeTrade(trade);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["character-trades", characterId] });
+      queryClient.invalidateQueries({ queryKey: ["character"] });
+    },
+    onError: (error: Error) => {
+      toast.error("Erro ao confirmar: " + error.message);
+    },
+  });
+
+  // Accept master gift
+  const acceptMasterGift = useMutation({
+    mutationFn: async (tradeId: string) => {
+      // Fetch the trade
+      const { data: trade, error: fetchError } = await supabase
+        .from("player_trades")
+        .select("*, receiver_character:characters!player_trades_receiver_character_id_fkey(*)")
+        .eq("id", tradeId)
+        .single();
+
+      if (fetchError) throw fetchError;
+
+      const character = (trade as any).receiver_character;
+      if (!character) throw new Error("Personagem não encontrado");
+
+      // Add item to inventory
+      const currentInventory = (character.inventory as any[]) || [];
+      const itemData = trade.initiator_item_data as unknown as ItemData;
+      const newItem = {
+        id: crypto.randomUUID(),
+        name: itemData.name,
+        description: itemData.description || "",
+        quantity: itemData.quantity || 1,
+        category: itemData.category || "Outros",
+        rarity: itemData.rarity || "comum",
+        isEquipped: false,
+      };
+
+      const { error: charError } = await supabase
+        .from("characters")
+        .update({ inventory: [...currentInventory, newItem] })
+        .eq("id", trade.receiver_character_id);
+
+      if (charError) throw charError;
+
+      // Mark trade as completed
+      const { error: tradeError } = await supabase
+        .from("player_trades")
+        .update({ status: 'completed', receiver_confirmed: true })
+        .eq("id", tradeId);
+
+      if (tradeError) throw tradeError;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["character-trades", characterId] });
+      queryClient.invalidateQueries({ queryKey: ["character", characterId] });
+      toast.success("Item recebido!");
+    },
+    onError: (error: Error) => {
+      toast.error("Erro ao aceitar: " + error.message);
+    },
+  });
+
+  // Reject trade or gift
+  const rejectTrade = useMutation({
+    mutationFn: async (tradeId: string) => {
+      const { error } = await supabase
+        .from("player_trades")
+        .update({ status: 'rejected' })
+        .eq("id", tradeId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["character-trades", characterId] });
+      toast.info("Troca recusada");
+    },
+    onError: (error: Error) => {
+      toast.error("Erro ao recusar: " + error.message);
+    },
+  });
+
+  // Cancel trade (initiator only)
+  const cancelTrade = useMutation({
+    mutationFn: async (tradeId: string) => {
+      const { error } = await supabase
+        .from("player_trades")
+        .update({ status: 'cancelled' })
+        .eq("id", tradeId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["character-trades", characterId] });
+      toast.info("Troca cancelada");
+    },
+    onError: (error: Error) => {
+      toast.error("Erro ao cancelar: " + error.message);
+    },
+  });
+
+  // Get pending trades where this character needs to act
+  const pendingTrades = (tradesQuery.data || []).filter(t => {
+    if (t.trade_type === 'master_gift' && t.receiver_character_id === characterId && t.status === 'pending_receiver') {
+      return true; // Master gift waiting for acceptance
+    }
+    if (t.trade_type === 'player_trade') {
+      if (t.receiver_character_id === characterId && t.status === 'pending_receiver') {
+        return true; // Need to select item
+      }
+      if (t.status === 'pending_confirmations') {
+        const isInitiator = t.initiator_character_id === characterId;
+        const needsConfirm = isInitiator ? !t.initiator_confirmed : !t.receiver_confirmed;
+        return needsConfirm;
+      }
+    }
+    return false;
+  });
+
+  return {
+    trades: tradesQuery.data || [],
+    pendingTrades,
+    hasPendingTrades: pendingTrades.length > 0,
+    isLoading: tradesQuery.isLoading,
+    initiateTrade,
+    selectReceiverItem,
+    confirmTrade,
+    acceptMasterGift,
+    rejectTrade,
+    cancelTrade,
+  };
+}
+
+// Helper function to execute a completed trade
+async function executeTrade(trade: any) {
+  const initiatorChar = trade.initiator_character;
+  const receiverChar = trade.receiver_character;
+  
+  if (!initiatorChar || !receiverChar) throw new Error("Personagens não encontrados");
+
+  const initiatorInventory = (initiatorChar.inventory as any[]) || [];
+  const receiverInventory = (receiverChar.inventory as any[]) || [];
+
+  const initiatorItemData = trade.initiator_item_data as ItemData;
+  const receiverItemData = trade.receiver_item_data as ItemData;
+
+  // Remove items from original owners and add to new owners
+  const newInitiatorInventory = initiatorInventory.filter(
+    item => item.id !== initiatorItemData.id
+  );
+  const newReceiverInventory = receiverInventory.filter(
+    item => item.id !== receiverItemData.id
+  );
+
+  // Add received items
+  newInitiatorInventory.push({
+    id: crypto.randomUUID(),
+    name: receiverItemData.name,
+    description: receiverItemData.description || "",
+    quantity: receiverItemData.quantity || 1,
+    category: receiverItemData.category || "Outros",
+    rarity: receiverItemData.rarity || "comum",
+    isEquipped: false,
+  });
+
+  newReceiverInventory.push({
+    id: crypto.randomUUID(),
+    name: initiatorItemData.name,
+    description: initiatorItemData.description || "",
+    quantity: initiatorItemData.quantity || 1,
+    category: initiatorItemData.category || "Outros",
+    rarity: initiatorItemData.rarity || "comum",
+    isEquipped: false,
+  });
+
+  // Update both characters
+  const { error: initError } = await supabase
+    .from("characters")
+    .update({ inventory: newInitiatorInventory })
+    .eq("id", trade.initiator_character_id);
+
+  if (initError) throw initError;
+
+  const { error: recvError } = await supabase
+    .from("characters")
+    .update({ inventory: newReceiverInventory })
+    .eq("id", trade.receiver_character_id);
+
+  if (recvError) throw recvError;
+
+  // Mark trade as completed
+  const { error: tradeError } = await supabase
+    .from("player_trades")
+    .update({ status: 'completed' })
+    .eq("id", trade.id);
+
+  if (tradeError) throw tradeError;
+
+  toast.success("Troca realizada com sucesso!");
+}
