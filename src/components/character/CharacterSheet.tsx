@@ -61,6 +61,7 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useCharacterCampaign } from "@/hooks/useCampaigns";
 import { InlineCampaignChat } from "./InlineCampaignChat";
 import { TradeOfferModal } from "./TradeOfferModal";
+import { PlayerTradeModal } from "./PlayerTradeModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -2195,6 +2196,12 @@ export function CharacterSheet() {
           silver: (character.currency as any)?.silver || 0,
           copper: (character.currency as any)?.copper || 0,
         }}
+      />
+
+      {/* Player Trade Modal - shows pending trades and gifts */}
+      <PlayerTradeModal
+        characterId={character.id}
+        characterInventory={(character.inventory as any[]) || []}
       />
     </div>
   );

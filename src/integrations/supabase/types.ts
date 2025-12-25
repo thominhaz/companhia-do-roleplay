@@ -1007,6 +1007,79 @@ export type Database = {
         }
         Relationships: []
       }
+      player_trades: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          id: string
+          initiator_character_id: string | null
+          initiator_confirmed: boolean
+          initiator_item_data: Json
+          initiator_user_id: string
+          receiver_character_id: string
+          receiver_confirmed: boolean
+          receiver_item_data: Json | null
+          receiver_user_id: string
+          status: string
+          trade_type: string
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          id?: string
+          initiator_character_id?: string | null
+          initiator_confirmed?: boolean
+          initiator_item_data?: Json
+          initiator_user_id: string
+          receiver_character_id: string
+          receiver_confirmed?: boolean
+          receiver_item_data?: Json | null
+          receiver_user_id: string
+          status?: string
+          trade_type?: string
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          initiator_character_id?: string | null
+          initiator_confirmed?: boolean
+          initiator_item_data?: Json
+          initiator_user_id?: string
+          receiver_character_id?: string
+          receiver_confirmed?: boolean
+          receiver_item_data?: Json | null
+          receiver_user_id?: string
+          status?: string
+          trade_type?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_trades_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_trades_initiator_character_id_fkey"
+            columns: ["initiator_character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_trades_receiver_character_id_fkey"
+            columns: ["receiver_character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
