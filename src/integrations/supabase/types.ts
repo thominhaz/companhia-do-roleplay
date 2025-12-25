@@ -347,6 +347,122 @@ export type Database = {
           },
         ]
       }
+      campaign_shop_items: {
+        Row: {
+          category: string | null
+          created_at: string
+          description: string | null
+          id: string
+          is_available: boolean
+          name: string
+          notes: string | null
+          price_copper: number
+          price_gold: number
+          price_silver: number
+          quantity: number | null
+          rarity: string | null
+          shop_id: string
+          updated_at: string
+        }
+        Insert: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          name: string
+          notes?: string | null
+          price_copper?: number
+          price_gold?: number
+          price_silver?: number
+          quantity?: number | null
+          rarity?: string | null
+          shop_id: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string | null
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          name?: string
+          notes?: string | null
+          price_copper?: number
+          price_gold?: number
+          price_silver?: number
+          quantity?: number | null
+          rarity?: string | null
+          shop_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_shop_items_shop_id_fkey"
+            columns: ["shop_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_shops"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaign_shops: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_hidden: boolean
+          location: string | null
+          name: string
+          npc_id: string | null
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_hidden?: boolean
+          location?: string | null
+          name: string
+          npc_id?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_hidden?: boolean
+          location?: string | null
+          name?: string
+          npc_id?: string | null
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_shops_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_shops_npc_id_fkey"
+            columns: ["npc_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_npcs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
           created_at: string

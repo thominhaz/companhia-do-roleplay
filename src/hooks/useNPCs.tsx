@@ -283,3 +283,12 @@ export function useDeleteNPCRelationship() {
     },
   });
 }
+
+// Simple hook to get NPCs list (for selects/dropdowns)
+export function useNPCs(campaignId: string) {
+  const query = useCampaignNPCs(campaignId);
+  return {
+    npcs: query.data || [],
+    isLoading: query.isLoading,
+  };
+}
