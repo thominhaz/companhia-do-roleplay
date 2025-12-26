@@ -4,6 +4,13 @@ import { useAuth } from './useAuth';
 import { toast } from 'sonner';
 import { useEffect } from 'react';
 
+export interface MessageReaction {
+  emoji: string;
+  count: number;
+  users: string[];
+  hasReacted: boolean;
+}
+
 export interface CampaignMessage {
   id: string;
   campaign_id: string;
@@ -28,6 +35,7 @@ export interface CampaignMessage {
       display_name: string | null;
     };
   };
+  reactions?: MessageReaction[];
 }
 
 // Fetch messages for a campaign with realtime updates
@@ -108,6 +116,7 @@ export function useCampaignMessages(campaignId: string) {
               profile: profile || undefined,
               recipient_profile: recipientProfile || undefined,
               reply_to: replyTo || undefined,
+              reactions: [],
             }]
           );
         }
@@ -134,6 +143,31 @@ export function useCampaignMessages(campaignId: string) {
     };
   }, [campaignId, queryClient, user?.id]);
 
+  // Realtime for reactions
+  useEffect(() => {
+    if (!campaignId || !user) return;
+
+    const channel = supabase
+      .channel(`reactions-${campaignId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'campaign_message_reactions',
+        },
+        () => {
+          // Invalidate to refetch reactions
+          queryClient.invalidateQueries({ queryKey: ['campaign-messages', campaignId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [campaignId, queryClient, user]);
+
   return useQuery({
     queryKey: ['campaign-messages', campaignId],
     queryFn: async () => {
@@ -159,6 +193,9 @@ export function useCampaignMessages(campaignId: string) {
 
       // Get reply_to message IDs
       const replyToIds = messages.filter(m => m.reply_to_id).map(m => m.reply_to_id!);
+
+      // Get message IDs for fetching reactions
+      const messageIds = messages.map(m => m.id);
 
       // Get profiles for these users
       const { data: profiles, error: profilesError } = await supabase
@@ -193,17 +230,53 @@ export function useCampaignMessages(campaignId: string) {
         }
       }
 
+      // Get reactions for all messages
+      const { data: reactions } = await supabase
+        .from('campaign_message_reactions')
+        .select('message_id, emoji, user_id')
+        .in('message_id', messageIds);
+
+      // Group reactions by message
+      const reactionsMap = new Map<string, Map<string, string[]>>();
+      reactions?.forEach(r => {
+        if (!reactionsMap.has(r.message_id)) {
+          reactionsMap.set(r.message_id, new Map());
+        }
+        const emojiMap = reactionsMap.get(r.message_id)!;
+        if (!emojiMap.has(r.emoji)) {
+          emojiMap.set(r.emoji, []);
+        }
+        emojiMap.get(r.emoji)!.push(r.user_id);
+      });
+
       // Create maps
       const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
       const replyToMap = new Map(replyToMessages.map(r => [r.id, r]));
 
-      // Combine messages with their profiles and replies
-      return messages.map(msg => ({
-        ...msg,
-        profile: profileMap.get(msg.user_id) || null,
-        recipient_profile: msg.recipient_id ? profileMap.get(msg.recipient_id) || null : null,
-        reply_to: msg.reply_to_id ? replyToMap.get(msg.reply_to_id) || null : null,
-      })) as CampaignMessage[];
+      // Combine messages with their profiles, replies, and reactions
+      return messages.map(msg => {
+        const msgReactions = reactionsMap.get(msg.id);
+        const formattedReactions: MessageReaction[] = [];
+        
+        if (msgReactions) {
+          msgReactions.forEach((users, emoji) => {
+            formattedReactions.push({
+              emoji,
+              count: users.length,
+              users,
+              hasReacted: users.includes(user?.id || ''),
+            });
+          });
+        }
+
+        return {
+          ...msg,
+          profile: profileMap.get(msg.user_id) || null,
+          recipient_profile: msg.recipient_id ? profileMap.get(msg.recipient_id) || null : null,
+          reply_to: msg.reply_to_id ? replyToMap.get(msg.reply_to_id) || null : null,
+          reactions: formattedReactions,
+        };
+      }) as CampaignMessage[];
     },
     enabled: !!campaignId,
   });
@@ -244,6 +317,51 @@ export function useSendMessage() {
     },
     onError: () => {
       toast.error('Erro ao enviar mensagem');
+    },
+  });
+}
+
+// Toggle a reaction on a message
+export function useToggleReaction() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ messageId, emoji }: { messageId: string; emoji: string }) => {
+      if (!user) throw new Error('Usuário não autenticado');
+
+      // Check if reaction exists
+      const { data: existing } = await supabase
+        .from('campaign_message_reactions')
+        .select('id')
+        .eq('message_id', messageId)
+        .eq('user_id', user.id)
+        .eq('emoji', emoji)
+        .single();
+
+      if (existing) {
+        // Remove reaction
+        const { error } = await supabase
+          .from('campaign_message_reactions')
+          .delete()
+          .eq('id', existing.id);
+        if (error) throw error;
+        return { action: 'removed' };
+      } else {
+        // Add reaction
+        const { error } = await supabase
+          .from('campaign_message_reactions')
+          .insert({
+            message_id: messageId,
+            user_id: user.id,
+            emoji,
+          });
+        if (error) throw error;
+        return { action: 'added' };
+      }
+    },
+    onSuccess: (_, variables) => {
+      // The realtime subscription will handle the update
     },
   });
 }

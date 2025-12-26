@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useCampaignMessages, useSendMessage, CampaignMessage } from "@/hooks/useChat";
+import { useCampaignMessages, useSendMessage, useToggleReaction, CampaignMessage } from "@/hooks/useChat";
 import { useCampaignImageUpload } from "@/hooks/useCampaignImageUpload";
 import { useCampaignPlayers } from "@/hooks/useSessions";
 import { useAuth } from "@/hooks/useAuth";
@@ -16,7 +16,8 @@ import {
   Lock,
   Users,
   Reply,
-  CornerDownRight
+  CornerDownRight,
+  SmilePlus
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -35,6 +36,13 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Badge } from "@/components/ui/badge";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+
+const AVAILABLE_EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🎲', '⚔️', '🛡️'];
 
 interface CampaignChatSheetProps {
   campaignId: string;
@@ -74,6 +82,7 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
   const { data: messages, isLoading } = useCampaignMessages(campaignId);
   const { data: players } = useCampaignPlayers(campaignId);
   const sendMessage = useSendMessage();
+  const toggleReaction = useToggleReaction();
   const { uploadImage, isUploading, progress } = useCampaignImageUpload();
 
   // Get current user's display name
@@ -376,132 +385,209 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                         : null;
 
                       return (
-                        <div
-                          key={msg.id}
-                          className={cn(
-                            "flex group",
-                            isOwn ? "justify-end" : "justify-start"
-                          )}
-                        >
-                          {/* Reply button - left side for own messages */}
-                          {isOwn && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="w-7 h-7 opacity-0 group-hover:opacity-100 transition-opacity mr-1 self-center"
-                              onClick={() => {
-                                setReplyingTo(msg);
-                                inputRef.current?.focus();
-                              }}
-                            >
-                              <Reply className="w-4 h-4" />
-                            </Button>
-                          )}
-                          
+                        <div key={msg.id} className="space-y-1">
                           <div
                             className={cn(
-                              "max-w-[80%] rounded-2xl px-4 py-2 relative",
-                              isPrivate 
-                                ? isOwn 
-                                  ? "bg-purple-600 text-white rounded-br-sm" 
-                                  : "bg-purple-500/20 text-foreground rounded-bl-sm border border-purple-500/30"
-                                : isOwn
-                                  ? "bg-primary text-primary-foreground rounded-br-sm"
-                                  : "bg-muted text-foreground rounded-bl-sm"
+                              "flex group",
+                              isOwn ? "justify-end" : "justify-start"
                             )}
                           >
-                            {/* Reply quote */}
-                            {msg.reply_to && replyContent && (
-                              <div className={cn(
-                                "flex items-start gap-1.5 mb-2 pb-2 border-b text-[11px]",
-                                isOwn 
-                                  ? "border-white/20" 
-                                  : isPrivate 
-                                    ? "border-purple-500/30" 
-                                    : "border-border"
-                              )}>
-                                <CornerDownRight className={cn(
-                                  "w-3 h-3 mt-0.5 flex-shrink-0",
-                                  isOwn ? "text-white/60" : "text-muted-foreground"
-                                )} />
-                                <div className="min-w-0">
-                                  <span className={cn(
-                                    "font-semibold",
-                                    isOwn ? "text-white/80" : "text-primary"
-                                  )}>
-                                    {msg.reply_to.profile?.display_name || 'Jogador'}
-                                  </span>
-                                  <p className={cn(
-                                    "truncate",
-                                    isOwn ? "text-white/60" : "text-muted-foreground"
-                                  )}>
-                                    {replyContent}
-                                  </p>
-                                </div>
+                            {/* Action buttons - left side for own messages */}
+                            {isOwn && (
+                              <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity mr-1 self-center gap-0.5">
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="w-7 h-7"
+                                    >
+                                      <SmilePlus className="w-4 h-4" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-2" side="top">
+                                    <div className="flex gap-1 flex-wrap max-w-[200px]">
+                                      {AVAILABLE_EMOJIS.map(emoji => (
+                                        <button
+                                          key={emoji}
+                                          className="text-xl hover:bg-muted p-1.5 rounded transition-colors"
+                                          onClick={() => toggleReaction.mutate({ messageId: msg.id, emoji })}
+                                        >
+                                          {emoji}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </PopoverContent>
+                                </Popover>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="w-7 h-7"
+                                  onClick={() => {
+                                    setReplyingTo(msg);
+                                    inputRef.current?.focus();
+                                  }}
+                                >
+                                  <Reply className="w-4 h-4" />
+                                </Button>
                               </div>
                             )}
                             
-                            {/* Private message indicator */}
-                            {isPrivate && (
-                              <div className={cn(
-                                "flex items-center gap-1 text-[10px] mb-1",
-                                isOwn ? "text-white/70" : "text-purple-400"
+                            <div
+                              className={cn(
+                                "max-w-[80%] rounded-2xl px-4 py-2 relative",
+                                isPrivate 
+                                  ? isOwn 
+                                    ? "bg-purple-600 text-white rounded-br-sm" 
+                                    : "bg-purple-500/20 text-foreground rounded-bl-sm border border-purple-500/30"
+                                  : isOwn
+                                    ? "bg-primary text-primary-foreground rounded-br-sm"
+                                    : "bg-muted text-foreground rounded-bl-sm"
+                              )}
+                            >
+                              {/* Reply quote */}
+                              {msg.reply_to && replyContent && (
+                                <div className={cn(
+                                  "flex items-start gap-1.5 mb-2 pb-2 border-b text-[11px]",
+                                  isOwn 
+                                    ? "border-white/20" 
+                                    : isPrivate 
+                                      ? "border-purple-500/30" 
+                                      : "border-border"
+                                )}>
+                                  <CornerDownRight className={cn(
+                                    "w-3 h-3 mt-0.5 flex-shrink-0",
+                                    isOwn ? "text-white/60" : "text-muted-foreground"
+                                  )} />
+                                  <div className="min-w-0">
+                                    <span className={cn(
+                                      "font-semibold",
+                                      isOwn ? "text-white/80" : "text-primary"
+                                    )}>
+                                      {msg.reply_to.profile?.display_name || 'Jogador'}
+                                    </span>
+                                    <p className={cn(
+                                      "truncate",
+                                      isOwn ? "text-white/60" : "text-muted-foreground"
+                                    )}>
+                                      {replyContent}
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+                              
+                              {/* Private message indicator */}
+                              {isPrivate && (
+                                <div className={cn(
+                                  "flex items-center gap-1 text-[10px] mb-1",
+                                  isOwn ? "text-white/70" : "text-purple-400"
+                                )}>
+                                  <Lock className="w-3 h-3" />
+                                  {isOwn 
+                                    ? `Para ${msg.recipient_profile?.display_name || 'Jogador'}`
+                                    : 'Mensagem privada'
+                                  }
+                                </div>
+                              )}
+                              {!isOwn && (
+                                <p className={cn(
+                                  "text-xs font-semibold mb-1",
+                                  isPrivate ? "text-purple-400" : "text-primary"
+                                )}>
+                                  {msg.profile?.display_name || 'Jogador'}
+                                </p>
+                              )}
+                              <div className="space-y-2">
+                                {parts.map((part, idx) => (
+                                  part.type === 'image' ? (
+                                    <img 
+                                      key={idx}
+                                      src={part.content} 
+                                      alt="Imagem" 
+                                      className="rounded-lg max-w-full cursor-pointer"
+                                      onClick={() => window.open(part.content, '_blank')}
+                                    />
+                                  ) : (
+                                    <p key={idx} className="text-sm whitespace-pre-wrap break-words">
+                                      {part.content}
+                                    </p>
+                                  )
+                                ))}
+                              </div>
+                              <p className={cn(
+                                "text-[10px] mt-1",
+                                isPrivate 
+                                  ? isOwn ? "text-white/70" : "text-purple-400/70"
+                                  : isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
                               )}>
-                                <Lock className="w-3 h-3" />
-                                {isOwn 
-                                  ? `Para ${msg.recipient_profile?.display_name || 'Jogador'}`
-                                  : 'Mensagem privada'
-                                }
+                                {format(new Date(msg.created_at), "HH:mm")}
+                              </p>
+                            </div>
+
+                            {/* Action buttons - right side for others' messages */}
+                            {!isOwn && (
+                              <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity ml-1 self-center gap-0.5">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="w-7 h-7"
+                                  onClick={() => {
+                                    setReplyingTo(msg);
+                                    inputRef.current?.focus();
+                                  }}
+                                >
+                                  <Reply className="w-4 h-4" />
+                                </Button>
+                                <Popover>
+                                  <PopoverTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="w-7 h-7"
+                                    >
+                                      <SmilePlus className="w-4 h-4" />
+                                    </Button>
+                                  </PopoverTrigger>
+                                  <PopoverContent className="w-auto p-2" side="top">
+                                    <div className="flex gap-1 flex-wrap max-w-[200px]">
+                                      {AVAILABLE_EMOJIS.map(emoji => (
+                                        <button
+                                          key={emoji}
+                                          className="text-xl hover:bg-muted p-1.5 rounded transition-colors"
+                                          onClick={() => toggleReaction.mutate({ messageId: msg.id, emoji })}
+                                        >
+                                          {emoji}
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </PopoverContent>
+                                </Popover>
                               </div>
                             )}
-                            {!isOwn && (
-                              <p className={cn(
-                                "text-xs font-semibold mb-1",
-                                isPrivate ? "text-purple-400" : "text-primary"
-                              )}>
-                                {msg.profile?.display_name || 'Jogador'}
-                              </p>
-                            )}
-                            <div className="space-y-2">
-                              {parts.map((part, idx) => (
-                                part.type === 'image' ? (
-                                  <img 
-                                    key={idx}
-                                    src={part.content} 
-                                    alt="Imagem" 
-                                    className="rounded-lg max-w-full cursor-pointer"
-                                    onClick={() => window.open(part.content, '_blank')}
-                                  />
-                                ) : (
-                                  <p key={idx} className="text-sm whitespace-pre-wrap break-words">
-                                    {part.content}
-                                  </p>
-                                )
-                              ))}
-                            </div>
-                            <p className={cn(
-                              "text-[10px] mt-1",
-                              isPrivate 
-                                ? isOwn ? "text-white/70" : "text-purple-400/70"
-                                : isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
-                            )}>
-                              {format(new Date(msg.created_at), "HH:mm")}
-                            </p>
                           </div>
 
-                          {/* Reply button - right side for others' messages */}
-                          {!isOwn && (
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="w-7 h-7 opacity-0 group-hover:opacity-100 transition-opacity ml-1 self-center"
-                              onClick={() => {
-                                setReplyingTo(msg);
-                                inputRef.current?.focus();
-                              }}
-                            >
-                              <Reply className="w-4 h-4" />
-                            </Button>
+                          {/* Reactions display */}
+                          {msg.reactions && msg.reactions.length > 0 && (
+                            <div className={cn(
+                              "flex gap-1 flex-wrap",
+                              isOwn ? "justify-end pr-2" : "justify-start pl-2"
+                            )}>
+                              {msg.reactions.map(reaction => (
+                                <button
+                                  key={reaction.emoji}
+                                  onClick={() => toggleReaction.mutate({ messageId: msg.id, emoji: reaction.emoji })}
+                                  className={cn(
+                                    "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs transition-colors",
+                                    reaction.hasReacted
+                                      ? "bg-primary/20 border border-primary/40 text-primary"
+                                      : "bg-muted hover:bg-muted/80 border border-transparent"
+                                  )}
+                                >
+                                  <span>{reaction.emoji}</span>
+                                  <span>{reaction.count}</span>
+                                </button>
+                              ))}
+                            </div>
                           )}
                         </div>
                       );
