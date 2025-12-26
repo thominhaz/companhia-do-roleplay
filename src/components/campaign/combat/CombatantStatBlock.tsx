@@ -376,6 +376,22 @@ export function CombatantStatBlock({
               </div>
             )}
 
+            {/* Reactions */}
+            {data.reactions && data.reactions.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-lg font-bold text-orange-400 border-b border-orange-500/30 pb-1">Reações</h3>
+                {data.reactions.map((action, i) => renderMonsterAction(action, i))}
+              </div>
+            )}
+
+            {/* Legendary Actions */}
+            {data.legendary_actions && data.legendary_actions.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-lg font-bold text-yellow-400 border-b border-yellow-500/30 pb-1">Ações Lendárias</h3>
+                {data.legendary_actions.map((action, i) => renderMonsterAction(action, i))}
+              </div>
+            )}
+
             {/* Conditions */}
             {combatant.conditions.length > 0 && (
               <div className="space-y-2">

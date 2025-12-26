@@ -72,12 +72,14 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.classList.add(mode);
     }
 
-    // IMPORTANT: Don’t evaluate premium access before auth/subscription are loaded.
+    // IMPORTANT: Don't evaluate premium access before auth/subscription are loaded.
     // Otherwise, premium themes can be wrongly reset to default on page refresh.
-    const shouldDeferThemeAccessCheck =
-      isAuthLoading || (user ? isLoadingSubscription || !subscription : false);
+    const isLoadingAuth = isAuthLoading;
+    const isLoadingSubs = user ? isLoadingSubscription : false;
+    const shouldDeferThemeAccessCheck = isLoadingAuth || isLoadingSubs;
 
     if (shouldDeferThemeAccessCheck) {
+      // While loading, apply stored style to prevent visual flicker
       root.classList.add(`theme-${style}`);
       requestAnimationFrame(() => {
         requestAnimationFrame(() => root.classList.remove("no-transitions"));
@@ -95,7 +97,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
 
     // Logged in + subscription loaded: Apply style (only if user has access)
-    if (canUseTheme(style)) {
+    const userCanUseTheme = FREE_THEMES.includes(style) || hasThemeAccess;
+    if (userCanUseTheme) {
       root.classList.add(`theme-${style}`);
     } else {
       root.classList.add("theme-default");
@@ -109,7 +112,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => root.classList.remove("no-transitions"));
     });
-  }, [mode, style, isAuthLoading, user, subscription, isLoadingSubscription]);
+  }, [mode, style, isAuthLoading, user, hasThemeAccess, isLoadingSubscription]);
 
   // Listen for system theme changes
   useEffect(() => {
@@ -140,4 +143,3 @@ export function useTheme() {
   }
   return context;
 }
-
