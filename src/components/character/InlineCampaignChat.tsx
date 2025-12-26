@@ -138,7 +138,7 @@ export function InlineCampaignChat({ campaignId, campaignName }: InlineCampaignC
   const unreadCount = messages?.length || 0;
 
   return (
-    <div className="fixed bottom-20 right-4 z-40">
+    <div className="fixed bottom-20 right-20 z-40">
       <AnimatePresence>
         {isExpanded && (
           <motion.div
