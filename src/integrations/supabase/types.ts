@@ -233,6 +233,41 @@ export type Database = {
           },
         ]
       }
+      campaign_message_read_receipts: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          id: string
+          last_read_at: string
+          other_user_id: string | null
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          id?: string
+          last_read_at?: string
+          other_user_id?: string | null
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          last_read_at?: string
+          other_user_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_message_read_receipts_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign_messages: {
         Row: {
           campaign_id: string
