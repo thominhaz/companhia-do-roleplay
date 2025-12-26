@@ -32,7 +32,8 @@ import {
   Star,
   ArrowRightLeft,
   Scroll,
-  Users
+  Users,
+  Package
 } from "lucide-react";
 import advancementData from "@/data/rules/avanco-personagem.json";
 import { calculateFeatBonuses } from "@/lib/featEffects";
@@ -70,6 +71,7 @@ import { InitiateTradeSheet } from "./InitiateTradeSheet";
 import { DocumentsSheet } from "./DocumentsSheet";
 import { useCharacterDocuments } from "@/hooks/useDocuments";
 import { CharacterFactionReputations } from "./CharacterFactionReputations";
+import { InventoryTab } from "./InventoryTab";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -267,6 +269,7 @@ export function CharacterSheet() {
   
   // Calculate unread documents count
   const unreadDocumentsCount = characterDocuments?.filter(d => !d.read_at).length || 0;
+  const [mainTab, setMainTab] = useState<'ficha' | 'inventario'>('ficha');
   const [activeTab, setActiveTab] = useState('geral');
   const [skillsTab, setSkillsTab] = useState('pericias');
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -796,8 +799,8 @@ export function CharacterSheet() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-24">
       {/* Header */}
-      <header className="bg-card/50 backdrop-blur-md border-b border-border/30 px-4 py-3 sticky top-0 z-50">
-        <div className="flex items-center justify-between max-w-7xl mx-auto">
+      <header className="bg-card/50 backdrop-blur-md border-b border-border/30 sticky top-0 z-50">
+        <div className="flex items-center justify-between max-w-7xl mx-auto px-4 py-3">
           <div className="flex items-center gap-3">
             <Button 
               variant="ghost" 
@@ -859,6 +862,34 @@ export function CharacterSheet() {
             </DropdownMenu>
           </div>
         </div>
+        
+        {/* Main Tab Navigation - Ficha / Inventário */}
+        <div className="max-w-7xl mx-auto px-4 pb-3">
+          <div className="flex gap-1 bg-muted/30 p-1 rounded-xl">
+            <button
+              onClick={() => setMainTab('ficha')}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium text-sm transition-all
+                ${mainTab === 'ficha' 
+                  ? 'bg-card shadow-sm text-primary' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                }`}
+            >
+              <User className="w-4 h-4" />
+              Ficha
+            </button>
+            <button
+              onClick={() => setMainTab('inventario')}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg font-medium text-sm transition-all
+                ${mainTab === 'inventario' 
+                  ? 'bg-card shadow-sm text-primary' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                }`}
+            >
+              <Package className="w-4 h-4" />
+              Inventário
+            </button>
+          </div>
+        </div>
       </header>
 
       {/* Desktop: Sidebar + Content Layout */}
@@ -897,7 +928,21 @@ export function CharacterSheet() {
 
         {/* Main Content */}
         <div className="flex-1 min-w-0">
+          
+          {/* Inventory Tab Content */}
+          {mainTab === 'inventario' && (
+            <div className="p-4">
+              <InventoryTab 
+                character={character}
+                characterCampaign={characterCampaign}
+                campaignPlayers={campaignPlayers}
+              />
+            </div>
+          )}
 
+          {/* Character Sheet Content */}
+          {mainTab === 'ficha' && (
+            <>
       {/* XP & Level Up Banner - Top Right */}
       {(() => {
         const levels = advancementData.character_advancement.levels;
@@ -2164,6 +2209,8 @@ export function CharacterSheet() {
           </div>
         </div>
       </div>
+            </>
+          )}
       </div> {/* End Main Content */}
       </div> {/* End Flex Container */}
 
