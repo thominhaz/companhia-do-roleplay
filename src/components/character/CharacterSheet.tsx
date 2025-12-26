@@ -177,22 +177,25 @@ function SheetCard({ children, className = "" }: { children: React.ReactNode; cl
   );
 }
 
-// Attribute Box Component - Minimalist style
+// Attribute Box Component - Shows base value and modifier
 function AttributeBox({ 
   name, 
   fullName,
+  value,
   modifier 
 }: { 
   name: string;
   fullName: string;
+  value: number;
   modifier: number;
 }) {
   return (
-    <div className="bg-muted/50 rounded-xl p-4 text-center hover:bg-muted/70 transition-colors cursor-pointer">
-      <div className="text-3xl font-bold text-foreground mb-1">
+    <div className="bg-muted/50 rounded-xl p-3 text-center hover:bg-muted/70 transition-colors cursor-pointer">
+      <div className="text-2xl font-bold text-foreground">{value}</div>
+      <div className={`text-sm font-semibold ${modifier >= 0 ? 'text-primary' : 'text-destructive'}`}>
         {modifier >= 0 ? '+' : ''}{modifier}
       </div>
-      <div className="text-xs text-muted-foreground">{fullName}</div>
+      <div className="text-xs text-muted-foreground mt-1">{fullName}</div>
     </div>
   );
 }
@@ -715,6 +718,81 @@ export function CharacterSheet() {
     skill.name.toLowerCase().includes(skillSearch.toLowerCase())
   );
 
+  // Menu action items - reusable between sidebar and dropdown
+  const menuActions = [
+    {
+      id: 'edit',
+      label: 'Editar Personagem',
+      icon: Edit3,
+      color: 'blue',
+      onClick: () => setShowEditStats(true),
+      show: true,
+    },
+    {
+      id: 'levelup',
+      label: 'Subir de Nível',
+      icon: TrendingUp,
+      color: 'green',
+      onClick: () => setShowLevelUp(true),
+      show: true,
+    },
+    {
+      id: 'notes',
+      label: 'Notas e Anotações',
+      icon: FileText,
+      color: 'amber',
+      onClick: () => setShowNotes(true),
+      show: true,
+    },
+    {
+      id: 'history',
+      label: 'Histórico',
+      icon: History,
+      color: 'purple',
+      onClick: () => setShowHistory(true),
+      show: true,
+      badge: !hasHistoryAccess ? 'PRO' : undefined,
+    },
+    {
+      id: 'spells',
+      label: 'Gerenciar Magias',
+      icon: Sparkles,
+      color: 'violet',
+      onClick: () => setShowSpells(true),
+      show: !!character.spellcasting,
+    },
+    {
+      id: 'trade',
+      label: 'Propor Troca',
+      icon: ArrowRightLeft,
+      color: 'cyan',
+      onClick: () => setShowTradeSheet(true),
+      show: !!(characterCampaign && campaignPlayers && campaignPlayers.length > 1),
+    },
+    {
+      id: 'documents',
+      label: 'Meus Documentos',
+      icon: Scroll,
+      color: 'orange',
+      onClick: () => setShowDocuments(true),
+      show: !!characterCampaign,
+      count: unreadDocumentsCount,
+    },
+  ];
+
+  const getColorClasses = (color: string) => {
+    const colors: Record<string, { bg: string; text: string }> = {
+      blue: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
+      green: { bg: 'bg-green-500/20', text: 'text-green-400' },
+      amber: { bg: 'bg-amber-500/20', text: 'text-amber-400' },
+      purple: { bg: 'bg-purple-500/20', text: 'text-purple-400' },
+      violet: { bg: 'bg-violet-500/20', text: 'text-violet-400' },
+      cyan: { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
+      orange: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
+    };
+    return colors[color] || { bg: 'bg-muted', text: 'text-muted-foreground' };
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-primary/5 pb-24">
       {/* Header */}
@@ -737,7 +815,8 @@ export function CharacterSheet() {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
+          {/* Mobile: Dropdown menu */}
+          <div className="flex items-center gap-2 md:hidden">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="icon" className="rounded-full relative">
@@ -750,98 +829,74 @@ export function CharacterSheet() {
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-56 p-1 bg-card border border-border shadow-lg">
-                <DropdownMenuItem 
-                  onClick={() => setShowEditStats(true)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
-                    <Edit3 className="w-4 h-4 text-blue-400" />
-                  </div>
-                  <span className="font-medium">Editar Personagem</span>
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  onClick={() => setShowLevelUp(true)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0">
-                    <TrendingUp className="w-4 h-4 text-green-400" />
-                  </div>
-                  <span className="font-medium">Subir de Nível</span>
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  onClick={() => setShowNotes(true)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
-                    <FileText className="w-4 h-4 text-amber-400" />
-                  </div>
-                  <span className="font-medium">Notas e Anotações</span>
-                </DropdownMenuItem>
-                
-                <DropdownMenuItem 
-                  onClick={() => setShowHistory(true)}
-                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
-                >
-                  <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center shrink-0">
-                    <History className="w-4 h-4 text-purple-400" />
-                  </div>
-                  <div className="flex items-center gap-2 flex-1">
-                    <span className="font-medium">Histórico</span>
-                    {!hasHistoryAccess && (
-                      <span className="text-[10px] px-1.5 py-0.5 bg-gold/20 text-gold rounded font-bold">PRO</span>
-                    )}
-                  </div>
-                </DropdownMenuItem>
-                
-                {character.spellcasting && (
-                  <DropdownMenuItem 
-                    onClick={() => setShowSpells(true)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center shrink-0">
-                      <Sparkles className="w-4 h-4 text-violet-400" />
-                    </div>
-                    <span className="font-medium">Gerenciar Magias</span>
-                  </DropdownMenuItem>
-                )}
-                
-                {characterCampaign && campaignPlayers && campaignPlayers.length > 1 && (
-                  <DropdownMenuItem 
-                    onClick={() => setShowTradeSheet(true)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center shrink-0">
-                      <ArrowRightLeft className="w-4 h-4 text-cyan-400" />
-                    </div>
-                    <span className="font-medium">Propor Troca</span>
-                  </DropdownMenuItem>
-                )}
-                
-                {characterCampaign && (
-                  <DropdownMenuItem 
-                    onClick={() => setShowDocuments(true)}
-                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
-                  >
-                    <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center shrink-0">
-                      <Scroll className="w-4 h-4 text-orange-400" />
-                    </div>
-                    <div className="flex items-center gap-2 flex-1">
-                      <span className="font-medium">Meus Documentos</span>
-                      {unreadDocumentsCount > 0 && (
-                        <span className="text-[10px] px-1.5 py-0.5 bg-destructive text-destructive-foreground rounded-full font-bold min-w-[18px] text-center">
-                          {unreadDocumentsCount}
-                        </span>
-                      )}
-                    </div>
-                  </DropdownMenuItem>
-                )}
+                {menuActions.filter(action => action.show).map((action) => {
+                  const Icon = action.icon;
+                  const colorClasses = getColorClasses(action.color);
+                  return (
+                    <DropdownMenuItem 
+                      key={action.id}
+                      onClick={action.onClick}
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
+                    >
+                      <div className={`w-8 h-8 rounded-lg ${colorClasses.bg} flex items-center justify-center shrink-0`}>
+                        <Icon className={`w-4 h-4 ${colorClasses.text}`} />
+                      </div>
+                      <div className="flex items-center gap-2 flex-1">
+                        <span className="font-medium">{action.label}</span>
+                        {action.badge && (
+                          <span className="text-[10px] px-1.5 py-0.5 bg-gold/20 text-gold rounded font-bold">{action.badge}</span>
+                        )}
+                        {action.count && action.count > 0 && (
+                          <span className="text-[10px] px-1.5 py-0.5 bg-destructive text-destructive-foreground rounded-full font-bold min-w-[18px] text-center">
+                            {action.count}
+                          </span>
+                        )}
+                      </div>
+                    </DropdownMenuItem>
+                  );
+                })}
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
         </div>
       </header>
+
+      {/* Desktop: Sidebar + Content Layout */}
+      <div className="max-w-7xl mx-auto flex">
+        {/* Desktop Sidebar - hidden on mobile */}
+        <aside className="hidden md:block w-56 shrink-0 p-4 sticky top-16 self-start h-fit">
+          <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-2 space-y-1">
+            {menuActions.filter(action => action.show).map((action) => {
+              const Icon = action.icon;
+              const colorClasses = getColorClasses(action.color);
+              return (
+                <button
+                  key={action.id}
+                  onClick={action.onClick}
+                  className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted/50 transition-colors text-left"
+                >
+                  <div className={`w-8 h-8 rounded-lg ${colorClasses.bg} flex items-center justify-center shrink-0`}>
+                    <Icon className={`w-4 h-4 ${colorClasses.text}`} />
+                  </div>
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="font-medium text-sm truncate">{action.label}</span>
+                    {action.badge && (
+                      <span className="text-[10px] px-1.5 py-0.5 bg-gold/20 text-gold rounded font-bold shrink-0">{action.badge}</span>
+                    )}
+                    {action.count && action.count > 0 && (
+                      <span className="text-[10px] px-1.5 py-0.5 bg-destructive text-destructive-foreground rounded-full font-bold min-w-[18px] text-center shrink-0">
+                        {action.count}
+                      </span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </aside>
+
+        {/* Main Content */}
+        <div className="flex-1 min-w-0">
 
       {/* XP & Level Up Banner - Top Right */}
       {(() => {
@@ -876,7 +931,7 @@ export function CharacterSheet() {
         };
 
         return (
-          <div className="max-w-7xl mx-auto px-4 mb-4">
+          <div className="px-4 mb-4">
             <div className={`rounded-xl p-4 border ${
               canLevelUp 
                 ? 'bg-yellow-500/10 border-yellow-500/50' 
@@ -992,7 +1047,7 @@ export function CharacterSheet() {
       })()}
 
       {/* Main Content - 3 Column Layout */}
-      <div className="max-w-7xl mx-auto p-4">
+      <div className="p-4">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           
           {/* Left Column - Character Info */}
@@ -1050,6 +1105,7 @@ export function CharacterSheet() {
                         key={attr}
                         name={getAttributeAbbr(attr)}
                         fullName={ATTR_NAMES[attr]}
+                        value={score}
                         modifier={mod}
                       />
                     );
@@ -1064,6 +1120,7 @@ export function CharacterSheet() {
                         key={attr}
                         name={getAttributeAbbr(attr)}
                         fullName={ATTR_NAMES[attr]}
+                        value={score}
                         modifier={mod}
                       />
                     );
@@ -2087,6 +2144,8 @@ export function CharacterSheet() {
           </div>
         </div>
       </div>
+      </div> {/* End Main Content */}
+      </div> {/* End Flex Container */}
 
       {/* Sheets */}
       <LevelUpSheet 
