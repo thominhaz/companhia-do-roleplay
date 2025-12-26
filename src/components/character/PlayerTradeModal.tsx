@@ -641,7 +641,7 @@ export function PlayerTradeModal({ characterId, characterInventory, characterCur
         setSelectedTrade(null);
         setSelectingItem(false);
         setSelectingCurrency(false);
-        setOfferedCurrency({ gold: 0, silver: 0, copper: 0 });
+        setOfferedCurrency({ platinum: 0, gold: 0, silver: 0, copper: 0 });
       }}>
         <AlertDialogContent className="max-w-md">
           {renderTradeContent()}

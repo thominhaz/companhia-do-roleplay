@@ -507,7 +507,7 @@ export function InitiateTradeSheet({
               disabled={
                 !selectedItem || 
                 initiateTrade.isPending ||
-                (!requestedCurrency.gold && !requestedCurrency.silver && !requestedCurrency.copper)
+                currencyToCopper(requestedCurrency) === 0
               }
             >
               {initiateTrade.isPending ? (
