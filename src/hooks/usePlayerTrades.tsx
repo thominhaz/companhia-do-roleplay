@@ -2,6 +2,15 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import { 
+  FullCurrency, 
+  currencyToCopper, 
+  copperToCurrency, 
+  hasEnoughCurrency, 
+  subtractCurrency, 
+  addCurrency,
+  normalizeCurrency
+} from "@/lib/currencyUtils";
 
 export interface ItemData {
   id?: string;
@@ -12,11 +21,8 @@ export interface ItemData {
   quantity?: number;
 }
 
-export interface CurrencyData {
-  gold?: number;
-  silver?: number;
-  copper?: number;
-}
+// Re-export FullCurrency as CurrencyData for backward compatibility
+export type CurrencyData = FullCurrency;
 
 export interface TradeOffer {
   type: 'item' | 'currency' | 'gift';
@@ -488,8 +494,8 @@ async function executeTrade(trade: any) {
 
   const initiatorInventory = (initiatorChar.inventory as any[]) || [];
   const receiverInventory = (receiverChar.inventory as any[]) || [];
-  const initiatorCurrency = (initiatorChar.currency as any) || { gold: 0, silver: 0, copper: 0 };
-  const receiverCurrency = (receiverChar.currency as any) || { gold: 0, silver: 0, copper: 0 };
+  const initiatorCurrency = normalizeCurrency(initiatorChar.currency as any);
+  const receiverCurrency = normalizeCurrency(receiverChar.currency as any);
 
   const initiatorItemData = trade.initiator_item_data as ItemData & { offer_type?: string; currency?: CurrencyData };
   const receiverItemData = trade.receiver_item_data as (ItemData & { offer_type?: string; currency?: CurrencyData }) | null;
@@ -510,16 +516,12 @@ async function executeTrade(trade: any) {
   // Validate receiver's offer
   if (receiverItemData) {
     if (receiverItemData.offer_type === 'currency' && receiverItemData.currency) {
-      // Validate receiver has enough currency
-      const currency = receiverItemData.currency;
-      if ((currency.gold || 0) > (receiverCurrency.gold || 0)) {
-        throw new Error(`Moedas insuficientes: precisa de ${currency.gold} PO, tem ${receiverCurrency.gold || 0} PO`);
-      }
-      if ((currency.silver || 0) > (receiverCurrency.silver || 0)) {
-        throw new Error(`Moedas insuficientes: precisa de ${currency.silver} PP, tem ${receiverCurrency.silver || 0} PP`);
-      }
-      if ((currency.copper || 0) > (receiverCurrency.copper || 0)) {
-        throw new Error(`Moedas insuficientes: precisa de ${currency.copper} PC, tem ${receiverCurrency.copper || 0} PC`);
+      // Validate receiver has enough currency using automatic conversion
+      const requiredCurrency = normalizeCurrency(receiverItemData.currency);
+      if (!hasEnoughCurrency(receiverCurrency, requiredCurrency)) {
+        const walletTotal = currencyToCopper(receiverCurrency);
+        const requiredTotal = currencyToCopper(requiredCurrency);
+        throw new Error(`Moedas insuficientes: você tem ${(walletTotal / 100).toFixed(2)} PO equivalente, precisa de ${(requiredTotal / 100).toFixed(2)} PO equivalente`);
       }
     } else if (receiverItemData.offer_type === 'item' || !receiverItemData.offer_type) {
       // Validate receiver's item still exists
@@ -560,15 +562,18 @@ async function executeTrade(trade: any) {
   // Handle receiver's offer
   if (receiverItemData) {
     if (receiverItemData.offer_type === 'currency' && receiverItemData.currency) {
-      // Receiver is paying with currency
-      const currency = receiverItemData.currency;
-      newReceiverCurrency.gold = (newReceiverCurrency.gold || 0) - (currency.gold || 0);
-      newReceiverCurrency.silver = (newReceiverCurrency.silver || 0) - (currency.silver || 0);
-      newReceiverCurrency.copper = (newReceiverCurrency.copper || 0) - (currency.copper || 0);
-
-      newInitiatorCurrency.gold = (newInitiatorCurrency.gold || 0) + (currency.gold || 0);
-      newInitiatorCurrency.silver = (newInitiatorCurrency.silver || 0) + (currency.silver || 0);
-      newInitiatorCurrency.copper = (newInitiatorCurrency.copper || 0) + (currency.copper || 0);
+      // Receiver is paying with currency - use automatic conversion
+      const paymentCurrency = normalizeCurrency(receiverItemData.currency);
+      
+      // Subtract from receiver using automatic conversion
+      const receiverAfterPayment = subtractCurrency(newReceiverCurrency, paymentCurrency);
+      if (!receiverAfterPayment) {
+        throw new Error("Erro ao processar pagamento: moedas insuficientes");
+      }
+      newReceiverCurrency = receiverAfterPayment;
+      
+      // Add to initiator
+      newInitiatorCurrency = addCurrency(newInitiatorCurrency, paymentCurrency);
     } else if (receiverItemData.offer_type === 'item' || !receiverItemData.offer_type) {
       // Receiver is trading an item - find the actual item
       let receiverItemToRemove = receiverInventory.find(item => item.id === receiverItemData.id);

@@ -21,6 +21,12 @@ import {
   ArrowRight
 } from "lucide-react";
 import { useCharacterTrades, ItemData, CurrencyData } from "@/hooks/usePlayerTrades";
+import { 
+  FullCurrency, 
+  currencyToCopper, 
+  formatCurrency as formatCurrencyUtil, 
+  formatCurrencyAsGold 
+} from "@/lib/currencyUtils";
 
 interface InventoryItem {
   id: string;
@@ -80,7 +86,8 @@ export function InitiateTradeSheet({
   const [selectedPlayer, setSelectedPlayer] = useState<CampaignPlayer | null>(null);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [tradeType, setTradeType] = useState<TradeType>('item');
-  const [requestedCurrency, setRequestedCurrency] = useState<CurrencyData>({
+  const [requestedCurrency, setRequestedCurrency] = useState<FullCurrency>({
+    platinum: 0,
     gold: 0,
     silver: 0,
     copper: 0,
@@ -120,7 +127,7 @@ export function InitiateTradeSheet({
     setSelectedPlayer(null);
     setSelectedItem(null);
     setTradeType('item');
-    setRequestedCurrency({ gold: 0, silver: 0, copper: 0 });
+    setRequestedCurrency({ platinum: 0, gold: 0, silver: 0, copper: 0 });
     onOpenChange(false);
   };
 
@@ -377,7 +384,24 @@ export function InitiateTradeSheet({
               <div className="space-y-4">
                 <Label className="text-base font-semibold">Quanto você quer receber?</Label>
                 
-                <div className="grid grid-cols-3 gap-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-xs text-gray-300 flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-full bg-gray-300" />
+                      Platina (PL)
+                    </Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={requestedCurrency.platinum || ''}
+                      onChange={(e) => setRequestedCurrency(prev => ({
+                        ...prev,
+                        platinum: parseInt(e.target.value) || 0
+                      }))}
+                      className="text-center"
+                      placeholder="0"
+                    />
+                  </div>
                   <div className="space-y-2">
                     <Label className="text-xs text-amber-500 flex items-center gap-1">
                       <div className="w-3 h-3 rounded-full bg-amber-500" />
@@ -413,8 +437,8 @@ export function InitiateTradeSheet({
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-xs text-orange-700 flex items-center gap-1">
-                      <div className="w-3 h-3 rounded-full bg-orange-700" />
+                    <Label className="text-xs text-orange-600 flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-full bg-orange-600" />
                       Cobre (PC)
                     </Label>
                     <Input
@@ -432,14 +456,12 @@ export function InitiateTradeSheet({
                 </div>
 
                 {/* Total preview */}
-                {(requestedCurrency.gold || requestedCurrency.silver || requestedCurrency.copper) ? (
+                {currencyToCopper(requestedCurrency) > 0 ? (
                   <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
                     <p className="text-sm text-center">
                       <span className="text-muted-foreground">Total: </span>
                       <span className="font-semibold">
-                        {requestedCurrency.gold ? `${requestedCurrency.gold} PO ` : ''}
-                        {requestedCurrency.silver ? `${requestedCurrency.silver} PP ` : ''}
-                        {requestedCurrency.copper ? `${requestedCurrency.copper} PC` : ''}
+                        {formatCurrencyUtil(requestedCurrency)} ({formatCurrencyAsGold(requestedCurrency)} equiv.)
                       </span>
                     </p>
                   </div>
@@ -485,7 +507,7 @@ export function InitiateTradeSheet({
               disabled={
                 !selectedItem || 
                 initiateTrade.isPending ||
-                (!requestedCurrency.gold && !requestedCurrency.silver && !requestedCurrency.copper)
+                currencyToCopper(requestedCurrency) === 0
               }
             >
               {initiateTrade.isPending ? (
