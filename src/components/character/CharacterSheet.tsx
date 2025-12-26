@@ -65,8 +65,7 @@ import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useCharacterCampaign } from "@/hooks/useCampaigns";
 import { useCampaignPlayers } from "@/hooks/useSessions";
-import { PrivateMasterChat } from "./PrivateMasterChat";
-import { InlineCampaignChat } from "./InlineCampaignChat";
+import { UnifiedCampaignChat } from "./UnifiedCampaignChat";
 import { TradeOfferModal } from "./TradeOfferModal";
 import { PlayerTradeModal } from "./PlayerTradeModal";
 import { InitiateTradeSheet } from "./InitiateTradeSheet";
@@ -2135,21 +2134,13 @@ export function CharacterSheet() {
         onDropConcentration={handleDropConcentration}
       />
 
-      {/* Campaign Chats - only show if character is in a campaign */}
+      {/* Unified Campaign Chat - only show if character is in a campaign */}
       {characterCampaign && (
-        <>
-          {/* General Campaign Chat */}
-          <InlineCampaignChat 
-            campaignId={characterCampaign.id} 
-            campaignName={characterCampaign.name}
-          />
-          {/* Private Chat with Master */}
-          <PrivateMasterChat 
-            campaignId={characterCampaign.id} 
-            campaignName={characterCampaign.name}
-            masterId={characterCampaign.master_id}
-          />
-        </>
+        <UnifiedCampaignChat 
+          campaignId={characterCampaign.id} 
+          campaignName={characterCampaign.name}
+          masterId={characterCampaign.master_id}
+        />
       )}
 
       {/* Trade Offer Modal - shows pending shop offers */}
