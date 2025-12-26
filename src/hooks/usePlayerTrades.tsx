@@ -12,17 +12,29 @@ export interface ItemData {
   quantity?: number;
 }
 
+export interface CurrencyData {
+  gold?: number;
+  silver?: number;
+  copper?: number;
+}
+
+export interface TradeOffer {
+  type: 'item' | 'currency' | 'gift';
+  item?: ItemData;
+  currency?: CurrencyData;
+}
+
 export interface PlayerTrade {
   id: string;
   campaign_id: string;
-  trade_type: 'master_gift' | 'player_trade';
+  trade_type: 'master_gift' | 'player_trade' | 'player_gift';
   initiator_user_id: string;
   initiator_character_id: string | null;
-  initiator_item_data: ItemData;
+  initiator_item_data: ItemData & { offer_type?: string; currency?: CurrencyData };
   initiator_confirmed: boolean;
   receiver_user_id: string;
   receiver_character_id: string;
-  receiver_item_data: ItemData | null;
+  receiver_item_data: (ItemData & { offer_type?: string; currency?: CurrencyData }) | null;
   receiver_confirmed: boolean;
   status: 'pending_receiver' | 'pending_confirmations' | 'completed' | 'cancelled' | 'rejected';
   created_at: string;
@@ -159,24 +171,35 @@ export function useCharacterTrades(characterId: string) {
     };
   }, [characterId, queryClient]);
 
-  // Initiate a trade with another player
+  // Initiate a trade with another player (item for item, item for currency, or gift)
   const initiateTrade = useMutation({
     mutationFn: async (data: {
       campaign_id: string;
       receiver_user_id: string;
       receiver_character_id: string;
       item_data: ItemData;
+      offer_type: 'item' | 'currency' | 'gift';
+      requested_currency?: CurrencyData;
     }) => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) throw new Error("Não autenticado");
 
+      const isGift = data.offer_type === 'gift';
+      const wantsCurrency = data.offer_type === 'currency';
+
+      const initiatorItemData = {
+        ...data.item_data,
+        offer_type: data.offer_type,
+        requested_currency: wantsCurrency ? data.requested_currency : undefined,
+      };
+
       const insertData = {
         campaign_id: data.campaign_id,
-        trade_type: 'player_trade' as const,
+        trade_type: isGift ? 'player_gift' : 'player_trade',
         initiator_user_id: user.user.id,
         initiator_character_id: characterId,
-        initiator_item_data: data.item_data as unknown as Record<string, unknown>,
-        initiator_confirmed: false,
+        initiator_item_data: initiatorItemData as unknown as Record<string, unknown>,
+        initiator_confirmed: isGift, // Gifts are auto-confirmed by initiator
         receiver_user_id: data.receiver_user_id,
         receiver_character_id: data.receiver_character_id,
         receiver_item_data: null,
@@ -193,9 +216,13 @@ export function useCharacterTrades(characterId: string) {
       if (error) throw error;
       return result;
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["character-trades", characterId] });
-      toast.success("Proposta de troca enviada!");
+      if (variables.offer_type === 'gift') {
+        toast.success("Item enviado como presente!");
+      } else {
+        toast.success("Proposta de troca enviada!");
+      }
     },
     onError: (error: Error) => {
       toast.error("Erro ao propor troca: " + error.message);
@@ -208,7 +235,7 @@ export function useCharacterTrades(characterId: string) {
       const { error } = await supabase
         .from("player_trades")
         .update({
-          receiver_item_data: data.item_data as any,
+          receiver_item_data: { ...data.item_data, offer_type: 'item' } as any,
           status: 'pending_confirmations',
         })
         .eq("id", data.tradeId);
@@ -221,6 +248,32 @@ export function useCharacterTrades(characterId: string) {
     },
     onError: (error: Error) => {
       toast.error("Erro ao selecionar item: " + error.message);
+    },
+  });
+
+  // Receiver offers currency instead of item
+  const selectReceiverCurrency = useMutation({
+    mutationFn: async (data: { tradeId: string; currency: CurrencyData }) => {
+      const { error } = await supabase
+        .from("player_trades")
+        .update({
+          receiver_item_data: { 
+            name: 'Moedas',
+            offer_type: 'currency',
+            currency: data.currency 
+          } as any,
+          status: 'pending_confirmations',
+        })
+        .eq("id", data.tradeId);
+
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["character-trades", characterId] });
+      toast.success("Pagamento oferecido! Aguardando confirmações.");
+    },
+    onError: (error: Error) => {
+      toast.error("Erro ao oferecer pagamento: " + error.message);
     },
   });
 
@@ -260,7 +313,7 @@ export function useCharacterTrades(characterId: string) {
     },
   });
 
-  // Accept master gift
+  // Accept master gift or player gift
   const acceptMasterGift = useMutation({
     mutationFn: async (tradeId: string) => {
       // Fetch the trade
@@ -294,6 +347,27 @@ export function useCharacterTrades(characterId: string) {
         .eq("id", trade.receiver_character_id);
 
       if (charError) throw charError;
+
+      // If it's a player gift, also remove from initiator's inventory
+      if (trade.trade_type === 'player_gift' && trade.initiator_character_id) {
+        const { data: initiatorChar } = await supabase
+          .from("characters")
+          .select("inventory")
+          .eq("id", trade.initiator_character_id)
+          .single();
+
+        if (initiatorChar) {
+          const initiatorInventory = (initiatorChar.inventory as any[]) || [];
+          const newInitiatorInventory = initiatorInventory.filter(
+            item => item.id !== itemData.id
+          );
+          
+          await supabase
+            .from("characters")
+            .update({ inventory: newInitiatorInventory })
+            .eq("id", trade.initiator_character_id);
+        }
+      }
 
       // Mark trade as completed
       const { error: tradeError } = await supabase
@@ -353,12 +427,15 @@ export function useCharacterTrades(characterId: string) {
 
   // Get pending trades where this character needs to act
   const pendingTrades = (tradesQuery.data || []).filter(t => {
-    if (t.trade_type === 'master_gift' && t.receiver_character_id === characterId && t.status === 'pending_receiver') {
-      return true; // Master gift waiting for acceptance
+    // Master gift or player gift waiting for acceptance
+    if ((t.trade_type === 'master_gift' || t.trade_type === 'player_gift') && 
+        t.receiver_character_id === characterId && 
+        t.status === 'pending_receiver') {
+      return true;
     }
     if (t.trade_type === 'player_trade') {
       if (t.receiver_character_id === characterId && t.status === 'pending_receiver') {
-        return true; // Need to select item
+        return true; // Need to select item or currency
       }
       if (t.status === 'pending_confirmations') {
         const isInitiator = t.initiator_character_id === characterId;
@@ -376,6 +453,7 @@ export function useCharacterTrades(characterId: string) {
     isLoading: tradesQuery.isLoading,
     initiateTrade,
     selectReceiverItem,
+    selectReceiverCurrency,
     confirmTrade,
     acceptMasterGift,
     rejectTrade,
@@ -392,29 +470,23 @@ async function executeTrade(trade: any) {
 
   const initiatorInventory = (initiatorChar.inventory as any[]) || [];
   const receiverInventory = (receiverChar.inventory as any[]) || [];
+  const initiatorCurrency = (initiatorChar.currency as any) || { gold: 0, silver: 0, copper: 0 };
+  const receiverCurrency = (receiverChar.currency as any) || { gold: 0, silver: 0, copper: 0 };
 
-  const initiatorItemData = trade.initiator_item_data as ItemData;
-  const receiverItemData = trade.receiver_item_data as ItemData;
+  const initiatorItemData = trade.initiator_item_data as ItemData & { offer_type?: string; currency?: CurrencyData };
+  const receiverItemData = trade.receiver_item_data as (ItemData & { offer_type?: string; currency?: CurrencyData }) | null;
 
-  // Remove items from original owners and add to new owners
-  const newInitiatorInventory = initiatorInventory.filter(
+  let newInitiatorInventory = [...initiatorInventory];
+  let newReceiverInventory = [...receiverInventory];
+  let newInitiatorCurrency = { ...initiatorCurrency };
+  let newReceiverCurrency = { ...receiverCurrency };
+
+  // Remove initiator's item
+  newInitiatorInventory = newInitiatorInventory.filter(
     item => item.id !== initiatorItemData.id
   );
-  const newReceiverInventory = receiverInventory.filter(
-    item => item.id !== receiverItemData.id
-  );
 
-  // Add received items
-  newInitiatorInventory.push({
-    id: crypto.randomUUID(),
-    name: receiverItemData.name,
-    description: receiverItemData.description || "",
-    quantity: receiverItemData.quantity || 1,
-    category: receiverItemData.category || "Outros",
-    rarity: receiverItemData.rarity || "comum",
-    isEquipped: false,
-  });
-
+  // Add initiator's item to receiver
   newReceiverInventory.push({
     id: crypto.randomUUID(),
     name: initiatorItemData.name,
@@ -425,17 +497,54 @@ async function executeTrade(trade: any) {
     isEquipped: false,
   });
 
-  // Update both characters
+  // Handle receiver's offer
+  if (receiverItemData) {
+    if (receiverItemData.offer_type === 'currency' && receiverItemData.currency) {
+      // Receiver is paying with currency
+      const currency = receiverItemData.currency;
+      newReceiverCurrency.gold = (newReceiverCurrency.gold || 0) - (currency.gold || 0);
+      newReceiverCurrency.silver = (newReceiverCurrency.silver || 0) - (currency.silver || 0);
+      newReceiverCurrency.copper = (newReceiverCurrency.copper || 0) - (currency.copper || 0);
+
+      newInitiatorCurrency.gold = (newInitiatorCurrency.gold || 0) + (currency.gold || 0);
+      newInitiatorCurrency.silver = (newInitiatorCurrency.silver || 0) + (currency.silver || 0);
+      newInitiatorCurrency.copper = (newInitiatorCurrency.copper || 0) + (currency.copper || 0);
+    } else if (receiverItemData.offer_type === 'item' || !receiverItemData.offer_type) {
+      // Receiver is trading an item
+      newReceiverInventory = newReceiverInventory.filter(
+        item => item.id !== receiverItemData.id
+      );
+
+      newInitiatorInventory.push({
+        id: crypto.randomUUID(),
+        name: receiverItemData.name,
+        description: receiverItemData.description || "",
+        quantity: receiverItemData.quantity || 1,
+        category: receiverItemData.category || "Outros",
+        rarity: receiverItemData.rarity || "comum",
+        isEquipped: false,
+      });
+    }
+  }
+
+  // Update initiator character
   const { error: initError } = await supabase
     .from("characters")
-    .update({ inventory: newInitiatorInventory })
+    .update({ 
+      inventory: newInitiatorInventory,
+      currency: newInitiatorCurrency,
+    })
     .eq("id", trade.initiator_character_id);
 
   if (initError) throw initError;
 
+  // Update receiver character
   const { error: recvError } = await supabase
     .from("characters")
-    .update({ inventory: newReceiverInventory })
+    .update({ 
+      inventory: newReceiverInventory,
+      currency: newReceiverCurrency,
+    })
     .eq("id", trade.receiver_character_id);
 
   if (recvError) throw recvError;

@@ -8,8 +8,19 @@ import {
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRightLeft, Loader2, User, Package, CheckCircle2 } from "lucide-react";
-import { useCharacterTrades, ItemData } from "@/hooks/usePlayerTrades";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { 
+  ArrowRightLeft, 
+  Loader2, 
+  User, 
+  Package, 
+  CheckCircle2, 
+  Gift, 
+  Coins,
+  ArrowRight
+} from "lucide-react";
+import { useCharacterTrades, ItemData, CurrencyData } from "@/hooks/usePlayerTrades";
 
 interface InventoryItem {
   id: string;
@@ -53,6 +64,9 @@ const RARITY_COLORS: Record<string, string> = {
   artefato: "bg-red-500/20 text-red-400",
 };
 
+type TradeType = 'item' | 'currency' | 'gift';
+type Step = 'player' | 'item' | 'type' | 'currency';
+
 export function InitiateTradeSheet({
   open,
   onOpenChange,
@@ -62,9 +76,15 @@ export function InitiateTradeSheet({
   campaignPlayers,
 }: InitiateTradeSheetProps) {
   const { initiateTrade } = useCharacterTrades(characterId);
-  const [step, setStep] = useState<'player' | 'item'>('player');
+  const [step, setStep] = useState<Step>('player');
   const [selectedPlayer, setSelectedPlayer] = useState<CampaignPlayer | null>(null);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
+  const [tradeType, setTradeType] = useState<TradeType>('item');
+  const [requestedCurrency, setRequestedCurrency] = useState<CurrencyData>({
+    gold: 0,
+    silver: 0,
+    copper: 0,
+  });
 
   // Filter out current character from players list
   const otherPlayers = campaignPlayers.filter(
@@ -88,19 +108,19 @@ export function InitiateTradeSheet({
       receiver_user_id: selectedPlayer.user_id,
       receiver_character_id: selectedPlayer.character_id,
       item_data: itemData,
+      offer_type: tradeType,
+      requested_currency: tradeType === 'currency' ? requestedCurrency : undefined,
     });
 
-    // Reset and close
-    setStep('player');
-    setSelectedPlayer(null);
-    setSelectedItem(null);
-    onOpenChange(false);
+    handleClose();
   };
 
   const handleClose = () => {
     setStep('player');
     setSelectedPlayer(null);
     setSelectedItem(null);
+    setTradeType('item');
+    setRequestedCurrency({ gold: 0, silver: 0, copper: 0 });
     onOpenChange(false);
   };
 
@@ -109,10 +129,45 @@ export function InitiateTradeSheet({
     setStep('item');
   };
 
+  const handleItemSelect = (item: InventoryItem) => {
+    setSelectedItem(item);
+    setStep('type');
+  };
+
+  const handleTradeTypeSelect = (type: TradeType) => {
+    setTradeType(type);
+    if (type === 'currency') {
+      setStep('currency');
+    }
+  };
+
   const handleBack = () => {
-    if (step === 'item') {
-      setStep('player');
+    if (step === 'currency') {
+      setStep('type');
+    } else if (step === 'type') {
+      setStep('item');
       setSelectedItem(null);
+    } else if (step === 'item') {
+      setStep('player');
+      setSelectedPlayer(null);
+    }
+  };
+
+  const getStepTitle = () => {
+    switch (step) {
+      case 'player': return 'Propor Troca';
+      case 'item': return 'Selecionar Item';
+      case 'type': return 'Tipo de Troca';
+      case 'currency': return 'Definir Valor';
+    }
+  };
+
+  const getStepDescription = () => {
+    switch (step) {
+      case 'player': return 'Escolha um jogador para propor uma troca';
+      case 'item': return `Trocar com ${selectedPlayer?.character?.name}`;
+      case 'type': return 'O que você quer em troca?';
+      case 'currency': return 'Quanto você quer receber?';
     }
   };
 
@@ -122,18 +177,15 @@ export function InitiateTradeSheet({
         <SheetHeader className="text-left">
           <SheetTitle className="flex items-center gap-2">
             <ArrowRightLeft className="w-5 h-5 text-primary" />
-            {step === 'player' ? 'Propor Troca' : 'Selecionar Item'}
+            {getStepTitle()}
           </SheetTitle>
           <p className="text-sm text-muted-foreground">
-            {step === 'player' 
-              ? 'Escolha um jogador para propor uma troca'
-              : `Trocar com ${selectedPlayer?.character?.name}`
-            }
+            {getStepDescription()}
           </p>
         </SheetHeader>
 
         <ScrollArea className="h-[calc(100%-8rem)] mt-6">
-          {step === 'player' ? (
+          {step === 'player' && (
             <div className="space-y-4 pr-4">
               {otherPlayers.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
@@ -165,7 +217,9 @@ export function InitiateTradeSheet({
                 </div>
               )}
             </div>
-          ) : (
+          )}
+
+          {step === 'item' && (
             <div className="space-y-4 pr-4">
               {characterInventory.length === 0 ? (
                 <div className="text-center py-12 text-muted-foreground">
@@ -177,12 +231,8 @@ export function InitiateTradeSheet({
                   {characterInventory.map((item) => (
                     <button
                       key={item.id}
-                      onClick={() => setSelectedItem(item)}
-                      className={`p-4 rounded-xl border text-left transition-all ${
-                        selectedItem?.id === item.id
-                          ? "border-primary bg-primary/10"
-                          : "border-border hover:border-primary/50"
-                      }`}
+                      onClick={() => handleItemSelect(item)}
+                      className="p-4 rounded-xl border border-border hover:border-primary/50 text-left transition-all"
                     >
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center">
@@ -206,9 +256,7 @@ export function InitiateTradeSheet({
                             )}
                           </div>
                         </div>
-                        {selectedItem?.id === item.id && (
-                          <CheckCircle2 className="w-5 h-5 text-primary flex-shrink-0" />
-                        )}
+                        <ArrowRight className="w-4 h-4 text-muted-foreground" />
                       </div>
                     </button>
                   ))}
@@ -216,10 +264,193 @@ export function InitiateTradeSheet({
               )}
             </div>
           )}
+
+          {step === 'type' && (
+            <div className="space-y-4 pr-4">
+              {/* Selected item summary */}
+              <div className="p-4 rounded-xl bg-muted/50 border border-border">
+                <div className="flex items-center gap-3">
+                  <Package className="w-5 h-5 text-primary" />
+                  <div>
+                    <p className="font-medium">{selectedItem?.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Para {selectedPlayer?.character?.name}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="grid gap-3">
+                {/* Gift option */}
+                <button
+                  onClick={() => handleTradeTypeSelect('gift')}
+                  className={`p-4 rounded-xl border text-left transition-all ${
+                    tradeType === 'gift'
+                      ? "border-green-500 bg-green-500/10"
+                      : "border-border hover:border-green-500/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-green-500/20 flex items-center justify-center">
+                      <Gift className="w-6 h-6 text-green-500" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Presente</p>
+                      <p className="text-sm text-muted-foreground">
+                        Entregar o item sem pedir nada em troca
+                      </p>
+                    </div>
+                    {tradeType === 'gift' && (
+                      <CheckCircle2 className="w-5 h-5 text-green-500" />
+                    )}
+                  </div>
+                </button>
+
+                {/* Item trade option */}
+                <button
+                  onClick={() => handleTradeTypeSelect('item')}
+                  className={`p-4 rounded-xl border text-left transition-all ${
+                    tradeType === 'item'
+                      ? "border-primary bg-primary/10"
+                      : "border-border hover:border-primary/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary/20 flex items-center justify-center">
+                      <ArrowRightLeft className="w-6 h-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Trocar por Item</p>
+                      <p className="text-sm text-muted-foreground">
+                        Pedir um item em troca
+                      </p>
+                    </div>
+                    {tradeType === 'item' && (
+                      <CheckCircle2 className="w-5 h-5 text-primary" />
+                    )}
+                  </div>
+                </button>
+
+                {/* Currency trade option */}
+                <button
+                  onClick={() => handleTradeTypeSelect('currency')}
+                  className={`p-4 rounded-xl border text-left transition-all ${
+                    tradeType === 'currency'
+                      ? "border-amber-500 bg-amber-500/10"
+                      : "border-border hover:border-amber-500/50"
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                      <Coins className="w-6 h-6 text-amber-500" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="font-semibold">Vender por Moedas</p>
+                      <p className="text-sm text-muted-foreground">
+                        Pedir dinheiro em troca
+                      </p>
+                    </div>
+                    {tradeType === 'currency' && (
+                      <CheckCircle2 className="w-5 h-5 text-amber-500" />
+                    )}
+                  </div>
+                </button>
+              </div>
+            </div>
+          )}
+
+          {step === 'currency' && (
+            <div className="space-y-6 pr-4">
+              {/* Selected item summary */}
+              <div className="p-4 rounded-xl bg-muted/50 border border-border">
+                <div className="flex items-center gap-3">
+                  <Package className="w-5 h-5 text-primary" />
+                  <div>
+                    <p className="font-medium">{selectedItem?.name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      Vendendo para {selectedPlayer?.character?.name}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <Label className="text-base font-semibold">Quanto você quer receber?</Label>
+                
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="space-y-2">
+                    <Label className="text-xs text-amber-500 flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-full bg-amber-500" />
+                      Ouro (PO)
+                    </Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={requestedCurrency.gold || ''}
+                      onChange={(e) => setRequestedCurrency(prev => ({
+                        ...prev,
+                        gold: parseInt(e.target.value) || 0
+                      }))}
+                      className="text-center"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs text-slate-400 flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-full bg-slate-400" />
+                      Prata (PP)
+                    </Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={requestedCurrency.silver || ''}
+                      onChange={(e) => setRequestedCurrency(prev => ({
+                        ...prev,
+                        silver: parseInt(e.target.value) || 0
+                      }))}
+                      className="text-center"
+                      placeholder="0"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label className="text-xs text-orange-700 flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-full bg-orange-700" />
+                      Cobre (PC)
+                    </Label>
+                    <Input
+                      type="number"
+                      min="0"
+                      value={requestedCurrency.copper || ''}
+                      onChange={(e) => setRequestedCurrency(prev => ({
+                        ...prev,
+                        copper: parseInt(e.target.value) || 0
+                      }))}
+                      className="text-center"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+
+                {/* Total preview */}
+                {(requestedCurrency.gold || requestedCurrency.silver || requestedCurrency.copper) ? (
+                  <div className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                    <p className="text-sm text-center">
+                      <span className="text-muted-foreground">Total: </span>
+                      <span className="font-semibold">
+                        {requestedCurrency.gold ? `${requestedCurrency.gold} PO ` : ''}
+                        {requestedCurrency.silver ? `${requestedCurrency.silver} PP ` : ''}
+                        {requestedCurrency.copper ? `${requestedCurrency.copper} PC` : ''}
+                      </span>
+                    </p>
+                  </div>
+                ) : null}
+              </div>
+            </div>
+          )}
         </ScrollArea>
 
         <div className="flex gap-3 pt-4 border-t mt-4">
-          {step === 'item' && (
+          {step !== 'player' && (
             <Button variant="outline" onClick={handleBack}>
               Voltar
             </Button>
@@ -231,7 +462,7 @@ export function InitiateTradeSheet({
           >
             Cancelar
           </Button>
-          {step === 'item' && (
+          {(step === 'type' && (tradeType === 'gift' || tradeType === 'item')) && (
             <Button
               className="flex-1"
               onClick={handleSubmit}
@@ -239,10 +470,30 @@ export function InitiateTradeSheet({
             >
               {initiateTrade.isPending ? (
                 <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : tradeType === 'gift' ? (
+                <Gift className="w-4 h-4 mr-2" />
               ) : (
                 <ArrowRightLeft className="w-4 h-4 mr-2" />
               )}
-              Propor Troca
+              {tradeType === 'gift' ? 'Enviar Presente' : 'Propor Troca'}
+            </Button>
+          )}
+          {step === 'currency' && (
+            <Button
+              className="flex-1"
+              onClick={handleSubmit}
+              disabled={
+                !selectedItem || 
+                initiateTrade.isPending ||
+                (!requestedCurrency.gold && !requestedCurrency.silver && !requestedCurrency.copper)
+              }
+            >
+              {initiateTrade.isPending ? (
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              ) : (
+                <Coins className="w-4 h-4 mr-2" />
+              )}
+              Propor Venda
             </Button>
           )}
         </div>
