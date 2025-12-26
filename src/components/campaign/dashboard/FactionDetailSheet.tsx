@@ -9,14 +9,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Textarea } from "@/components/ui/textarea";
 import { 
-  Edit, Trash2, Eye, EyeOff, MapPin, Target, Lock, 
-  Users, Handshake, Plus, Crown, X, Shield
+  Edit, Trash2, EyeOff, MapPin, Target, Lock, 
+  Users, Handshake, Plus, Crown, X, Shield, Calendar, TrendingUp, TrendingDown
 } from "lucide-react";
-import { Faction, FactionNPC, useFactionNPCs, useFactionRelationships, useCharacterFactionRep } from "@/hooks/useFactions";
+import { Faction, useFactionNPCs, useFactionRelationships, useCharacterFactionRep, useFactionEvents } from "@/hooks/useFactions";
 import { useNPCs } from "@/hooks/useNPCs";
 import { CampaignDB } from "@/hooks/useCampaigns";
 import { useCampaignPlayers } from "@/hooks/useSessions";
+import { useAuth } from "@/hooks/useAuth";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -70,12 +72,20 @@ export function FactionDetailSheet({
   const [repLevel, setRepLevel] = useState(0);
   const [selectedRelFactionId, setSelectedRelFactionId] = useState<string>("");
   const [relType, setRelType] = useState("neutral");
+  
+  // Event form state
+  const [eventTitle, setEventTitle] = useState("");
+  const [eventDescription, setEventDescription] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventRepChange, setEventRepChange] = useState(0);
 
+  const { user } = useAuth();
   const { npcs } = useNPCs(campaign.id);
   const { data: players = [] } = useCampaignPlayers(campaign.id);
   const { factionNPCs, linkNPC, unlinkNPC } = useFactionNPCs(faction?.id);
   const { relationships, createRelationship, deleteRelationship } = useFactionRelationships(campaign.id);
   const { reputations, upsertReputation } = useCharacterFactionRep(campaign.id);
+  const { events, createEventAndApply, deleteEvent } = useFactionEvents(campaign.id, faction?.id);
 
   if (!faction) return null;
 
@@ -128,6 +138,28 @@ export function FactionDetailSheet({
       setSelectedCharId("");
       setRepLevel(0);
     }
+  };
+
+  const handleCreateEvent = () => {
+    if (!eventTitle || !user) return;
+    
+    const characterIds = charactersInCampaign.map(c => c!.id);
+    
+    createEventAndApply.mutate({
+      faction_id: faction.id,
+      title: eventTitle,
+      description: eventDescription || undefined,
+      event_date: eventDate || undefined,
+      reputation_change: eventRepChange,
+      character_ids: characterIds,
+      created_by: user.id,
+    });
+    
+    // Reset form
+    setEventTitle("");
+    setEventDescription("");
+    setEventDate("");
+    setEventRepChange(0);
   };
 
   return (
@@ -198,18 +230,18 @@ export function FactionDetailSheet({
               )}
 
               <Tabs defaultValue="members" className="mt-4">
-                <TabsList className="w-full">
-                  <TabsTrigger value="members" className="flex-1">
-                    <Users className="w-4 h-4 mr-1" />
-                    NPCs
+                <TabsList className="w-full grid grid-cols-4">
+                  <TabsTrigger value="members">
+                    <Users className="w-4 h-4" />
                   </TabsTrigger>
-                  <TabsTrigger value="relations" className="flex-1">
-                    <Handshake className="w-4 h-4 mr-1" />
-                    Relações
+                  <TabsTrigger value="relations">
+                    <Handshake className="w-4 h-4" />
                   </TabsTrigger>
-                  <TabsTrigger value="reputation" className="flex-1">
-                    <Shield className="w-4 h-4 mr-1" />
-                    Reputação
+                  <TabsTrigger value="reputation">
+                    <Shield className="w-4 h-4" />
+                  </TabsTrigger>
+                  <TabsTrigger value="events">
+                    <Calendar className="w-4 h-4" />
                   </TabsTrigger>
                 </TabsList>
 
@@ -399,6 +431,92 @@ export function FactionDetailSheet({
                       )}
                     </div>
                   )}
+                </TabsContent>
+
+                <TabsContent value="events" className="space-y-3 mt-4">
+                  <div className="text-xs text-muted-foreground mb-2">
+                    Eventos históricos afetam a reputação de todos os personagens da campanha com esta facção.
+                  </div>
+                  
+                  {events.length > 0 && (
+                    <div className="space-y-2 mb-4">
+                      {events.map(event => (
+                        <div key={event.id} className="p-3 rounded-lg bg-card border space-y-1">
+                          <div className="flex items-start justify-between">
+                            <div className="flex items-center gap-2">
+                              {event.reputation_change > 0 ? (
+                                <TrendingUp className="w-4 h-4 text-green-500" />
+                              ) : event.reputation_change < 0 ? (
+                                <TrendingDown className="w-4 h-4 text-red-500" />
+                              ) : (
+                                <Calendar className="w-4 h-4 text-muted-foreground" />
+                              )}
+                              <span className="text-sm font-medium">{event.title}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Badge variant={event.reputation_change > 0 ? "default" : event.reputation_change < 0 ? "destructive" : "secondary"}>
+                                {event.reputation_change > 0 ? "+" : ""}{event.reputation_change}
+                              </Badge>
+                              <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => deleteEvent.mutate(event.id)}>
+                                <X className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          </div>
+                          {event.event_date && (
+                            <p className="text-xs text-muted-foreground pl-6">{event.event_date}</p>
+                          )}
+                          {event.description && (
+                            <p className="text-xs text-muted-foreground pl-6">{event.description}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="space-y-3 pt-2 border-t">
+                    <Label className="text-xs font-medium">Novo Evento Histórico</Label>
+                    <Input 
+                      placeholder="Título do evento *" 
+                      value={eventTitle}
+                      onChange={(e) => setEventTitle(e.target.value)}
+                    />
+                    <Input 
+                      placeholder="Data no jogo (ex: Ano 1045, Inverno)" 
+                      value={eventDate}
+                      onChange={(e) => setEventDate(e.target.value)}
+                    />
+                    <Textarea 
+                      placeholder="Descrição (opcional)" 
+                      value={eventDescription}
+                      onChange={(e) => setEventDescription(e.target.value)}
+                      rows={2}
+                    />
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-xs">
+                        <span>-50</span>
+                        <span className="font-medium">
+                          Mudança: {eventRepChange > 0 ? "+" : ""}{eventRepChange}
+                        </span>
+                        <span>+50</span>
+                      </div>
+                      <Slider
+                        value={[eventRepChange]}
+                        onValueChange={([v]) => setEventRepChange(v)}
+                        min={-50}
+                        max={50}
+                        step={5}
+                      />
+                    </div>
+                    <Button 
+                      size="sm" 
+                      className="w-full" 
+                      onClick={handleCreateEvent}
+                      disabled={!eventTitle || createEventAndApply.isPending}
+                    >
+                      <Plus className="w-4 h-4 mr-1" /> 
+                      Criar Evento e Aplicar a Todos ({charactersInCampaign.length})
+                    </Button>
+                  </div>
                 </TabsContent>
               </Tabs>
             </div>
