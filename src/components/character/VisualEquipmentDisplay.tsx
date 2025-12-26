@@ -29,6 +29,7 @@ interface EquipmentItem {
   damage?: string;
   armorClass?: number;
   isEquipped?: boolean;
+  equipped?: boolean;
   description?: string;
   rarity?: string;
 }
@@ -95,8 +96,9 @@ export function VisualEquipmentDisplay({ character, onEquipItem, onUnequipItem }
   };
   
   // Map equipment items to slots based on type
+  // Note: items can have either 'equipped' or 'isEquipped' flag
   equipment.forEach((item) => {
-    if (!item.isEquipped) return;
+    if (!item.isEquipped && !item.equipped) return;
     
     const type = item.type?.toLowerCase();
     if (type === "armor" || type === "armadura") {
@@ -126,8 +128,9 @@ export function VisualEquipmentDisplay({ character, onEquipItem, onUnequipItem }
     const item = equippedBySlot[slot];
     if (!item) return;
     
+    // Support both 'equipped' and 'isEquipped' flags
     const updatedEquipment = equipment.map((eq) => 
-      eq.id === item.id ? { ...eq, isEquipped: false } : eq
+      eq.id === item.id ? { ...eq, isEquipped: false, equipped: false } : eq
     );
     
     try {
@@ -235,14 +238,14 @@ export function VisualEquipmentDisplay({ character, onEquipItem, onUnequipItem }
           <div className="bg-card/80 border border-border/50 rounded-xl p-3 sm:p-4 text-center">
             <Sword className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 text-red-400" />
             <p className="text-lg sm:text-xl font-bold">
-              {equipment.filter(e => e.isEquipped && (e.type === 'weapon' || e.type === 'arma')).length}
+              {equipment.filter(e => (e.isEquipped || e.equipped) && (e.type === 'weapon' || e.type === 'arma')).length}
             </p>
             <p className="text-[10px] sm:text-xs text-muted-foreground">Armas</p>
           </div>
           <div className="bg-card/80 border border-border/50 rounded-xl p-3 sm:p-4 text-center">
             <Package className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 text-amber-400" />
             <p className="text-lg sm:text-xl font-bold">
-              {equipment.filter(e => e.isEquipped).length}
+              {equipment.filter(e => e.isEquipped || e.equipped).length}
             </p>
             <p className="text-[10px] sm:text-xs text-muted-foreground">Equipados</p>
           </div>

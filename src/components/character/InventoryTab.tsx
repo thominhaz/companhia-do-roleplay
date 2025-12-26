@@ -38,7 +38,7 @@ const RARITY_COLORS: Record<string, string> = {
 };
 
 function ItemCard({ item, onSelect }: { item: any; onSelect?: () => void }) {
-  const isEquipped = item.isEquipped;
+  const isEquipped = item.isEquipped || item.equipped;
   const rarityColor = RARITY_COLORS[item.rarity?.toLowerCase()] || "text-muted-foreground";
   
   // Determine icon based on item type
@@ -115,8 +115,8 @@ export function InventoryTab({ character, characterCampaign, campaignPlayers }: 
     item.name?.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
-  const equippedItems = filteredItems.filter(item => item.isEquipped);
-  const unequippedItems = filteredItems.filter(item => !item.isEquipped);
+  const equippedItems = filteredItems.filter(item => item.isEquipped || item.equipped);
+  const unequippedItems = filteredItems.filter(item => !item.isEquipped && !item.equipped);
   
   // Currency display
   const currencies = [
