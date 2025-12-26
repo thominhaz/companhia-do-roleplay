@@ -1475,6 +1475,10 @@ export type Database = {
         Args: { campaign_id: string }
         Returns: string
       }
+      get_document_campaign_id: {
+        Args: { _document_id: string }
+        Returns: string
+      }
       get_or_create_notification_preferences: {
         Args: { _user_id: string }
         Returns: {
@@ -1495,6 +1499,10 @@ export type Database = {
         }
       }
       get_subscription_tier: { Args: { _user_id: string }; Returns: string }
+      has_document_access: {
+        Args: { _document_id: string; _user_id: string }
+        Returns: boolean
+      }
       has_homebrew_access: {
         Args: { _content_id: string; _user_id: string }
         Returns: boolean
@@ -1516,6 +1524,10 @@ export type Database = {
       join_campaign_by_code: {
         Args: { _character_id?: string; _invite_code: string; _user_id: string }
         Returns: string
+      }
+      owns_character: {
+        Args: { _character_id: string; _user_id: string }
+        Returns: boolean
       }
       redeem_promo_token: {
         Args: { _code: string; _user_id: string }
