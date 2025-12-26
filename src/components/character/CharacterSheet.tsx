@@ -30,7 +30,9 @@ import {
   History,
   X,
   Star,
-  ArrowRightLeft
+  ArrowRightLeft,
+  Scroll,
+  Users
 } from "lucide-react";
 import advancementData from "@/data/rules/avanco-personagem.json";
 import { calculateFeatBonuses } from "@/lib/featEffects";
@@ -66,6 +68,7 @@ import { TradeOfferModal } from "./TradeOfferModal";
 import { PlayerTradeModal } from "./PlayerTradeModal";
 import { InitiateTradeSheet } from "./InitiateTradeSheet";
 import { DocumentsSheet } from "./DocumentsSheet";
+import { useCharacterDocuments } from "@/hooks/useDocuments";
 import { CharacterFactionReputations } from "./CharacterFactionReputations";
 import {
   AlertDialog,
@@ -257,6 +260,10 @@ export function CharacterSheet() {
   const { data: subscription } = useSubscription();
   const { data: characterCampaign } = useCharacterCampaign(id);
   const { data: campaignPlayers } = useCampaignPlayers(characterCampaign?.id || '');
+  const { data: characterDocuments } = useCharacterDocuments(id || '');
+  
+  // Calculate unread documents count
+  const unreadDocumentsCount = characterDocuments?.filter(d => !d.read_at).length || 0;
   const [activeTab, setActiveTab] = useState('geral');
   const [skillsTab, setSkillsTab] = useState('pericias');
   const [showLevelUp, setShowLevelUp] = useState(false);
@@ -733,44 +740,101 @@ export function CharacterSheet() {
           <div className="flex items-center gap-2">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="rounded-full">
+                <Button variant="ghost" size="icon" className="rounded-full relative">
                   <MoreVertical className="w-5 h-5" />
+                  {unreadDocumentsCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-4 h-4 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {unreadDocumentsCount}
+                    </span>
+                  )}
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setShowEditStats(true)}>
-                  <Edit3 className="w-4 h-4 mr-2" />
-                  Editar Personagem
+              <DropdownMenuContent align="end" className="w-56 p-1 bg-card border border-border shadow-lg">
+                <DropdownMenuItem 
+                  onClick={() => setShowEditStats(true)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-blue-500/20 flex items-center justify-center shrink-0">
+                    <Edit3 className="w-4 h-4 text-blue-400" />
+                  </div>
+                  <span className="font-medium">Editar Personagem</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowLevelUp(true)}>
-                  <TrendingUp className="w-4 h-4 mr-2" />
-                  Subir de Nível
+                
+                <DropdownMenuItem 
+                  onClick={() => setShowLevelUp(true)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-green-500/20 flex items-center justify-center shrink-0">
+                    <TrendingUp className="w-4 h-4 text-green-400" />
+                  </div>
+                  <span className="font-medium">Subir de Nível</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowNotes(true)}>
-                  <FileText className="w-4 h-4 mr-2" />
-                  Notas e Anotações
+                
+                <DropdownMenuItem 
+                  onClick={() => setShowNotes(true)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-amber-500/20 flex items-center justify-center shrink-0">
+                    <FileText className="w-4 h-4 text-amber-400" />
+                  </div>
+                  <span className="font-medium">Notas e Anotações</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowHistory(true)}>
-                  <History className="w-4 h-4 mr-2" />
-                  Histórico de Alterações
-                  {!hasHistoryAccess && <span className="ml-auto text-[10px] text-gold">PRO</span>}
+                
+                <DropdownMenuItem 
+                  onClick={() => setShowHistory(true)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center shrink-0">
+                    <History className="w-4 h-4 text-purple-400" />
+                  </div>
+                  <div className="flex items-center gap-2 flex-1">
+                    <span className="font-medium">Histórico</span>
+                    {!hasHistoryAccess && (
+                      <span className="text-[10px] px-1.5 py-0.5 bg-gold/20 text-gold rounded font-bold">PRO</span>
+                    )}
+                  </div>
                 </DropdownMenuItem>
+                
                 {character.spellcasting && (
-                  <DropdownMenuItem onClick={() => setShowSpells(true)}>
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    Gerenciar Magias
+                  <DropdownMenuItem 
+                    onClick={() => setShowSpells(true)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center shrink-0">
+                      <Sparkles className="w-4 h-4 text-violet-400" />
+                    </div>
+                    <span className="font-medium">Gerenciar Magias</span>
                   </DropdownMenuItem>
                 )}
+                
                 {characterCampaign && campaignPlayers && campaignPlayers.length > 1 && (
-                  <DropdownMenuItem onClick={() => setShowTradeSheet(true)}>
-                    <ArrowRightLeft className="w-4 h-4 mr-2" />
-                    Propor Troca
+                  <DropdownMenuItem 
+                    onClick={() => setShowTradeSheet(true)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-cyan-500/20 flex items-center justify-center shrink-0">
+                      <ArrowRightLeft className="w-4 h-4 text-cyan-400" />
+                    </div>
+                    <span className="font-medium">Propor Troca</span>
                   </DropdownMenuItem>
                 )}
+                
                 {characterCampaign && (
-                  <DropdownMenuItem onClick={() => setShowDocuments(true)}>
-                    <FileText className="w-4 h-4 mr-2" />
-                    Meus Documentos
+                  <DropdownMenuItem 
+                    onClick={() => setShowDocuments(true)}
+                    className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer"
+                  >
+                    <div className="w-8 h-8 rounded-lg bg-orange-500/20 flex items-center justify-center shrink-0">
+                      <Scroll className="w-4 h-4 text-orange-400" />
+                    </div>
+                    <div className="flex items-center gap-2 flex-1">
+                      <span className="font-medium">Meus Documentos</span>
+                      {unreadDocumentsCount > 0 && (
+                        <span className="text-[10px] px-1.5 py-0.5 bg-destructive text-destructive-foreground rounded-full font-bold min-w-[18px] text-center">
+                          {unreadDocumentsCount}
+                        </span>
+                      )}
+                    </div>
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
