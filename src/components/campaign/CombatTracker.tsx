@@ -23,7 +23,9 @@ import { useAuth } from "@/hooks/useAuth";
 import { useCampaignHomebrew } from "@/hooks/useHomebrew";
 import { useSubscription } from "@/hooks/useSubscription";
 import { CombatLogPanel } from "./CombatLogPanel";
-import { ProCombatantCard, RealTimeStatusIndicator } from "./CombatTrackerPro";
+import { RealTimeStatusIndicator } from "./CombatTrackerPro";
+import { CombatantCard } from "./combat/CombatantCard";
+import { CombatantDetailSheet } from "./combat/CombatantDetailSheet";
 import { 
   Swords, 
   Plus, 
@@ -47,7 +49,7 @@ import {
   Crown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Sheet,
   SheetContent,
@@ -107,6 +109,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
   const [selectedHomebrewMonster, setSelectedHomebrewMonster] = useState("");
   const [activeTab, setActiveTab] = useState<'combatants' | 'log'>('combatants');
   const [realtimeConnected, setRealtimeConnected] = useState(true);
+  const [selectedCombatant, setSelectedCombatant] = useState<Combatant | null>(null);
   const [newCombatant, setNewCombatant] = useState({
     name: "",
     initiative: 10,
@@ -474,7 +477,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                           const isOwnCombatant = combatant.character_id === userCharacterId;
                           
                           return (
-                            <ProCombatantCard
+                            <CombatantCard
                               key={combatant.id}
                               combatant={combatant}
                               index={index}
@@ -484,6 +487,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                               onHpChange={(c, mode) => setHpDialog({ open: true, combatant: c, mode })}
                               onConditionToggle={toggleCondition}
                               onRemove={(c) => removeCombatant.mutate({ id: c.id, encounterId: encounter.id })}
+                              onViewDetails={(c) => setSelectedCombatant(c)}
                               conditions={CONDITIONS}
                             />
                           );
@@ -1081,6 +1085,14 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
             </Dialog>
           </>
         )}
+
+        {/* Combatant Detail Sheet */}
+        <CombatantDetailSheet
+          combatant={selectedCombatant}
+          campaignId={campaignId}
+          open={!!selectedCombatant}
+          onOpenChange={(open) => !open && setSelectedCombatant(null)}
+        />
       </SheetContent>
     </Sheet>
   );
