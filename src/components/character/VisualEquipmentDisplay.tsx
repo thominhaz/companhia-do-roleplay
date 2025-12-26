@@ -48,19 +48,22 @@ interface VisualEquipmentDisplayProps {
   onUnequipItem?: (slot: string) => void;
 }
 
-// Equipment slot configuration
-const EQUIPMENT_SLOTS = {
-  helmet: { label: "Elmo", icon: Crown, position: "top-0 left-1/2 -translate-x-1/2" },
-  armor: { label: "Armadura", icon: Shirt, position: "top-20 left-1/2 -translate-x-1/2" },
-  mainHand: { label: "Mão Principal", icon: Sword, position: "top-24 -left-4" },
-  offHand: { label: "Mão Secundária", icon: Shield, position: "top-24 -right-4" },
-  gloves: { label: "Luvas", icon: Hand, position: "top-44 -left-8" },
-  ring1: { label: "Anel 1", icon: Circle, position: "top-52 -left-4" },
-  ring2: { label: "Anel 2", icon: Circle, position: "top-52 -right-4" },
-  boots: { label: "Botas", icon: Footprints, position: "bottom-4 left-1/2 -translate-x-1/2" },
-  amulet: { label: "Amuleto", icon: Gem, position: "top-14 left-1/2 -translate-x-1/2" },
-  cloak: { label: "Capa", icon: Package, position: "top-36 -right-8" },
-};
+// Equipment slots organized by side (like WoW style)
+const LEFT_SLOTS = [
+  { id: "helmet", label: "Elmo", icon: Crown },
+  { id: "amulet", label: "Amuleto", icon: Gem },
+  { id: "armor", label: "Armadura", icon: Shirt },
+  { id: "cloak", label: "Capa", icon: Package },
+  { id: "gloves", label: "Luvas", icon: Hand },
+];
+
+const RIGHT_SLOTS = [
+  { id: "ring1", label: "Anel 1", icon: Circle },
+  { id: "ring2", label: "Anel 2", icon: Circle },
+  { id: "boots", label: "Botas", icon: Footprints },
+  { id: "mainHand", label: "Mão Principal", icon: Sword },
+  { id: "offHand", label: "Mão Secundária", icon: Shield },
+];
 
 const RARITY_COLORS: Record<string, string> = {
   comum: "border-muted-foreground/50",
@@ -143,77 +146,83 @@ export function VisualEquipmentDisplay({ character, onEquipItem, onUnequipItem }
     return RARITY_COLORS[rarity.toLowerCase()] || "border-border";
   };
 
+  const renderSlot = (slot: { id: string; label: string; icon: any }) => {
+    const equipped = equippedBySlot[slot.id];
+    const Icon = slot.icon;
+    
+    return (
+      <Tooltip key={slot.id}>
+        <TooltipTrigger asChild>
+          <button
+            onClick={() => equipped ? handleUnequip(slot.id) : setSelectedSlot(slot.id)}
+            className={`w-12 h-12 rounded-lg transition-all duration-200 flex-shrink-0
+              ${equipped 
+                ? `bg-card border-2 ${getRarityBorder(equipped.rarity)} shadow-lg hover:scale-105` 
+                : "bg-muted/30 border border-dashed border-muted-foreground/30 hover:border-primary/50 hover:bg-muted/50"
+              }`}
+          >
+            {equipped ? (
+              <div className="w-full h-full flex flex-col items-center justify-center p-1">
+                <Icon className="w-4 h-4 text-primary mb-0.5" />
+                <span className="text-[7px] text-center text-muted-foreground leading-tight line-clamp-1 px-0.5">
+                  {equipped.name}
+                </span>
+              </div>
+            ) : (
+              <div className="w-full h-full flex flex-col items-center justify-center">
+                <Icon className="w-4 h-4 text-muted-foreground/50" />
+                <span className="text-[7px] text-muted-foreground/50 mt-0.5">{slot.label}</span>
+              </div>
+            )}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs">
+          {equipped ? (
+            <div className="space-y-1">
+              <p className="font-semibold">{equipped.name}</p>
+              {equipped.rarity && (
+                <Badge variant="outline" className="text-[10px]">{equipped.rarity}</Badge>
+              )}
+              {equipped.damage && <p className="text-xs text-muted-foreground">Dano: {equipped.damage}</p>}
+              {equipped.armorClass && <p className="text-xs text-muted-foreground">CA: +{equipped.armorClass}</p>}
+              {equipped.description && <p className="text-xs text-muted-foreground">{equipped.description}</p>}
+              <p className="text-[10px] text-primary mt-1">Clique para desequipar</p>
+            </div>
+          ) : (
+            <div>
+              <p className="font-medium">{slot.label}</p>
+              <p className="text-xs text-muted-foreground">Slot vazio</p>
+            </div>
+          )}
+        </TooltipContent>
+      </Tooltip>
+    );
+  };
+
   return (
     <TooltipProvider>
-      <div className="relative w-full max-w-md mx-auto">
-        {/* Character Silhouette Container */}
-        <div className="relative h-[420px] flex items-center justify-center">
-          {/* Background glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/10 to-transparent rounded-3xl" />
+      <div className="w-full max-w-md mx-auto">
+        {/* WoW-style layout: left slots | character | right slots */}
+        <div className="flex items-center justify-center gap-2">
+          {/* Left column slots */}
+          <div className="flex flex-col gap-2">
+            {LEFT_SLOTS.map(renderSlot)}
+          </div>
           
-          {/* Character silhouette using uploaded image */}
-          <div className="relative z-10 w-40 h-72 flex items-center justify-center">
+          {/* Character silhouette in center */}
+          <div className="relative flex-shrink-0">
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/10 to-transparent rounded-2xl" />
             <img 
               src={characterSilhouette} 
               alt="Silhueta do personagem"
-              className="w-full h-full object-contain opacity-60"
+              className="w-32 h-64 object-contain opacity-60"
             />
           </div>
           
-          
-          {/* Equipment Slots */}
-          {Object.entries(EQUIPMENT_SLOTS).map(([slotId, slot]) => {
-            const equipped = equippedBySlot[slotId];
-            const Icon = slot.icon;
-            
-            return (
-              <Tooltip key={slotId}>
-                <TooltipTrigger asChild>
-                  <button
-                    onClick={() => equipped ? handleUnequip(slotId) : setSelectedSlot(slotId)}
-                    className={`absolute ${slot.position} w-14 h-14 rounded-xl transition-all duration-200
-                      ${equipped 
-                        ? `bg-card border-2 ${getRarityBorder(equipped.rarity)} shadow-lg hover:scale-105` 
-                        : "bg-muted/30 border border-dashed border-muted-foreground/30 hover:border-primary/50 hover:bg-muted/50"
-                      }`}
-                  >
-                    {equipped ? (
-                      <div className="w-full h-full flex flex-col items-center justify-center p-1">
-                        <Icon className="w-5 h-5 text-primary mb-0.5" />
-                        <span className="text-[8px] text-center text-muted-foreground leading-tight line-clamp-2 px-0.5">
-                          {equipped.name}
-                        </span>
-                      </div>
-                    ) : (
-                      <div className="w-full h-full flex flex-col items-center justify-center">
-                        <Icon className="w-5 h-5 text-muted-foreground/50" />
-                        <span className="text-[8px] text-muted-foreground/50 mt-0.5">{slot.label}</span>
-                      </div>
-                    )}
-                  </button>
-                </TooltipTrigger>
-                <TooltipContent side="top" className="max-w-xs">
-                  {equipped ? (
-                    <div className="space-y-1">
-                      <p className="font-semibold">{equipped.name}</p>
-                      {equipped.rarity && (
-                        <Badge variant="outline" className="text-[10px]">{equipped.rarity}</Badge>
-                      )}
-                      {equipped.damage && <p className="text-xs text-muted-foreground">Dano: {equipped.damage}</p>}
-                      {equipped.armorClass && <p className="text-xs text-muted-foreground">CA: +{equipped.armorClass}</p>}
-                      {equipped.description && <p className="text-xs text-muted-foreground">{equipped.description}</p>}
-                      <p className="text-[10px] text-primary mt-1">Clique para desequipar</p>
-                    </div>
-                  ) : (
-                    <div>
-                      <p className="font-medium">{slot.label}</p>
-                      <p className="text-xs text-muted-foreground">Slot vazio</p>
-                    </div>
-                  )}
-                </TooltipContent>
-              </Tooltip>
-            );
-          })}
+          {/* Right column slots */}
+          <div className="flex flex-col gap-2">
+            {RIGHT_SLOTS.map(renderSlot)}
+          </div>
         </div>
 
         {/* Stats Summary */}
