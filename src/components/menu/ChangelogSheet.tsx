@@ -24,13 +24,25 @@ interface UpcomingFeature {
 
 const changelog: ChangelogEntry[] = [
   {
+    version: "1.2.0",
+    date: "2025-12-26",
+    changes: [
+      { type: "feature", description: "Timeline de Campanha: linha do tempo visual e interativa para eventos da história" },
+      { type: "feature", description: "Sistema de Facções: gerencie facções com reputação, influência e relacionamentos" },
+      { type: "feature", description: "Oficina de Documentos: crie contratos, cartas, pergaminhos e documentos personalizados" },
+      { type: "feature", description: "Oficina de Lojas: mercadores com inventário, preços e histórico de transações" },
+      { type: "feature", description: "Oficina de NPCs: gerencie NPCs com personalidade, motivações e relacionamentos" },
+      { type: "feature", description: "Sistema de presentes do mestre: envie itens diretamente aos jogadores" },
+      { type: "improvement", description: "Geradores de encontros e tesouros em desenvolvimento" },
+    ],
+  },
+  {
     version: "1.1.0",
     date: "2025-06-26",
     changes: [
       { type: "feature", description: "Sistema de recapitulação pós-sessão com resumo, destaques e recompensas" },
       { type: "feature", description: "Histórico completo de sessões passadas com notas do mestre" },
       { type: "improvement", description: "Melhorias na responsividade do wizard de criação de personagem" },
-      { type: "improvement", description: "Geradores de encontros e tesouros em desenvolvimento" },
     ],
   },
   {
