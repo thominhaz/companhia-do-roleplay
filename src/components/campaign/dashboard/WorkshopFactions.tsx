@@ -8,11 +8,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { 
   Flag, Plus, Search, Eye, EyeOff, MapPin, 
-  Users, Handshake, Shield, ChevronRight, Network
+  Handshake, Shield, ChevronRight
 } from "lucide-react";
 import { FactionFormSheet } from "./FactionFormSheet";
 import { FactionDetailSheet } from "./FactionDetailSheet";
-import { FactionRelationshipMap } from "./FactionRelationshipMap";
+import { FactionRelationshipList } from "./FactionRelationshipList";
 
 interface WorkshopFactionsProps {
   campaign: CampaignDB;
@@ -103,9 +103,9 @@ export function WorkshopFactions({ campaign }: WorkshopFactionsProps) {
             <Shield className="w-4 h-4 mr-1" />
             Lista
           </TabsTrigger>
-          <TabsTrigger value="map" className="flex-1">
-            <Network className="w-4 h-4 mr-1" />
-            Mapa
+          <TabsTrigger value="relationships" className="flex-1">
+            <Handshake className="w-4 h-4 mr-1" />
+            Relações
           </TabsTrigger>
         </TabsList>
 
@@ -199,13 +199,13 @@ export function WorkshopFactions({ campaign }: WorkshopFactionsProps) {
           )}
         </TabsContent>
 
-        <TabsContent value="map" className="mt-4">
+        <TabsContent value="relationships" className="mt-4">
           <div className="bg-card rounded-2xl border p-4">
             <h3 className="text-sm font-medium mb-4 flex items-center gap-2">
               <Handshake className="w-4 h-4" />
-              Mapa de Relacionamentos
+              Relacionamentos entre Facções
             </h3>
-            <FactionRelationshipMap
+            <FactionRelationshipList
               factions={factions}
               relationships={relationships}
               onFactionClick={handleView}
