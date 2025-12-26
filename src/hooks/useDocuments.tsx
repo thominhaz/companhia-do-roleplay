@@ -44,7 +44,8 @@ export function useCampaignDocuments(campaignId: string) {
         signature_data: (doc.signature_data || []) as CampaignDocument['signature_data']
       })) as CampaignDocument[];
     },
-    enabled: !!campaignId && !!user
+    enabled: !!campaignId && !!user,
+    staleTime: 1000 * 60, // 1 minute cache
   });
 }
 
