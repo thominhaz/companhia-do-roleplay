@@ -1763,13 +1763,13 @@ export function CharacterSheet() {
                 </div>
               )}
 
-              {/* Other Items */}
+              {/* Other Items from Equipment */}
               {(character.equipment as any[])?.filter((item: any) => item.type === 'item').length > 0 && (
                 <div className="mb-3">
-                  <p className="text-[10px] uppercase text-muted-foreground font-semibold mb-1">Outros Itens</p>
+                  <p className="text-[10px] uppercase text-muted-foreground font-semibold mb-1">Outros Itens (Equipamento)</p>
                   <div className="flex flex-wrap gap-1">
                     {(character.equipment as any[]).filter((item: any) => item.type === 'item').slice(0, 8).map((item: any, i: number) => (
-                      <Badge key={`item-${i}`} variant="outline" className="text-xs">
+                      <Badge key={`equip-item-${i}`} variant="outline" className="text-xs">
                         {item.name} {item.quantity > 1 && `(${item.quantity})`}
                       </Badge>
                     ))}
@@ -1782,7 +1782,27 @@ export function CharacterSheet() {
                 </div>
               )}
 
-              {(!character.equipment || (character.equipment as any[]).length === 0) && (
+              {/* Inventory Items (from shop purchases, trades, gifts) */}
+              {((character.inventory as any[]) || []).length > 0 && (
+                <div className="mb-3">
+                  <p className="text-[10px] uppercase text-purple-400 font-semibold mb-1">Itens Adquiridos</p>
+                  <div className="flex flex-wrap gap-1">
+                    {((character.inventory as any[]) || []).slice(0, 10).map((item: any, i: number) => (
+                      <Badge key={`inv-${item.id || i}`} variant="outline" className="text-xs border-purple-500/40 text-purple-300">
+                        {item.name} {item.quantity > 1 && `(${item.quantity})`}
+                      </Badge>
+                    ))}
+                    {((character.inventory as any[]) || []).length > 10 && (
+                      <Badge variant="outline" className="text-xs text-muted-foreground">
+                        +{((character.inventory as any[]) || []).length - 10}
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {(!character.equipment || (character.equipment as any[]).length === 0) && 
+               (!character.inventory || (character.inventory as any[]).length === 0) && (
                 <div className="text-center py-4">
                   <p className="text-sm text-muted-foreground mb-2">Nenhum equipamento</p>
                   <Button variant="outline" size="sm" onClick={() => setShowInventory(true)}>
@@ -2355,7 +2375,17 @@ export function CharacterSheet() {
       {/* Player Trade Modal - shows pending trades and gifts */}
       <PlayerTradeModal
         characterId={character.id}
-        characterInventory={(character.inventory as any[]) || []}
+        characterInventory={[
+          ...((character.inventory as any[]) || []),
+          ...((character.equipment as any[]) || []).map((item: any) => ({
+            id: item.id,
+            name: item.name,
+            description: item.description,
+            quantity: item.quantity || 1,
+            category: item.type === 'weapon' ? 'Armas' : item.type === 'armor' ? 'Armaduras' : item.type === 'shield' ? 'Escudos' : item.category,
+            rarity: item.rarity,
+          }))
+        ]}
         characterCurrency={{
           platinum: (character.currency as any)?.platinum || 0,
           gold: (character.currency as any)?.gold || 0,
@@ -2372,7 +2402,17 @@ export function CharacterSheet() {
           onOpenChange={setShowTradeSheet}
           campaignId={characterCampaign.id}
           characterId={character.id}
-          characterInventory={(character.inventory as any[]) || []}
+          characterInventory={[
+            ...((character.inventory as any[]) || []),
+            ...((character.equipment as any[]) || []).map((item: any) => ({
+              id: item.id,
+              name: item.name,
+              description: item.description,
+              quantity: item.quantity || 1,
+              category: item.type === 'weapon' ? 'Armas' : item.type === 'armor' ? 'Armaduras' : item.type === 'shield' ? 'Escudos' : item.category,
+              rarity: item.rarity,
+            }))
+          ]}
           campaignPlayers={campaignPlayers || []}
         />
       )}
