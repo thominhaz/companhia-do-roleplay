@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { 
-  User, 
   Shield, 
   Sword, 
   Shirt,
@@ -10,9 +9,8 @@ import {
   Circle,
   Gem,
   Package,
-  X,
-  Check
 } from "lucide-react";
+import characterSilhouette from "@/assets/character-silhouette.png";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
@@ -153,41 +151,15 @@ export function VisualEquipmentDisplay({ character, onEquipItem, onUnequipItem }
           {/* Background glow effect */}
           <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/10 to-transparent rounded-3xl" />
           
-          {/* Character silhouette */}
-          <div className="relative z-10 w-32 h-64 flex items-center justify-center">
-            <div className="relative">
-              {/* Silhouette body */}
-              <svg 
-                viewBox="0 0 100 200" 
-                className="w-32 h-64 fill-muted-foreground/20 stroke-primary/30"
-                strokeWidth="1"
-              >
-                {/* Head */}
-                <circle cx="50" cy="20" r="15" />
-                {/* Neck */}
-                <rect x="45" y="35" width="10" height="10" />
-                {/* Body */}
-                <path d="M30 45 L70 45 L75 100 L65 100 L60 80 L55 100 L45 100 L40 80 L35 100 L25 100 Z" />
-                {/* Arms */}
-                <path d="M30 45 L15 55 L10 90 L20 92 L25 60 L30 60" />
-                <path d="M70 45 L85 55 L90 90 L80 92 L75 60 L70 60" />
-                {/* Legs */}
-                <path d="M35 100 L30 160 L40 165 L45 105" />
-                <path d="M55 105 L60 165 L70 160 L65 100" />
-                {/* Feet */}
-                <ellipse cx="35" cy="175" rx="12" ry="6" />
-                <ellipse cx="65" cy="175" rx="12" ry="6" />
-              </svg>
-              
-              {/* Character info overlay */}
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-center pointer-events-none">
-                <User className="w-8 h-8 mx-auto mb-1 text-primary/40" />
-                <p className="text-[10px] text-muted-foreground font-medium">
-                  {character.name}
-                </p>
-              </div>
-            </div>
+          {/* Character silhouette using uploaded image */}
+          <div className="relative z-10 w-40 h-72 flex items-center justify-center">
+            <img 
+              src={characterSilhouette} 
+              alt="Silhueta do personagem"
+              className="w-full h-full object-contain opacity-60"
+            />
           </div>
+          
           
           {/* Equipment Slots */}
           {Object.entries(EQUIPMENT_SLOTS).map(([slotId, slot]) => {
