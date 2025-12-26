@@ -483,6 +483,58 @@ export function useFactionEvents(campaignId: string | undefined, factionId?: str
     },
   });
 
+  const revertEvent = useMutation({
+    mutationFn: async (event: FactionEvent) => {
+      // Get all character reputations for this faction
+      const { data: reps, error: repsError } = await supabase
+        .from("campaign_character_faction_rep")
+        .select("*")
+        .eq("campaign_id", campaignId)
+        .eq("faction_id", event.faction_id);
+      
+      if (repsError) throw repsError;
+
+      // Apply the opposite reputation change to each character
+      for (const rep of reps || []) {
+        const newLevel = Math.max(-100, Math.min(100, rep.reputation_level - event.reputation_change));
+        
+        // Calculate new reputation title
+        let title = "Neutro";
+        if (newLevel <= -51) title = "Odiado";
+        else if (newLevel <= -26) title = "Hostil";
+        else if (newLevel <= -1) title = "Desconfiado";
+        else if (newLevel === 0) title = "Neutro";
+        else if (newLevel <= 25) title = "Amigável";
+        else if (newLevel <= 50) title = "Respeitado";
+        else title = "Venerado";
+
+        await supabase
+          .from("campaign_character_faction_rep")
+          .update({
+            reputation_level: newLevel,
+            reputation_title: title,
+          })
+          .eq("id", rep.id);
+      }
+
+      // Delete the event
+      const { error } = await supabase
+        .from("campaign_faction_events")
+        .delete()
+        .eq("id", event.id);
+      
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["faction-events", campaignId] });
+      queryClient.invalidateQueries({ queryKey: ["character-faction-rep", campaignId] });
+      toast({ title: "Evento revertido e reputações restauradas!" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Erro ao reverter", description: error.message, variant: "destructive" });
+    },
+  });
+
   const deleteEvent = useMutation({
     mutationFn: async (eventId: string) => {
       const { error } = await supabase
@@ -493,7 +545,7 @@ export function useFactionEvents(campaignId: string | undefined, factionId?: str
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["faction-events", campaignId] });
-      toast({ title: "Evento removido!" });
+      toast({ title: "Evento removido (sem reverter reputação)!" });
     },
   });
 
@@ -501,6 +553,7 @@ export function useFactionEvents(campaignId: string | undefined, factionId?: str
     events,
     isLoading,
     createEventAndApply,
+    revertEvent,
     deleteEvent,
   };
 }
