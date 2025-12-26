@@ -954,11 +954,11 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
           </>
         )}
 
-        {/* Combatant Detail Sheet */}
+        {/* Combatant Detail Sheet - Only for mobile when stat block panel is hidden */}
         <CombatantDetailSheet
           combatant={selectedCombatant}
           campaignId={campaignId}
-          open={!!selectedCombatant}
+          open={!!selectedCombatant && typeof window !== 'undefined' && window.innerWidth < 768}
           onOpenChange={(open) => !open && setSelectedCombatant(null)}
         />
       </SheetContent>
