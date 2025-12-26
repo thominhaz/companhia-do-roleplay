@@ -359,35 +359,73 @@ export function useCharacterTrades(characterId: string) {
 
       if (charError) throw charError;
 
-      // If it's a player gift, also remove from initiator's inventory
+      // If it's a player gift, also remove from initiator's inventory or equipment
       if (trade.trade_type === 'player_gift' && trade.initiator_character_id) {
         const initiatorCharacter = (trade as any).initiator_character;
         
         if (initiatorCharacter) {
           const initiatorInventory = (initiatorCharacter.inventory as any[]) || [];
+          const initiatorEquipment = (initiatorCharacter.equipment as any[]) || [];
           
-          // Find the item by id first, then by name as fallback
+          // Find the item by id first in inventory
           let itemToRemove = initiatorInventory.find(item => item.id === itemData.id);
+          let itemSource: 'inventory' | 'equipment' = 'inventory';
           
           if (!itemToRemove) {
-            // Fallback: find by name and other properties
+            // Try equipment
+            itemToRemove = initiatorEquipment.find(item => item.id === itemData.id);
+            if (itemToRemove) {
+              itemSource = 'equipment';
+            }
+          }
+          
+          if (!itemToRemove) {
+            // Fallback: find by name in inventory
             itemToRemove = initiatorInventory.find(item => 
               item.name === itemData.name && 
               (itemData.rarity ? item.rarity === itemData.rarity : true)
             );
+            if (!itemToRemove) {
+              // Fallback: find by name in equipment
+              itemToRemove = initiatorEquipment.find(item => 
+                item.name === itemData.name && 
+                (itemData.rarity ? item.rarity === itemData.rarity : true)
+              );
+              if (itemToRemove) {
+                itemSource = 'equipment';
+              }
+            }
           }
           
           if (itemToRemove) {
-            const newInitiatorInventory = initiatorInventory.filter(
-              item => item.id !== itemToRemove.id
-            );
+            // Check if item is equipped - should have been caught earlier, but double-check
+            if (itemToRemove.isEquipped) {
+              throw new Error("Não é possível dar um item equipado como presente. Desequipe-o primeiro.");
+            }
             
-            const { error: initiatorError } = await supabase
-              .from("characters")
-              .update({ inventory: newInitiatorInventory })
-              .eq("id", trade.initiator_character_id);
+            if (itemSource === 'inventory') {
+              const newInitiatorInventory = initiatorInventory.filter(
+                item => item.id !== itemToRemove.id
+              );
+              
+              const { error: initiatorError } = await supabase
+                .from("characters")
+                .update({ inventory: newInitiatorInventory })
+                .eq("id", trade.initiator_character_id);
 
-            if (initiatorError) throw initiatorError;
+              if (initiatorError) throw initiatorError;
+            } else {
+              const newInitiatorEquipment = initiatorEquipment.filter(
+                item => item.id !== itemToRemove.id
+              );
+              
+              const { error: initiatorError } = await supabase
+                .from("characters")
+                .update({ equipment: newInitiatorEquipment })
+                .eq("id", trade.initiator_character_id);
+
+              if (initiatorError) throw initiatorError;
+            }
           }
         }
       }
@@ -497,23 +535,52 @@ async function executeTrade(trade: any) {
   const initiatorCurrency = normalizeCurrency(initiatorChar.currency as any);
   const receiverCurrency = normalizeCurrency(receiverChar.currency as any);
 
-  const initiatorItemData = trade.initiator_item_data as ItemData & { offer_type?: string; currency?: CurrencyData };
-  const receiverItemData = trade.receiver_item_data as (ItemData & { offer_type?: string; currency?: CurrencyData }) | null;
+  const initiatorItemData = trade.initiator_item_data as ItemData & { offer_type?: string; currency?: CurrencyData; source?: string };
+  const receiverItemData = trade.receiver_item_data as (ItemData & { offer_type?: string; currency?: CurrencyData; source?: string }) | null;
+  
+  const initiatorEquipment = (initiatorChar.equipment as any[]) || [];
+  const receiverEquipment = (receiverChar.equipment as any[]) || [];
 
-  // Validate initiator's item still exists in inventory
+  // Validate initiator's item still exists - check both inventory and equipment
   let initiatorItemToRemove = initiatorInventory.find(item => item.id === initiatorItemData.id);
+  let initiatorItemSource: 'inventory' | 'equipment' = 'inventory';
+  
   if (!initiatorItemToRemove) {
-    // Try fallback by name
+    // Try equipment
+    initiatorItemToRemove = initiatorEquipment.find(item => item.id === initiatorItemData.id);
+    if (initiatorItemToRemove) {
+      initiatorItemSource = 'equipment';
+    }
+  }
+  if (!initiatorItemToRemove) {
+    // Try fallback by name in inventory
     initiatorItemToRemove = initiatorInventory.find(item => 
       item.name === initiatorItemData.name && 
       (initiatorItemData.rarity ? item.rarity === initiatorItemData.rarity : true)
     );
+    if (!initiatorItemToRemove) {
+      // Try fallback in equipment
+      initiatorItemToRemove = initiatorEquipment.find(item => 
+        item.name === initiatorItemData.name && 
+        (initiatorItemData.rarity ? item.rarity === initiatorItemData.rarity : true)
+      );
+      if (initiatorItemToRemove) {
+        initiatorItemSource = 'equipment';
+      }
+    }
   }
   if (!initiatorItemToRemove) {
     throw new Error("O item oferecido não está mais no inventário do vendedor");
   }
+  // Check if item is equipped - block trade if so
+  if (initiatorItemToRemove.isEquipped) {
+    throw new Error("Não é possível trocar um item equipado. Desequipe-o primeiro.");
+  }
 
   // Validate receiver's offer
+  let receiverItemToRemove: any = null;
+  let receiverItemSource: 'inventory' | 'equipment' = 'inventory';
+  
   if (receiverItemData) {
     if (receiverItemData.offer_type === 'currency' && receiverItemData.currency) {
       // Validate receiver has enough currency using automatic conversion
@@ -524,29 +591,59 @@ async function executeTrade(trade: any) {
         throw new Error(`Moedas insuficientes: você tem ${(walletTotal / 100).toFixed(2)} PO equivalente, precisa de ${(requiredTotal / 100).toFixed(2)} PO equivalente`);
       }
     } else if (receiverItemData.offer_type === 'item' || !receiverItemData.offer_type) {
-      // Validate receiver's item still exists
-      let receiverItemToRemove = receiverInventory.find(item => item.id === receiverItemData.id);
+      // Validate receiver's item still exists - check both inventory and equipment
+      receiverItemToRemove = receiverInventory.find(item => item.id === receiverItemData.id);
+      receiverItemSource = 'inventory';
+      
+      if (!receiverItemToRemove) {
+        // Try equipment
+        receiverItemToRemove = receiverEquipment.find(item => item.id === receiverItemData.id);
+        if (receiverItemToRemove) {
+          receiverItemSource = 'equipment';
+        }
+      }
       if (!receiverItemToRemove) {
         receiverItemToRemove = receiverInventory.find(item => 
           item.name === receiverItemData.name && 
           (receiverItemData.rarity ? item.rarity === receiverItemData.rarity : true)
         );
+        if (!receiverItemToRemove) {
+          receiverItemToRemove = receiverEquipment.find(item => 
+            item.name === receiverItemData.name && 
+            (receiverItemData.rarity ? item.rarity === receiverItemData.rarity : true)
+          );
+          if (receiverItemToRemove) {
+            receiverItemSource = 'equipment';
+          }
+        }
       }
       if (!receiverItemToRemove) {
         throw new Error("O item oferecido pelo comprador não está mais no inventário");
+      }
+      // Check if receiver's item is equipped
+      if (receiverItemToRemove.isEquipped) {
+        throw new Error("O item oferecido pelo comprador está equipado. Deve ser desequipado primeiro.");
       }
     }
   }
 
   let newInitiatorInventory = [...initiatorInventory];
+  let newInitiatorEquipment = [...initiatorEquipment];
   let newReceiverInventory = [...receiverInventory];
+  let newReceiverEquipment = [...receiverEquipment];
   let newInitiatorCurrency = { ...initiatorCurrency };
   let newReceiverCurrency = { ...receiverCurrency };
 
-  // Remove initiator's item using the found item
-  newInitiatorInventory = newInitiatorInventory.filter(
-    item => item.id !== initiatorItemToRemove.id
-  );
+  // Remove initiator's item from the correct source
+  if (initiatorItemSource === 'inventory') {
+    newInitiatorInventory = newInitiatorInventory.filter(
+      item => item.id !== initiatorItemToRemove.id
+    );
+  } else {
+    newInitiatorEquipment = newInitiatorEquipment.filter(
+      item => item.id !== initiatorItemToRemove.id
+    );
+  }
 
   // Add initiator's item to receiver
   newReceiverInventory.push({
@@ -575,18 +672,16 @@ async function executeTrade(trade: any) {
       // Add to initiator
       newInitiatorCurrency = addCurrency(newInitiatorCurrency, paymentCurrency);
     } else if (receiverItemData.offer_type === 'item' || !receiverItemData.offer_type) {
-      // Receiver is trading an item - find the actual item
-      let receiverItemToRemove = receiverInventory.find(item => item.id === receiverItemData.id);
-      if (!receiverItemToRemove) {
-        receiverItemToRemove = receiverInventory.find(item => 
-          item.name === receiverItemData.name && 
-          (receiverItemData.rarity ? item.rarity === receiverItemData.rarity : true)
+      // Receiver is trading an item - remove from the correct source
+      if (receiverItemSource === 'inventory') {
+        newReceiverInventory = newReceiverInventory.filter(
+          item => item.id !== receiverItemToRemove!.id
+        );
+      } else {
+        newReceiverEquipment = newReceiverEquipment.filter(
+          item => item.id !== receiverItemToRemove!.id
         );
       }
-      
-      newReceiverInventory = newReceiverInventory.filter(
-        item => item.id !== receiverItemToRemove!.id
-      );
 
       newInitiatorInventory.push({
         id: crypto.randomUUID(),
@@ -605,6 +700,7 @@ async function executeTrade(trade: any) {
     .from("characters")
     .update({ 
       inventory: newInitiatorInventory,
+      equipment: newInitiatorEquipment,
       currency: newInitiatorCurrency,
     })
     .eq("id", trade.initiator_character_id);
@@ -616,6 +712,7 @@ async function executeTrade(trade: any) {
     .from("characters")
     .update({ 
       inventory: newReceiverInventory,
+      equipment: newReceiverEquipment,
       currency: newReceiverCurrency,
     })
     .eq("id", trade.receiver_character_id);

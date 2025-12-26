@@ -2403,15 +2403,20 @@ export function CharacterSheet() {
           campaignId={characterCampaign.id}
           characterId={character.id}
           characterInventory={[
-            ...((character.inventory as any[]) || []),
-            ...((character.equipment as any[]) || []).map((item: any) => ({
-              id: item.id,
-              name: item.name,
-              description: item.description,
-              quantity: item.quantity || 1,
-              category: item.type === 'weapon' ? 'Armas' : item.type === 'armor' ? 'Armaduras' : item.type === 'shield' ? 'Escudos' : item.category,
-              rarity: item.rarity,
-            }))
+            // Itens do inventário (não equipados)
+            ...((character.inventory as any[]) || []).filter((item: any) => !item.isEquipped),
+            // Itens do equipamento (não equipados) - filtra armas/armaduras equipadas
+            ...((character.equipment as any[]) || [])
+              .filter((item: any) => !item.isEquipped)
+              .map((item: any) => ({
+                id: item.id,
+                name: item.name,
+                description: item.description,
+                quantity: item.quantity || 1,
+                category: item.type === 'weapon' ? 'Armas' : item.type === 'armor' ? 'Armaduras' : item.type === 'shield' ? 'Escudos' : item.category,
+                rarity: item.rarity,
+                source: 'equipment', // Marca a origem para saber onde remover
+              }))
           ]}
           campaignPlayers={campaignPlayers || []}
         />
