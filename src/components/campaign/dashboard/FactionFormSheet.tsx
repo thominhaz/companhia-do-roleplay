@@ -42,6 +42,7 @@ export function FactionFormSheet({ open, onOpenChange, faction, onSave, isLoadin
     goals: "",
     secrets: "",
     is_hidden: false,
+    show_reputation_to_players: false,
     tags: [],
   });
   const [newTag, setNewTag] = useState("");
@@ -57,6 +58,7 @@ export function FactionFormSheet({ open, onOpenChange, faction, onSave, isLoadin
         goals: faction.goals || "",
         secrets: faction.secrets || "",
         is_hidden: faction.is_hidden,
+        show_reputation_to_players: faction.show_reputation_to_players ?? false,
         tags: faction.tags || [],
       });
     } else {
@@ -69,6 +71,7 @@ export function FactionFormSheet({ open, onOpenChange, faction, onSave, isLoadin
         goals: "",
         secrets: "",
         is_hidden: false,
+        show_reputation_to_players: false,
         tags: [],
       });
     }
@@ -230,6 +233,18 @@ export function FactionFormSheet({ open, onOpenChange, faction, onSave, isLoadin
               id="is_hidden"
               checked={formData.is_hidden}
               onCheckedChange={(checked) => setFormData(prev => ({ ...prev, is_hidden: checked }))}
+            />
+          </div>
+
+          <div className="flex items-center justify-between py-2">
+            <div>
+              <Label htmlFor="show_rep">Mostrar reputação</Label>
+              <p className="text-xs text-muted-foreground">Jogadores verão sua reputação na ficha</p>
+            </div>
+            <Switch
+              id="show_rep"
+              checked={formData.show_reputation_to_players}
+              onCheckedChange={(checked) => setFormData(prev => ({ ...prev, show_reputation_to_players: checked }))}
             />
           </div>
 

@@ -373,6 +373,7 @@ export type Database = {
           is_hidden: boolean
           name: string
           secrets: string | null
+          show_reputation_to_players: boolean
           tags: string[] | null
           updated_at: string
         }
@@ -389,6 +390,7 @@ export type Database = {
           is_hidden?: boolean
           name: string
           secrets?: string | null
+          show_reputation_to_players?: boolean
           tags?: string[] | null
           updated_at?: string
         }
@@ -405,6 +407,7 @@ export type Database = {
           is_hidden?: boolean
           name?: string
           secrets?: string | null
+          show_reputation_to_players?: boolean
           tags?: string[] | null
           updated_at?: string
         }

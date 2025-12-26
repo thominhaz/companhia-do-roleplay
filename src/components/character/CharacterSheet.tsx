@@ -66,6 +66,7 @@ import { TradeOfferModal } from "./TradeOfferModal";
 import { PlayerTradeModal } from "./PlayerTradeModal";
 import { InitiateTradeSheet } from "./InitiateTradeSheet";
 import { DocumentsSheet } from "./DocumentsSheet";
+import { CharacterFactionReputations } from "./CharacterFactionReputations";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -1710,6 +1711,16 @@ export function CharacterSheet() {
                 </p>
               </div>
             </SheetCard>
+
+            {/* Faction Reputations - only show if character is in a campaign */}
+            {characterCampaign && (
+              <SheetCard>
+                <CharacterFactionReputations 
+                  characterId={character.id} 
+                  campaignId={characterCampaign.id} 
+                />
+              </SheetCard>
+            )}
           </div>
 
           {/* Right Column - Combat & Spells */}
