@@ -155,7 +155,7 @@ export function VisualEquipmentDisplay({ character, onEquipItem, onUnequipItem }
         <TooltipTrigger asChild>
           <button
             onClick={() => equipped ? handleUnequip(slot.id) : setSelectedSlot(slot.id)}
-            className={`w-12 h-12 rounded-lg transition-all duration-200 flex-shrink-0
+            className={`w-14 h-14 sm:w-16 sm:h-16 md:w-18 lg:w-20 lg:h-20 rounded-xl transition-all duration-200 flex-shrink-0
               ${equipped 
                 ? `bg-card border-2 ${getRarityBorder(equipped.rarity)} shadow-lg hover:scale-105` 
                 : "bg-muted/30 border border-dashed border-muted-foreground/30 hover:border-primary/50 hover:bg-muted/50"
@@ -163,15 +163,15 @@ export function VisualEquipmentDisplay({ character, onEquipItem, onUnequipItem }
           >
             {equipped ? (
               <div className="w-full h-full flex flex-col items-center justify-center p-1">
-                <Icon className="w-4 h-4 text-primary mb-0.5" />
-                <span className="text-[7px] text-center text-muted-foreground leading-tight line-clamp-1 px-0.5">
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-primary mb-0.5" />
+                <span className="text-[8px] sm:text-[9px] lg:text-[10px] text-center text-muted-foreground leading-tight line-clamp-2 px-0.5">
                   {equipped.name}
                 </span>
               </div>
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center">
-                <Icon className="w-4 h-4 text-muted-foreground/50" />
-                <span className="text-[7px] text-muted-foreground/50 mt-0.5">{slot.label}</span>
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-muted-foreground/50" />
+                <span className="text-[8px] sm:text-[9px] lg:text-[10px] text-muted-foreground/50 mt-0.5">{slot.label}</span>
               </div>
             )}
           </button>
@@ -201,50 +201,50 @@ export function VisualEquipmentDisplay({ character, onEquipItem, onUnequipItem }
 
   return (
     <TooltipProvider>
-      <div className="w-full max-w-md mx-auto">
+      <div className="w-full max-w-2xl mx-auto px-2">
         {/* WoW-style layout: left slots | character | right slots */}
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-3 sm:gap-4 lg:gap-6">
           {/* Left column slots */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 sm:gap-3">
             {LEFT_SLOTS.map(renderSlot)}
           </div>
           
           {/* Character silhouette in center */}
           <div className="relative flex-shrink-0">
-            <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-primary/10 to-transparent rounded-2xl" />
+            <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-primary/5 to-transparent rounded-2xl" />
             <img 
               src={characterSilhouette} 
               alt="Silhueta do personagem"
-              className="w-32 h-64 object-contain opacity-60"
+              className="w-40 h-80 sm:w-48 sm:h-96 lg:w-56 lg:h-[28rem] object-contain opacity-70"
             />
           </div>
           
           {/* Right column slots */}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 sm:gap-3">
             {RIGHT_SLOTS.map(renderSlot)}
           </div>
         </div>
 
         {/* Stats Summary */}
-        <div className="mt-4 grid grid-cols-3 gap-2">
-          <div className="bg-card/80 border border-border/50 rounded-xl p-3 text-center">
-            <Shield className="w-5 h-5 mx-auto mb-1 text-blue-400" />
-            <p className="text-lg font-bold">{character.armor_class}</p>
-            <p className="text-[10px] text-muted-foreground">CA Total</p>
+        <div className="mt-6 grid grid-cols-3 gap-3">
+          <div className="bg-card/80 border border-border/50 rounded-xl p-3 sm:p-4 text-center">
+            <Shield className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 text-blue-400" />
+            <p className="text-lg sm:text-xl font-bold">{character.armor_class}</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">CA Total</p>
           </div>
-          <div className="bg-card/80 border border-border/50 rounded-xl p-3 text-center">
-            <Sword className="w-5 h-5 mx-auto mb-1 text-red-400" />
-            <p className="text-lg font-bold">
+          <div className="bg-card/80 border border-border/50 rounded-xl p-3 sm:p-4 text-center">
+            <Sword className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 text-red-400" />
+            <p className="text-lg sm:text-xl font-bold">
               {equipment.filter(e => e.isEquipped && (e.type === 'weapon' || e.type === 'arma')).length}
             </p>
-            <p className="text-[10px] text-muted-foreground">Armas</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">Armas</p>
           </div>
-          <div className="bg-card/80 border border-border/50 rounded-xl p-3 text-center">
-            <Package className="w-5 h-5 mx-auto mb-1 text-amber-400" />
-            <p className="text-lg font-bold">
+          <div className="bg-card/80 border border-border/50 rounded-xl p-3 sm:p-4 text-center">
+            <Package className="w-5 h-5 sm:w-6 sm:h-6 mx-auto mb-1 text-amber-400" />
+            <p className="text-lg sm:text-xl font-bold">
               {equipment.filter(e => e.isEquipped).length}
             </p>
-            <p className="text-[10px] text-muted-foreground">Equipados</p>
+            <p className="text-[10px] sm:text-xs text-muted-foreground">Equipados</p>
           </div>
         </div>
       </div>
