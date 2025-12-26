@@ -2356,6 +2356,11 @@ export function CharacterSheet() {
       <PlayerTradeModal
         characterId={character.id}
         characterInventory={(character.inventory as any[]) || []}
+        characterCurrency={{
+          gold: (character.currency as any)?.gold || 0,
+          silver: (character.currency as any)?.silver || 0,
+          copper: (character.currency as any)?.copper || 0,
+        }}
       />
 
       {/* Initiate Trade Sheet - for players to start trades */}

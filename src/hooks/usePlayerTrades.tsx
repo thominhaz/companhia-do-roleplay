@@ -494,14 +494,56 @@ async function executeTrade(trade: any) {
   const initiatorItemData = trade.initiator_item_data as ItemData & { offer_type?: string; currency?: CurrencyData };
   const receiverItemData = trade.receiver_item_data as (ItemData & { offer_type?: string; currency?: CurrencyData }) | null;
 
+  // Validate initiator's item still exists in inventory
+  let initiatorItemToRemove = initiatorInventory.find(item => item.id === initiatorItemData.id);
+  if (!initiatorItemToRemove) {
+    // Try fallback by name
+    initiatorItemToRemove = initiatorInventory.find(item => 
+      item.name === initiatorItemData.name && 
+      (initiatorItemData.rarity ? item.rarity === initiatorItemData.rarity : true)
+    );
+  }
+  if (!initiatorItemToRemove) {
+    throw new Error("O item oferecido não está mais no inventário do vendedor");
+  }
+
+  // Validate receiver's offer
+  if (receiverItemData) {
+    if (receiverItemData.offer_type === 'currency' && receiverItemData.currency) {
+      // Validate receiver has enough currency
+      const currency = receiverItemData.currency;
+      if ((currency.gold || 0) > (receiverCurrency.gold || 0)) {
+        throw new Error(`Moedas insuficientes: precisa de ${currency.gold} PO, tem ${receiverCurrency.gold || 0} PO`);
+      }
+      if ((currency.silver || 0) > (receiverCurrency.silver || 0)) {
+        throw new Error(`Moedas insuficientes: precisa de ${currency.silver} PP, tem ${receiverCurrency.silver || 0} PP`);
+      }
+      if ((currency.copper || 0) > (receiverCurrency.copper || 0)) {
+        throw new Error(`Moedas insuficientes: precisa de ${currency.copper} PC, tem ${receiverCurrency.copper || 0} PC`);
+      }
+    } else if (receiverItemData.offer_type === 'item' || !receiverItemData.offer_type) {
+      // Validate receiver's item still exists
+      let receiverItemToRemove = receiverInventory.find(item => item.id === receiverItemData.id);
+      if (!receiverItemToRemove) {
+        receiverItemToRemove = receiverInventory.find(item => 
+          item.name === receiverItemData.name && 
+          (receiverItemData.rarity ? item.rarity === receiverItemData.rarity : true)
+        );
+      }
+      if (!receiverItemToRemove) {
+        throw new Error("O item oferecido pelo comprador não está mais no inventário");
+      }
+    }
+  }
+
   let newInitiatorInventory = [...initiatorInventory];
   let newReceiverInventory = [...receiverInventory];
   let newInitiatorCurrency = { ...initiatorCurrency };
   let newReceiverCurrency = { ...receiverCurrency };
 
-  // Remove initiator's item
+  // Remove initiator's item using the found item
   newInitiatorInventory = newInitiatorInventory.filter(
-    item => item.id !== initiatorItemData.id
+    item => item.id !== initiatorItemToRemove.id
   );
 
   // Add initiator's item to receiver
@@ -528,9 +570,17 @@ async function executeTrade(trade: any) {
       newInitiatorCurrency.silver = (newInitiatorCurrency.silver || 0) + (currency.silver || 0);
       newInitiatorCurrency.copper = (newInitiatorCurrency.copper || 0) + (currency.copper || 0);
     } else if (receiverItemData.offer_type === 'item' || !receiverItemData.offer_type) {
-      // Receiver is trading an item
+      // Receiver is trading an item - find the actual item
+      let receiverItemToRemove = receiverInventory.find(item => item.id === receiverItemData.id);
+      if (!receiverItemToRemove) {
+        receiverItemToRemove = receiverInventory.find(item => 
+          item.name === receiverItemData.name && 
+          (receiverItemData.rarity ? item.rarity === receiverItemData.rarity : true)
+        );
+      }
+      
       newReceiverInventory = newReceiverInventory.filter(
-        item => item.id !== receiverItemData.id
+        item => item.id !== receiverItemToRemove!.id
       );
 
       newInitiatorInventory.push({
