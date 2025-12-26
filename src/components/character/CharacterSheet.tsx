@@ -65,6 +65,7 @@ import { InlineCampaignChat } from "./InlineCampaignChat";
 import { TradeOfferModal } from "./TradeOfferModal";
 import { PlayerTradeModal } from "./PlayerTradeModal";
 import { InitiateTradeSheet } from "./InitiateTradeSheet";
+import { DocumentsSheet } from "./DocumentsSheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -263,6 +264,7 @@ export function CharacterSheet() {
   const [showNotes, setShowNotes] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showTradeSheet, setShowTradeSheet] = useState(false);
+  const [showDocuments, setShowDocuments] = useState(false);
   const [skillSearch, setSkillSearch] = useState('');
   const [hpModifier, setHpModifier] = useState('');
   const [tempHpInput, setTempHpInput] = useState('');
@@ -762,6 +764,12 @@ export function CharacterSheet() {
                   <DropdownMenuItem onClick={() => setShowTradeSheet(true)}>
                     <ArrowRightLeft className="w-4 h-4 mr-2" />
                     Propor Troca
+                  </DropdownMenuItem>
+                )}
+                {characterCampaign && (
+                  <DropdownMenuItem onClick={() => setShowDocuments(true)}>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Meus Documentos
                   </DropdownMenuItem>
                 )}
               </DropdownMenuContent>
@@ -2224,6 +2232,16 @@ export function CharacterSheet() {
           characterId={character.id}
           characterInventory={(character.inventory as any[]) || []}
           campaignPlayers={campaignPlayers || []}
+        />
+      )}
+
+      {/* Documents Sheet - for players to view received documents */}
+      {characterCampaign && (
+        <DocumentsSheet
+          open={showDocuments}
+          onOpenChange={setShowDocuments}
+          characterId={character.id}
+          characterName={character.name}
         />
       )}
     </div>
