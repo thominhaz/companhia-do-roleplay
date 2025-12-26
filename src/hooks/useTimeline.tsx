@@ -18,19 +18,19 @@ export interface TimelineEvent {
   created_by: string;
 }
 
-export function useTimeline(campaignId: string | undefined) {
+export function useTimeline(campaignId: string | undefined, sortBy: "event_date" | "sort_order" = "event_date") {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   const { data: events = [], isLoading } = useQuery({
-    queryKey: ["timeline-events", campaignId],
+    queryKey: ["timeline-events", campaignId, sortBy],
     queryFn: async () => {
       if (!campaignId) return [];
       const { data, error } = await supabase
         .from("campaign_timeline_events")
         .select("*")
         .eq("campaign_id", campaignId)
-        .order("event_date", { ascending: true });
+        .order(sortBy, { ascending: true });
       
       if (error) throw error;
       return data as TimelineEvent[];

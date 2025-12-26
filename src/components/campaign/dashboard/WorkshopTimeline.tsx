@@ -10,7 +10,7 @@ import {
   Clock, Plus, Edit, Trash2, 
   Calendar, Sword, Shield, Crown, Skull, Map, 
   Users, Star, Heart, Flame, BookOpen, Castle,
-  LayoutList, LayoutGrid
+  LayoutList, LayoutGrid, ArrowDownAZ, ListOrdered
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -67,7 +67,8 @@ const COLOR_BG_MAP: Record<string, string> = {
 
 export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
   const { user } = useAuth();
-  const { events, isLoading, createEvent, updateEvent, deleteEvent } = useTimeline(campaign.id);
+  const [sortMode, setSortMode] = useState<"event_date" | "sort_order">("event_date");
+  const { events, isLoading, createEvent, updateEvent, deleteEvent } = useTimeline(campaign.id, sortMode);
   const [showForm, setShowForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<TimelineEvent | null>(null);
@@ -104,7 +105,22 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
           </h2>
           <p className="text-sm text-muted-foreground">Visualize a linha do tempo da sua história</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          <ToggleGroup 
+            type="single" 
+            value={sortMode} 
+            onValueChange={(value) => value && setSortMode(value as "event_date" | "sort_order")}
+            className="bg-muted rounded-lg p-1"
+          >
+            <ToggleGroupItem value="event_date" aria-label="Ordenar por data" className="px-2 sm:px-3 gap-1">
+              <ArrowDownAZ className="w-4 h-4" />
+              <span className="hidden sm:inline text-xs">Data</span>
+            </ToggleGroupItem>
+            <ToggleGroupItem value="sort_order" aria-label="Ordem de criação" className="px-2 sm:px-3 gap-1">
+              <ListOrdered className="w-4 h-4" />
+              <span className="hidden sm:inline text-xs">Manual</span>
+            </ToggleGroupItem>
+          </ToggleGroup>
           <ToggleGroup 
             type="single" 
             value={viewMode} 
