@@ -180,11 +180,7 @@ export function PlayerTradeModal({ characterId, characterInventory, characterCur
 
   const formatCurrency = (currency?: CurrencyData) => {
     if (!currency) return '';
-    const parts = [];
-    if (currency.gold) parts.push(`${currency.gold} PO`);
-    if (currency.silver) parts.push(`${currency.silver} PP`);
-    if (currency.copper) parts.push(`${currency.copper} PC`);
-    return parts.join(' ');
+    return formatCurrencyUtil(normalizeCurrency(currency));
   };
 
   if (!hasPendingTrades) return null;
