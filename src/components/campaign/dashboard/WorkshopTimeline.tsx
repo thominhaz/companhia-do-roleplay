@@ -145,16 +145,13 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
           </Button>
         </div>
       ) : viewMode === "horizontal" ? (
-        // Horizontal Timeline View
         <div className="bg-card rounded-2xl p-6 border">
           <ScrollArea className="w-full">
             <div className="relative min-w-max py-12 px-8">
-              {/* Timeline Line */}
               <div className="absolute left-8 right-8 top-1/2 h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20 rounded-full transform -translate-y-1/2" />
 
-              {/* Events */}
               <div className="relative flex items-center">
-                <AnimatePresence>
+                <AnimatePresence mode="popLayout">
                   {events.map((event, index) => {
                     const IconComponent = ICON_MAP[event.icon] || Calendar;
                     const colorClass = COLOR_MAP[event.color] || COLOR_MAP.primary;
@@ -163,26 +160,46 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                     return (
                       <motion.div
                         key={event.id}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        transition={{ delay: index * 0.1, duration: 0.3 }}
+                        layout
+                        initial={{ opacity: 0, scale: 0.5, y: isAbove ? -30 : 30 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ 
+                          opacity: 0, 
+                          scale: 0.3, 
+                          y: isAbove ? -50 : 50,
+                          transition: { duration: 0.3, ease: "easeInOut" }
+                        }}
+                        transition={{ 
+                          delay: index * 0.08, 
+                          duration: 0.4,
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 25
+                        }}
                         className="flex flex-col items-center"
                         style={{ width: "200px", flexShrink: 0 }}
                       >
-                        {/* Content Above */}
                         {isAbove && (
-                          <div className="w-44 mb-4 group">
+                          <motion.div 
+                            className="w-44 mb-4 group"
+                            initial={{ opacity: 0, y: -20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.08 + 0.15, duration: 0.3 }}
+                          >
                             <motion.div 
-                              className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-lg hover:shadow-xl transition-all duration-300 relative"
-                              whileHover={{ scale: 1.02 }}
+                              className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-lg transition-shadow duration-300 relative"
+                              whileHover={{ scale: 1.03, boxShadow: "0 10px 40px -10px rgba(0,0,0,0.3)" }}
+                              transition={{ type: "spring", stiffness: 400, damping: 25 }}
                             >
-                              {/* Number Badge */}
-                              <div className={`absolute -bottom-3 left-4 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}>
+                              <motion.div 
+                                className={`absolute -bottom-3 left-4 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: index * 0.08 + 0.25, type: "spring", stiffness: 500 }}
+                              >
                                 {String(index + 1).padStart(2, "0")}
-                              </div>
+                              </motion.div>
                               
-                              {/* Edit/Delete Buttons */}
                               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                                 <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleEdit(event)}>
                                   <Edit className="w-3 h-3" />
@@ -199,51 +216,74 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                               )}
                             </motion.div>
 
-                            {/* Connector Line */}
-                            <div className={`mx-auto w-0.5 h-4 bg-gradient-to-b from-muted to-transparent`} />
-                          </div>
+                            <motion.div 
+                              className="mx-auto w-0.5 h-4 bg-gradient-to-b from-muted to-transparent"
+                              initial={{ scaleY: 0 }}
+                              animate={{ scaleY: 1 }}
+                              transition={{ delay: index * 0.08 + 0.2, duration: 0.2 }}
+                            />
+                          </motion.div>
                         )}
 
-                        {/* Space above for bottom cards */}
                         {!isAbove && <div className="h-[140px]" />}
 
-                        {/* Circle Node */}
                         <motion.div
                           className={`relative z-10 w-16 h-16 rounded-full bg-gradient-to-br ${colorClass} p-1 shadow-lg cursor-pointer`}
-                          whileHover={{ scale: 1.1 }}
-                          whileTap={{ scale: 0.95 }}
+                          whileHover={{ scale: 1.15, rotate: 5 }}
+                          whileTap={{ scale: 0.9 }}
+                          transition={{ type: "spring", stiffness: 400, damping: 15 }}
                         >
-                          <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
+                          <motion.div 
+                            className="w-full h-full rounded-full bg-background flex items-center justify-center"
+                            initial={{ rotate: -180, opacity: 0 }}
+                            animate={{ rotate: 0, opacity: 1 }}
+                            transition={{ delay: index * 0.08 + 0.1, duration: 0.4 }}
+                          >
                             <IconComponent className={`w-6 h-6 text-${event.color === 'primary' ? 'primary' : event.color + '-500'}`} />
-                          </div>
+                          </motion.div>
                           
-                          {/* Major Event Indicator */}
                           {event.is_major_event && (
-                            <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-yellow-400 border-2 border-background flex items-center justify-center">
+                            <motion.div 
+                              className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-yellow-400 border-2 border-background flex items-center justify-center"
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ delay: index * 0.08 + 0.3, type: "spring", stiffness: 500 }}
+                            >
                               <Star className="w-2.5 h-2.5 text-yellow-900" />
-                            </div>
+                            </motion.div>
                           )}
                         </motion.div>
 
-                        {/* Space below for top cards */}
                         {isAbove && <div className="h-[140px]" />}
 
-                        {/* Content Below */}
                         {!isAbove && (
-                          <div className="w-44 mt-4 group">
-                            {/* Connector Line */}
-                            <div className={`mx-auto w-0.5 h-4 bg-gradient-to-t from-muted to-transparent`} />
+                          <motion.div 
+                            className="w-44 mt-4 group"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: index * 0.08 + 0.15, duration: 0.3 }}
+                          >
+                            <motion.div 
+                              className="mx-auto w-0.5 h-4 bg-gradient-to-t from-muted to-transparent"
+                              initial={{ scaleY: 0 }}
+                              animate={{ scaleY: 1 }}
+                              transition={{ delay: index * 0.08 + 0.2, duration: 0.2 }}
+                            />
                             
                             <motion.div 
-                              className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-lg hover:shadow-xl transition-all duration-300 relative"
-                              whileHover={{ scale: 1.02 }}
+                              className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-lg transition-shadow duration-300 relative"
+                              whileHover={{ scale: 1.03, boxShadow: "0 10px 40px -10px rgba(0,0,0,0.3)" }}
+                              transition={{ type: "spring", stiffness: 400, damping: 25 }}
                             >
-                              {/* Number Badge */}
-                              <div className={`absolute -top-3 left-4 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}>
+                              <motion.div 
+                                className={`absolute -top-3 left-4 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}
+                                initial={{ scale: 0 }}
+                                animate={{ scale: 1 }}
+                                transition={{ delay: index * 0.08 + 0.25, type: "spring", stiffness: 500 }}
+                              >
                                 {String(index + 1).padStart(2, "0")}
-                              </div>
+                              </motion.div>
                               
-                              {/* Edit/Delete Buttons */}
                               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                                 <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleEdit(event)}>
                                   <Edit className="w-3 h-3" />
@@ -259,7 +299,7 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                                 <p className="text-xs text-muted-foreground line-clamp-3">{event.description}</p>
                               )}
                             </motion.div>
-                          </div>
+                          </motion.div>
                         )}
                       </motion.div>
                     );
@@ -271,14 +311,12 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
           </ScrollArea>
         </div>
       ) : (
-        // Vertical List Timeline View
         <div className="bg-card rounded-2xl p-4 sm:p-6 border">
           <div className="relative">
-            {/* Vertical Timeline Line */}
             <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
             
             <div className="space-y-0">
-              <AnimatePresence>
+              <AnimatePresence mode="popLayout">
                 {events.map((event, index) => {
                   const IconComponent = ICON_MAP[event.icon] || Calendar;
                   const colorClass = COLOR_MAP[event.color] || COLOR_MAP.primary;
@@ -287,40 +325,61 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                   return (
                     <motion.div
                       key={event.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -20 }}
-                      transition={{ delay: index * 0.05, duration: 0.3 }}
+                      layout
+                      initial={{ opacity: 0, x: -40, scale: 0.9 }}
+                      animate={{ opacity: 1, x: 0, scale: 1 }}
+                      exit={{ 
+                        opacity: 0, 
+                        x: -60, 
+                        scale: 0.8,
+                        transition: { duration: 0.3, ease: "easeInOut" }
+                      }}
+                      transition={{ 
+                        delay: index * 0.05, 
+                        duration: 0.4,
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 25
+                      }}
                       className="relative pl-16 sm:pl-20 pb-8 last:pb-0 group"
                     >
-                      {/* Circle Node */}
                       <motion.div
                         className={`absolute left-2 sm:left-4 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br ${colorClass} p-0.5 shadow-lg z-10`}
-                        whileHover={{ scale: 1.1 }}
+                        whileHover={{ scale: 1.2, rotate: 10 }}
+                        transition={{ type: "spring", stiffness: 400, damping: 15 }}
+                        initial={{ scale: 0, rotate: -180 }}
+                        animate={{ scale: 1, rotate: 0 }}
                       >
                         <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
                           <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
                         </div>
                         
-                        {/* Major Event Indicator */}
                         {event.is_major_event && (
-                          <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-yellow-400 border-2 border-background flex items-center justify-center">
+                          <motion.div 
+                            className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-yellow-400 border-2 border-background flex items-center justify-center"
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: index * 0.05 + 0.2, type: "spring", stiffness: 500 }}
+                          >
                             <Star className="w-2 h-2 text-yellow-900" />
-                          </div>
+                          </motion.div>
                         )}
                       </motion.div>
 
-                      {/* Content Card */}
                       <motion.div 
-                        className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-sm hover:shadow-md transition-all duration-300 relative"
-                        whileHover={{ x: 4 }}
+                        className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-sm hover:shadow-md transition-shadow duration-300 relative"
+                        whileHover={{ x: 8, boxShadow: "0 8px 30px -10px rgba(0,0,0,0.2)" }}
+                        transition={{ type: "spring", stiffness: 400, damping: 25 }}
                       >
-                        {/* Number Badge */}
-                        <div className={`absolute -left-2 top-4 w-6 h-6 rounded-full ${bgColor} flex items-center justify-center text-white font-bold text-xs shadow-md`}>
+                        <motion.div 
+                          className={`absolute -left-2 top-4 w-6 h-6 rounded-full ${bgColor} flex items-center justify-center text-white font-bold text-xs shadow-md`}
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: index * 0.05 + 0.15, type: "spring", stiffness: 500 }}
+                        >
                           {String(index + 1).padStart(2, "0")}
-                        </div>
+                        </motion.div>
 
-                        {/* Edit/Delete Buttons */}
                         <div className="absolute top-2 right-2 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
                           <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleEdit(event)}>
                             <Edit className="w-3.5 h-3.5" />
@@ -340,8 +399,12 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                           )}
                         </div>
 
-                        {/* Connector to node */}
-                        <div className={`absolute left-0 top-6 w-3 h-0.5 ${bgColor} -translate-x-full`} />
+                        <motion.div 
+                          className={`absolute left-0 top-6 w-3 h-0.5 ${bgColor} -translate-x-full`}
+                          initial={{ scaleX: 0 }}
+                          animate={{ scaleX: 1 }}
+                          transition={{ delay: index * 0.05 + 0.1, duration: 0.2 }}
+                        />
                       </motion.div>
                     </motion.div>
                   );
