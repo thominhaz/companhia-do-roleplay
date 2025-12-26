@@ -316,21 +316,26 @@ export function useCharacterTrades(characterId: string) {
   // Accept master gift or player gift
   const acceptMasterGift = useMutation({
     mutationFn: async (tradeId: string) => {
-      // Fetch the trade
+      // Fetch the trade with both characters
       const { data: trade, error: fetchError } = await supabase
         .from("player_trades")
-        .select("*, receiver_character:characters!player_trades_receiver_character_id_fkey(*)")
+        .select(`
+          *,
+          receiver_character:characters!player_trades_receiver_character_id_fkey(*),
+          initiator_character:characters!player_trades_initiator_character_id_fkey(*)
+        `)
         .eq("id", tradeId)
         .single();
 
       if (fetchError) throw fetchError;
 
-      const character = (trade as any).receiver_character;
-      if (!character) throw new Error("Personagem não encontrado");
+      const receiverCharacter = (trade as any).receiver_character;
+      if (!receiverCharacter) throw new Error("Personagem receptor não encontrado");
 
-      // Add item to inventory
-      const currentInventory = (character.inventory as any[]) || [];
       const itemData = trade.initiator_item_data as unknown as ItemData;
+      
+      // Add item to receiver's inventory
+      const currentInventory = (receiverCharacter.inventory as any[]) || [];
       const newItem = {
         id: crypto.randomUUID(),
         name: itemData.name,
@@ -350,22 +355,34 @@ export function useCharacterTrades(characterId: string) {
 
       // If it's a player gift, also remove from initiator's inventory
       if (trade.trade_type === 'player_gift' && trade.initiator_character_id) {
-        const { data: initiatorChar } = await supabase
-          .from("characters")
-          .select("inventory")
-          .eq("id", trade.initiator_character_id)
-          .single();
-
-        if (initiatorChar) {
-          const initiatorInventory = (initiatorChar.inventory as any[]) || [];
-          const newInitiatorInventory = initiatorInventory.filter(
-            item => item.id !== itemData.id
-          );
+        const initiatorCharacter = (trade as any).initiator_character;
+        
+        if (initiatorCharacter) {
+          const initiatorInventory = (initiatorCharacter.inventory as any[]) || [];
           
-          await supabase
-            .from("characters")
-            .update({ inventory: newInitiatorInventory })
-            .eq("id", trade.initiator_character_id);
+          // Find the item by id first, then by name as fallback
+          let itemToRemove = initiatorInventory.find(item => item.id === itemData.id);
+          
+          if (!itemToRemove) {
+            // Fallback: find by name and other properties
+            itemToRemove = initiatorInventory.find(item => 
+              item.name === itemData.name && 
+              (itemData.rarity ? item.rarity === itemData.rarity : true)
+            );
+          }
+          
+          if (itemToRemove) {
+            const newInitiatorInventory = initiatorInventory.filter(
+              item => item.id !== itemToRemove.id
+            );
+            
+            const { error: initiatorError } = await supabase
+              .from("characters")
+              .update({ inventory: newInitiatorInventory })
+              .eq("id", trade.initiator_character_id);
+
+            if (initiatorError) throw initiatorError;
+          }
         }
       }
 
@@ -380,6 +397,7 @@ export function useCharacterTrades(characterId: string) {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["character-trades", characterId] });
       queryClient.invalidateQueries({ queryKey: ["character", characterId] });
+      queryClient.invalidateQueries({ queryKey: ["character"] });
       toast.success("Item recebido!");
     },
     onError: (error: Error) => {
