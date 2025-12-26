@@ -6,6 +6,7 @@ import { useCampaignMessages, useSendMessage, CampaignMessage } from "@/hooks/us
 import { useCampaignImageUpload } from "@/hooks/useCampaignImageUpload";
 import { useCampaignPlayers } from "@/hooks/useSessions";
 import { useAuth } from "@/hooks/useAuth";
+import { useUnreadMessageCounts, useMarkMessagesAsRead } from "@/hooks/useUnreadMessages";
 import { 
   MessageCircle, 
   Send, 
@@ -38,6 +39,8 @@ export function PrivateMasterChat({ campaignId, campaignName, masterId }: Privat
 
   const { data: allMessages, isLoading } = useCampaignMessages(campaignId);
   const { data: players } = useCampaignPlayers(campaignId);
+  const { data: unreadCounts } = useUnreadMessageCounts(campaignId);
+  const markAsRead = useMarkMessagesAsRead();
   const sendMessage = useSendMessage();
   const { uploadImage, isUploading } = useCampaignImageUpload();
 
@@ -52,8 +55,18 @@ export function PrivateMasterChat({ campaignId, campaignName, masterId }: Privat
   // Get master profile
   const masterProfile = players?.find(p => p.user_id === masterId)?.profile;
 
-  // Count unread private messages
-  const unreadCount = privateMessages.length;
+  // Get unread count from master
+  const unreadCount = unreadCounts?.get(masterId) || 0;
+
+  // Mark messages as read when chat is expanded
+  useEffect(() => {
+    if (isExpanded && unreadCount > 0) {
+      markAsRead.mutate({
+        campaignId,
+        otherUserId: masterId,
+      });
+    }
+  }, [isExpanded, unreadCount, campaignId, masterId]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
