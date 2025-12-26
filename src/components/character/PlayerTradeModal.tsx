@@ -10,6 +10,8 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   Gift, 
   ArrowLeftRight, 
@@ -20,13 +22,15 @@ import {
   ChevronRight,
   User,
   CheckCircle2,
-  Clock
+  Clock,
+  Coins
 } from "lucide-react";
-import { useCharacterTrades, PlayerTrade, ItemData } from "@/hooks/usePlayerTrades";
+import { useCharacterTrades, PlayerTrade, ItemData, CurrencyData } from "@/hooks/usePlayerTrades";
 
 interface PlayerTradeModalProps {
   characterId: string;
   characterInventory: any[];
+  characterCurrency?: { gold?: number; silver?: number; copper?: number };
 }
 
 const RARITIES: Record<string, { label: string; color: string }> = {
@@ -38,19 +42,22 @@ const RARITIES: Record<string, { label: string; color: string }> = {
   artefato: { label: "Artefato", color: "bg-red-500/20 text-red-500" },
 };
 
-export function PlayerTradeModal({ characterId, characterInventory }: PlayerTradeModalProps) {
+export function PlayerTradeModal({ characterId, characterInventory, characterCurrency }: PlayerTradeModalProps) {
   const { 
     pendingTrades, 
     hasPendingTrades,
     acceptMasterGift,
     rejectTrade,
     selectReceiverItem,
+    selectReceiverCurrency,
     confirmTrade,
     cancelTrade,
   } = useCharacterTrades(characterId);
   
   const [selectedTrade, setSelectedTrade] = useState<PlayerTrade | null>(null);
   const [selectingItem, setSelectingItem] = useState(false);
+  const [selectingCurrency, setSelectingCurrency] = useState(false);
+  const [offeredCurrency, setOfferedCurrency] = useState<CurrencyData>({ gold: 0, silver: 0, copper: 0 });
   const [processing, setProcessing] = useState(false);
 
   const getRarityStyle = (rarity?: string) => {
@@ -65,6 +72,10 @@ export function PlayerTradeModal({ characterId, characterInventory }: PlayerTrad
   const tradableItems = useMemo(() => {
     return characterInventory.filter(item => !item.isEquipped && item.quantity > 0);
   }, [characterInventory]);
+
+  // Check if initiator wants currency
+  const initiatorWantsCurrency = selectedTrade?.initiator_item_data?.offer_type === 'currency';
+  const requestedCurrency = (selectedTrade?.initiator_item_data as any)?.requested_currency as CurrencyData | undefined;
 
   const handleAcceptGift = async () => {
     if (!selectedTrade) return;
@@ -110,6 +121,34 @@ export function PlayerTradeModal({ characterId, characterInventory }: PlayerTrad
     }
   };
 
+  const handleOfferCurrency = async () => {
+    if (!selectedTrade) return;
+    
+    // Check if player has enough currency
+    const playerGold = characterCurrency?.gold || 0;
+    const playerSilver = characterCurrency?.silver || 0;
+    const playerCopper = characterCurrency?.copper || 0;
+    
+    if ((offeredCurrency.gold || 0) > playerGold ||
+        (offeredCurrency.silver || 0) > playerSilver ||
+        (offeredCurrency.copper || 0) > playerCopper) {
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      await selectReceiverCurrency.mutateAsync({
+        tradeId: selectedTrade.id,
+        currency: offeredCurrency,
+      });
+      setSelectingCurrency(false);
+      setOfferedCurrency({ gold: 0, silver: 0, copper: 0 });
+      setSelectedTrade(null);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   const handleConfirm = async () => {
     if (!selectedTrade) return;
     setProcessing(true);
@@ -135,22 +174,35 @@ export function PlayerTradeModal({ characterId, characterInventory }: PlayerTrad
     }
   };
 
+  const formatCurrency = (currency?: CurrencyData) => {
+    if (!currency) return '';
+    const parts = [];
+    if (currency.gold) parts.push(`${currency.gold} PO`);
+    if (currency.silver) parts.push(`${currency.silver} PP`);
+    if (currency.copper) parts.push(`${currency.copper} PC`);
+    return parts.join(' ');
+  };
+
   if (!hasPendingTrades) return null;
 
   const renderTradeContent = () => {
     if (!selectedTrade) return null;
 
-    // Master gift
-    if (selectedTrade.trade_type === 'master_gift') {
+    // Master gift or Player gift
+    if (selectedTrade.trade_type === 'master_gift' || selectedTrade.trade_type === 'player_gift') {
+      const isFromMaster = selectedTrade.trade_type === 'master_gift';
       return (
         <>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
               <Gift className="w-5 h-5 text-primary" />
-              Presente do Mestre
+              {isFromMaster ? 'Presente do Mestre' : 'Presente de Jogador'}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              O mestre está te enviando um item!
+              {isFromMaster 
+                ? 'O mestre está te enviando um item!'
+                : `${selectedTrade.initiator_character?.name} quer te dar um item!`
+              }
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -200,8 +252,97 @@ export function PlayerTradeModal({ characterId, characterInventory }: PlayerTrad
       );
     }
 
-    // Player trade - waiting for receiver to select item
+    // Player trade - waiting for receiver to select item or currency
     if (selectedTrade.status === 'pending_receiver' && isReceiver) {
+      // Selecting currency
+      if (selectingCurrency) {
+        const playerGold = characterCurrency?.gold || 0;
+        const playerSilver = characterCurrency?.silver || 0;
+        const playerCopper = characterCurrency?.copper || 0;
+
+        return (
+          <>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Pagar com Moedas</AlertDialogTitle>
+              <AlertDialogDescription>
+                {requestedCurrency 
+                  ? `Pedido: ${formatCurrency(requestedCurrency)}`
+                  : 'Quanto você quer oferecer?'
+                }
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <div className="my-4 space-y-4">
+              <div className="text-xs text-muted-foreground">
+                Seu dinheiro: {playerGold} PO, {playerSilver} PP, {playerCopper} PC
+              </div>
+
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-2">
+                  <Label className="text-xs text-amber-500">Ouro (PO)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max={playerGold}
+                    value={offeredCurrency.gold || ''}
+                    onChange={(e) => setOfferedCurrency(prev => ({
+                      ...prev,
+                      gold: Math.min(parseInt(e.target.value) || 0, playerGold)
+                    }))}
+                    className="text-center"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs text-slate-400">Prata (PP)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max={playerSilver}
+                    value={offeredCurrency.silver || ''}
+                    onChange={(e) => setOfferedCurrency(prev => ({
+                      ...prev,
+                      silver: Math.min(parseInt(e.target.value) || 0, playerSilver)
+                    }))}
+                    className="text-center"
+                    placeholder="0"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label className="text-xs text-orange-700">Cobre (PC)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    max={playerCopper}
+                    value={offeredCurrency.copper || ''}
+                    onChange={(e) => setOfferedCurrency(prev => ({
+                      ...prev,
+                      copper: Math.min(parseInt(e.target.value) || 0, playerCopper)
+                    }))}
+                    className="text-center"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <AlertDialogFooter className="flex gap-2">
+              <Button variant="outline" onClick={() => setSelectingCurrency(false)} disabled={processing}>
+                Voltar
+              </Button>
+              <Button 
+                onClick={handleOfferCurrency} 
+                disabled={processing || (!offeredCurrency.gold && !offeredCurrency.silver && !offeredCurrency.copper)}
+              >
+                {processing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Coins className="w-4 h-4 mr-1" />}
+                Confirmar Pagamento
+              </Button>
+            </AlertDialogFooter>
+          </>
+        );
+      }
+
+      // Selecting item
       if (selectingItem) {
         return (
           <>
@@ -256,15 +397,20 @@ export function PlayerTradeModal({ characterId, characterInventory }: PlayerTrad
         );
       }
 
+      // Main trade proposal view
       return (
         <>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <ArrowLeftRight className="w-5 h-5 text-primary" />
-              Proposta de Troca
+              {initiatorWantsCurrency ? (
+                <Coins className="w-5 h-5 text-amber-500" />
+              ) : (
+                <ArrowLeftRight className="w-5 h-5 text-primary" />
+              )}
+              {initiatorWantsCurrency ? 'Proposta de Venda' : 'Proposta de Troca'}
             </AlertDialogTitle>
             <AlertDialogDescription>
-              {selectedTrade.initiator_character?.name} quer trocar com você
+              {selectedTrade.initiator_character?.name} quer {initiatorWantsCurrency ? 'vender' : 'trocar'} com você
             </AlertDialogDescription>
           </AlertDialogHeader>
 
@@ -286,15 +432,49 @@ export function PlayerTradeModal({ characterId, characterInventory }: PlayerTrad
                 </p>
               )}
             </div>
+
+            {initiatorWantsCurrency && requestedCurrency && (
+              <div className="mt-3 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                <p className="text-sm">
+                  <span className="text-muted-foreground">Preço pedido: </span>
+                  <span className="font-semibold">{formatCurrency(requestedCurrency)}</span>
+                </p>
+              </div>
+            )}
           </div>
 
-          <AlertDialogFooter className="flex gap-2">
-            <Button variant="outline" className="flex-1" onClick={handleReject} disabled={processing}>
-              Recusar
-            </Button>
-            <Button className="flex-1" onClick={() => setSelectingItem(true)} disabled={processing}>
-              Selecionar Item
-            </Button>
+          <AlertDialogFooter className="flex flex-col gap-2">
+            <div className="flex gap-2 w-full">
+              <Button variant="outline" className="flex-1" onClick={handleReject} disabled={processing}>
+                Recusar
+              </Button>
+              {initiatorWantsCurrency ? (
+                <Button className="flex-1" onClick={() => {
+                  if (requestedCurrency) {
+                    setOfferedCurrency(requestedCurrency);
+                  }
+                  setSelectingCurrency(true);
+                }} disabled={processing}>
+                  <Coins className="w-4 h-4 mr-2" />
+                  Pagar
+                </Button>
+              ) : (
+                <Button className="flex-1" onClick={() => setSelectingItem(true)} disabled={processing}>
+                  Selecionar Item
+                </Button>
+              )}
+            </div>
+            {!initiatorWantsCurrency && (
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                onClick={() => setSelectingCurrency(true)} 
+                disabled={processing}
+              >
+                <Coins className="w-4 h-4 mr-2" />
+                Oferecer Dinheiro
+              </Button>
+            )}
           </AlertDialogFooter>
         </>
       );
@@ -303,7 +483,8 @@ export function PlayerTradeModal({ characterId, characterInventory }: PlayerTrad
     // Player trade - pending confirmations
     if (selectedTrade.status === 'pending_confirmations') {
       const myConfirmed = isInitiator ? selectedTrade.initiator_confirmed : selectedTrade.receiver_confirmed;
-      const otherConfirmed = isInitiator ? selectedTrade.receiver_confirmed : selectedTrade.initiator_confirmed;
+      const receiverOffersCurrency = selectedTrade.receiver_item_data?.offer_type === 'currency';
+      const receiverCurrency = selectedTrade.receiver_item_data?.currency as CurrencyData | undefined;
 
       return (
         <>
@@ -331,6 +512,7 @@ export function PlayerTradeModal({ characterId, characterInventory }: PlayerTrad
               </div>
               <div className="bg-muted/50 rounded-xl p-3">
                 <div className="flex items-center gap-2">
+                  <Package className="w-4 h-4 text-muted-foreground" />
                   <span className="font-medium">{selectedTrade.initiator_item_data.name}</span>
                   <Badge variant="secondary" className={`text-xs ${getRarityStyle(selectedTrade.initiator_item_data.rarity).color}`}>
                     {getRarityStyle(selectedTrade.initiator_item_data.rarity).label}
@@ -343,7 +525,7 @@ export function PlayerTradeModal({ characterId, characterInventory }: PlayerTrad
               <ArrowLeftRight className="w-5 h-5 text-muted-foreground" />
             </div>
 
-            {/* Receiver's item */}
+            {/* Receiver's offer */}
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <User className="w-3 h-3 text-muted-foreground" />
@@ -355,12 +537,20 @@ export function PlayerTradeModal({ characterId, characterInventory }: PlayerTrad
                 )}
               </div>
               <div className="bg-muted/50 rounded-xl p-3">
-                <div className="flex items-center gap-2">
-                  <span className="font-medium">{selectedTrade.receiver_item_data?.name}</span>
-                  <Badge variant="secondary" className={`text-xs ${getRarityStyle(selectedTrade.receiver_item_data?.rarity).color}`}>
-                    {getRarityStyle(selectedTrade.receiver_item_data?.rarity).label}
-                  </Badge>
-                </div>
+                {receiverOffersCurrency ? (
+                  <div className="flex items-center gap-2">
+                    <Coins className="w-4 h-4 text-amber-500" />
+                    <span className="font-medium">{formatCurrency(receiverCurrency)}</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-2">
+                    <Package className="w-4 h-4 text-muted-foreground" />
+                    <span className="font-medium">{selectedTrade.receiver_item_data?.name}</span>
+                    <Badge variant="secondary" className={`text-xs ${getRarityStyle(selectedTrade.receiver_item_data?.rarity).color}`}>
+                      {getRarityStyle(selectedTrade.receiver_item_data?.rarity).label}
+                    </Badge>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -429,6 +619,8 @@ export function PlayerTradeModal({ characterId, characterInventory }: PlayerTrad
       <AlertDialog open={!!selectedTrade} onOpenChange={() => {
         setSelectedTrade(null);
         setSelectingItem(false);
+        setSelectingCurrency(false);
+        setOfferedCurrency({ gold: 0, silver: 0, copper: 0 });
       }}>
         <AlertDialogContent className="max-w-md">
           {renderTradeContent()}
