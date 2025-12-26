@@ -109,6 +109,98 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_document_deliveries: {
+        Row: {
+          character_id: string
+          delivered_at: string
+          document_id: string
+          id: string
+          read_at: string | null
+        }
+        Insert: {
+          character_id: string
+          delivered_at?: string
+          document_id: string
+          id?: string
+          read_at?: string | null
+        }
+        Update: {
+          character_id?: string
+          delivered_at?: string
+          document_id?: string
+          id?: string
+          read_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_document_deliveries_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_document_deliveries_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaign_documents: {
+        Row: {
+          campaign_id: string
+          content: string | null
+          created_at: string
+          created_by: string
+          document_type: string
+          id: string
+          is_signed: boolean | null
+          requires_signature: boolean | null
+          signature_data: Json | null
+          style: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          content?: string | null
+          created_at?: string
+          created_by: string
+          document_type?: string
+          id?: string
+          is_signed?: boolean | null
+          requires_signature?: boolean | null
+          signature_data?: Json | null
+          style?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          content?: string | null
+          created_at?: string
+          created_by?: string
+          document_type?: string
+          id?: string
+          is_signed?: boolean | null
+          requires_signature?: boolean | null
+          signature_data?: Json | null
+          style?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_documents_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign_messages: {
         Row: {
           campaign_id: string
