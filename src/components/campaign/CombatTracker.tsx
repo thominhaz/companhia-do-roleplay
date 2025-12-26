@@ -425,33 +425,16 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
           </div>
         ) : (
           <>
-            {/* Action Bar - Only show for masters */}
+            {/* Action Bar - Only show for masters - Add combatant button only */}
             {isMaster && (
-              <div className="p-4 border-b border-border flex gap-2">
+              <div className="p-3 border-b border-border flex gap-2">
                 <Button 
                   variant="outline" 
                   size="sm" 
                   onClick={() => setShowAddCombatant(true)}
                 >
                   <Plus className="w-4 h-4 mr-1" />
-                  Adicionar
-                </Button>
-                <Button 
-                  variant="outline"
-                  size="sm" 
-                  onClick={handlePreviousTurn}
-                  disabled={!combatants?.length || (encounter.round === 1 && encounter.current_turn === 0)}
-                >
-                  <RotateCcw className="w-4 h-4" />
-                </Button>
-                <Button 
-                  size="sm" 
-                  onClick={handleNextTurn}
-                  disabled={!combatants?.length}
-                  className="flex-1"
-                >
-                  <SkipForward className="w-4 h-4 mr-1" />
-                  Próximo Turno
+                  Adicionar Combatente
                 </Button>
               </div>
             )}
@@ -481,9 +464,9 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                 )}
               </div>
 
-              <TabsContent value="combatants" className="flex-1 mt-0">
+              <TabsContent value="combatants" className="flex-1 mt-0 flex flex-col">
                 {/* Side-by-side layout: Initiative List + Stat Block */}
-                <div className="flex h-[calc(90vh-280px)]">
+                <div className="flex flex-1 h-[calc(90vh-340px)]">
                   {/* Left: Initiative List */}
                   <div className="flex-1 border-r border-border">
                     <ScrollArea className="h-full">
@@ -524,6 +507,55 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                     />
                   </div>
                 </div>
+
+                {/* D&D Beyond Style Control Bar - Fixed at bottom */}
+                {isMaster && (
+                  <div className="border-t border-border bg-card/95 backdrop-blur-sm">
+                    <div className="flex items-center justify-center gap-1 p-3">
+                      {/* Undo Button */}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handlePreviousTurn}
+                        disabled={!combatants?.length || (encounter.round === 1 && encounter.current_turn === 0)}
+                        className="h-10 px-4 text-xs font-medium uppercase tracking-wide hover:bg-muted/80"
+                      >
+                        <RotateCcw className="w-4 h-4 mr-1.5" />
+                        Desfazer
+                      </Button>
+
+                      <div className="w-px h-6 bg-border mx-1" />
+
+                      {/* Round Indicator */}
+                      <div className="h-10 px-4 flex items-center gap-2 bg-muted/50 rounded-md">
+                        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Rodada</span>
+                        <span className="text-lg font-bold text-primary">{encounter.round}</span>
+                      </div>
+
+                      <div className="w-px h-6 bg-border mx-1" />
+
+                      {/* Turn Indicator */}
+                      <div className="h-10 px-4 flex items-center gap-2 bg-muted/50 rounded-md">
+                        <span className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Turno</span>
+                        <span className="text-lg font-bold text-primary">{(encounter.current_turn || 0) + 1}</span>
+                        <span className="text-xs text-muted-foreground">/ {sortedCombatants.length}</span>
+                      </div>
+
+                      <div className="w-px h-6 bg-border mx-1" />
+
+                      {/* Next Turn Button */}
+                      <Button
+                        size="sm"
+                        onClick={handleNextTurn}
+                        disabled={!combatants?.length}
+                        className="h-10 px-6 text-xs font-medium uppercase tracking-wide bg-primary hover:bg-primary/90"
+                      >
+                        Próximo
+                        <SkipForward className="w-4 h-4 ml-1.5" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
               </TabsContent>
 
               <TabsContent value="dice" className="flex-1 mt-0 p-4">

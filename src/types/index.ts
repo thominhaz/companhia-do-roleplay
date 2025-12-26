@@ -385,6 +385,8 @@ export interface HomebrewMonsterData extends HomebrewData {
   alignment: string;
   armor_class: number;
   hit_points: string;
+  hp?: number;
+  ac?: number;
   speed: string;
   attributes: CharacterAttributes;
   saving_throws?: Partial<CharacterAttributes>;
@@ -395,8 +397,17 @@ export interface HomebrewMonsterData extends HomebrewData {
   senses?: string;
   languages?: string;
   challenge_rating: string;
+  cr?: string;
+  xp?: number;
+  traits?: MonsterTrait[];
   actions?: MonsterAction[];
   legendary_actions?: MonsterAction[];
+  reactions?: MonsterAction[];
+}
+
+export interface MonsterTrait {
+  name: string;
+  description: string;
 }
 
 export interface MonsterAction {
