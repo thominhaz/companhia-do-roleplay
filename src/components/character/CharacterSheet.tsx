@@ -2357,7 +2357,9 @@ export function CharacterSheet() {
         characterId={character.id}
         characterInventory={(character.inventory as any[]) || []}
         characterCurrency={{
+          platinum: (character.currency as any)?.platinum || 0,
           gold: (character.currency as any)?.gold || 0,
+          electrum: (character.currency as any)?.electrum || 0,
           silver: (character.currency as any)?.silver || 0,
           copper: (character.currency as any)?.copper || 0,
         }}
