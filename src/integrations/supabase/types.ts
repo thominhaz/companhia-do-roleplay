@@ -1680,30 +1680,51 @@ export type Database = {
       sessions: {
         Row: {
           campaign_id: string
+          completed_at: string | null
           created_at: string
+          gold_awarded: number | null
+          highlights: string[] | null
           id: string
           location: string | null
           notes: string | null
+          recap: string | null
           scheduled_at: string
+          status: string | null
+          summary: string | null
           title: string
+          xp_awarded: number | null
         }
         Insert: {
           campaign_id: string
+          completed_at?: string | null
           created_at?: string
+          gold_awarded?: number | null
+          highlights?: string[] | null
           id?: string
           location?: string | null
           notes?: string | null
+          recap?: string | null
           scheduled_at: string
+          status?: string | null
+          summary?: string | null
           title: string
+          xp_awarded?: number | null
         }
         Update: {
           campaign_id?: string
+          completed_at?: string | null
           created_at?: string
+          gold_awarded?: number | null
+          highlights?: string[] | null
           id?: string
           location?: string | null
           notes?: string | null
+          recap?: string | null
           scheduled_at?: string
+          status?: string | null
+          summary?: string | null
           title?: string
+          xp_awarded?: number | null
         }
         Relationships: [
           {
