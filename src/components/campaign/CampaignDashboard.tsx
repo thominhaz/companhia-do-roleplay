@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { CampaignDB } from "@/hooks/useCampaigns";
 import { useCampaignSessions, useCampaignPlayers } from "@/hooks/useSessions";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -129,7 +130,7 @@ export function CampaignDashboard({ campaign, open, onOpenChange, isMaster }: Ca
         const Icon = item.icon;
         const isActive = activeSection === item.id;
         
-        return (
+        const buttonContent = (
           <button
             key={item.id}
             onClick={() => handleNavClick(item.id, item.comingSoon)}
@@ -150,6 +151,23 @@ export function CampaignDashboard({ campaign, open, onOpenChange, isMaster }: Ca
             )}
           </button>
         );
+
+        if (item.comingSoon) {
+          return (
+            <TooltipProvider key={item.id} delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {buttonContent}
+                </TooltipTrigger>
+                <TooltipContent side="right" className="bg-card border-border">
+                  <p className="text-xs font-medium">Em desenvolvimento</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          );
+        }
+
+        return buttonContent;
       })}
     </div>
   );

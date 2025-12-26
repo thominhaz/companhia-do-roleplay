@@ -24,6 +24,16 @@ interface UpcomingFeature {
 
 const changelog: ChangelogEntry[] = [
   {
+    version: "1.1.0",
+    date: "2025-06-26",
+    changes: [
+      { type: "feature", description: "Sistema de recapitulação pós-sessão com resumo, destaques e recompensas" },
+      { type: "feature", description: "Histórico completo de sessões passadas com notas do mestre" },
+      { type: "improvement", description: "Melhorias na responsividade do wizard de criação de personagem" },
+      { type: "improvement", description: "Geradores de encontros e tesouros em desenvolvimento" },
+    ],
+  },
+  {
     version: "1.0.0",
     date: "2025-01-20",
     changes: [
