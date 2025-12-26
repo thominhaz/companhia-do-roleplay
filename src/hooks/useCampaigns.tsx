@@ -201,13 +201,13 @@ export function useCharacterCampaign(characterId: string | undefined) {
         .from('campaign_players')
         .select(`
           campaign_id,
-          campaigns(id, name, description, image_url)
+          campaigns(id, name, description, image_url, master_id)
         `)
         .eq('character_id', characterId)
         .maybeSingle();
 
       if (error) throw error;
-      return data?.campaigns as { id: string; name: string; description: string | null; image_url: string | null } | null;
+      return data?.campaigns as { id: string; name: string; description: string | null; image_url: string | null; master_id: string } | null;
     },
     enabled: !!characterId,
   });
