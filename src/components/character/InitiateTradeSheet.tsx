@@ -21,6 +21,12 @@ import {
   ArrowRight
 } from "lucide-react";
 import { useCharacterTrades, ItemData, CurrencyData } from "@/hooks/usePlayerTrades";
+import { 
+  FullCurrency, 
+  currencyToCopper, 
+  formatCurrency as formatCurrencyUtil, 
+  formatCurrencyAsGold 
+} from "@/lib/currencyUtils";
 
 interface InventoryItem {
   id: string;
@@ -80,7 +86,8 @@ export function InitiateTradeSheet({
   const [selectedPlayer, setSelectedPlayer] = useState<CampaignPlayer | null>(null);
   const [selectedItem, setSelectedItem] = useState<InventoryItem | null>(null);
   const [tradeType, setTradeType] = useState<TradeType>('item');
-  const [requestedCurrency, setRequestedCurrency] = useState<CurrencyData>({
+  const [requestedCurrency, setRequestedCurrency] = useState<FullCurrency>({
+    platinum: 0,
     gold: 0,
     silver: 0,
     copper: 0,
@@ -120,7 +127,7 @@ export function InitiateTradeSheet({
     setSelectedPlayer(null);
     setSelectedItem(null);
     setTradeType('item');
-    setRequestedCurrency({ gold: 0, silver: 0, copper: 0 });
+    setRequestedCurrency({ platinum: 0, gold: 0, silver: 0, copper: 0 });
     onOpenChange(false);
   };
 
