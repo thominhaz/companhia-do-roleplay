@@ -9,10 +9,12 @@ import {
   Circle,
   Gem,
   Package,
+  User,
 } from "lucide-react";
 import characterSilhouette from "@/assets/character-silhouette.png";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { useUpdateCharacter } from "@/hooks/useCharacters";
 import {
@@ -78,6 +80,7 @@ const RARITY_COLORS: Record<string, string> = {
 export function VisualEquipmentDisplay({ character, onEquipItem, onUnequipItem }: VisualEquipmentDisplayProps) {
   const updateCharacter = useUpdateCharacter();
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
   
   const equipment = (character.equipment as EquipmentItem[]) || [];
   
@@ -215,10 +218,24 @@ export function VisualEquipmentDisplay({ character, onEquipItem, onUnequipItem }
           {/* Character silhouette in center */}
           <div className="relative flex-shrink-0">
             <div className="absolute inset-0 bg-gradient-to-b from-primary/10 via-primary/5 to-transparent rounded-2xl" />
+            
+            {/* Skeleton while loading */}
+            {!imageLoaded && (
+              <div className="w-40 h-80 sm:w-48 sm:h-96 lg:w-56 lg:h-[28rem] flex flex-col items-center justify-center gap-4">
+                <Skeleton className="w-16 h-16 rounded-full" />
+                <Skeleton className="w-24 h-32 rounded-lg" />
+                <Skeleton className="w-20 h-24 rounded-lg" />
+                <User className="absolute w-20 h-20 text-muted-foreground/20 animate-pulse" />
+              </div>
+            )}
+            
             <img 
               src={characterSilhouette} 
               alt="Silhueta do personagem"
-              className="w-40 h-80 sm:w-48 sm:h-96 lg:w-56 lg:h-[28rem] object-contain opacity-70"
+              onLoad={() => setImageLoaded(true)}
+              className={`w-40 h-80 sm:w-48 sm:h-96 lg:w-56 lg:h-[28rem] object-contain opacity-70 transition-opacity duration-300 ${
+                imageLoaded ? 'opacity-70' : 'opacity-0 absolute'
+              }`}
             />
           </div>
           
