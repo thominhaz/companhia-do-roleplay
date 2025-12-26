@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useLayoutEffect } from "react";
+import characterSilhouette from "@/assets/character-silhouette.png";
 import { useParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft,
@@ -403,6 +404,12 @@ export function CharacterSheet() {
   };
 
   const hasHistoryAccess = subscription?.limits.hasHistorico ?? false;
+
+  // Preload character silhouette image for inventory tab
+  useLayoutEffect(() => {
+    const img = new Image();
+    img.src = characterSilhouette;
+  }, []);
 
   // Load all spells data from unified magias.json
   useEffect(() => {
