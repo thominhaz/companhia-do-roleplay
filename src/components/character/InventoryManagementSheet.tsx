@@ -126,8 +126,35 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
   const [moveItemDialog, setMoveItemDialog] = useState<{
     item: any;
     direction: 'toEquipment' | 'toInventory';
+    detectedType: 'weapon' | 'armor' | 'shield' | 'item';
   } | null>(null);
   const [moveItemType, setMoveItemType] = useState<'weapon' | 'armor' | 'shield' | 'item'>('item');
+
+  // Detect item type from category/description
+  const detectItemType = (item: any): 'weapon' | 'armor' | 'shield' | 'item' => {
+    const category = (item.category || '').toLowerCase();
+    const name = (item.name || '').toLowerCase();
+    const description = (item.description || '').toLowerCase();
+    
+    // Check for weapons
+    const weaponKeywords = ['arma', 'weapon', 'espada', 'machado', 'adaga', 'arco', 'besta', 'lança', 'maça', 'martelo', 'alabarda', 'azagaia', 'florete', 'cimitarra', 'tridente', 'funda', 'dardo', 'bordão', 'cajado', 'foice', 'picareta', 'clava', 'mangual', 'chicote', 'glaive', 'rede'];
+    if (category.includes('arma') || weaponKeywords.some(kw => name.includes(kw) || description.includes(kw))) {
+      return 'weapon';
+    }
+    
+    // Check for shields
+    if (category.includes('escudo') || name.includes('escudo') || description.includes('escudo')) {
+      return 'shield';
+    }
+    
+    // Check for armor
+    const armorKeywords = ['armadura', 'armor', 'cota', 'brunea', 'couro', 'gibão', 'loriga', 'peitoral', 'elmo', 'grevas'];
+    if (category.includes('armadura') || armorKeywords.some(kw => name.includes(kw) || description.includes(kw))) {
+      return 'armor';
+    }
+    
+    return 'item';
+  };
 
   // Move item from inventory to equipment
   const moveToEquipment = async (item: any, itemType: 'weapon' | 'armor' | 'shield' | 'item') => {
@@ -1162,8 +1189,9 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              setMoveItemDialog({ item, direction: 'toEquipment' });
-                              setMoveItemType('item');
+                              const detected = detectItemType(item);
+                              setMoveItemDialog({ item, direction: 'toEquipment', detectedType: detected });
+                              setMoveItemType(detected);
                             }}
                             className="text-xs text-primary hover:text-primary"
                             title="Mover para equipamento"
@@ -1264,44 +1292,69 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
           <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <div className="bg-card border border-border rounded-2xl p-6 max-w-sm w-full space-y-4">
               <h3 className="text-lg font-semibold">Mover Item</h3>
-              <p className="text-sm text-muted-foreground">
-                Escolha o tipo do item <span className="font-medium text-foreground">{moveItemDialog.item.name}</span>:
-              </p>
               
-              <div className="grid grid-cols-2 gap-2">
-                <Button
-                  variant={moveItemType === 'weapon' ? 'default' : 'outline'}
-                  onClick={() => setMoveItemType('weapon')}
-                  className="flex items-center gap-2"
-                >
-                  <Swords className="w-4 h-4" />
-                  Arma
-                </Button>
-                <Button
-                  variant={moveItemType === 'armor' ? 'default' : 'outline'}
-                  onClick={() => setMoveItemType('armor')}
-                  className="flex items-center gap-2"
-                >
-                  <Shield className="w-4 h-4" />
-                  Armadura
-                </Button>
-                <Button
-                  variant={moveItemType === 'shield' ? 'default' : 'outline'}
-                  onClick={() => setMoveItemType('shield')}
-                  className="flex items-center gap-2"
-                >
-                  <Shield className="w-4 h-4" />
-                  Escudo
-                </Button>
-                <Button
-                  variant={moveItemType === 'item' ? 'default' : 'outline'}
-                  onClick={() => setMoveItemType('item')}
-                  className="flex items-center gap-2"
-                >
-                  <Package className="w-4 h-4" />
-                  Outro
-                </Button>
+              {/* Show detected type */}
+              <div className="p-3 rounded-xl bg-muted/50 border border-border">
+                <p className="text-sm">
+                  <span className="text-muted-foreground">Item: </span>
+                  <span className="font-medium">{moveItemDialog.item.name}</span>
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Tipo detectado: <span className="text-primary font-medium">
+                    {moveItemDialog.detectedType === 'weapon' ? 'Arma' :
+                     moveItemDialog.detectedType === 'armor' ? 'Armadura' :
+                     moveItemDialog.detectedType === 'shield' ? 'Escudo' : 'Item Geral'}
+                  </span>
+                </p>
               </div>
+
+              {/* Only show type selection if detected as generic item */}
+              {moveItemDialog.detectedType === 'item' ? (
+                <>
+                  <p className="text-sm text-muted-foreground">
+                    Não foi possível detectar automaticamente. Escolha o tipo:
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      variant={moveItemType === 'weapon' ? 'default' : 'outline'}
+                      onClick={() => setMoveItemType('weapon')}
+                      className="flex items-center gap-2"
+                    >
+                      <Swords className="w-4 h-4" />
+                      Arma
+                    </Button>
+                    <Button
+                      variant={moveItemType === 'armor' ? 'default' : 'outline'}
+                      onClick={() => setMoveItemType('armor')}
+                      className="flex items-center gap-2"
+                    >
+                      <Shield className="w-4 h-4" />
+                      Armadura
+                    </Button>
+                    <Button
+                      variant={moveItemType === 'shield' ? 'default' : 'outline'}
+                      onClick={() => setMoveItemType('shield')}
+                      className="flex items-center gap-2"
+                    >
+                      <Shield className="w-4 h-4" />
+                      Escudo
+                    </Button>
+                    <Button
+                      variant={moveItemType === 'item' ? 'default' : 'outline'}
+                      onClick={() => setMoveItemType('item')}
+                      className="flex items-center gap-2"
+                    >
+                      <Package className="w-4 h-4" />
+                      Outro
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-green-400">
+                  ✓ O item será movido como {moveItemDialog.detectedType === 'weapon' ? 'arma' :
+                    moveItemDialog.detectedType === 'armor' ? 'armadura' : 'escudo'}.
+                </p>
+              )}
 
               <div className="flex gap-2 pt-2">
                 <Button
@@ -1309,7 +1362,7 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
                   className="flex-1"
                 >
                   <ArrowRight className="w-4 h-4 mr-2" />
-                  Mover para Equipamento
+                  Confirmar
                 </Button>
                 <Button
                   variant="outline"
