@@ -30,7 +30,7 @@ export function useTimeline(campaignId: string | undefined) {
         .from("campaign_timeline_events")
         .select("*")
         .eq("campaign_id", campaignId)
-        .order("sort_order", { ascending: true });
+        .order("event_date", { ascending: true });
       
       if (error) throw error;
       return data as TimelineEvent[];
