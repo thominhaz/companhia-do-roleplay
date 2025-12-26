@@ -2,9 +2,10 @@ import { useState } from "react";
 import { CampaignDB } from "@/hooks/useCampaigns";
 import { useCampaignPlayers, useRemovePlayer } from "@/hooks/useSessions";
 import { Button } from "@/components/ui/button";
-import { Users, UserPlus, Crown, User, Loader2, UserMinus, Gift } from "lucide-react";
+import { Users, UserPlus, Crown, User, Loader2, UserMinus, Gift, Eye } from "lucide-react";
 import { AddPlayerSheet } from "../AddPlayerSheet";
 import { MasterGiftSheet } from "./MasterGiftSheet";
+import { PlayerCharacterSheet } from "./PlayerCharacterSheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -25,6 +26,7 @@ interface DashboardPlayersProps {
 export function DashboardPlayers({ campaign, isMaster }: DashboardPlayersProps) {
   const [showAddPlayer, setShowAddPlayer] = useState(false);
   const [showGiftSheet, setShowGiftSheet] = useState(false);
+  const [viewingCharacterId, setViewingCharacterId] = useState<string | null>(null);
   const { data: players, isLoading } = useCampaignPlayers(campaign.id);
   const removePlayer = useRemovePlayer();
 
@@ -64,7 +66,17 @@ export function DashboardPlayers({ campaign, isMaster }: DashboardPlayersProps) 
       ) : (
         <div className="space-y-2">
           {players?.map(player => (
-            <div key={player.id} className="bg-card rounded-xl p-4 flex items-center gap-3 border border-border">
+            <div 
+              key={player.id} 
+              className={`bg-card rounded-xl p-4 flex items-center gap-3 border border-border ${
+                isMaster && player.character?.id ? 'cursor-pointer hover:bg-muted/50 transition-colors' : ''
+              }`}
+              onClick={() => {
+                if (isMaster && player.character?.id) {
+                  setViewingCharacterId(player.character.id);
+                }
+              }}
+            >
               <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
                 {player.role === 'master' ? (
                   <Crown className="w-6 h-6 text-amber-500" />
@@ -82,6 +94,19 @@ export function DashboardPlayers({ campaign, isMaster }: DashboardPlayersProps) 
                     : 'Sem personagem vinculado'}
                 </p>
               </div>
+              {isMaster && player.character?.id && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="flex-shrink-0 text-primary hover:text-primary hover:bg-primary/10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setViewingCharacterId(player.character!.id);
+                  }}
+                >
+                  <Eye className="w-4 h-4" />
+                </Button>
+              )}
               <span className={`text-xs px-3 py-1 rounded-full flex-shrink-0 ${
                 player.role === 'master' ? 'bg-amber-500/20 text-amber-500' : 'bg-primary/20 text-primary'
               }`}>
@@ -94,6 +119,7 @@ export function DashboardPlayers({ campaign, isMaster }: DashboardPlayersProps) 
                       variant="ghost" 
                       size="icon" 
                       className="flex-shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       <UserMinus className="w-4 h-4" />
                     </Button>
@@ -145,6 +171,12 @@ export function DashboardPlayers({ campaign, isMaster }: DashboardPlayersProps) 
         onOpenChange={setShowGiftSheet}
         campaignId={campaign.id}
         players={players || []}
+      />
+
+      <PlayerCharacterSheet
+        characterId={viewingCharacterId || ''}
+        open={!!viewingCharacterId}
+        onOpenChange={(open) => !open && setViewingCharacterId(null)}
       />
     </div>
   );
