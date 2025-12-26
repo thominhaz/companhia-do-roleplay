@@ -15,7 +15,8 @@ import {
   X,
   Lock,
   Users,
-  ChevronDown
+  Reply,
+  CornerDownRight
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -62,6 +63,7 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
     name: "Todos", 
     isPrivate: false 
   });
+  const [replyingTo, setReplyingTo] = useState<CampaignMessage | null>(null);
   const [typingUsers, setTypingUsers] = useState<Map<string, string>>(new Map());
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -228,10 +230,12 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
     if (!content) return;
 
     setMessage("");
+    setReplyingTo(null);
     await sendMessage.mutateAsync({
       campaignId,
       content,
       recipientId: selectedRecipient.id || undefined,
+      replyToId: replyingTo?.id,
     });
   };
 
@@ -367,15 +371,33 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                       const isOwn = msg.user_id === user?.id;
                       const isPrivate = !!msg.recipient_id;
                       const parts = parseMessageContent(msg.content);
+                      const replyContent = msg.reply_to?.content 
+                        ? msg.reply_to.content.replace(/\[img\].*?\[\/img\]/g, '📷 Imagem').slice(0, 50) + (msg.reply_to.content.length > 50 ? '...' : '')
+                        : null;
 
                       return (
                         <div
                           key={msg.id}
                           className={cn(
-                            "flex",
+                            "flex group",
                             isOwn ? "justify-end" : "justify-start"
                           )}
                         >
+                          {/* Reply button - left side for own messages */}
+                          {isOwn && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="w-7 h-7 opacity-0 group-hover:opacity-100 transition-opacity mr-1 self-center"
+                              onClick={() => {
+                                setReplyingTo(msg);
+                                inputRef.current?.focus();
+                              }}
+                            >
+                              <Reply className="w-4 h-4" />
+                            </Button>
+                          )}
+                          
                           <div
                             className={cn(
                               "max-w-[80%] rounded-2xl px-4 py-2 relative",
@@ -388,6 +410,37 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                                   : "bg-muted text-foreground rounded-bl-sm"
                             )}
                           >
+                            {/* Reply quote */}
+                            {msg.reply_to && replyContent && (
+                              <div className={cn(
+                                "flex items-start gap-1.5 mb-2 pb-2 border-b text-[11px]",
+                                isOwn 
+                                  ? "border-white/20" 
+                                  : isPrivate 
+                                    ? "border-purple-500/30" 
+                                    : "border-border"
+                              )}>
+                                <CornerDownRight className={cn(
+                                  "w-3 h-3 mt-0.5 flex-shrink-0",
+                                  isOwn ? "text-white/60" : "text-muted-foreground"
+                                )} />
+                                <div className="min-w-0">
+                                  <span className={cn(
+                                    "font-semibold",
+                                    isOwn ? "text-white/80" : "text-primary"
+                                  )}>
+                                    {msg.reply_to.profile?.display_name || 'Jogador'}
+                                  </span>
+                                  <p className={cn(
+                                    "truncate",
+                                    isOwn ? "text-white/60" : "text-muted-foreground"
+                                  )}>
+                                    {replyContent}
+                                  </p>
+                                </div>
+                              </div>
+                            )}
+                            
                             {/* Private message indicator */}
                             {isPrivate && (
                               <div className={cn(
@@ -435,6 +488,21 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                               {format(new Date(msg.created_at), "HH:mm")}
                             </p>
                           </div>
+
+                          {/* Reply button - right side for others' messages */}
+                          {!isOwn && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="w-7 h-7 opacity-0 group-hover:opacity-100 transition-opacity ml-1 self-center"
+                              onClick={() => {
+                                setReplyingTo(msg);
+                                inputRef.current?.focus();
+                              }}
+                            >
+                              <Reply className="w-4 h-4" />
+                            </Button>
+                          )}
                         </div>
                       );
                     })}
@@ -455,6 +523,32 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                 <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
               </div>
               <span>{typingText()}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Reply indicator */}
+        {replyingTo && (
+          <div className="px-4 pb-2">
+            <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-2 border-l-4 border-primary">
+              <Reply className="w-4 h-4 text-primary flex-shrink-0" />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-semibold text-primary">
+                  Respondendo a {replyingTo.profile?.display_name || 'Jogador'}
+                </p>
+                <p className="text-xs text-muted-foreground truncate">
+                  {replyingTo.content.replace(/\[img\].*?\[\/img\]/g, '📷 Imagem').slice(0, 60)}
+                  {replyingTo.content.length > 60 ? '...' : ''}
+                </p>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="w-6 h-6 flex-shrink-0"
+                onClick={() => setReplyingTo(null)}
+              >
+                <X className="w-3 h-3" />
+              </Button>
             </div>
           </div>
         )}
