@@ -2,6 +2,15 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useEffect } from "react";
+import { 
+  FullCurrency, 
+  currencyToCopper, 
+  copperToCurrency, 
+  hasEnoughCurrency, 
+  subtractCurrency, 
+  addCurrency,
+  normalizeCurrency
+} from "@/lib/currencyUtils";
 
 export interface ItemData {
   id?: string;
@@ -12,11 +21,8 @@ export interface ItemData {
   quantity?: number;
 }
 
-export interface CurrencyData {
-  gold?: number;
-  silver?: number;
-  copper?: number;
-}
+// Re-export FullCurrency as CurrencyData for backward compatibility
+export type CurrencyData = FullCurrency;
 
 export interface TradeOffer {
   type: 'item' | 'currency' | 'gift';
