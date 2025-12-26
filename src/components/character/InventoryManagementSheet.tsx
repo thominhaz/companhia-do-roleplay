@@ -30,7 +30,10 @@ import {
   Eye,
   EyeOff,
   Coins,
-  Sparkles
+  Sparkles,
+  ArrowRight,
+  ArrowLeft,
+  ShoppingBag
 } from "lucide-react";
 import { toast } from "sonner";
 import { useUpdateCharacter } from "@/hooks/useCharacters";
@@ -113,10 +116,98 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
   });
 
   const equipment = (character.equipment || []) as EquipmentItem[];
+  const inventory = (character.inventory || []) as any[];
   const attributes = character.attributes as Record<string, number>;
   const dexMod = getModifier(attributes?.dexterity || 10);
   const strMod = getModifier(attributes?.strength || 10);
   const proficiencies = character.proficiencies as any;
+
+  // State for moving items between inventory and equipment
+  const [moveItemDialog, setMoveItemDialog] = useState<{
+    item: any;
+    direction: 'toEquipment' | 'toInventory';
+  } | null>(null);
+  const [moveItemType, setMoveItemType] = useState<'weapon' | 'armor' | 'shield' | 'item'>('item');
+
+  // Move item from inventory to equipment
+  const moveToEquipment = async (item: any, itemType: 'weapon' | 'armor' | 'shield' | 'item') => {
+    const newInventory = inventory.filter(i => i.id !== item.id);
+    
+    const newEquipmentItem: EquipmentItem = {
+      id: item.id || `inv_${Date.now()}`,
+      name: item.name,
+      type: itemType,
+      equipped: false,
+      quantity: item.quantity || 1,
+      description: item.description,
+      isCustom: true,
+    };
+
+    // Add type-specific properties based on description/category hints
+    if (itemType === 'weapon') {
+      newEquipmentItem.damage = item.damage || '1d6';
+      newEquipmentItem.damageType = item.damageType || 'slashing';
+    }
+    if (itemType === 'armor' || itemType === 'shield') {
+      newEquipmentItem.armorClass = item.armorClass || (itemType === 'shield' ? 2 : 10);
+      newEquipmentItem.armorCategory = item.armorCategory || (itemType === 'shield' ? 'shield' : 'light');
+    }
+
+    const newEquipment = [...equipment, newEquipmentItem];
+    
+    await updateCharacter.mutateAsync({
+      id: character.id,
+      inventory: newInventory,
+      equipment: newEquipment,
+    });
+    
+    toast.success(`${item.name} movido para equipamento`);
+    setMoveItemDialog(null);
+  };
+
+  // Move item from equipment to inventory
+  const moveToInventory = async (item: EquipmentItem) => {
+    // If equipped, unequip first and recalculate AC
+    let updates: any = {};
+    if (item.equipped && (item.type === 'armor' || item.type === 'shield')) {
+      const tempEquipment = equipment.map(e => 
+        e.id === item.id ? { ...e, equipped: false } : e
+      );
+      const newAC = calculateNewAC(tempEquipment.filter(e => e.id !== item.id));
+      updates.armor_class = newAC;
+    }
+
+    const newEquipment = equipment.filter(e => e.id !== item.id);
+    const newInventoryItem = {
+      id: item.id,
+      name: item.name,
+      description: item.description || '',
+      quantity: item.quantity || 1,
+      category: item.type === 'weapon' ? 'Armas' : item.type === 'armor' ? 'Armaduras' : item.type === 'shield' ? 'Escudos' : 'Outros',
+      isEquipped: false,
+    };
+
+    const newInventory = [...inventory, newInventoryItem];
+    
+    await updateCharacter.mutateAsync({
+      id: character.id,
+      inventory: newInventory,
+      equipment: newEquipment,
+      ...updates,
+    });
+    
+    toast.success(`${item.name} movido para itens adquiridos`);
+  };
+
+  // Remove item from inventory
+  const removeInventoryItem = async (itemId: string) => {
+    const newInventory = inventory.filter(i => i.id !== itemId);
+    await updateCharacter.mutateAsync({
+      id: character.id,
+      inventory: newInventory,
+    });
+    toast.success("Item removido");
+  };
 
   // Get armor proficiencies
   const armorProficiencies = useMemo(() => {
@@ -454,24 +545,28 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
         </SheetHeader>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
-          <TabsList className="grid grid-cols-5 w-full">
-            <TabsTrigger value="weapons" className="flex items-center gap-1">
+          <TabsList className="grid grid-cols-6 w-full">
+            <TabsTrigger value="weapons" className="flex items-center gap-1 text-xs px-1">
               <Swords className="w-4 h-4" />
               <span className="hidden sm:inline">Armas</span>
             </TabsTrigger>
-            <TabsTrigger value="armor" className="flex items-center gap-1">
+            <TabsTrigger value="armor" className="flex items-center gap-1 text-xs px-1">
               <Shield className="w-4 h-4" />
               <span className="hidden sm:inline">Armaduras</span>
             </TabsTrigger>
-            <TabsTrigger value="homebrew" className="flex items-center gap-1">
+            <TabsTrigger value="acquired" className="flex items-center gap-1 text-xs px-1">
+              <ShoppingBag className="w-4 h-4" />
+              <span className="hidden sm:inline">Adquiridos</span>
+            </TabsTrigger>
+            <TabsTrigger value="homebrew" className="flex items-center gap-1 text-xs px-1">
               <Sparkles className="w-4 h-4" />
               <span className="hidden sm:inline">Homebrew</span>
             </TabsTrigger>
-            <TabsTrigger value="inventory" className="flex items-center gap-1">
+            <TabsTrigger value="inventory" className="flex items-center gap-1 text-xs px-1">
               <Package className="w-4 h-4" />
               <span className="hidden sm:inline">Itens</span>
             </TabsTrigger>
-            <TabsTrigger value="currency" className="flex items-center gap-1">
+            <TabsTrigger value="currency" className="flex items-center gap-1 text-xs px-1">
               <Coins className="w-4 h-4" />
               <span className="hidden sm:inline">Moedas</span>
             </TabsTrigger>
@@ -535,6 +630,17 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
                             <EyeOff className="w-4 h-4 text-muted-foreground" />
                           )}
                         </Button>
+                        {item.isCustom && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => moveToInventory(item)}
+                            className="w-8 h-8 text-purple-400 hover:text-purple-300"
+                            title="Mover para Adquiridos"
+                          >
+                            <ArrowLeft className="w-4 h-4" />
+                          </Button>
+                        )}
                         <Button
                           variant="ghost"
                           size="icon"
@@ -669,6 +775,17 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
                               <EyeOff className="w-4 h-4 text-muted-foreground" />
                             )}
                           </Button>
+                          {item.isCustom && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => moveToInventory(item)}
+                              className="w-8 h-8 text-purple-400 hover:text-purple-300"
+                              title="Mover para Adquiridos"
+                            >
+                              <ArrowLeft className="w-4 h-4" />
+                            </Button>
+                          )}
                           <Button
                             variant="ghost"
                             size="icon"
@@ -1004,6 +1121,82 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
             </div>
           </TabsContent>
 
+          {/* Acquired Items Tab - Items from shop purchases, trades, gifts */}
+          <TabsContent value="acquired" className="mt-4">
+            <div className="space-y-4">
+              <div className="p-3 bg-purple-500/10 border border-purple-500/30 rounded-xl">
+                <p className="text-sm text-purple-300">
+                  <ShoppingBag className="w-4 h-4 inline mr-2" />
+                  Itens recebidos de lojas, trocas ou presentes. Mova para equipamento para poder equipar.
+                </p>
+              </div>
+
+              <ScrollArea className="h-[400px]">
+                {inventory.length > 0 ? (
+                  <div className="space-y-2">
+                    {inventory.map((item: any) => (
+                      <div 
+                        key={item.id}
+                        className="flex items-center justify-between p-3 rounded-xl bg-muted/30 border border-purple-500/20"
+                      >
+                        <div className="flex-1">
+                          <span className="font-medium">{item.name}</span>
+                          {item.quantity && item.quantity > 1 && (
+                            <Badge variant="secondary" className="ml-2 text-xs">
+                              x{item.quantity}
+                            </Badge>
+                          )}
+                          {item.category && (
+                            <Badge variant="outline" className="ml-2 text-xs text-purple-400 border-purple-500/40">
+                              {item.category}
+                            </Badge>
+                          )}
+                          {item.description && (
+                            <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
+                              {item.description}
+                            </p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setMoveItemDialog({ item, direction: 'toEquipment' });
+                              setMoveItemType('item');
+                            }}
+                            className="text-xs text-primary hover:text-primary"
+                            title="Mover para equipamento"
+                          >
+                            <ArrowRight className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeInventoryItem(item.id)}
+                            className="w-8 h-8 text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-12">
+                    <ShoppingBag className="w-12 h-12 mx-auto mb-3 text-muted-foreground opacity-50" />
+                    <p className="text-sm text-muted-foreground">
+                      Nenhum item adquirido ainda
+                    </p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Compre itens em lojas ou receba de outros jogadores
+                    </p>
+                  </div>
+                )}
+              </ScrollArea>
+            </div>
+          </TabsContent>
+
           {/* Currency Tab */}
           <TabsContent value="currency" className="mt-4">
             <div className="grid grid-cols-2 gap-4">
@@ -1065,6 +1258,69 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Move Item Dialog */}
+        {moveItemDialog && (
+          <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+            <div className="bg-card border border-border rounded-2xl p-6 max-w-sm w-full space-y-4">
+              <h3 className="text-lg font-semibold">Mover Item</h3>
+              <p className="text-sm text-muted-foreground">
+                Escolha o tipo do item <span className="font-medium text-foreground">{moveItemDialog.item.name}</span>:
+              </p>
+              
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  variant={moveItemType === 'weapon' ? 'default' : 'outline'}
+                  onClick={() => setMoveItemType('weapon')}
+                  className="flex items-center gap-2"
+                >
+                  <Swords className="w-4 h-4" />
+                  Arma
+                </Button>
+                <Button
+                  variant={moveItemType === 'armor' ? 'default' : 'outline'}
+                  onClick={() => setMoveItemType('armor')}
+                  className="flex items-center gap-2"
+                >
+                  <Shield className="w-4 h-4" />
+                  Armadura
+                </Button>
+                <Button
+                  variant={moveItemType === 'shield' ? 'default' : 'outline'}
+                  onClick={() => setMoveItemType('shield')}
+                  className="flex items-center gap-2"
+                >
+                  <Shield className="w-4 h-4" />
+                  Escudo
+                </Button>
+                <Button
+                  variant={moveItemType === 'item' ? 'default' : 'outline'}
+                  onClick={() => setMoveItemType('item')}
+                  className="flex items-center gap-2"
+                >
+                  <Package className="w-4 h-4" />
+                  Outro
+                </Button>
+              </div>
+
+              <div className="flex gap-2 pt-2">
+                <Button
+                  onClick={() => moveToEquipment(moveItemDialog.item, moveItemType)}
+                  className="flex-1"
+                >
+                  <ArrowRight className="w-4 h-4 mr-2" />
+                  Mover para Equipamento
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => setMoveItemDialog(null)}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );
