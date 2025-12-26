@@ -72,8 +72,8 @@ const navItems: NavItem[] = [
   { id: 'npcs', label: 'NPCs', icon: UserSquare2, masterOnly: true, category: 'workshops' },
   { id: 'shops', label: 'Lojas', icon: Store, masterOnly: true, category: 'workshops' },
   { id: 'documents', label: 'Documentos', icon: FileText, masterOnly: true, category: 'workshops' },
-  { id: 'factions', label: 'Facções', icon: Flag, masterOnly: true, comingSoon: true, category: 'workshops' },
-  { id: 'timeline', label: 'Timeline', icon: Clock, masterOnly: true, comingSoon: true, category: 'workshops' },
+  { id: 'factions', label: 'Facções', icon: Flag, masterOnly: true, category: 'workshops' },
+  { id: 'timeline', label: 'Timeline', icon: Clock, masterOnly: true, category: 'workshops' },
   
   // Generators
   { id: 'encounters', label: 'Encontros', icon: Sparkles, masterOnly: true, comingSoon: true, category: 'generators' },
