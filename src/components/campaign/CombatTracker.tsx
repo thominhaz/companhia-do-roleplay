@@ -153,6 +153,17 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
 
   const { data: encounter, isLoading: loadingEncounter } = useActiveEncounter(campaignId);
   const { data: combatants, isLoading: loadingCombatants } = useCombatants(encounter?.id || "");
+
+  // Get character IDs that are already in combat
+  const characterIdsInCombat = useMemo(() => 
+    new Set(combatants?.filter(c => c.character_id).map(c => c.character_id) || []),
+    [combatants]
+  );
+
+  // Filter players available to add (not already in combat)
+  const availablePlayersToAdd = playersWithCharacters.filter(
+    p => !characterIdsInCombat.has(p.character_id)
+  );
   
   const createEncounter = useCreateEncounter();
   const endEncounter = useEndEncounter();
@@ -747,12 +758,19 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                             Nenhum jogador com personagem vinculado nesta campanha.
                           </p>
                         </div>
+                      ) : availablePlayersToAdd.length === 0 ? (
+                        <div className="bg-amber-500/10 rounded-lg p-4 text-center border border-amber-500/30">
+                          <AlertTriangle className="w-5 h-5 text-amber-500 mx-auto mb-2" />
+                          <p className="text-sm text-amber-400">
+                            Todos os jogadores já estão no combate.
+                          </p>
+                        </div>
                       ) : (
                         <Select 
                           value={selectedPlayerId} 
                           onValueChange={(value) => {
                             setSelectedPlayerId(value);
-                            const player = playersWithCharacters.find(p => p.id === value);
+                            const player = availablePlayersToAdd.find(p => p.id === value);
                             if (player && player.character) {
                               setNewCombatant({
                                 name: player.character.name,
@@ -770,7 +788,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                             <SelectValue placeholder="Selecione um jogador" />
                           </SelectTrigger>
                           <SelectContent>
-                            {playersWithCharacters.map(player => (
+                            {availablePlayersToAdd.map(player => (
                               <SelectItem key={player.id} value={player.id}>
                                 <div className="flex items-center gap-2">
                                   <User className="w-4 h-4 text-blue-500" />
