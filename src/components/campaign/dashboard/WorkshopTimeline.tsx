@@ -187,19 +187,10 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                             transition={{ delay: index * 0.08 + 0.15, duration: 0.3 }}
                           >
                             <motion.div 
-                              className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-lg transition-shadow duration-300 relative"
+                              className="bg-background/80 backdrop-blur-sm rounded-xl p-4 pb-6 border shadow-lg transition-shadow duration-300 relative"
                               whileHover={{ scale: 1.03, boxShadow: "0 10px 40px -10px rgba(0,0,0,0.3)" }}
                               transition={{ type: "spring", stiffness: 400, damping: 25 }}
                             >
-                              <motion.div 
-                                className={`absolute -bottom-3 left-4 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: index * 0.08 + 0.25, type: "spring", stiffness: 500 }}
-                              >
-                                {String(index + 1).padStart(2, "0")}
-                              </motion.div>
-                              
                               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                                 <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleEdit(event)}>
                                   <Edit className="w-3 h-3" />
@@ -209,11 +200,21 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                                 </Button>
                               </div>
 
-                              <h4 className="font-semibold text-sm mt-4 mb-1 line-clamp-2">{event.title}</h4>
+                              <h4 className="font-semibold text-sm mb-1 line-clamp-2 pr-12">{event.title}</h4>
                               <p className="text-xs text-primary font-medium mb-2">{event.event_date}</p>
                               {event.description && (
                                 <p className="text-xs text-muted-foreground line-clamp-3">{event.description}</p>
                               )}
+                            </motion.div>
+
+                            {/* Number Badge - outside the card */}
+                            <motion.div 
+                              className={`mx-auto -mt-3 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ delay: index * 0.08 + 0.25, type: "spring", stiffness: 500 }}
+                            >
+                              {String(index + 1).padStart(2, "0")}
                             </motion.div>
 
                             <motion.div 
@@ -263,27 +264,21 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: index * 0.08 + 0.15, duration: 0.3 }}
                           >
+                            {/* Number Badge - outside the card */}
                             <motion.div 
-                              className="mx-auto w-0.5 h-4 bg-gradient-to-t from-muted to-transparent"
-                              initial={{ scaleY: 0 }}
-                              animate={{ scaleY: 1 }}
-                              transition={{ delay: index * 0.08 + 0.2, duration: 0.2 }}
-                            />
+                              className={`mx-auto -mb-3 relative z-10 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              transition={{ delay: index * 0.08 + 0.25, type: "spring", stiffness: 500 }}
+                            >
+                              {String(index + 1).padStart(2, "0")}
+                            </motion.div>
                             
                             <motion.div 
-                              className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-lg transition-shadow duration-300 relative"
+                              className="bg-background/80 backdrop-blur-sm rounded-xl p-4 pt-6 border shadow-lg transition-shadow duration-300 relative"
                               whileHover={{ scale: 1.03, boxShadow: "0 10px 40px -10px rgba(0,0,0,0.3)" }}
                               transition={{ type: "spring", stiffness: 400, damping: 25 }}
                             >
-                              <motion.div 
-                                className={`absolute -top-3 left-4 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}
-                                initial={{ scale: 0 }}
-                                animate={{ scale: 1 }}
-                                transition={{ delay: index * 0.08 + 0.25, type: "spring", stiffness: 500 }}
-                              >
-                                {String(index + 1).padStart(2, "0")}
-                              </motion.div>
-                              
                               <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
                                 <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleEdit(event)}>
                                   <Edit className="w-3 h-3" />
@@ -293,12 +288,19 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                                 </Button>
                               </div>
 
-                              <h4 className="font-semibold text-sm mt-4 mb-1 line-clamp-2">{event.title}</h4>
+                              <h4 className="font-semibold text-sm mb-1 line-clamp-2 pr-12">{event.title}</h4>
                               <p className="text-xs text-primary font-medium mb-2">{event.event_date}</p>
                               {event.description && (
                                 <p className="text-xs text-muted-foreground line-clamp-3">{event.description}</p>
                               )}
                             </motion.div>
+
+                            <motion.div 
+                              className="mx-auto w-0.5 h-4 bg-gradient-to-t from-muted to-transparent"
+                              initial={{ scaleY: 0 }}
+                              animate={{ scaleY: 1 }}
+                              transition={{ delay: index * 0.08 + 0.2, duration: 0.2 }}
+                            />
                           </motion.div>
                         )}
                       </motion.div>
