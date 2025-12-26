@@ -26,11 +26,19 @@ import {
   Coins
 } from "lucide-react";
 import { useCharacterTrades, PlayerTrade, ItemData, CurrencyData } from "@/hooks/usePlayerTrades";
+import { 
+  FullCurrency, 
+  currencyToCopper, 
+  formatCurrency as formatCurrencyUtil, 
+  formatCurrencyAsGold,
+  hasEnoughCurrency,
+  normalizeCurrency
+} from "@/lib/currencyUtils";
 
 interface PlayerTradeModalProps {
   characterId: string;
   characterInventory: any[];
-  characterCurrency?: { gold?: number; silver?: number; copper?: number };
+  characterCurrency?: FullCurrency;
 }
 
 const RARITIES: Record<string, { label: string; color: string }> = {
