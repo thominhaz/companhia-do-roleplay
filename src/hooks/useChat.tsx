@@ -11,6 +11,7 @@ export interface CampaignMessage {
   content: string;
   created_at: string;
   recipient_id: string | null;
+  reply_to_id: string | null;
   profile?: {
     display_name: string | null;
     avatar_url: string | null;
@@ -18,6 +19,14 @@ export interface CampaignMessage {
   recipient_profile?: {
     display_name: string | null;
     avatar_url: string | null;
+  };
+  reply_to?: {
+    id: string;
+    content: string;
+    user_id: string;
+    profile?: {
+      display_name: string | null;
+    };
   };
 }
 
@@ -40,7 +49,7 @@ export function useCampaignMessages(campaignId: string) {
           filter: `campaign_id=eq.${campaignId}`,
         },
         async (payload) => {
-          const newMessage = payload.new as CampaignMessage;
+          const newMessage = payload.new as any;
           
           // Check if this message is visible to the current user
           const isPublic = !newMessage.recipient_id;
@@ -48,7 +57,6 @@ export function useCampaignMessages(campaignId: string) {
           const isSentToMe = newMessage.recipient_id === user?.id;
           
           if (!isPublic && !isSentByMe && !isSentToMe) {
-            // This private message is not for us, ignore
             return;
           }
           
@@ -69,13 +77,37 @@ export function useCampaignMessages(campaignId: string) {
               .single();
             recipientProfile = data;
           }
+
+          // Fetch reply_to message if exists
+          let replyTo = null;
+          if (newMessage.reply_to_id) {
+            const { data: replyMsg } = await supabase
+              .from('campaign_messages')
+              .select('id, content, user_id')
+              .eq('id', newMessage.reply_to_id)
+              .single();
+            
+            if (replyMsg) {
+              const { data: replyProfile } = await supabase
+                .from('profiles')
+                .select('display_name')
+                .eq('id', replyMsg.user_id)
+                .single();
+              
+              replyTo = {
+                ...replyMsg,
+                profile: replyProfile || undefined,
+              };
+            }
+          }
           
           queryClient.setQueryData<CampaignMessage[]>(
             ['campaign-messages', campaignId],
             (old = []) => [...old, { 
               ...newMessage, 
               profile: profile || undefined,
-              recipient_profile: recipientProfile || undefined
+              recipient_profile: recipientProfile || undefined,
+              reply_to: replyTo || undefined,
             }]
           );
         }
@@ -125,6 +157,9 @@ export function useCampaignMessages(campaignId: string) {
         ...messages.filter(m => m.recipient_id).map(m => m.recipient_id!)
       ])];
 
+      // Get reply_to message IDs
+      const replyToIds = messages.filter(m => m.reply_to_id).map(m => m.reply_to_id!);
+
       // Get profiles for these users
       const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
@@ -133,21 +168,48 @@ export function useCampaignMessages(campaignId: string) {
 
       if (profilesError) throw profilesError;
 
-      // Create a map of user_id to profile
-      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      // Get reply_to messages if any
+      let replyToMessages: any[] = [];
+      if (replyToIds.length > 0) {
+        const { data: replies } = await supabase
+          .from('campaign_messages')
+          .select('id, content, user_id')
+          .in('id', replyToIds);
+        
+        if (replies) {
+          // Get profiles for reply authors
+          const replyUserIds = [...new Set(replies.map(r => r.user_id))];
+          const { data: replyProfiles } = await supabase
+            .from('profiles')
+            .select('id, display_name')
+            .in('id', replyUserIds);
+          
+          const replyProfileMap = new Map(replyProfiles?.map(p => [p.id, p]) || []);
+          
+          replyToMessages = replies.map(r => ({
+            ...r,
+            profile: replyProfileMap.get(r.user_id) || null,
+          }));
+        }
+      }
 
-      // Combine messages with their profiles
+      // Create maps
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+      const replyToMap = new Map(replyToMessages.map(r => [r.id, r]));
+
+      // Combine messages with their profiles and replies
       return messages.map(msg => ({
         ...msg,
         profile: profileMap.get(msg.user_id) || null,
         recipient_profile: msg.recipient_id ? profileMap.get(msg.recipient_id) || null : null,
+        reply_to: msg.reply_to_id ? replyToMap.get(msg.reply_to_id) || null : null,
       })) as CampaignMessage[];
     },
     enabled: !!campaignId,
   });
 }
 
-// Send a message (with optional recipient for private messages)
+// Send a message (with optional recipient for private messages and reply)
 export function useSendMessage() {
   const { user } = useAuth();
 
@@ -155,11 +217,13 @@ export function useSendMessage() {
     mutationFn: async ({ 
       campaignId, 
       content, 
-      recipientId 
+      recipientId,
+      replyToId,
     }: { 
       campaignId: string; 
       content: string;
       recipientId?: string;
+      replyToId?: string;
     }) => {
       if (!user) throw new Error('Usuário não autenticado');
 
@@ -170,6 +234,7 @@ export function useSendMessage() {
           user_id: user.id,
           content,
           recipient_id: recipientId || null,
+          reply_to_id: replyToId || null,
         })
         .select()
         .single();
