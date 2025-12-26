@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { toast } from 'sonner';
@@ -199,6 +200,34 @@ export function useDeleteSession() {
 
 // Fetch players for a campaign with profile information
 export function useCampaignPlayers(campaignId: string) {
+  const queryClient = useQueryClient();
+
+  // Subscribe to realtime changes for campaign_players
+  useEffect(() => {
+    if (!campaignId) return;
+
+    const channel = supabase
+      .channel(`campaign-players-${campaignId}`)
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'campaign_players',
+          filter: `campaign_id=eq.${campaignId}`,
+        },
+        () => {
+          // Invalidate the query to refetch players
+          queryClient.invalidateQueries({ queryKey: ['campaign-players', campaignId] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [campaignId, queryClient]);
+
   return useQuery({
     queryKey: ['campaign-players', campaignId],
     queryFn: async () => {
