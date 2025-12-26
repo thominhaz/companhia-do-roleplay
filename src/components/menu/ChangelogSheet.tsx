@@ -68,21 +68,6 @@ const upcomingFeatures: UpcomingFeature[] = [
     description: "Mecânicas completas para campanhas de horror, incluindo sistema de medo, traumas e loucura inspirado em Call of Cthulhu.",
   },
   {
-    icon: FileText,
-    title: "Oficina de Documentos",
-    description: "Crie contratos, cartas, mapas de tesouro, pergaminhos e outros documentos personalizados para enriquecer suas campanhas.",
-  },
-  {
-    icon: Store,
-    title: "Oficina de Lojas",
-    description: "Ferramenta para mestres criarem mercadores completos com inventário, preços, reputação e negociação dinâmica.",
-  },
-  {
-    icon: Users,
-    title: "Oficina de NPCs",
-    description: "Gerador e gerenciador de NPCs com personalidade, motivações, segredos e relacionamentos para dar vida ao seu mundo.",
-  },
-  {
     icon: Swords,
     title: "Gerador de Encontros",
     description: "Crie combates balanceados com medidor de dificuldade que compara o nível dos jogadores com os monstros selecionados.",
@@ -91,16 +76,6 @@ const upcomingFeatures: UpcomingFeature[] = [
     icon: Gem,
     title: "Gerador de Tesouros",
     description: "Gere loot aleatório baseado no nível de dificuldade, tipo de criatura e raridade dos itens.",
-  },
-  {
-    icon: Clock,
-    title: "Timeline de Campanha",
-    description: "Linha do tempo visual e interativa para registrar e visualizar os eventos importantes da sua história.",
-  },
-  {
-    icon: Flag,
-    title: "Sistema de Facções",
-    description: "Gerencie facções, guildas e organizações com sistema de reputação, influência e relacionamentos políticos.",
   },
   {
     icon: Hammer,
