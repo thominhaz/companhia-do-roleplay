@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -17,7 +18,8 @@ import {
   Users,
   Reply,
   CornerDownRight,
-  SmilePlus
+  SmilePlus,
+  Sparkles
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -43,6 +45,99 @@ import {
 } from "@/components/ui/popover";
 
 const AVAILABLE_EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🎲', '⚔️', '🛡️'];
+
+// Animation variants
+const messageVariants = {
+  initial: (isOwn: boolean) => ({
+    opacity: 0,
+    x: isOwn ? 20 : -20,
+    y: 10,
+    scale: 0.95,
+  }),
+  animate: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    scale: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 25,
+    },
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.9,
+    transition: { duration: 0.15 },
+  },
+};
+
+const bubbleVariants = {
+  initial: { scale: 0.8, opacity: 0 },
+  animate: { 
+    scale: 1, 
+    opacity: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 500,
+      damping: 30,
+    },
+  },
+  hover: {
+    scale: 1.01,
+    transition: { duration: 0.2 },
+  },
+  tap: { scale: 0.98 },
+};
+
+const reactionVariants = {
+  initial: { scale: 0, opacity: 0 },
+  animate: { 
+    scale: 1, 
+    opacity: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 600,
+      damping: 20,
+    },
+  },
+  exit: { 
+    scale: 0, 
+    opacity: 0,
+    transition: { duration: 0.1 },
+  },
+  hover: { scale: 1.15 },
+  tap: { scale: 0.9 },
+};
+
+const floatingIndicatorVariants = {
+  initial: { opacity: 0, y: 10, height: 0 },
+  animate: { 
+    opacity: 1, 
+    y: 0, 
+    height: "auto",
+    transition: {
+      type: "spring" as const,
+      stiffness: 400,
+      damping: 25,
+    },
+  },
+  exit: { 
+    opacity: 0, 
+    y: 10, 
+    height: 0,
+    transition: { duration: 0.2 },
+  },
+};
+
+const sendButtonVariants = {
+  idle: { scale: 1, rotate: 0 },
+  sending: { 
+    scale: [1, 1.1, 1],
+    rotate: [0, -10, 10, 0],
+    transition: { duration: 0.4 },
+  },
+};
 
 interface CampaignChatSheetProps {
   campaignId: string;
@@ -385,7 +480,16 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                         : null;
 
                       return (
-                        <div key={msg.id} className="space-y-1">
+                        <motion.div 
+                          key={msg.id} 
+                          className="space-y-1"
+                          custom={isOwn}
+                          initial="initial"
+                          animate="animate"
+                          exit="exit"
+                          variants={messageVariants}
+                          layout
+                        >
                           <div
                             className={cn(
                               "flex group",
@@ -394,35 +498,50 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                           >
                             {/* Action buttons - left side for own messages */}
                             {isOwn && (
-                              <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity mr-1 self-center gap-0.5">
+                              <motion.div 
+                                className="flex items-center mr-1 self-center gap-0.5"
+                                initial={{ opacity: 0, x: 10 }}
+                                whileHover={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.2 }}
+                              >
                                 <Popover>
                                   <PopoverTrigger asChild>
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="w-7 h-7"
+                                      className="w-7 h-7 hover:bg-muted/80"
                                     >
                                       <SmilePlus className="w-4 h-4" />
                                     </Button>
                                   </PopoverTrigger>
                                   <PopoverContent className="w-auto p-2" side="top">
-                                    <div className="flex gap-1 flex-wrap max-w-[200px]">
-                                      {AVAILABLE_EMOJIS.map(emoji => (
-                                        <button
+                                    <motion.div 
+                                      className="flex gap-1 flex-wrap max-w-[200px]"
+                                      initial={{ scale: 0.9, opacity: 0 }}
+                                      animate={{ scale: 1, opacity: 1 }}
+                                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                    >
+                                      {AVAILABLE_EMOJIS.map((emoji, i) => (
+                                        <motion.button
                                           key={emoji}
                                           className="text-xl hover:bg-muted p-1.5 rounded transition-colors"
                                           onClick={() => toggleReaction.mutate({ messageId: msg.id, emoji })}
+                                          initial={{ scale: 0, opacity: 0 }}
+                                          animate={{ scale: 1, opacity: 1 }}
+                                          transition={{ delay: i * 0.03, type: "spring", stiffness: 500 }}
+                                          whileHover={{ scale: 1.2 }}
+                                          whileTap={{ scale: 0.9 }}
                                         >
                                           {emoji}
-                                        </button>
+                                        </motion.button>
                                       ))}
-                                    </div>
+                                    </motion.div>
                                   </PopoverContent>
                                 </Popover>
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="w-7 h-7"
+                                  className="w-7 h-7 hover:bg-muted/80"
                                   onClick={() => {
                                     setReplyingTo(msg);
                                     inputRef.current?.focus();
@@ -430,20 +549,25 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                                 >
                                   <Reply className="w-4 h-4" />
                                 </Button>
-                              </div>
+                              </motion.div>
                             )}
                             
-                            <div
+                            <motion.div
                               className={cn(
-                                "max-w-[80%] rounded-2xl px-4 py-2 relative",
+                                "max-w-[80%] rounded-2xl px-4 py-2.5 relative shadow-lg",
                                 isPrivate 
                                   ? isOwn 
-                                    ? "bg-purple-600 text-white rounded-br-sm" 
-                                    : "bg-purple-500/20 text-foreground rounded-bl-sm border border-purple-500/30"
+                                    ? "bg-gradient-to-br from-purple-600 to-purple-700 text-white rounded-br-sm shadow-purple-500/20" 
+                                    : "bg-purple-500/15 text-foreground rounded-bl-sm border border-purple-500/30 backdrop-blur-sm"
                                   : isOwn
-                                    ? "bg-primary text-primary-foreground rounded-br-sm"
-                                    : "bg-muted text-foreground rounded-bl-sm"
+                                    ? "bg-gradient-to-br from-primary to-primary/90 text-primary-foreground rounded-br-sm shadow-primary/20"
+                                    : "bg-gradient-to-br from-muted to-muted/80 text-foreground rounded-bl-sm backdrop-blur-sm"
                               )}
+                              variants={bubbleVariants}
+                              initial="initial"
+                              animate="animate"
+                              whileHover="hover"
+                              whileTap="tap"
                             >
                               {/* Reply quote */}
                               {msg.reply_to && replyContent && (
@@ -504,7 +628,7 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                                       key={idx}
                                       src={part.content} 
                                       alt="Imagem" 
-                                      className="rounded-lg max-w-full cursor-pointer"
+                                      className="rounded-lg max-w-full cursor-pointer hover:scale-[1.02] transition-transform"
                                       onClick={() => window.open(part.content, '_blank')}
                                     />
                                   ) : (
@@ -515,22 +639,26 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                                 ))}
                               </div>
                               <p className={cn(
-                                "text-[10px] mt-1",
+                                "text-[10px] mt-1.5 opacity-70",
                                 isPrivate 
-                                  ? isOwn ? "text-white/70" : "text-purple-400/70"
-                                  : isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
+                                  ? isOwn ? "text-white" : "text-purple-400"
+                                  : isOwn ? "text-primary-foreground" : "text-muted-foreground"
                               )}>
                                 {format(new Date(msg.created_at), "HH:mm")}
                               </p>
-                            </div>
+                            </motion.div>
 
-                            {/* Action buttons - right side for others' messages */}
                             {!isOwn && (
-                              <div className="flex items-center opacity-0 group-hover:opacity-100 transition-opacity ml-1 self-center gap-0.5">
+                              <motion.div 
+                                className="flex items-center ml-1 self-center gap-0.5"
+                                initial={{ opacity: 0, x: -10 }}
+                                whileHover={{ opacity: 1, x: 0 }}
+                                transition={{ duration: 0.2 }}
+                              >
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="w-7 h-7"
+                                  className="w-7 h-7 hover:bg-muted/80"
                                   onClick={() => {
                                     setReplyingTo(msg);
                                     inputRef.current?.focus();
@@ -543,53 +671,77 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="w-7 h-7"
+                                      className="w-7 h-7 hover:bg-muted/80"
                                     >
                                       <SmilePlus className="w-4 h-4" />
                                     </Button>
                                   </PopoverTrigger>
                                   <PopoverContent className="w-auto p-2" side="top">
-                                    <div className="flex gap-1 flex-wrap max-w-[200px]">
-                                      {AVAILABLE_EMOJIS.map(emoji => (
-                                        <button
+                                    <motion.div 
+                                      className="flex gap-1 flex-wrap max-w-[200px]"
+                                      initial={{ scale: 0.9, opacity: 0 }}
+                                      animate={{ scale: 1, opacity: 1 }}
+                                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                    >
+                                      {AVAILABLE_EMOJIS.map((emoji, i) => (
+                                        <motion.button
                                           key={emoji}
                                           className="text-xl hover:bg-muted p-1.5 rounded transition-colors"
                                           onClick={() => toggleReaction.mutate({ messageId: msg.id, emoji })}
+                                          initial={{ scale: 0, opacity: 0 }}
+                                          animate={{ scale: 1, opacity: 1 }}
+                                          transition={{ delay: i * 0.03, type: "spring", stiffness: 500 }}
+                                          whileHover={{ scale: 1.2 }}
+                                          whileTap={{ scale: 0.9 }}
                                         >
                                           {emoji}
-                                        </button>
+                                        </motion.button>
                                       ))}
-                                    </div>
+                                    </motion.div>
                                   </PopoverContent>
                                 </Popover>
-                              </div>
+                              </motion.div>
                             )}
                           </div>
 
                           {/* Reactions display */}
-                          {msg.reactions && msg.reactions.length > 0 && (
-                            <div className={cn(
-                              "flex gap-1 flex-wrap",
-                              isOwn ? "justify-end pr-2" : "justify-start pl-2"
-                            )}>
-                              {msg.reactions.map(reaction => (
-                                <button
-                                  key={reaction.emoji}
-                                  onClick={() => toggleReaction.mutate({ messageId: msg.id, emoji: reaction.emoji })}
-                                  className={cn(
-                                    "flex items-center gap-1 px-2 py-0.5 rounded-full text-xs transition-colors",
-                                    reaction.hasReacted
-                                      ? "bg-primary/20 border border-primary/40 text-primary"
-                                      : "bg-muted hover:bg-muted/80 border border-transparent"
-                                  )}
-                                >
-                                  <span>{reaction.emoji}</span>
-                                  <span>{reaction.count}</span>
-                                </button>
-                              ))}
-                            </div>
-                          )}
-                        </div>
+                          <AnimatePresence>
+                            {msg.reactions && msg.reactions.length > 0 && (
+                              <motion.div 
+                                className={cn(
+                                  "flex gap-1.5 flex-wrap",
+                                  isOwn ? "justify-end pr-2" : "justify-start pl-2"
+                                )}
+                                initial={{ opacity: 0, y: -5 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -5 }}
+                              >
+                                {msg.reactions.map(reaction => (
+                                  <motion.button
+                                    key={reaction.emoji}
+                                    onClick={() => toggleReaction.mutate({ messageId: msg.id, emoji: reaction.emoji })}
+                                    className={cn(
+                                      "flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-all",
+                                      reaction.hasReacted
+                                        ? "bg-primary/20 border border-primary/40 text-primary shadow-sm"
+                                        : "bg-muted/60 hover:bg-muted border border-border/50"
+                                    )}
+                                    variants={reactionVariants}
+                                    initial="initial"
+                                    animate="animate"
+                                    exit="exit"
+                                    whileHover="hover"
+                                    whileTap="tap"
+                                    layout
+                                  >
+                                    <span>{reaction.emoji}</span>
+                                    <span>{reaction.count}</span>
+                                  </motion.button>
+                                ))}
+                              </motion.div>
+                            )}
+                          </AnimatePresence>
+                        </motion.div>
                       );
                     })}
                   </div>
@@ -600,93 +752,134 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
         </div>
 
         {/* Typing Indicator */}
-        {typingUsers.size > 0 && (
-          <div className="px-4 pb-2">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground animate-pulse">
-              <div className="flex gap-1">
-                <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+        <AnimatePresence>
+          {typingUsers.size > 0 && (
+            <motion.div 
+              className="px-4 pb-2"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+            >
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex gap-1">
+                  <motion.span 
+                    className="w-2 h-2 bg-primary rounded-full"
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                  />
+                  <motion.span 
+                    className="w-2 h-2 bg-primary rounded-full"
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay: 0.15 }}
+                  />
+                  <motion.span 
+                    className="w-2 h-2 bg-primary rounded-full"
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay: 0.3 }}
+                  />
+                </div>
+                <span>{typingText()}</span>
               </div>
-              <span>{typingText()}</span>
-            </div>
-          </div>
-        )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Reply indicator */}
-        {replyingTo && (
-          <div className="px-4 pb-2">
-            <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-2 border-l-4 border-primary">
-              <Reply className="w-4 h-4 text-primary flex-shrink-0" />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-semibold text-primary">
-                  Respondendo a {replyingTo.profile?.display_name || 'Jogador'}
-                </p>
-                <p className="text-xs text-muted-foreground truncate">
-                  {replyingTo.content.replace(/\[img\].*?\[\/img\]/g, '📷 Imagem').slice(0, 60)}
-                  {replyingTo.content.length > 60 ? '...' : ''}
-                </p>
-              </div>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="w-6 h-6 flex-shrink-0"
-                onClick={() => setReplyingTo(null)}
-              >
-                <X className="w-3 h-3" />
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {/* Pending Image Preview */}
-        {pendingImage && (
-          <div className="px-4 pb-2">
-            <div className="relative inline-block">
-              <img 
-                src={pendingImage.preview} 
-                alt="Preview" 
-                className="h-20 rounded-lg object-cover"
-              />
-              {isUploading ? (
-                <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
-                  <Loader2 className="w-5 h-5 animate-spin text-white" />
+        <AnimatePresence>
+          {replyingTo && (
+            <motion.div 
+              className="px-4 pb-2"
+              variants={floatingIndicatorVariants}
+              initial="initial"
+              animate="animate"
+              exit="exit"
+            >
+              <div className="flex items-center gap-2 bg-muted/50 rounded-lg p-2.5 border-l-4 border-primary backdrop-blur-sm">
+                <Reply className="w-4 h-4 text-primary flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-primary">
+                    Respondendo a {replyingTo.profile?.display_name || 'Jogador'}
+                  </p>
+                  <p className="text-xs text-muted-foreground truncate">
+                    {replyingTo.content.replace(/\[img\].*?\[\/img\]/g, '📷 Imagem').slice(0, 60)}
+                    {replyingTo.content.length > 60 ? '...' : ''}
+                  </p>
                 </div>
-              ) : (
                 <Button
-                  variant="destructive"
+                  variant="ghost"
                   size="icon"
-                  className="absolute -top-2 -right-2 w-6 h-6"
-                  onClick={removePendingImage}
+                  className="w-6 h-6 flex-shrink-0 hover:bg-destructive/20 hover:text-destructive"
+                  onClick={() => setReplyingTo(null)}
                 >
                   <X className="w-3 h-3" />
                 </Button>
-              )}
-            </div>
-          </div>
-        )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Pending Image Preview */}
+        <AnimatePresence>
+          {pendingImage && (
+            <motion.div 
+              className="px-4 pb-2"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+            >
+              <div className="relative inline-block">
+                <img 
+                  src={pendingImage.preview} 
+                  alt="Preview" 
+                  className="h-20 rounded-lg object-cover shadow-lg"
+                />
+                {isUploading ? (
+                  <div className="absolute inset-0 bg-black/50 rounded-lg flex items-center justify-center">
+                    <Loader2 className="w-5 h-5 animate-spin text-white" />
+                  </div>
+                ) : (
+                  <Button
+                    variant="destructive"
+                    size="icon"
+                    className="absolute -top-2 -right-2 w-6 h-6"
+                    onClick={removePendingImage}
+                  >
+                    <X className="w-3 h-3" />
+                  </Button>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Recipient selector badge */}
-        {selectedRecipient.isPrivate && (
-          <div className="px-4 pb-2">
-            <Badge 
-              variant="secondary" 
-              className="bg-purple-500/20 text-purple-400 border-purple-500/30 gap-1"
+        <AnimatePresence>
+          {selectedRecipient.isPrivate && (
+            <motion.div 
+              className="px-4 pb-2"
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -10 }}
             >
-              <Lock className="w-3 h-3" />
-              Mensagem privada para {selectedRecipient.name}
-              <button 
-                onClick={() => setSelectedRecipient({ id: null, name: "Todos", isPrivate: false })}
-                className="ml-1 hover:text-purple-200"
+              <Badge 
+                variant="secondary" 
+                className="bg-purple-500/20 text-purple-400 border-purple-500/30 gap-1"
               >
-                <X className="w-3 h-3" />
-              </button>
-            </Badge>
-          </div>
-        )}
+                <Lock className="w-3 h-3" />
+                Mensagem privada para {selectedRecipient.name}
+                <button 
+                  onClick={() => setSelectedRecipient({ id: null, name: "Todos", isPrivate: false })}
+                  className="ml-1 hover:text-purple-200 transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              </Badge>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Input Area */}
-        <div className="p-4 border-t border-border flex-shrink-0">
+        <div className="p-4 border-t border-border flex-shrink-0 bg-background/80 backdrop-blur-sm">
           <input
             ref={fileInputRef}
             type="file"
@@ -694,23 +887,26 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
             onChange={handleImageSelect}
             className="hidden"
           />
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             {/* Recipient Selector */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={cn(
-                    selectedRecipient.isPrivate && "text-purple-400 bg-purple-500/10"
-                  )}
-                >
-                  {selectedRecipient.isPrivate ? (
-                    <Lock className="w-5 h-5" />
-                  ) : (
-                    <Users className="w-5 h-5" />
-                  )}
-                </Button>
+                <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className={cn(
+                      "transition-colors",
+                      selectedRecipient.isPrivate && "text-purple-400 bg-purple-500/10"
+                    )}
+                  >
+                    {selectedRecipient.isPrivate ? (
+                      <Lock className="w-5 h-5" />
+                    ) : (
+                      <Users className="w-5 h-5" />
+                    )}
+                  </Button>
+                </motion.div>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start" className="w-56">
                 <DropdownMenuItem 
@@ -741,14 +937,17 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isUploading || sendMessage.isPending}
-            >
-              <ImagePlus className="w-5 h-5" />
-            </Button>
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading || sendMessage.isPending}
+              >
+                <ImagePlus className="w-5 h-5" />
+              </Button>
+            </motion.div>
+            
             <Input
               ref={inputRef}
               value={message}
@@ -759,25 +958,52 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                 : "Digite sua mensagem..."
               }
               className={cn(
-                "flex-1",
+                "flex-1 transition-all",
                 selectedRecipient.isPrivate && "border-purple-500/30 focus-visible:ring-purple-500/50"
               )}
               disabled={isUploading}
             />
-            <Button 
-              onClick={handleSend}
-              disabled={(!message.trim() && !pendingImage) || sendMessage.isPending || isUploading}
-              size="icon"
-              className={cn(
-                selectedRecipient.isPrivate && "bg-purple-600 hover:bg-purple-700"
-              )}
+            
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.9 }}
+              animate={sendMessage.isPending ? { rotate: [0, -5, 5, 0] } : {}}
+              transition={{ duration: 0.3 }}
             >
-              {sendMessage.isPending || isUploading ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Send className="w-4 h-4" />
-              )}
-            </Button>
+              <Button 
+                onClick={handleSend}
+                disabled={(!message.trim() && !pendingImage) || sendMessage.isPending || isUploading}
+                size="icon"
+                className={cn(
+                  "relative overflow-hidden transition-all",
+                  selectedRecipient.isPrivate 
+                    ? "bg-purple-600 hover:bg-purple-700" 
+                    : "bg-primary hover:bg-primary/90"
+                )}
+              >
+                <AnimatePresence mode="wait">
+                  {sendMessage.isPending || isUploading ? (
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.5 }}
+                    >
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="send"
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 10 }}
+                    >
+                      <Send className="w-4 h-4" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </Button>
+            </motion.div>
           </div>
         </div>
       </SheetContent>
