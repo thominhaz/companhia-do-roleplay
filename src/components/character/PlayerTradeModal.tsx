@@ -256,9 +256,10 @@ export function PlayerTradeModal({ characterId, characterInventory, characterCur
     if (selectedTrade.status === 'pending_receiver' && isReceiver) {
       // Selecting currency
       if (selectingCurrency) {
-        const playerGold = characterCurrency?.gold || 0;
-        const playerSilver = characterCurrency?.silver || 0;
-        const playerCopper = characterCurrency?.copper || 0;
+        const playerCurrency = normalizeCurrency(characterCurrency);
+        const totalPlayerCopper = currencyToCopper(playerCurrency);
+        const totalOfferedCopper = currencyToCopper(offeredCurrency);
+        const hasEnough = totalPlayerCopper >= totalOfferedCopper;
 
         return (
           <>
@@ -274,20 +275,33 @@ export function PlayerTradeModal({ characterId, characterInventory, characterCur
 
             <div className="my-4 space-y-4">
               <div className="text-xs text-muted-foreground">
-                Seu dinheiro: {playerGold} PO, {playerSilver} PP, {playerCopper} PC
+                Seu dinheiro: {formatCurrencyUtil(playerCurrency)} ({formatCurrencyAsGold(playerCurrency)} equiv.)
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-2">
+                  <Label className="text-xs text-gray-300">Platina (PL)</Label>
+                  <Input
+                    type="number"
+                    min="0"
+                    value={offeredCurrency.platinum || ''}
+                    onChange={(e) => setOfferedCurrency(prev => ({
+                      ...prev,
+                      platinum: Math.max(0, parseInt(e.target.value) || 0)
+                    }))}
+                    className="text-center"
+                    placeholder="0"
+                  />
+                </div>
                 <div className="space-y-2">
                   <Label className="text-xs text-amber-500">Ouro (PO)</Label>
                   <Input
                     type="number"
                     min="0"
-                    max={playerGold}
                     value={offeredCurrency.gold || ''}
                     onChange={(e) => setOfferedCurrency(prev => ({
                       ...prev,
-                      gold: Math.min(parseInt(e.target.value) || 0, playerGold)
+                      gold: Math.max(0, parseInt(e.target.value) || 0)
                     }))}
                     className="text-center"
                     placeholder="0"
@@ -298,32 +312,39 @@ export function PlayerTradeModal({ characterId, characterInventory, characterCur
                   <Input
                     type="number"
                     min="0"
-                    max={playerSilver}
                     value={offeredCurrency.silver || ''}
                     onChange={(e) => setOfferedCurrency(prev => ({
                       ...prev,
-                      silver: Math.min(parseInt(e.target.value) || 0, playerSilver)
+                      silver: Math.max(0, parseInt(e.target.value) || 0)
                     }))}
                     className="text-center"
                     placeholder="0"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label className="text-xs text-orange-700">Cobre (PC)</Label>
+                  <Label className="text-xs text-orange-600">Cobre (PC)</Label>
                   <Input
                     type="number"
                     min="0"
-                    max={playerCopper}
                     value={offeredCurrency.copper || ''}
                     onChange={(e) => setOfferedCurrency(prev => ({
                       ...prev,
-                      copper: Math.min(parseInt(e.target.value) || 0, playerCopper)
+                      copper: Math.max(0, parseInt(e.target.value) || 0)
                     }))}
                     className="text-center"
                     placeholder="0"
                   />
                 </div>
               </div>
+
+              {totalOfferedCopper > 0 && (
+                <div className={`text-xs p-2 rounded ${hasEnough ? 'bg-green-500/10 text-green-500' : 'bg-destructive/10 text-destructive'}`}>
+                  {hasEnough 
+                    ? `✓ Total: ${formatCurrencyAsGold(offeredCurrency)} - Saldo suficiente (conversão automática)`
+                    : `✗ Saldo insuficiente (${formatCurrencyAsGold(offeredCurrency)} > ${formatCurrencyAsGold(playerCurrency)})`
+                  }
+                </div>
+              )}
             </div>
 
             <AlertDialogFooter className="flex gap-2">
@@ -332,7 +353,7 @@ export function PlayerTradeModal({ characterId, characterInventory, characterCur
               </Button>
               <Button 
                 onClick={handleOfferCurrency} 
-                disabled={processing || (!offeredCurrency.gold && !offeredCurrency.silver && !offeredCurrency.copper)}
+                disabled={processing || totalOfferedCopper === 0 || !hasEnough}
               >
                 {processing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Coins className="w-4 h-4 mr-1" />}
                 Confirmar Pagamento
