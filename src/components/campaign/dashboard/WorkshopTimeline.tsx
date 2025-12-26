@@ -209,7 +209,7 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
 
                             {/* Number Badge - outside the card */}
                             <motion.div 
-                              className={`mx-auto -mt-3 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}
+                              className={`mx-auto -mt-3 relative z-20 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}
                               initial={{ scale: 0 }}
                               animate={{ scale: 1 }}
                               transition={{ delay: index * 0.08 + 0.25, type: "spring", stiffness: 500 }}
