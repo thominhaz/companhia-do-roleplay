@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -6,6 +6,7 @@ import { useCampaignMessages, useSendMessage, CampaignMessage } from "@/hooks/us
 import { useCampaignImageUpload } from "@/hooks/useCampaignImageUpload";
 import { useCampaignPlayers } from "@/hooks/useSessions";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { 
   MessageCircle, 
   Send, 
@@ -46,6 +47,12 @@ interface RecipientOption {
   isPrivate: boolean;
 }
 
+interface TypingUser {
+  odigo: string;
+  name: string;
+  isTyping: boolean;
+}
+
 export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignChatSheetProps) {
   const { user } = useAuth();
   const [message, setMessage] = useState("");
@@ -55,14 +62,20 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
     name: "Todos", 
     isPrivate: false 
   });
+  const [typingUsers, setTypingUsers] = useState<Map<string, string>>(new Map());
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
 
   const { data: messages, isLoading } = useCampaignMessages(campaignId);
   const { data: players } = useCampaignPlayers(campaignId);
   const sendMessage = useSendMessage();
   const { uploadImage, isUploading, progress } = useCampaignImageUpload();
+
+  // Get current user's display name
+  const currentUserName = players?.find(p => p.user_id === user?.id)?.profile?.display_name || 'Você';
 
   // Build recipient options from players
   const recipientOptions: RecipientOption[] = [
@@ -75,6 +88,75 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
         isPrivate: true,
       }))
   ];
+
+  // Setup presence channel for typing indicators
+  useEffect(() => {
+    if (!open || !campaignId || !user) return;
+
+    const channel = supabase.channel(`typing-${campaignId}`, {
+      config: {
+        presence: {
+          key: user.id,
+        },
+      },
+    });
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        const newTypingUsers = new Map<string, string>();
+        
+        Object.entries(state).forEach(([odigo, presences]) => {
+          const presence = (presences as any[])[0];
+          if (presence?.isTyping && odigo !== user.id) {
+            newTypingUsers.set(odigo, presence.name || 'Alguém');
+          }
+        });
+        
+        setTypingUsers(newTypingUsers);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            isTyping: false,
+            name: currentUserName,
+          });
+        }
+      });
+
+    channelRef.current = channel;
+
+    return () => {
+      channel.unsubscribe();
+      channelRef.current = null;
+    };
+  }, [open, campaignId, user, currentUserName]);
+
+  // Handle typing indicator
+  const handleTyping = useCallback(() => {
+    if (!channelRef.current) return;
+
+    // Update presence to show typing
+    channelRef.current.track({
+      isTyping: true,
+      name: currentUserName,
+    });
+
+    // Clear previous timeout
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
+    // Set timeout to stop typing indicator after 2 seconds of inactivity
+    typingTimeoutRef.current = setTimeout(() => {
+      if (channelRef.current) {
+        channelRef.current.track({
+          isTyping: false,
+          name: currentUserName,
+        });
+      }
+    }, 2000);
+  }, [currentUserName]);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -114,6 +196,17 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
   const handleSend = async () => {
     if (!message.trim() && !pendingImage) return;
 
+    // Stop typing indicator
+    if (channelRef.current) {
+      channelRef.current.track({
+        isTyping: false,
+        name: currentUserName,
+      });
+    }
+    if (typingTimeoutRef.current) {
+      clearTimeout(typingTimeoutRef.current);
+    }
+
     let content = message.trim();
     
     // If there's an image, upload it first
@@ -146,6 +239,13 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSend();
+    }
+  };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+    if (e.target.value.trim()) {
+      handleTyping();
     }
   };
 
@@ -209,6 +309,15 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
   };
 
   const messageGroups = groupMessagesByDate(messages || []);
+
+  // Format typing users text
+  const typingText = () => {
+    const names = Array.from(typingUsers.values());
+    if (names.length === 0) return null;
+    if (names.length === 1) return `${names[0]} está digitando...`;
+    if (names.length === 2) return `${names[0]} e ${names[1]} estão digitando...`;
+    return `${names.slice(0, -1).join(', ')} e ${names[names.length - 1]} estão digitando...`;
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -336,6 +445,20 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
           )}
         </div>
 
+        {/* Typing Indicator */}
+        {typingUsers.size > 0 && (
+          <div className="px-4 pb-2">
+            <div className="flex items-center gap-2 text-sm text-muted-foreground animate-pulse">
+              <div className="flex gap-1">
+                <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <span className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
+              <span>{typingText()}</span>
+            </div>
+          </div>
+        )}
+
         {/* Pending Image Preview */}
         {pendingImage && (
           <div className="px-4 pb-2">
@@ -449,7 +572,7 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
             <Input
               ref={inputRef}
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              onChange={handleInputChange}
               onKeyPress={handleKeyPress}
               placeholder={selectedRecipient.isPrivate 
                 ? `Mensagem privada para ${selectedRecipient.name}...` 
