@@ -143,6 +143,7 @@ interface CampaignChatSheetProps {
   campaignId: string;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  preSelectedRecipientId?: string | null;
 }
 
 interface RecipientOption {
@@ -157,7 +158,7 @@ interface TypingUser {
   isTyping: boolean;
 }
 
-export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignChatSheetProps) {
+export function CampaignChatSheet({ campaignId, open, onOpenChange, preSelectedRecipientId }: CampaignChatSheetProps) {
   const { user } = useAuth();
   const [message, setMessage] = useState("");
   const [pendingImage, setPendingImage] = useState<{ file: File; preview: string } | null>(null);
@@ -194,6 +195,22 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
         isPrivate: true,
       }))
   ];
+
+  // Set pre-selected recipient when opening
+  useEffect(() => {
+    if (open && preSelectedRecipientId !== undefined) {
+      const player = players?.find(p => p.user_id === preSelectedRecipientId);
+      if (preSelectedRecipientId === null) {
+        setSelectedRecipient({ id: null, name: "Todos", isPrivate: false });
+      } else if (player) {
+        setSelectedRecipient({
+          id: preSelectedRecipientId,
+          name: player.profile?.display_name || 'Jogador',
+          isPrivate: true,
+        });
+      }
+    }
+  }, [open, preSelectedRecipientId, players]);
 
   // Setup presence channel for typing indicators
   useEffect(() => {

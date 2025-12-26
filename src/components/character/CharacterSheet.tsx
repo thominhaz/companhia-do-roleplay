@@ -61,7 +61,7 @@ import { toast } from "sonner";
 import { useSubscription } from "@/hooks/useSubscription";
 import { useCharacterCampaign } from "@/hooks/useCampaigns";
 import { useCampaignPlayers } from "@/hooks/useSessions";
-import { InlineCampaignChat } from "./InlineCampaignChat";
+import { PrivateMasterChat } from "./PrivateMasterChat";
 import { TradeOfferModal } from "./TradeOfferModal";
 import { PlayerTradeModal } from "./PlayerTradeModal";
 import { InitiateTradeSheet } from "./InitiateTradeSheet";
@@ -2199,11 +2199,12 @@ export function CharacterSheet() {
         onDropConcentration={handleDropConcentration}
       />
 
-      {/* Campaign Chat - only show if character is in a campaign */}
+      {/* Private Chat with Master - only show if character is in a campaign */}
       {characterCampaign && (
-        <InlineCampaignChat 
+        <PrivateMasterChat 
           campaignId={characterCampaign.id} 
           campaignName={characterCampaign.name}
+          masterId={characterCampaign.master_id}
         />
       )}
 
