@@ -66,6 +66,18 @@ export interface CharacterFactionRep {
   };
 }
 
+export interface FactionEvent {
+  id: string;
+  campaign_id: string;
+  faction_id: string;
+  title: string;
+  description: string | null;
+  event_date: string | null;
+  reputation_change: number;
+  created_at: string;
+  created_by: string;
+}
+
 export function useFactions(campaignId: string | undefined) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -370,5 +382,125 @@ export function useCharacterFactionRep(campaignId: string | undefined) {
     reputations,
     isLoading,
     upsertReputation,
+  };
+}
+
+export function useFactionEvents(campaignId: string | undefined, factionId?: string) {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  const { data: events = [], isLoading } = useQuery({
+    queryKey: ["faction-events", campaignId, factionId],
+    queryFn: async () => {
+      if (!campaignId) return [];
+      let query = supabase
+        .from("campaign_faction_events")
+        .select("*")
+        .eq("campaign_id", campaignId)
+        .order("created_at", { ascending: false });
+      
+      if (factionId) {
+        query = query.eq("faction_id", factionId);
+      }
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      return data as FactionEvent[];
+    },
+    enabled: !!campaignId,
+  });
+
+  const createEventAndApply = useMutation({
+    mutationFn: async (params: {
+      faction_id: string;
+      title: string;
+      description?: string;
+      event_date?: string;
+      reputation_change: number;
+      character_ids: string[];
+      created_by: string;
+    }) => {
+      // Create the event
+      const { data: event, error: eventError } = await supabase
+        .from("campaign_faction_events")
+        .insert({
+          campaign_id: campaignId,
+          faction_id: params.faction_id,
+          title: params.title,
+          description: params.description,
+          event_date: params.event_date,
+          reputation_change: params.reputation_change,
+          created_by: params.created_by,
+        })
+        .select()
+        .single();
+      
+      if (eventError) throw eventError;
+
+      // Apply reputation change to all characters
+      for (const charId of params.character_ids) {
+        // Get current reputation
+        const { data: existing } = await supabase
+          .from("campaign_character_faction_rep")
+          .select("*")
+          .eq("character_id", charId)
+          .eq("faction_id", params.faction_id)
+          .single();
+
+        const currentLevel = existing?.reputation_level || 0;
+        const newLevel = Math.max(-100, Math.min(100, currentLevel + params.reputation_change));
+        
+        // Calculate reputation title
+        let title = "Neutro";
+        if (newLevel <= -51) title = "Odiado";
+        else if (newLevel <= -26) title = "Hostil";
+        else if (newLevel <= -1) title = "Desconfiado";
+        else if (newLevel === 0) title = "Neutro";
+        else if (newLevel <= 25) title = "Amigável";
+        else if (newLevel <= 50) title = "Respeitado";
+        else title = "Venerado";
+
+        await supabase
+          .from("campaign_character_faction_rep")
+          .upsert({
+            campaign_id: campaignId,
+            character_id: charId,
+            faction_id: params.faction_id,
+            reputation_level: newLevel,
+            reputation_title: title,
+          }, { onConflict: 'character_id,faction_id' });
+      }
+
+      return event;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["faction-events", campaignId] });
+      queryClient.invalidateQueries({ queryKey: ["character-faction-rep", campaignId] });
+      toast({ title: "Evento criado e reputações atualizadas!" });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteEvent = useMutation({
+    mutationFn: async (eventId: string) => {
+      const { error } = await supabase
+        .from("campaign_faction_events")
+        .delete()
+        .eq("id", eventId);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["faction-events", campaignId] });
+      toast({ title: "Evento removido!" });
+    },
+  });
+
+  return {
+    events,
+    isLoading,
+    createEventAndApply,
+    deleteEvent,
   };
 }

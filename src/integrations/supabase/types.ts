@@ -259,6 +259,57 @@ export type Database = {
           },
         ]
       }
+      campaign_faction_events: {
+        Row: {
+          campaign_id: string
+          created_at: string
+          created_by: string
+          description: string | null
+          event_date: string | null
+          faction_id: string
+          id: string
+          reputation_change: number
+          title: string
+        }
+        Insert: {
+          campaign_id: string
+          created_at?: string
+          created_by: string
+          description?: string | null
+          event_date?: string | null
+          faction_id: string
+          id?: string
+          reputation_change?: number
+          title: string
+        }
+        Update: {
+          campaign_id?: string
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          event_date?: string | null
+          faction_id?: string
+          id?: string
+          reputation_change?: number
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_faction_events_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_faction_events_faction_id_fkey"
+            columns: ["faction_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_factions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaign_faction_npcs: {
         Row: {
           created_at: string
