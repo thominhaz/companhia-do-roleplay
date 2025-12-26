@@ -14,6 +14,7 @@ export interface Faction {
   goals: string | null;
   secrets: string | null;
   is_hidden: boolean;
+  show_reputation_to_players: boolean;
   tags: string[];
   created_at: string;
   updated_at: string;
