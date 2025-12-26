@@ -153,7 +153,7 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
               <div className="absolute left-8 right-8 top-1/2 h-1 bg-gradient-to-r from-primary/20 via-primary to-primary/20 rounded-full transform -translate-y-1/2" />
 
               {/* Events */}
-              <div className="relative flex items-center gap-0">
+              <div className="relative flex items-center">
                 <AnimatePresence>
                   {events.map((event, index) => {
                     const IconComponent = ICON_MAP[event.icon] || Calendar;
@@ -167,42 +167,45 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
                         transition={{ delay: index * 0.1, duration: 0.3 }}
-                        className="relative flex flex-col items-center"
-                        style={{ minWidth: "200px" }}
+                        className="flex flex-col items-center"
+                        style={{ width: "200px", flexShrink: 0 }}
                       >
-                        {/* Content Card */}
-                        <div 
-                          className={`absolute ${isAbove ? "bottom-16" : "top-16"} w-44 group`}
-                        >
-                          <motion.div 
-                            className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-lg hover:shadow-xl transition-all duration-300"
-                            whileHover={{ scale: 1.02 }}
-                          >
-                            {/* Number Badge */}
-                            <div className={`absolute ${isAbove ? "-bottom-3" : "-top-3"} left-4 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}>
-                              {String(index + 1).padStart(2, "0")}
-                            </div>
-                            
-                            {/* Edit/Delete Buttons */}
-                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
-                              <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleEdit(event)}>
-                                <Edit className="w-3 h-3" />
-                              </Button>
-                              <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" onClick={() => setDeletingEvent(event)}>
-                                <Trash2 className="w-3 h-3" />
-                              </Button>
-                            </div>
+                        {/* Content Above */}
+                        {isAbove && (
+                          <div className="w-44 mb-4 group">
+                            <motion.div 
+                              className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-lg hover:shadow-xl transition-all duration-300 relative"
+                              whileHover={{ scale: 1.02 }}
+                            >
+                              {/* Number Badge */}
+                              <div className={`absolute -bottom-3 left-4 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}>
+                                {String(index + 1).padStart(2, "0")}
+                              </div>
+                              
+                              {/* Edit/Delete Buttons */}
+                              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleEdit(event)}>
+                                  <Edit className="w-3 h-3" />
+                                </Button>
+                                <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" onClick={() => setDeletingEvent(event)}>
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </div>
 
-                            <h4 className="font-semibold text-sm mt-4 mb-1 line-clamp-2">{event.title}</h4>
-                            <p className="text-xs text-primary font-medium mb-2">{event.event_date}</p>
-                            {event.description && (
-                              <p className="text-xs text-muted-foreground line-clamp-3">{event.description}</p>
-                            )}
-                          </motion.div>
+                              <h4 className="font-semibold text-sm mt-4 mb-1 line-clamp-2">{event.title}</h4>
+                              <p className="text-xs text-primary font-medium mb-2">{event.event_date}</p>
+                              {event.description && (
+                                <p className="text-xs text-muted-foreground line-clamp-3">{event.description}</p>
+                              )}
+                            </motion.div>
 
-                          {/* Connector Line */}
-                          <div className={`absolute left-1/2 transform -translate-x-1/2 w-0.5 h-8 bg-gradient-to-b ${isAbove ? `from-muted to-transparent ${colorClass.split(' ')[0]}` : `from-transparent to-muted`} ${isAbove ? "bottom-0 translate-y-full" : "top-0 -translate-y-full"}`} />
-                        </div>
+                            {/* Connector Line */}
+                            <div className={`mx-auto w-0.5 h-4 bg-gradient-to-b from-muted to-transparent`} />
+                          </div>
+                        )}
+
+                        {/* Space above for bottom cards */}
+                        {!isAbove && <div className="h-[140px]" />}
 
                         {/* Circle Node */}
                         <motion.div
@@ -221,6 +224,43 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                             </div>
                           )}
                         </motion.div>
+
+                        {/* Space below for top cards */}
+                        {isAbove && <div className="h-[140px]" />}
+
+                        {/* Content Below */}
+                        {!isAbove && (
+                          <div className="w-44 mt-4 group">
+                            {/* Connector Line */}
+                            <div className={`mx-auto w-0.5 h-4 bg-gradient-to-t from-muted to-transparent`} />
+                            
+                            <motion.div 
+                              className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-lg hover:shadow-xl transition-all duration-300 relative"
+                              whileHover={{ scale: 1.02 }}
+                            >
+                              {/* Number Badge */}
+                              <div className={`absolute -top-3 left-4 w-8 h-8 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white font-bold text-sm shadow-lg`}>
+                                {String(index + 1).padStart(2, "0")}
+                              </div>
+                              
+                              {/* Edit/Delete Buttons */}
+                              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1">
+                                <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => handleEdit(event)}>
+                                  <Edit className="w-3 h-3" />
+                                </Button>
+                                <Button size="icon" variant="ghost" className="h-6 w-6 text-destructive" onClick={() => setDeletingEvent(event)}>
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </div>
+
+                              <h4 className="font-semibold text-sm mt-4 mb-1 line-clamp-2">{event.title}</h4>
+                              <p className="text-xs text-primary font-medium mb-2">{event.event_date}</p>
+                              {event.description && (
+                                <p className="text-xs text-muted-foreground line-clamp-3">{event.description}</p>
+                              )}
+                            </motion.div>
+                          </div>
+                        )}
                       </motion.div>
                     );
                   })}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,12 +47,34 @@ const COLOR_OPTIONS = [
 ];
 
 export function TimelineEventForm({ open, onOpenChange, event, onSubmit, isPending }: TimelineEventFormProps) {
-  const [title, setTitle] = useState(event?.title || "");
-  const [description, setDescription] = useState(event?.description || "");
-  const [eventDate, setEventDate] = useState(event?.event_date || "");
-  const [icon, setIcon] = useState(event?.icon || "calendar");
-  const [color, setColor] = useState(event?.color || "primary");
-  const [isMajorEvent, setIsMajorEvent] = useState(event?.is_major_event || false);
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [icon, setIcon] = useState("calendar");
+  const [color, setColor] = useState("primary");
+  const [isMajorEvent, setIsMajorEvent] = useState(false);
+
+  // Reset form when opening for new event or populate when editing
+  useEffect(() => {
+    if (open) {
+      if (event) {
+        setTitle(event.title || "");
+        setDescription(event.description || "");
+        setEventDate(event.event_date || "");
+        setIcon(event.icon || "calendar");
+        setColor(event.color || "primary");
+        setIsMajorEvent(event.is_major_event || false);
+      } else {
+        // Reset to defaults for new event
+        setTitle("");
+        setDescription("");
+        setEventDate("");
+        setIcon("calendar");
+        setColor("primary");
+        setIsMajorEvent(false);
+      }
+    }
+  }, [open, event]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
