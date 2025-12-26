@@ -195,30 +195,30 @@ export function CampaignDashboard({ campaign, open, onOpenChange, isMaster }: Ca
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="h-[95vh] rounded-t-3xl p-0 flex flex-col">
         {/* Header */}
-        <div className="flex items-center gap-3 p-4 border-b border-border bg-card/50">
+        <div className="flex items-center gap-2 sm:gap-3 p-3 sm:p-4 border-b border-border bg-card/50">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => onOpenChange(false)}
-            className="flex-shrink-0"
+            className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
           </Button>
           
-          <div className="flex items-center gap-3 flex-1 min-w-0">
+          <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
             <div className={cn(
-              "w-10 h-10 rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0",
+              "w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center overflow-hidden flex-shrink-0",
               campaign.image_url ? "" : "bg-primary/20"
             )}>
               {campaign.image_url ? (
                 <img src={campaign.image_url} alt={campaign.name} className="w-full h-full object-cover" />
               ) : (
-                <Crown className="w-5 h-5 text-primary" />
+                <Crown className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
               )}
             </div>
             <div className="min-w-0">
-              <h2 className="font-bold text-foreground truncate">{campaign.name}</h2>
-              <p className="text-xs text-muted-foreground">
+              <h2 className="font-bold text-sm sm:text-base text-foreground truncate">{campaign.name}</h2>
+              <p className="text-[10px] sm:text-xs text-muted-foreground">
                 {isMaster ? "Mestre" : "Jogador"} • {currentNavItem?.label}
               </p>
             </div>
@@ -229,7 +229,7 @@ export function CampaignDashboard({ campaign, open, onOpenChange, isMaster }: Ca
             variant="outline"
             size="sm"
             onClick={() => setShowMobileNav(!showMobileNav)}
-            className="md:hidden"
+            className="md:hidden h-8 px-2 text-xs"
           >
             Menu
           </Button>
@@ -266,7 +266,7 @@ export function CampaignDashboard({ campaign, open, onOpenChange, isMaster }: Ca
           {/* Main Content */}
           <main className="flex-1 overflow-hidden">
             <ScrollArea className="h-full">
-              <div className="p-4 md:p-6">
+              <div className="p-3 sm:p-4 md:p-6">
                 {renderContent()}
               </div>
             </ScrollArea>

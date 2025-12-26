@@ -190,10 +190,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       </AppHeader>
 
       {/* Hero Grid */}
-      <section className="px-5 mt-6">
-        <div className="grid grid-cols-3 gap-3 h-48">
+      <section className="px-4 sm:px-5 mt-4 sm:mt-6">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:h-48">
           {/* Active Character Card */}
-          <div className="col-span-2 bg-gradient-to-br from-cosmic-purple to-cosmic-purple/70 rounded-2xl p-4 relative overflow-hidden parallax-scale">
+          <div className="sm:col-span-2 bg-gradient-to-br from-cosmic-purple to-cosmic-purple/70 rounded-2xl p-4 relative overflow-hidden parallax-scale min-h-[140px] sm:min-h-0">
             <div className="absolute top-0 right-0 w-32 h-32 bg-foreground opacity-5 rounded-full -mr-10 -mt-10 parallax-float" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-foreground opacity-5 rounded-full -ml-8 -mb-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col justify-between">
@@ -215,7 +215,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                       {activeCharacter.race} {activeCharacter.class} • Nv {activeCharacter.level}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 mt-3 sm:mt-0">
                     <div className="flex-1 bg-background/20 rounded-lg px-2 py-1.5">
                       <p className="text-xs text-foreground/70">HP</p>
                       <p className="text-sm font-bold">{activeCharacter.current_hp}/{activeCharacter.max_hp}</p>
@@ -223,7 +223,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                   </div>
                 </>
               ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center">
+                <div className="flex flex-col items-center justify-center h-full text-center py-4">
                   <Shield className="w-8 h-8 text-foreground/50 mb-2" />
                   <p className="text-sm text-foreground/70">Nenhum personagem</p>
                   <button 
@@ -249,7 +249,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </div>
 
           {/* Next Session Card */}
-          <div className="col-span-1 bg-gradient-to-br from-magenta-red to-magenta-red/70 rounded-2xl p-3 relative overflow-hidden parallax-scale">
+          <div className="sm:col-span-1 bg-gradient-to-br from-magenta-red to-magenta-red/70 rounded-2xl p-3 relative overflow-hidden parallax-scale min-h-[120px] sm:min-h-0">
             <div className="absolute top-0 right-0 w-20 h-20 bg-foreground opacity-5 rounded-full -mr-8 -mt-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col">
               {loadingSessions ? (
@@ -258,17 +258,19 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 </div>
               ) : nextSession ? (
                 <>
-                  <div className="flex-1 flex flex-col justify-center items-center text-center">
-                    <div className="w-10 h-10 rounded-full bg-solar-orange/30 flex items-center justify-center mb-2">
+                  <div className="flex-1 flex flex-row sm:flex-col justify-center items-center text-center gap-3 sm:gap-0">
+                    <div className="w-10 h-10 rounded-full bg-solar-orange/30 flex items-center justify-center sm:mb-2">
                       <Calendar className="w-5 h-5" />
                     </div>
-                    <p className="text-[10px] text-foreground/80 font-medium uppercase">Próxima</p>
-                    <p className="text-lg font-bold mt-0.5">
-                      {format(new Date(nextSession.scheduled_at), "dd/MM", { locale: ptBR })}
-                    </p>
-                    <p className="text-xs text-foreground/70">
-                      {format(new Date(nextSession.scheduled_at), "HH:mm", { locale: ptBR })}
-                    </p>
+                    <div className="flex flex-col sm:items-center">
+                      <p className="text-[10px] text-foreground/80 font-medium uppercase">Próxima</p>
+                      <p className="text-lg font-bold mt-0.5">
+                        {format(new Date(nextSession.scheduled_at), "dd/MM", { locale: ptBR })}
+                      </p>
+                      <p className="text-xs text-foreground/70">
+                        {format(new Date(nextSession.scheduled_at), "HH:mm", { locale: ptBR })}
+                      </p>
+                    </div>
                   </div>
                   <div className="pt-2 border-t border-foreground/20">
                     <p className="text-[10px] font-medium leading-tight text-center text-foreground/70 truncate">
@@ -278,13 +280,15 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 </>
               ) : (
                 <>
-                  <div className="flex-1 flex flex-col justify-center items-center text-center">
-                    <div className="w-10 h-10 rounded-full bg-foreground/20 flex items-center justify-center mb-2">
+                  <div className="flex-1 flex flex-row sm:flex-col justify-center items-center text-center gap-3 sm:gap-0">
+                    <div className="w-10 h-10 rounded-full bg-foreground/20 flex items-center justify-center sm:mb-2">
                       <Calendar className="w-5 h-5 text-foreground/50" />
                     </div>
-                    <p className="text-[10px] text-foreground/80 font-medium uppercase">Próxima</p>
-                    <p className="text-lg font-bold mt-0.5">--</p>
-                    <p className="text-xs text-foreground/70">Sessão</p>
+                    <div className="flex flex-col sm:items-center">
+                      <p className="text-[10px] text-foreground/80 font-medium uppercase">Próxima</p>
+                      <p className="text-lg font-bold mt-0.5">--</p>
+                      <p className="text-xs text-foreground/70">Sessão</p>
+                    </div>
                   </div>
                   <div className="pt-2 border-t border-foreground/20">
                     <p className="text-[10px] font-medium leading-tight text-center text-foreground/70">
@@ -299,13 +303,13 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       </section>
 
       {/* Quick Actions */}
-      <section className="px-5 mt-8">
-        <h2 className="text-sm font-semibold text-muted-foreground mb-4">AÇÕES RÁPIDAS</h2>
-        <div className="grid grid-cols-4 gap-4 stagger-fast">
+      <section className="px-4 sm:px-5 mt-6 sm:mt-8">
+        <h2 className="text-sm font-semibold text-muted-foreground mb-3 sm:mb-4">AÇÕES RÁPIDAS</h2>
+        <div className="grid grid-cols-4 gap-2 sm:gap-4 stagger-fast">
           {quickActions.map((action) => (
             <button 
               key={action.id} 
-              className="flex flex-col items-center gap-2"
+              className="flex flex-col items-center gap-1.5 sm:gap-2"
               onClick={() => {
                 switch (action.id) {
                   case 'create':
@@ -350,18 +354,18 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 }
               }}
             >
-              <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-lg card-hover transition-all duration-300`}>
-                <action.icon className="w-5 h-5" />
+              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-lg card-hover transition-all duration-300`}>
+                <action.icon className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
-              <span className="text-xs text-muted-foreground text-center leading-tight">{action.label}</span>
+              <span className="text-[10px] sm:text-xs text-muted-foreground text-center leading-tight">{action.label}</span>
             </button>
           ))}
         </div>
       </section>
 
       {/* Recents */}
-      <section className="mt-8 mb-6">
-        <div className="px-5 flex items-center justify-between mb-4">
+      <section className="mt-6 sm:mt-8 mb-6">
+        <div className="px-4 sm:px-5 flex items-center justify-between mb-3 sm:mb-4">
           <h2 className="text-sm font-semibold text-muted-foreground">RECENTES</h2>
           <button 
             onClick={() => onNavigate?.("characters")}
@@ -375,24 +379,24 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             <Loader2 className="w-6 h-6 animate-spin text-primary" />
           </div>
         ) : recentItems.length === 0 ? (
-          <div className="px-5 py-8 text-center">
+          <div className="px-4 sm:px-5 py-8 text-center">
             <p className="text-sm text-muted-foreground">Nenhum item recente</p>
           </div>
         ) : (
           <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex gap-3 px-5 pb-2 stagger-fast">
+            <div className="flex gap-2.5 sm:gap-3 px-4 sm:px-5 pb-2 stagger-fast">
               {recentItems.map((item) => (
                 <div 
                   key={`${item.type}-${item.id}`}
-                  className="flex-shrink-0 w-40 glass-card rounded-xl p-3 card-interactive"
+                  className="flex-shrink-0 w-36 sm:w-40 glass-card rounded-xl p-2.5 sm:p-3 card-interactive"
                 >
-                  <div className={`w-12 h-12 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-3`}>
-                    <item.icon className="w-5 h-5" />
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-2 sm:mb-3`}>
+                    <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <h3 className="font-semibold text-sm mb-1 truncate">{item.name}</h3>
-                  <p className="text-xs text-muted-foreground truncate">{item.description}</p>
-                  <div className="mt-3 pt-3 border-t border-border/30">
-                    <p className="text-xs text-muted-foreground/70 truncate">{item.time}</p>
+                  <h3 className="font-semibold text-xs sm:text-sm mb-0.5 sm:mb-1 truncate">{item.name}</h3>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{item.description}</p>
+                  <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-border/30">
+                    <p className="text-[10px] text-muted-foreground/70 truncate">{item.time}</p>
                   </div>
                 </div>
               ))}

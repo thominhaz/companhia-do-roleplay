@@ -983,46 +983,64 @@ export function CharacterSheet() {
         };
 
         return (
-          <div className="px-4 mb-4">
-            <div className={`rounded-xl p-4 border ${
+          <div className="px-3 sm:px-4 mb-4">
+            <div className={`rounded-xl p-3 sm:p-4 border ${
               canLevelUp 
                 ? 'bg-yellow-500/10 border-yellow-500/50' 
                 : 'bg-primary/10 border-primary/30'
             }`}>
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                {/* Left: XP Info */}
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-full ${canLevelUp ? 'bg-yellow-500/20' : 'bg-primary/20'}`}>
-                    <Star className={`w-6 h-6 ${canLevelUp ? 'text-yellow-400' : 'text-primary'}`} />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className={`text-lg font-bold ${canLevelUp ? 'text-yellow-400' : 'text-primary'}`}>
-                        Nível {currentLevel}
-                      </h3>
-                      {currentLevel >= 20 && (
-                        <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50">
-                          Máximo
-                        </Badge>
+              <div className="flex flex-col gap-3 sm:gap-4">
+                {/* Top Row: XP Info & Level Up Button */}
+                <div className="flex items-center justify-between gap-3">
+                  {/* Left: XP Info */}
+                  <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                    <div className={`p-2 sm:p-3 rounded-full shrink-0 ${canLevelUp ? 'bg-yellow-500/20' : 'bg-primary/20'}`}>
+                      <Star className={`w-5 h-5 sm:w-6 sm:h-6 ${canLevelUp ? 'text-yellow-400' : 'text-primary'}`} />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h3 className={`text-base sm:text-lg font-bold ${canLevelUp ? 'text-yellow-400' : 'text-primary'}`}>
+                          Nível {currentLevel}
+                        </h3>
+                        {currentLevel >= 20 && (
+                          <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 text-[10px] sm:text-xs">
+                            Máximo
+                          </Badge>
+                        )}
+                      </div>
+                      {!useMilestone && currentLevel < 20 && (
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          {character.experience.toLocaleString()} / {xpForNext.toLocaleString()} XP
+                        </p>
+                      )}
+                      {useMilestone && (
+                        <p className="text-xs text-muted-foreground truncate">
+                          Milestone - Nível controlado pelo Mestre
+                        </p>
                       )}
                     </div>
-                    {!useMilestone && currentLevel < 20 && (
-                      <p className="text-sm text-muted-foreground">
-                        {character.experience.toLocaleString()} / {xpForNext.toLocaleString()} XP
-                      </p>
-                    )}
-                    {useMilestone && (
-                      <p className="text-sm text-muted-foreground">
-                        Usando Milestone - Nível controlado pelo Mestre
-                      </p>
-                    )}
                   </div>
+
+                  {/* Right: Level Up Button (always visible if available) */}
+                  {(canLevelUp || (useMilestone && currentLevel < 20)) && (
+                    <Button
+                      className={`shrink-0 ${useMilestone 
+                        ? "bg-primary hover:bg-primary/80 text-primary-foreground font-bold"
+                        : "bg-yellow-500 hover:bg-yellow-600 text-yellow-950 font-bold animate-pulse"
+                      }`}
+                      size="sm"
+                      onClick={() => setShowLevelUp(true)}
+                    >
+                      <TrendingUp className="w-4 h-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Nível {nextLevel}</span>
+                    </Button>
+                  )}
                 </div>
 
-                {/* Center: Progress Bar (XP mode only) */}
+                {/* Progress Bar (XP mode only) */}
                 {!useMilestone && currentLevel < 20 && (
-                  <div className="flex-1 max-w-md">
-                    <div className="h-3 bg-muted/50 rounded-full overflow-hidden">
+                  <div className="w-full">
+                    <div className="h-2 sm:h-3 bg-muted/50 rounded-full overflow-hidden">
                       <div
                         className={`h-full transition-all ${canLevelUp ? 'bg-yellow-500' : 'bg-primary'}`}
                         style={{ width: `${xpProgress}%` }}
@@ -1034,30 +1052,30 @@ export function CharacterSheet() {
                   </div>
                 )}
 
-                {/* Right: Actions */}
-                <div className="flex items-center gap-3">
+                {/* Bottom Row: Controls */}
+                <div className="flex flex-wrap items-center gap-2 sm:gap-3">
                   {/* Milestone Toggle */}
-                  <div className="flex items-center gap-2 bg-muted/30 rounded-lg px-3 py-2">
-                    <Label htmlFor="milestone-toggle" className="text-xs text-muted-foreground cursor-pointer">
+                  <div className="flex items-center gap-2 bg-muted/30 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2">
+                    <Label htmlFor="milestone-toggle" className="text-[10px] sm:text-xs text-muted-foreground cursor-pointer">
                       Milestone
                     </Label>
                     <Switch
                       id="milestone-toggle"
                       checked={useMilestone}
                       onCheckedChange={setUseMilestone}
-                      className="data-[state=checked]:bg-primary"
+                      className="data-[state=checked]:bg-primary scale-90 sm:scale-100"
                     />
                   </div>
 
                   {/* Add XP (only in XP mode) */}
                   {!useMilestone && currentLevel < 20 && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 sm:gap-2 flex-1 min-w-[140px]">
                       <Input
                         type="number"
                         placeholder="+XP"
                         value={xpInput}
                         onChange={(e) => setXpInput(e.target.value)}
-                        className="w-20 text-center h-9 text-sm"
+                        className="flex-1 min-w-0 text-center h-8 sm:h-9 text-xs sm:text-sm"
                         min="1"
                         onKeyDown={(e) => {
                           if (e.key === 'Enter' && xpInput) {
@@ -1068,28 +1086,13 @@ export function CharacterSheet() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="h-9 px-3 bg-primary/20 text-primary border-primary/30 hover:bg-primary/30"
+                        className="h-8 sm:h-9 px-2 sm:px-3 bg-primary/20 text-primary border-primary/30 hover:bg-primary/30"
                         onClick={handleAddXp}
                         disabled={!xpInput || updateCharacter.isPending}
                       >
                         <Plus className="w-4 h-4" />
                       </Button>
                     </div>
-                  )}
-
-                  {/* Level Up Button */}
-                  {(canLevelUp || (useMilestone && currentLevel < 20)) && (
-                    <Button
-                      className={useMilestone 
-                        ? "bg-primary hover:bg-primary/80 text-primary-foreground font-bold"
-                        : "bg-yellow-500 hover:bg-yellow-600 text-yellow-950 font-bold animate-pulse"
-                      }
-                      size="sm"
-                      onClick={() => setShowLevelUp(true)}
-                    >
-                      <TrendingUp className="w-4 h-4 mr-2" />
-                      Subir para Nível {nextLevel}
-                    </Button>
                   )}
                 </div>
               </div>
@@ -1099,11 +1102,11 @@ export function CharacterSheet() {
       })()}
 
       {/* Main Content - 3 Column Layout */}
-      <div className="p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div className="p-3 sm:p-4">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4">
           
           {/* Left Column - Character Info */}
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {/* Combat Status Card - Shows when character is in active combat */}
             <CombatStatusCard characterId={character.id} />
             
