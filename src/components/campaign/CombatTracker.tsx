@@ -27,6 +27,8 @@ import { RealTimeStatusIndicator } from "./CombatTrackerPro";
 import { CombatantCard } from "./combat/CombatantCard";
 import { CompactCombatantCard } from "./combat/CompactCombatantCard";
 import { CombatantDetailSheet } from "./combat/CombatantDetailSheet";
+import { CombatantStatBlock } from "./combat/CombatantStatBlock";
+import { InitiativeListCard } from "./combat/InitiativeListCard";
 import { CombatDiceRoller, useDiceRoller } from "./combat/CombatDiceRoller";
 import { 
   Swords, 
@@ -480,215 +482,48 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
               </div>
 
               <TabsContent value="combatants" className="flex-1 mt-0">
-                <ScrollArea className="h-[calc(90vh-280px)]">
-                  <div className={cn("p-4", viewMode === 'grid' ? "grid grid-cols-3 gap-3" : "space-y-3")}>
-                    {sortedCombatants.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground col-span-3">
-                        Adicione combatentes para iniciar
+                {/* Side-by-side layout: Initiative List + Stat Block */}
+                <div className="flex h-[calc(90vh-280px)]">
+                  {/* Left: Initiative List */}
+                  <div className="flex-1 border-r border-border">
+                    <ScrollArea className="h-full">
+                      <div className="p-4 space-y-2">
+                        {sortedCombatants.length === 0 ? (
+                          <div className="text-center py-8 text-muted-foreground">
+                            Adicione combatentes para iniciar
+                          </div>
+                        ) : (
+                          <AnimatePresence mode="popLayout">
+                            {sortedCombatants.map((combatant, index) => (
+                              <InitiativeListCard
+                                key={combatant.id}
+                                combatant={combatant}
+                                index={index}
+                                isCurrentTurn={index === encounter.current_turn}
+                                isSelected={selectedCombatant?.id === combatant.id}
+                                isMaster={isMaster}
+                                isOwnCombatant={combatant.character_id === userCharacterId}
+                                onSelect={(c) => setSelectedCombatant(c)}
+                                onHpChange={(c, mode) => setHpDialog({ open: true, combatant: c, mode })}
+                                onRemove={(c) => removeCombatant.mutate({ id: c.id, encounterId: encounter.id })}
+                              />
+                            ))}
+                          </AnimatePresence>
+                        )}
                       </div>
-                    ) : viewMode === 'grid' ? (
-                      <AnimatePresence mode="popLayout">
-                        {sortedCombatants.map((combatant, index) => (
-                          <CompactCombatantCard
-                            key={combatant.id}
-                            combatant={combatant}
-                            index={index}
-                            isCurrentTurn={index === encounter.current_turn}
-                            isOwnCombatant={combatant.character_id === userCharacterId}
-                            onViewDetails={(c) => setSelectedCombatant(c)}
-                          />
-                        ))}
-                      </AnimatePresence>
-                    ) : hasProFeatures ? (
-                      <AnimatePresence mode="popLayout">
-                        {sortedCombatants.map((combatant, index) => {
-                          const isCurrentTurn = index === encounter.current_turn;
-                          const isOwnCombatant = combatant.character_id === userCharacterId;
-                          
-                          return (
-                            <CombatantCard
-                              key={combatant.id}
-                              combatant={combatant}
-                              index={index}
-                              isCurrentTurn={isCurrentTurn}
-                              isMaster={isMaster}
-                              isOwnCombatant={isOwnCombatant}
-                              onHpChange={(c, mode) => setHpDialog({ open: true, combatant: c, mode })}
-                              onConditionToggle={toggleCondition}
-                              onRemove={(c) => removeCombatant.mutate({ id: c.id, encounterId: encounter.id })}
-                              onViewDetails={(c) => setSelectedCombatant(c)}
-                              conditions={CONDITIONS}
-                            />
-                          );
-                        })}
-                      </AnimatePresence>
-                    ) : (
-                      /* Standard Version */
-                      sortedCombatants.map((combatant, index) => {
-                        const isCurrentTurn = index === encounter.current_turn;
-                        const isDead = combatant.current_hp === 0;
-                        const hpPercent = (combatant.current_hp / combatant.max_hp) * 100;
-                        // Check if this combatant belongs to the current user
-                        const isOwnCombatant = combatant.character_id === userCharacterId;
-                        // Allow editing if master or own combatant
-                        const canEditHp = isMaster || isOwnCombatant;
-
-                        return (
-                          <div
-                            key={combatant.id}
-                            className={cn(
-                              "rounded-xl p-4 border transition-all",
-                              isCurrentTurn 
-                                ? "bg-primary/10 border-primary" 
-                                : "bg-card border-border",
-                              isDead && "opacity-50",
-                              isOwnCombatant && !isMaster && "ring-2 ring-blue-500/50"
-                            )}
-                          >
-                            <div className="flex items-start gap-3">
-                              {/* Initiative Badge */}
-                          <div className={cn(
-                            "w-10 h-10 rounded-lg flex items-center justify-center font-bold text-lg",
-                            combatant.is_player 
-                              ? "bg-blue-500/20 text-blue-500" 
-                              : "bg-red-500/20 text-red-500"
-                          )}>
-                            {combatant.initiative}
-                          </div>
-
-                          {/* Info */}
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-semibold truncate">{combatant.name}</h4>
-                              {combatant.is_player ? (
-                                <User className="w-3 h-3 text-blue-500" />
-                              ) : (
-                                <Skull className="w-3 h-3 text-red-500" />
-                              )}
-                              {isCurrentTurn && (
-                                <Badge variant="default" className="text-[10px] h-5">
-                                  Turno Atual
-                                </Badge>
-                              )}
-                            </div>
-
-                            {/* HP Bar */}
-                            <div className="mt-2">
-                              <div className="flex items-center gap-2 mb-1">
-                                <Heart className="w-3 h-3 text-red-500" />
-                                <span className="text-sm font-medium">
-                                  {combatant.current_hp}/{combatant.max_hp}
-                                </span>
-                                <Shield className="w-3 h-3 text-blue-500 ml-2" />
-                                <span className="text-sm">{combatant.armor_class}</span>
-                              </div>
-                              <div className="h-2 bg-muted rounded-full overflow-hidden">
-                                <div 
-                                  className={cn(
-                                    "h-full transition-all",
-                                    hpPercent > 50 ? "bg-green-500" :
-                                    hpPercent > 25 ? "bg-yellow-500" : "bg-red-500"
-                                  )}
-                                  style={{ width: `${hpPercent}%` }}
-                                />
-                              </div>
-                            </div>
-
-                            {/* Conditions */}
-                            <div className="flex flex-wrap gap-1 mt-2">
-                              {combatant.conditions.map(condition => {
-                                const condData = CONDITIONS.find(c => c.name === condition);
-                                return (
-                                  <Badge 
-                                    key={condition} 
-                                    variant="secondary"
-                                    className={cn("text-[10px] cursor-pointer", condData?.color)}
-                                    onClick={() => toggleCondition(combatant, condition)}
-                                  >
-                                    <span className="mr-1">{condData?.icon || "⚡"}</span>
-                                    {condition}
-                                  </Badge>
-                                );
-                              })}
-                              
-                              {/* Add Condition Popover */}
-                              <Popover>
-                                <PopoverTrigger asChild>
-                                  <Badge 
-                                    variant="outline" 
-                                    className="text-[10px] cursor-pointer hover:bg-muted"
-                                  >
-                                    <Plus className="w-2 h-2 mr-1" />
-                                    Condição
-                                  </Badge>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-64 p-2" align="start">
-                                  <div className="grid grid-cols-2 gap-1">
-                                    {CONDITIONS.map(cond => (
-                                      <Button
-                                        key={cond.name}
-                                        variant={combatant.conditions.includes(cond.name) ? "default" : "ghost"}
-                                        size="sm"
-                                        className="justify-start text-xs h-8"
-                                        onClick={() => toggleCondition(combatant, cond.name)}
-                                      >
-                                        <span className="mr-1">{cond.icon}</span>
-                                        {cond.name}
-                                      </Button>
-                                    ))}
-                                  </div>
-                                </PopoverContent>
-                              </Popover>
-                            </div>
-                          </div>
-
-                              {/* Actions - Only show for masters or own combatant */}
-                              {canEditHp && (
-                                <div className="flex flex-col gap-1">
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 bg-green-500/10 hover:bg-green-500/20"
-                                    onClick={() => {
-                                      setHpDialog({ open: true, combatant, mode: 'heal' });
-                                      setHpAmount("");
-                                    }}
-                                  >
-                                    <Plus className="w-4 h-4 text-green-500" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-8 w-8 bg-red-500/10 hover:bg-red-500/20"
-                                    onClick={() => {
-                                      setHpDialog({ open: true, combatant, mode: 'damage' });
-                                      setHpAmount("");
-                                    }}
-                                  >
-                                    <Minus className="w-4 h-4 text-red-500" />
-                                  </Button>
-                                  {isMaster && (
-                                    <Button
-                                      variant="ghost"
-                                      size="icon"
-                                      className="h-8 w-8"
-                                      onClick={() => removeCombatant.mutate({ 
-                                        id: combatant.id, 
-                                        encounterId: encounter.id 
-                                      })}
-                                    >
-                                      <Trash2 className="w-4 h-4 text-muted-foreground" />
-                                    </Button>
-                                  )}
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        );
-                      })
-                    )}
+                    </ScrollArea>
                   </div>
-                </ScrollArea>
+
+                  {/* Right: Stat Block Panel */}
+                  <div className="w-[360px] hidden md:block">
+                    <CombatantStatBlock
+                      combatant={selectedCombatant}
+                      campaignId={campaignId}
+                      onClose={() => setSelectedCombatant(null)}
+                      onRollDice={rollDice}
+                    />
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="dice" className="flex-1 mt-0 p-4">
