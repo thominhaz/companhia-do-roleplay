@@ -25,7 +25,9 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { CombatLogPanel } from "./CombatLogPanel";
 import { RealTimeStatusIndicator } from "./CombatTrackerPro";
 import { CombatantCard } from "./combat/CombatantCard";
+import { CompactCombatantCard } from "./combat/CompactCombatantCard";
 import { CombatantDetailSheet } from "./combat/CombatantDetailSheet";
+import { CombatDiceRoller, useDiceRoller } from "./combat/CombatDiceRoller";
 import { 
   Swords, 
   Plus, 
@@ -46,8 +48,12 @@ import {
   RotateCcw,
   ScrollText,
   Gem,
-  Crown
+  Crown,
+  LayoutGrid,
+  LayoutList,
+  Dices
 } from "lucide-react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -107,9 +113,11 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
   const [combatantType, setCombatantType] = useState<'monster' | 'npc' | 'player' | 'homebrew'>('monster');
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
   const [selectedHomebrewMonster, setSelectedHomebrewMonster] = useState("");
-  const [activeTab, setActiveTab] = useState<'combatants' | 'log'>('combatants');
+  const [activeTab, setActiveTab] = useState<'combatants' | 'log' | 'dice'>('combatants');
   const [realtimeConnected, setRealtimeConnected] = useState(true);
   const [selectedCombatant, setSelectedCombatant] = useState<Combatant | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const { rollDice, lastResult } = useDiceRoller();
   const [newCombatant, setNewCombatant] = useState({
     name: "",
     initiative: 10,
@@ -446,31 +454,52 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
               </div>
             )}
 
-            {/* Tabs for Combatants and Log */}
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'combatants' | 'log')} className="flex-1 flex flex-col">
-              <div className="px-4 pt-2">
-                <TabsList className="w-full">
+            {/* Tabs for Combatants, Log and Dice */}
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'combatants' | 'log' | 'dice')} className="flex-1 flex flex-col">
+              <div className="px-4 pt-2 flex items-center gap-2">
+                <TabsList className="flex-1">
                   <TabsTrigger value="combatants" className="flex-1">
                     <Swords className="w-4 h-4 mr-1" />
                     Combatentes
                   </TabsTrigger>
+                  <TabsTrigger value="dice" className="flex-1">
+                    <Dices className="w-4 h-4 mr-1" />
+                    Dados
+                  </TabsTrigger>
                   <TabsTrigger value="log" className="flex-1">
                     <ScrollText className="w-4 h-4 mr-1" />
-                    Histórico
+                    Log
                   </TabsTrigger>
                 </TabsList>
+                {activeTab === 'combatants' && sortedCombatants.length > 4 && (
+                  <ToggleGroup type="single" value={viewMode} onValueChange={(v) => v && setViewMode(v as 'list' | 'grid')}>
+                    <ToggleGroupItem value="list" size="sm"><LayoutList className="w-4 h-4" /></ToggleGroupItem>
+                    <ToggleGroupItem value="grid" size="sm"><LayoutGrid className="w-4 h-4" /></ToggleGroupItem>
+                  </ToggleGroup>
+                )}
               </div>
 
               <TabsContent value="combatants" className="flex-1 mt-0">
-                {/* Combatants List */}
                 <ScrollArea className="h-[calc(90vh-280px)]">
-                  <div className="p-4 space-y-3">
+                  <div className={cn("p-4", viewMode === 'grid' ? "grid grid-cols-3 gap-3" : "space-y-3")}>
                     {sortedCombatants.length === 0 ? (
-                      <div className="text-center py-8 text-muted-foreground">
+                      <div className="text-center py-8 text-muted-foreground col-span-3">
                         Adicione combatentes para iniciar
                       </div>
+                    ) : viewMode === 'grid' ? (
+                      <AnimatePresence mode="popLayout">
+                        {sortedCombatants.map((combatant, index) => (
+                          <CompactCombatantCard
+                            key={combatant.id}
+                            combatant={combatant}
+                            index={index}
+                            isCurrentTurn={index === encounter.current_turn}
+                            isOwnCombatant={combatant.character_id === userCharacterId}
+                            onViewDetails={(c) => setSelectedCombatant(c)}
+                          />
+                        ))}
+                      </AnimatePresence>
                     ) : hasProFeatures ? (
-                      /* PRO Version with animated cards */
                       <AnimatePresence mode="popLayout">
                         {sortedCombatants.map((combatant, index) => {
                           const isCurrentTurn = index === encounter.current_turn;
@@ -660,6 +689,10 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                     )}
                   </div>
                 </ScrollArea>
+              </TabsContent>
+
+              <TabsContent value="dice" className="flex-1 mt-0 p-4">
+                <CombatDiceRoller />
               </TabsContent>
 
               <TabsContent value="log" className="flex-1 mt-0 p-4">
