@@ -65,7 +65,7 @@ export function PlayerTradeModal({ characterId, characterInventory, characterCur
   const [selectedTrade, setSelectedTrade] = useState<PlayerTrade | null>(null);
   const [selectingItem, setSelectingItem] = useState(false);
   const [selectingCurrency, setSelectingCurrency] = useState(false);
-  const [offeredCurrency, setOfferedCurrency] = useState<CurrencyData>({ gold: 0, silver: 0, copper: 0 });
+  const [offeredCurrency, setOfferedCurrency] = useState<FullCurrency>({ platinum: 0, gold: 0, silver: 0, copper: 0 });
   const [processing, setProcessing] = useState(false);
 
   const getRarityStyle = (rarity?: string) => {
@@ -132,14 +132,10 @@ export function PlayerTradeModal({ characterId, characterInventory, characterCur
   const handleOfferCurrency = async () => {
     if (!selectedTrade) return;
     
-    // Check if player has enough currency
-    const playerGold = characterCurrency?.gold || 0;
-    const playerSilver = characterCurrency?.silver || 0;
-    const playerCopper = characterCurrency?.copper || 0;
+    // Check if player has enough currency using total copper comparison
+    const playerCurrency = normalizeCurrency(characterCurrency);
     
-    if ((offeredCurrency.gold || 0) > playerGold ||
-        (offeredCurrency.silver || 0) > playerSilver ||
-        (offeredCurrency.copper || 0) > playerCopper) {
+    if (!hasEnoughCurrency(playerCurrency, offeredCurrency)) {
       return;
     }
 
@@ -150,7 +146,7 @@ export function PlayerTradeModal({ characterId, characterInventory, characterCur
         currency: offeredCurrency,
       });
       setSelectingCurrency(false);
-      setOfferedCurrency({ gold: 0, silver: 0, copper: 0 });
+      setOfferedCurrency({ platinum: 0, gold: 0, silver: 0, copper: 0 });
       setSelectedTrade(null);
     } finally {
       setProcessing(false);
