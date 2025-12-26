@@ -10,7 +10,12 @@ export interface CampaignMessage {
   user_id: string;
   content: string;
   created_at: string;
+  recipient_id: string | null;
   profile?: {
+    display_name: string | null;
+    avatar_url: string | null;
+  };
+  recipient_profile?: {
     display_name: string | null;
     avatar_url: string | null;
   };
@@ -19,6 +24,7 @@ export interface CampaignMessage {
 // Fetch messages for a campaign with realtime updates
 export function useCampaignMessages(campaignId: string) {
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   useEffect(() => {
     if (!campaignId) return;
@@ -36,6 +42,16 @@ export function useCampaignMessages(campaignId: string) {
         async (payload) => {
           const newMessage = payload.new as CampaignMessage;
           
+          // Check if this message is visible to the current user
+          const isPublic = !newMessage.recipient_id;
+          const isSentByMe = newMessage.user_id === user?.id;
+          const isSentToMe = newMessage.recipient_id === user?.id;
+          
+          if (!isPublic && !isSentByMe && !isSentToMe) {
+            // This private message is not for us, ignore
+            return;
+          }
+          
           // Fetch the profile for the new message
           const { data: profile } = await supabase
             .from('profiles')
@@ -43,9 +59,24 @@ export function useCampaignMessages(campaignId: string) {
             .eq('id', newMessage.user_id)
             .single();
           
+          // Fetch recipient profile if it's a private message
+          let recipientProfile = null;
+          if (newMessage.recipient_id) {
+            const { data } = await supabase
+              .from('profiles')
+              .select('id, display_name, avatar_url')
+              .eq('id', newMessage.recipient_id)
+              .single();
+            recipientProfile = data;
+          }
+          
           queryClient.setQueryData<CampaignMessage[]>(
             ['campaign-messages', campaignId],
-            (old = []) => [...old, { ...newMessage, profile: profile || undefined }]
+            (old = []) => [...old, { 
+              ...newMessage, 
+              profile: profile || undefined,
+              recipient_profile: recipientProfile || undefined
+            }]
           );
         }
       )
@@ -69,14 +100,14 @@ export function useCampaignMessages(campaignId: string) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [campaignId, queryClient]);
+  }, [campaignId, queryClient, user?.id]);
 
   return useQuery({
     queryKey: ['campaign-messages', campaignId],
     queryFn: async () => {
       if (!campaignId) return [];
 
-      // Get messages
+      // Get messages (RLS will filter based on recipient_id visibility)
       const { data: messages, error: messagesError } = await supabase
         .from('campaign_messages')
         .select('*')
@@ -88,8 +119,11 @@ export function useCampaignMessages(campaignId: string) {
 
       if (!messages || messages.length === 0) return [];
 
-      // Get unique user IDs
-      const userIds = [...new Set(messages.map(m => m.user_id))];
+      // Get unique user IDs (both senders and recipients)
+      const userIds = [...new Set([
+        ...messages.map(m => m.user_id),
+        ...messages.filter(m => m.recipient_id).map(m => m.recipient_id!)
+      ])];
 
       // Get profiles for these users
       const { data: profiles, error: profilesError } = await supabase
@@ -106,18 +140,27 @@ export function useCampaignMessages(campaignId: string) {
       return messages.map(msg => ({
         ...msg,
         profile: profileMap.get(msg.user_id) || null,
+        recipient_profile: msg.recipient_id ? profileMap.get(msg.recipient_id) || null : null,
       })) as CampaignMessage[];
     },
     enabled: !!campaignId,
   });
 }
 
-// Send a message
+// Send a message (with optional recipient for private messages)
 export function useSendMessage() {
   const { user } = useAuth();
 
   return useMutation({
-    mutationFn: async ({ campaignId, content }: { campaignId: string; content: string }) => {
+    mutationFn: async ({ 
+      campaignId, 
+      content, 
+      recipientId 
+    }: { 
+      campaignId: string; 
+      content: string;
+      recipientId?: string;
+    }) => {
       if (!user) throw new Error('Usuário não autenticado');
 
       const { data, error } = await supabase
@@ -126,6 +169,7 @@ export function useSendMessage() {
           campaign_id: campaignId,
           user_id: user.id,
           content,
+          recipient_id: recipientId || null,
         })
         .select()
         .single();

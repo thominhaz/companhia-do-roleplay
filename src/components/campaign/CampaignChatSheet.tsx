@@ -4,13 +4,17 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCampaignMessages, useSendMessage, CampaignMessage } from "@/hooks/useChat";
 import { useCampaignImageUpload } from "@/hooks/useCampaignImageUpload";
+import { useCampaignPlayers } from "@/hooks/useSessions";
 import { useAuth } from "@/hooks/useAuth";
 import { 
   MessageCircle, 
   Send, 
   Loader2,
   ImagePlus,
-  X
+  X,
+  Lock,
+  Users,
+  ChevronDown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
@@ -21,6 +25,14 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from "@/components/ui/dropdown-menu";
+import { Badge } from "@/components/ui/badge";
 
 interface CampaignChatSheetProps {
   campaignId: string;
@@ -28,17 +40,41 @@ interface CampaignChatSheetProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface RecipientOption {
+  id: string | null;
+  name: string;
+  isPrivate: boolean;
+}
+
 export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignChatSheetProps) {
   const { user } = useAuth();
   const [message, setMessage] = useState("");
   const [pendingImage, setPendingImage] = useState<{ file: File; preview: string } | null>(null);
+  const [selectedRecipient, setSelectedRecipient] = useState<RecipientOption>({ 
+    id: null, 
+    name: "Todos", 
+    isPrivate: false 
+  });
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: messages, isLoading } = useCampaignMessages(campaignId);
+  const { data: players } = useCampaignPlayers(campaignId);
   const sendMessage = useSendMessage();
   const { uploadImage, isUploading, progress } = useCampaignImageUpload();
+
+  // Build recipient options from players
+  const recipientOptions: RecipientOption[] = [
+    { id: null, name: "Todos", isPrivate: false },
+    ...(players || [])
+      .filter(p => p.user_id !== user?.id)
+      .map(p => ({
+        id: p.user_id,
+        name: p.profile?.display_name || 'Jogador',
+        isPrivate: true,
+      }))
+  ];
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {
@@ -102,6 +138,7 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
     await sendMessage.mutateAsync({
       campaignId,
       content,
+      recipientId: selectedRecipient.id || undefined,
     });
   };
 
@@ -219,6 +256,7 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                   <div className="space-y-2">
                     {group.messages.map(msg => {
                       const isOwn = msg.user_id === user?.id;
+                      const isPrivate = !!msg.recipient_id;
                       const parts = parseMessageContent(msg.content);
 
                       return (
@@ -231,14 +269,34 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                         >
                           <div
                             className={cn(
-                              "max-w-[80%] rounded-2xl px-4 py-2",
-                              isOwn
-                                ? "bg-primary text-primary-foreground rounded-br-sm"
-                                : "bg-muted text-foreground rounded-bl-sm"
+                              "max-w-[80%] rounded-2xl px-4 py-2 relative",
+                              isPrivate 
+                                ? isOwn 
+                                  ? "bg-purple-600 text-white rounded-br-sm" 
+                                  : "bg-purple-500/20 text-foreground rounded-bl-sm border border-purple-500/30"
+                                : isOwn
+                                  ? "bg-primary text-primary-foreground rounded-br-sm"
+                                  : "bg-muted text-foreground rounded-bl-sm"
                             )}
                           >
+                            {/* Private message indicator */}
+                            {isPrivate && (
+                              <div className={cn(
+                                "flex items-center gap-1 text-[10px] mb-1",
+                                isOwn ? "text-white/70" : "text-purple-400"
+                              )}>
+                                <Lock className="w-3 h-3" />
+                                {isOwn 
+                                  ? `Para ${msg.recipient_profile?.display_name || 'Jogador'}`
+                                  : 'Mensagem privada'
+                                }
+                              </div>
+                            )}
                             {!isOwn && (
-                              <p className="text-xs font-semibold mb-1 text-primary">
+                              <p className={cn(
+                                "text-xs font-semibold mb-1",
+                                isPrivate ? "text-purple-400" : "text-primary"
+                              )}>
                                 {msg.profile?.display_name || 'Jogador'}
                               </p>
                             )}
@@ -261,7 +319,9 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
                             </div>
                             <p className={cn(
                               "text-[10px] mt-1",
-                              isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
+                              isPrivate 
+                                ? isOwn ? "text-white/70" : "text-purple-400/70"
+                                : isOwn ? "text-primary-foreground/70" : "text-muted-foreground"
                             )}>
                               {format(new Date(msg.created_at), "HH:mm")}
                             </p>
@@ -303,6 +363,25 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
           </div>
         )}
 
+        {/* Recipient selector badge */}
+        {selectedRecipient.isPrivate && (
+          <div className="px-4 pb-2">
+            <Badge 
+              variant="secondary" 
+              className="bg-purple-500/20 text-purple-400 border-purple-500/30 gap-1"
+            >
+              <Lock className="w-3 h-3" />
+              Mensagem privada para {selectedRecipient.name}
+              <button 
+                onClick={() => setSelectedRecipient({ id: null, name: "Todos", isPrivate: false })}
+                className="ml-1 hover:text-purple-200"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            </Badge>
+          </div>
+        )}
+
         {/* Input Area */}
         <div className="p-4 border-t border-border flex-shrink-0">
           <input
@@ -313,6 +392,52 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
             className="hidden"
           />
           <div className="flex gap-2">
+            {/* Recipient Selector */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className={cn(
+                    selectedRecipient.isPrivate && "text-purple-400 bg-purple-500/10"
+                  )}
+                >
+                  {selectedRecipient.isPrivate ? (
+                    <Lock className="w-5 h-5" />
+                  ) : (
+                    <Users className="w-5 h-5" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" className="w-56">
+                <DropdownMenuItem 
+                  onClick={() => setSelectedRecipient({ id: null, name: "Todos", isPrivate: false })}
+                  className="gap-2"
+                >
+                  <Users className="w-4 h-4" />
+                  Todos
+                  {!selectedRecipient.isPrivate && <span className="ml-auto text-primary">✓</span>}
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <div className="px-2 py-1.5 text-xs text-muted-foreground font-medium">
+                  Mensagem privada para:
+                </div>
+                {recipientOptions.filter(o => o.isPrivate).map(option => (
+                  <DropdownMenuItem
+                    key={option.id}
+                    onClick={() => setSelectedRecipient(option)}
+                    className="gap-2"
+                  >
+                    <Lock className="w-4 h-4 text-purple-400" />
+                    {option.name}
+                    {selectedRecipient.id === option.id && (
+                      <span className="ml-auto text-primary">✓</span>
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
             <Button
               variant="ghost"
               size="icon"
@@ -326,14 +451,23 @@ export function CampaignChatSheet({ campaignId, open, onOpenChange }: CampaignCh
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Digite sua mensagem..."
-              className="flex-1"
+              placeholder={selectedRecipient.isPrivate 
+                ? `Mensagem privada para ${selectedRecipient.name}...` 
+                : "Digite sua mensagem..."
+              }
+              className={cn(
+                "flex-1",
+                selectedRecipient.isPrivate && "border-purple-500/30 focus-visible:ring-purple-500/50"
+              )}
               disabled={isUploading}
             />
             <Button 
               onClick={handleSend}
               disabled={(!message.trim() && !pendingImage) || sendMessage.isPending || isUploading}
               size="icon"
+              className={cn(
+                selectedRecipient.isPrivate && "bg-purple-600 hover:bg-purple-700"
+              )}
             >
               {sendMessage.isPending || isUploading ? (
                 <Loader2 className="w-4 h-4 animate-spin" />
