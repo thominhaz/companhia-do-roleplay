@@ -12,7 +12,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Textarea } from "@/components/ui/textarea";
 import { 
   Edit, Trash2, EyeOff, MapPin, Target, Lock, 
-  Users, Handshake, Plus, Crown, X, Shield, Calendar, TrendingUp, TrendingDown
+  Users, Handshake, Plus, Crown, X, Shield, Calendar, TrendingUp, TrendingDown, Undo2
 } from "lucide-react";
 import { Faction, useFactionNPCs, useFactionRelationships, useCharacterFactionRep, useFactionEvents } from "@/hooks/useFactions";
 import { useNPCs } from "@/hooks/useNPCs";
@@ -85,7 +85,7 @@ export function FactionDetailSheet({
   const { factionNPCs, linkNPC, unlinkNPC } = useFactionNPCs(faction?.id);
   const { relationships, createRelationship, deleteRelationship } = useFactionRelationships(campaign.id);
   const { reputations, upsertReputation } = useCharacterFactionRep(campaign.id);
-  const { events, createEventAndApply, deleteEvent } = useFactionEvents(campaign.id, faction?.id);
+  const { events, createEventAndApply, revertEvent } = useFactionEvents(campaign.id, faction?.id);
 
   if (!faction) return null;
 
@@ -453,12 +453,19 @@ export function FactionDetailSheet({
                               )}
                               <span className="text-sm font-medium">{event.title}</span>
                             </div>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                               <Badge variant={event.reputation_change > 0 ? "default" : event.reputation_change < 0 ? "destructive" : "secondary"}>
                                 {event.reputation_change > 0 ? "+" : ""}{event.reputation_change}
                               </Badge>
-                              <Button size="icon" variant="ghost" className="h-6 w-6" onClick={() => deleteEvent.mutate(event.id)}>
-                                <X className="w-3 h-3" />
+                              <Button 
+                                size="icon" 
+                                variant="ghost" 
+                                className="h-6 w-6" 
+                                onClick={() => revertEvent.mutate(event)}
+                                disabled={revertEvent.isPending}
+                                title="Reverter evento e desfazer mudança de reputação"
+                              >
+                                <Undo2 className="w-3 h-3" />
                               </Button>
                             </div>
                           </div>
