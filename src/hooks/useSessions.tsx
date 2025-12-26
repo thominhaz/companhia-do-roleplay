@@ -12,6 +12,14 @@ export interface SessionDB {
   location: string | null;
   notes: string | null;
   created_at: string;
+  // New fields for session recap
+  summary: string | null;
+  recap: string | null;
+  highlights: string[] | null;
+  status: 'scheduled' | 'completed' | 'cancelled';
+  completed_at: string | null;
+  xp_awarded: number | null;
+  gold_awarded: number | null;
 }
 
 export interface SessionWithCampaign extends SessionDB {
