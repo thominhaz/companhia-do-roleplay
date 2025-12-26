@@ -545,7 +545,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       </header>
 
       {/* Content */}
-      <main className="flex-1 overflow-y-auto pb-8">
+      <main className="flex-1 overflow-y-auto pb-24 sm:pb-8">
         {renderStep()}
       </main>
     </div>
