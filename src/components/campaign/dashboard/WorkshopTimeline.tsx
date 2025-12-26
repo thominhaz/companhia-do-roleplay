@@ -5,10 +5,12 @@ import { useAuth } from "@/hooks/useAuth";
 import { TimelineEventForm } from "./TimelineEventForm";
 import { Button } from "@/components/ui/button";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { 
   Clock, Plus, Edit, Trash2, 
   Calendar, Sword, Shield, Crown, Skull, Map, 
-  Users, Star, Heart, Flame, BookOpen, Castle
+  Users, Star, Heart, Flame, BookOpen, Castle,
+  LayoutList, LayoutGrid
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -52,12 +54,24 @@ const COLOR_MAP: Record<string, string> = {
   blue: "from-blue-500 to-blue-400 border-blue-500",
 };
 
+const COLOR_BG_MAP: Record<string, string> = {
+  primary: "bg-primary",
+  cyan: "bg-cyan-500",
+  purple: "bg-purple-500",
+  red: "bg-red-500",
+  green: "bg-green-500",
+  yellow: "bg-yellow-500",
+  pink: "bg-pink-500",
+  blue: "bg-blue-500",
+};
+
 export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
   const { user } = useAuth();
   const { events, isLoading, createEvent, updateEvent, deleteEvent } = useTimeline(campaign.id);
   const [showForm, setShowForm] = useState(false);
   const [editingEvent, setEditingEvent] = useState<TimelineEvent | null>(null);
   const [deletingEvent, setDeletingEvent] = useState<TimelineEvent | null>(null);
+  const [viewMode, setViewMode] = useState<"horizontal" | "vertical">("horizontal");
 
   const handleSubmit = (data: Partial<TimelineEvent>) => {
     if (editingEvent) {
@@ -82,7 +96,7 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h2 className="text-xl font-bold flex items-center gap-2">
             <Clock className="w-5 h-5 text-primary" />
@@ -90,10 +104,26 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
           </h2>
           <p className="text-sm text-muted-foreground">Visualize a linha do tempo da sua história</p>
         </div>
-        <Button onClick={() => { setEditingEvent(null); setShowForm(true); }}>
-          <Plus className="w-4 h-4 mr-2" />
-          Novo Evento
-        </Button>
+        <div className="flex items-center gap-2">
+          <ToggleGroup 
+            type="single" 
+            value={viewMode} 
+            onValueChange={(value) => value && setViewMode(value as "horizontal" | "vertical")}
+            className="bg-muted rounded-lg p-1"
+          >
+            <ToggleGroupItem value="horizontal" aria-label="Visualização horizontal" className="px-3">
+              <LayoutGrid className="w-4 h-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem value="vertical" aria-label="Visualização lista" className="px-3">
+              <LayoutList className="w-4 h-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+          <Button onClick={() => { setEditingEvent(null); setShowForm(true); }}>
+            <Plus className="w-4 h-4 mr-2" />
+            <span className="hidden sm:inline">Novo Evento</span>
+            <span className="sm:hidden">Novo</span>
+          </Button>
+        </div>
       </div>
 
       {isLoading ? (
@@ -114,7 +144,8 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
             Adicionar Primeiro Evento
           </Button>
         </div>
-      ) : (
+      ) : viewMode === "horizontal" ? (
+        // Horizontal Timeline View
         <div className="bg-card rounded-2xl p-6 border">
           <ScrollArea className="w-full">
             <div className="relative min-w-max py-12 px-8">
@@ -198,6 +229,86 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
             </div>
             <ScrollBar orientation="horizontal" />
           </ScrollArea>
+        </div>
+      ) : (
+        // Vertical List Timeline View
+        <div className="bg-card rounded-2xl p-4 sm:p-6 border">
+          <div className="relative">
+            {/* Vertical Timeline Line */}
+            <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-primary/20" />
+            
+            <div className="space-y-0">
+              <AnimatePresence>
+                {events.map((event, index) => {
+                  const IconComponent = ICON_MAP[event.icon] || Calendar;
+                  const colorClass = COLOR_MAP[event.color] || COLOR_MAP.primary;
+                  const bgColor = COLOR_BG_MAP[event.color] || COLOR_BG_MAP.primary;
+                  
+                  return (
+                    <motion.div
+                      key={event.id}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      transition={{ delay: index * 0.05, duration: 0.3 }}
+                      className="relative pl-16 sm:pl-20 pb-8 last:pb-0 group"
+                    >
+                      {/* Circle Node */}
+                      <motion.div
+                        className={`absolute left-2 sm:left-4 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br ${colorClass} p-0.5 shadow-lg z-10`}
+                        whileHover={{ scale: 1.1 }}
+                      >
+                        <div className="w-full h-full rounded-full bg-background flex items-center justify-center">
+                          <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+                        </div>
+                        
+                        {/* Major Event Indicator */}
+                        {event.is_major_event && (
+                          <div className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-yellow-400 border-2 border-background flex items-center justify-center">
+                            <Star className="w-2 h-2 text-yellow-900" />
+                          </div>
+                        )}
+                      </motion.div>
+
+                      {/* Content Card */}
+                      <motion.div 
+                        className="bg-background/80 backdrop-blur-sm rounded-xl p-4 border shadow-sm hover:shadow-md transition-all duration-300 relative"
+                        whileHover={{ x: 4 }}
+                      >
+                        {/* Number Badge */}
+                        <div className={`absolute -left-2 top-4 w-6 h-6 rounded-full ${bgColor} flex items-center justify-center text-white font-bold text-xs shadow-md`}>
+                          {String(index + 1).padStart(2, "0")}
+                        </div>
+
+                        {/* Edit/Delete Buttons */}
+                        <div className="absolute top-2 right-2 flex gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => handleEdit(event)}>
+                            <Edit className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button size="icon" variant="ghost" className="h-7 w-7 text-destructive" onClick={() => setDeletingEvent(event)}>
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </Button>
+                        </div>
+
+                        <div className="pr-16 sm:pr-0">
+                          <p className={`text-xs font-semibold mb-1 ${event.color === 'primary' ? 'text-primary' : `text-${event.color}-500`}`}>
+                            {event.event_date}
+                          </p>
+                          <h4 className="font-semibold text-base mb-1">{event.title}</h4>
+                          {event.description && (
+                            <p className="text-sm text-muted-foreground">{event.description}</p>
+                          )}
+                        </div>
+
+                        {/* Connector to node */}
+                        <div className={`absolute left-0 top-6 w-3 h-0.5 ${bgColor} -translate-x-full`} />
+                      </motion.div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          </div>
         </div>
       )}
 
