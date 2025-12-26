@@ -906,6 +906,62 @@ export type Database = {
           },
         ]
       }
+      campaign_timeline_events: {
+        Row: {
+          campaign_id: string
+          color: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          event_date: string
+          icon: string | null
+          id: string
+          image_url: string | null
+          is_major_event: boolean | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          color?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          event_date: string
+          icon?: string | null
+          id?: string
+          image_url?: string | null
+          is_major_event?: boolean | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          color?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          event_date?: string
+          icon?: string | null
+          id?: string
+          image_url?: string | null
+          is_major_event?: boolean | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_timeline_events_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
           created_at: string
