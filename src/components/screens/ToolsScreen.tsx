@@ -190,13 +190,13 @@ export function ToolsScreen() {
       </AppHeader>
 
       {/* Content */}
-      <main className="px-4 py-4 max-w-lg mx-auto space-y-6">
+      <main className="px-3 sm:px-4 py-3 sm:py-4 max-w-lg mx-auto space-y-5 sm:space-y-6">
         {/* Featured Tools */}
         <section>
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+          <h2 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 sm:mb-3">
             Destaques
           </h2>
-          <div className="grid grid-cols-2 gap-3 stagger-fast">
+          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 stagger-fast">
             {featuredTools.map((tool, index) => {
               const Icon = tool.icon;
               return (
@@ -204,16 +204,16 @@ export function ToolsScreen() {
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className={cn(
-                    "p-4 rounded-2xl bg-gradient-to-br text-left card-shine",
+                    "p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br text-left card-shine",
                     tool.color,
                     "hover:scale-[1.02] hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.4),0_0_20px_rgba(255,159,85,0.15)] active:scale-[0.98] transition-all duration-300"
                   )}
                 >
-                  <Icon className="w-8 h-8 text-foreground mb-3" />
-                  <h3 className="text-sm font-semibold text-foreground">
+                  <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-foreground mb-2 sm:mb-3" />
+                  <h3 className="text-xs sm:text-sm font-semibold text-foreground">
                     {tool.name}
                   </h3>
-                  <p className="text-xs text-foreground/70 mt-0.5">
+                  <p className="text-[10px] sm:text-xs text-foreground/70 mt-0.5 line-clamp-2">
                     {tool.description}
                   </p>
                 </button>
@@ -224,10 +224,10 @@ export function ToolsScreen() {
 
         {/* All Tools */}
         <section>
-          <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
+          <h2 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 sm:mb-3">
             Compêndio
           </h2>
-          <div className="space-y-2 stagger-container">
+          <div className="space-y-1.5 sm:space-y-2 stagger-container">
             {otherTools.map((tool, index) => {
               const Icon = tool.icon;
               return (
@@ -235,27 +235,27 @@ export function ToolsScreen() {
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className={cn(
-                    "w-full glass-card rounded-xl p-3 flex items-center gap-3 card-hover-subtle",
+                    "w-full glass-card rounded-lg sm:rounded-xl p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3 card-hover-subtle",
                     "text-left"
                   )}
                 >
                   <div
                     className={cn(
-                      "w-10 h-10 rounded-xl bg-gradient-to-br flex items-center justify-center flex-shrink-0",
+                      "w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br flex items-center justify-center flex-shrink-0",
                       tool.color
                     )}
                   >
-                    <Icon className="w-5 h-5 text-foreground" />
+                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-semibold text-foreground">
+                    <h3 className="text-xs sm:text-sm font-semibold text-foreground">
                       {tool.name}
                     </h3>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
                       {tool.description}
                     </p>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-muted-foreground flex-shrink-0 transition-transform group-hover:translate-x-1" />
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0 transition-transform group-hover:translate-x-1" />
                 </button>
               );
             })}
