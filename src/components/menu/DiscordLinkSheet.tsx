@@ -21,7 +21,7 @@ interface DiscordLinkSheetProps {
 }
 
 const DISCORD_CLIENT_ID = "1453471765010579506";
-const DISCORD_SERVER_INVITE = "https://discord.gg/GwKMHAUvxB";
+const DISCORD_SERVER_INVITE = "https://discord.gg/AP9UeE5paj";
 
 export function DiscordLinkSheet({ open, onOpenChange }: DiscordLinkSheetProps) {
   const { user, session } = useAuth();
