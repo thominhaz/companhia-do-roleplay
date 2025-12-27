@@ -5,16 +5,19 @@ import { useEffect, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 
-export type SubscriptionTier = 'aldeao' | 'heroi' | 'mestre';
+export type SubscriptionTier = 'visitante' | 'aldeao' | 'heroi' | 'mestre';
 
 export interface SubscriptionInfo {
   tier: SubscriptionTier;
   status: string;
   expiresAt: string | null;
+  isLifetime: boolean;
   characterCount: number;
   canCreateCharacter: boolean;
   canCreateCampaign: boolean;
   canCreateHomebrew: boolean;
+  canUseQuickNotes: boolean;
+  canUseForge: boolean;
   limits: {
     maxCharacters: number | 'unlimited';
     canBeMaster: boolean;
@@ -26,6 +29,17 @@ export interface SubscriptionInfo {
     hasStressSanity: boolean;
   };
 }
+
+const VISITANTE_LIMITS = {
+  maxCharacters: 0 as const,
+  canBeMaster: false,
+  hasCombatTracker: false,
+  hasAdvancedTools: false,
+  hasThemes: false,
+  hasHistorico: false,
+  hasDiscordIntegration: false,
+  hasStressSanity: false,
+};
 
 const ALDEAO_LIMITS = {
   maxCharacters: 3 as const,
@@ -61,22 +75,35 @@ const MESTRE_LIMITS = {
 };
 
 function getTierFromStatus(status: string | null, expiresAt: string | null): SubscriptionTier {
-  if (!status) return 'aldeao';
+  if (!status) return 'visitante';
   
+  // Check if expired (but lifetime tokens have no expiration)
   const isExpired = expiresAt && new Date(expiresAt) < new Date();
-  if (isExpired) return 'aldeao';
+  if (isExpired) return 'visitante';
   
   if (status === 'mestre' || status === 'premium') return 'mestre';
   if (status === 'heroi') return 'heroi';
-  return 'aldeao';
+  if (status === 'aldeao') return 'aldeao';
+  if (status === 'visitante') return 'visitante';
+  
+  return 'visitante';
 }
 
 function getLimitsForTier(tier: SubscriptionTier) {
   switch (tier) {
     case 'mestre': return MESTRE_LIMITS;
     case 'heroi': return HEROI_LIMITS;
-    default: return ALDEAO_LIMITS;
+    case 'aldeao': return ALDEAO_LIMITS;
+    default: return VISITANTE_LIMITS;
   }
+}
+
+function isLifetimeSubscription(expiresAt: string | null): boolean {
+  if (!expiresAt) return true; // null = lifetime
+  // Consider 10+ years as lifetime
+  const tenYearsFromNow = new Date();
+  tenYearsFromNow.setFullYear(tenYearsFromNow.getFullYear() + 10);
+  return new Date(expiresAt) > tenYearsFromNow;
 }
 
 export function useSubscription() {
@@ -87,14 +114,17 @@ export function useSubscription() {
     queryFn: async (): Promise<SubscriptionInfo> => {
       if (!user) {
         return {
-          tier: 'aldeao',
-          status: 'aldeao',
+          tier: 'visitante',
+          status: 'visitante',
           expiresAt: null,
+          isLifetime: false,
           characterCount: 0,
           canCreateCharacter: false,
           canCreateCampaign: false,
           canCreateHomebrew: false,
-          limits: ALDEAO_LIMITS,
+          canUseQuickNotes: false,
+          canUseForge: false,
+          limits: VISITANTE_LIMITS,
         };
       }
 
@@ -114,21 +144,28 @@ export function useSubscription() {
       const tier = getTierFromStatus(subscription?.status ?? null, subscription?.expires_at ?? null);
       const limits = getLimitsForTier(tier);
       const count = characterCount ?? 0;
+      const isLifetime = isLifetimeSubscription(subscription?.expires_at ?? null);
 
-      const canCreateCharacter = tier === 'mestre' 
-        ? true 
-        : tier === 'heroi' 
-          ? count < 20 
-          : count < 3;
+      // Visitante cannot create anything
+      const canCreateCharacter = tier === 'visitante' 
+        ? false 
+        : tier === 'mestre' 
+          ? true 
+          : tier === 'heroi' 
+            ? count < 20 
+            : count < 3;
 
       return {
         tier,
-        status: subscription?.status ?? 'aldeao',
+        status: subscription?.status ?? 'visitante',
         expiresAt: subscription?.expires_at ?? null,
+        isLifetime,
         characterCount: count,
         canCreateCharacter,
         canCreateCampaign: tier === 'mestre',
         canCreateHomebrew: tier === 'heroi' || tier === 'mestre',
+        canUseQuickNotes: tier !== 'visitante',
+        canUseForge: tier !== 'visitante',
         limits,
       };
     },
@@ -137,7 +174,7 @@ export function useSubscription() {
   });
 }
 
-// Hook para verificar e sincronizar assinatura com Stripe
+// Hook para verificar e sincronizar assinatura (mantém compatibilidade com Stripe para futuro)
 export function useSubscriptionSync() {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -164,7 +201,7 @@ export function useSubscriptionSync() {
     }
   }, [user, queryClient]);
 
-  // Verifica parâmetros de retorno do Stripe checkout
+  // Verifica parâmetros de retorno do Stripe checkout (mantido para futuro)
   useEffect(() => {
     const subscriptionStatus = searchParams.get("subscription");
     
@@ -176,7 +213,7 @@ export function useSubscriptionSync() {
       newParams.delete("subscription");
       setSearchParams(newParams, { replace: true });
       
-      // Verifica a assinatura no Stripe com retry
+      // Verifica a assinatura com retry
       const checkWithRetry = async (attempts = 0) => {
         const result = await checkStripeSubscription();
         
@@ -184,7 +221,6 @@ export function useSubscriptionSync() {
           const tierName = result.tier === 'mestre' ? 'Mestre' : 'Herói';
           toast.success(`Plano ${tierName} ativado com sucesso!`);
         } else if (attempts < 3) {
-          // Retry após 2 segundos se não encontrou assinatura
           setTimeout(() => checkWithRetry(attempts + 1), 2000);
         }
       };
@@ -201,7 +237,6 @@ export function useSubscriptionSync() {
   // Verifica assinatura ao fazer login
   useEffect(() => {
     if (user) {
-      // Delay inicial para garantir que o banco está atualizado
       const timer = setTimeout(() => {
         checkStripeSubscription();
       }, 1000);

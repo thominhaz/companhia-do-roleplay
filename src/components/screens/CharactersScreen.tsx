@@ -14,7 +14,8 @@ import {
   Loader2,
   Archive,
   ArchiveRestore,
-  Trash2
+  Trash2,
+  Gift
 } from "lucide-react";
 import { useCharacters, useArchiveCharacter, useDeleteCharacter } from "@/hooks/useCharacters";
 import { useSubscription } from "@/hooks/useSubscription";
@@ -23,6 +24,7 @@ import { CharacterWizard } from "@/components/character/CharacterWizard";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppHeader } from "@/components/layout/AppHeader";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -87,6 +89,8 @@ export function CharactersScreen() {
   const archiveCharacter = useArchiveCharacter();
   const deleteCharacter = useDeleteCharacter();
 
+  const isVisitante = subscription?.tier === 'visitante';
+
   // Open wizard if ?create=true in URL
   useEffect(() => {
     if (searchParams.get('create') === 'true' && user && subscription?.canCreateCharacter) {
@@ -145,7 +149,7 @@ export function CharactersScreen() {
     <div className="min-h-screen bg-darker pb-24">
       <AppHeader
         title="Personagens"
-        subtitle={user && subscription ? `${subscription.characterCount}/${subscription.limits.maxCharacters === 'unlimited' ? '∞' : subscription.limits.maxCharacters} personagens` : undefined}
+        subtitle={user && subscription && !isVisitante ? `${subscription.characterCount}/${subscription.limits.maxCharacters === 'unlimited' ? '∞' : subscription.limits.maxCharacters} personagens` : undefined}
         rightContent={
           <button 
             onClick={handleCreateCharacter}
@@ -160,21 +164,23 @@ export function CharactersScreen() {
           </button>
         }
       >
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
-                activeTab === tab.id
-                  ? "bg-primary text-foreground"
-                  : "bg-dark text-muted-foreground"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+        {!isVisitante && (
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+            {tabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                  activeTab === tab.id
+                    ? "bg-primary text-foreground"
+                    : "bg-dark text-muted-foreground"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
       </AppHeader>
 
       {/* Content */}
@@ -186,6 +192,32 @@ export function CharactersScreen() {
         ) : !user ? (
           <div className="text-center py-20">
             <p className="text-muted-foreground">Faça login para ver seus personagens</p>
+          </div>
+        ) : isVisitante ? (
+          // Visitante view - show access gate
+          <div className="text-center py-12 sm:py-16">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
+            </div>
+            <h3 className="text-base sm:text-lg font-semibold mb-2">
+              Acesso Restrito
+            </h3>
+            <p className="text-muted-foreground text-sm mb-6 px-4 max-w-md mx-auto">
+              Para criar e gerenciar personagens, você precisa resgatar um código de acesso. 
+              Apoie o Go20 no Catarse para obter seu código!
+            </p>
+            <div className="space-y-3">
+              <Button
+                onClick={() => window.open('https://catarse.me/go20', '_blank')}
+                className="bg-gradient-primary"
+              >
+                <Gift className="w-4 h-4 mr-2" />
+                Apoiar no Catarse
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                Já tem um código? Vá em Menu → Assinatura para resgatar
+              </p>
+            </div>
           </div>
         ) : filteredCharacters.length === 0 ? (
           <div className="text-center py-16 sm:py-20">
