@@ -48,7 +48,7 @@ const TIER_CONFIG: Record<SubscriptionTier, {
       { icon: ScrollText, text: "Até 3 personagens" },
       { icon: Sword, text: "Compêndio SRD 5.1 completo" },
       { icon: Users, text: "Entrar em campanhas" },
-      { icon: Wand2, text: "Notas rápidas e Forja" },
+      { icon: Wand2, text: "Notas rápidas" },
     ],
     gradient: "from-primary/10 to-transparent",
     borderColor: "border-primary/30",
@@ -61,7 +61,7 @@ const TIER_CONFIG: Record<SubscriptionTier, {
     features: [
       { icon: ScrollText, text: "Até 20 personagens" },
       { icon: Palette, text: "Temas exclusivos" },
-      { icon: Wand2, text: "Homebrew completo" },
+      { icon: Wand2, text: "Homebrew completo / Forja" },
       { icon: History, text: "Histórico de alterações" },
     ],
     gradient: "from-secondary/20 to-transparent",
