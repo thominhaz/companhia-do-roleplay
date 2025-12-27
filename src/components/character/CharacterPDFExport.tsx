@@ -9,7 +9,13 @@ import {
   pdf,
 } from "@react-pdf/renderer";
 import { Button } from "@/components/ui/button";
-import { FileDown, Loader2 } from "lucide-react";
+import { FileDown, Loader2, Palette, Printer } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { getModifier } from "@/data/srd";
 
@@ -22,326 +28,333 @@ Font.register({
   ],
 });
 
-// PDF Styles
-const styles = StyleSheet.create({
-  page: {
-    flexDirection: "column",
-    backgroundColor: "#1a1a2e",
-    padding: 30,
-    fontFamily: "Roboto",
-    color: "#e2e8f0",
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
-    marginBottom: 20,
-    paddingBottom: 15,
-    borderBottomWidth: 2,
-    borderBottomColor: "#a855f7",
-  },
-  characterName: {
-    fontSize: 28,
-    fontWeight: 700,
-    color: "#a855f7",
-  },
-  subtitle: {
-    fontSize: 12,
-    color: "#94a3b8",
-    marginTop: 4,
-  },
-  levelBadge: {
-    backgroundColor: "#a855f7",
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-  },
-  levelText: {
-    fontSize: 14,
-    fontWeight: 700,
-    color: "#ffffff",
-  },
-  section: {
-    marginBottom: 16,
-  },
-  sectionTitle: {
-    fontSize: 14,
-    fontWeight: 700,
-    color: "#a855f7",
-    marginBottom: 8,
-    paddingBottom: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: "#a855f740",
-  },
-  row: {
-    flexDirection: "row",
-    gap: 10,
-  },
-  column: {
-    flex: 1,
-  },
-  // Stats grid
-  statsGrid: {
-    flexDirection: "row",
-    gap: 8,
-    marginBottom: 16,
-  },
-  statBox: {
-    flex: 1,
-    backgroundColor: "#252540",
-    borderRadius: 8,
-    padding: 10,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#3f3f5c",
-  },
-  statValue: {
-    fontSize: 20,
-    fontWeight: 700,
-    color: "#e2e8f0",
-  },
-  statModifier: {
-    fontSize: 12,
-    color: "#a855f7",
-    marginTop: 2,
-  },
-  statLabel: {
-    fontSize: 8,
-    color: "#94a3b8",
-    marginTop: 4,
-    textTransform: "uppercase",
-  },
-  // Combat stats
-  combatGrid: {
-    flexDirection: "row",
-    gap: 10,
-    marginBottom: 16,
-  },
-  combatBox: {
-    flex: 1,
-    backgroundColor: "#252540",
-    borderRadius: 8,
-    padding: 12,
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#3f3f5c",
-  },
-  combatValue: {
-    fontSize: 24,
-    fontWeight: 700,
-    color: "#e2e8f0",
-  },
-  combatLabel: {
-    fontSize: 9,
-    color: "#94a3b8",
-    marginTop: 4,
-  },
-  // Skills
-  skillsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 4,
-  },
-  skillItem: {
-    width: "48%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 3,
-    paddingHorizontal: 6,
-    borderRadius: 4,
-  },
-  skillItemProficient: {
-    backgroundColor: "#a855f720",
-  },
-  skillName: {
-    fontSize: 8,
-    color: "#94a3b8",
-  },
-  skillNameProficient: {
-    color: "#a855f7",
-    fontWeight: 700,
-  },
-  skillModifier: {
-    fontSize: 9,
-    fontWeight: 700,
-    color: "#e2e8f0",
-  },
-  // Features
-  featureItem: {
-    backgroundColor: "#252540",
-    borderRadius: 6,
-    padding: 8,
-    marginBottom: 6,
-  },
-  featureName: {
-    fontSize: 10,
-    fontWeight: 700,
-    color: "#e2e8f0",
-  },
-  featureSource: {
-    fontSize: 8,
-    color: "#a855f7",
-  },
-  featureDescription: {
-    fontSize: 8,
-    color: "#94a3b8",
-    marginTop: 4,
-    lineHeight: 1.4,
-  },
-  // Spells
-  spellLevel: {
-    marginBottom: 8,
-  },
-  spellLevelTitle: {
-    fontSize: 10,
-    fontWeight: 700,
-    color: "#a855f7",
-    marginBottom: 4,
-  },
-  spellList: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 4,
-  },
-  spellItem: {
-    backgroundColor: "#252540",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-    fontSize: 8,
-    color: "#e2e8f0",
-  },
-  // Equipment
-  equipmentItem: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingVertical: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: "#3f3f5c20",
-  },
-  equipmentName: {
-    fontSize: 9,
-    color: "#e2e8f0",
-  },
-  equipmentDetails: {
-    fontSize: 8,
-    color: "#94a3b8",
-  },
-  // Inventory
-  inventoryGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 4,
-  },
-  inventoryItem: {
-    backgroundColor: "#252540",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 4,
-  },
-  inventoryText: {
-    fontSize: 8,
-    color: "#e2e8f0",
-  },
-  // Currency
-  currencyRow: {
-    flexDirection: "row",
-    gap: 8,
-    marginTop: 8,
-  },
-  currencyItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-  },
-  currencyLabel: {
-    fontSize: 8,
-    color: "#94a3b8",
-  },
-  currencyValue: {
-    fontSize: 10,
-    fontWeight: 700,
-    color: "#fbbf24",
-  },
-  // Footer
-  footer: {
-    position: "absolute",
-    bottom: 20,
-    left: 30,
-    right: 30,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingTop: 10,
-    borderTopWidth: 1,
-    borderTopColor: "#3f3f5c",
-  },
-  footerText: {
-    fontSize: 8,
-    color: "#64748b",
-  },
-  // Backstory page
-  backstoryText: {
-    fontSize: 10,
-    color: "#e2e8f0",
-    lineHeight: 1.6,
-  },
-  personalitySection: {
-    marginBottom: 12,
-  },
-  personalityLabel: {
-    fontSize: 9,
-    fontWeight: 700,
-    color: "#a855f7",
-    marginBottom: 4,
-  },
-  personalityText: {
-    fontSize: 9,
-    color: "#94a3b8",
-    lineHeight: 1.4,
-  },
-  // Saving throws
-  savingThrowsGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 6,
-  },
-  savingThrowItem: {
-    width: "30%",
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 4,
-    paddingVertical: 4,
-    paddingHorizontal: 6,
-    borderRadius: 4,
-    backgroundColor: "#252540",
-  },
-  savingThrowProficient: {
-    backgroundColor: "#a855f720",
-    borderWidth: 1,
-    borderColor: "#a855f740",
-  },
-  proficiencyDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: "#3f3f5c",
-  },
-  proficiencyDotActive: {
-    backgroundColor: "#a855f7",
-  },
-  savingThrowLabel: {
-    fontSize: 8,
-    color: "#94a3b8",
-  },
-  savingThrowValue: {
-    fontSize: 9,
-    fontWeight: 700,
-    color: "#e2e8f0",
-    marginLeft: "auto",
-  },
-});
+// Color theme styles
+const createStyles = (theme: 'color' | 'bw') => {
+  const isColor = theme === 'color';
+  
+  const colors = {
+    pageBg: isColor ? "#1a1a2e" : "#ffffff",
+    text: isColor ? "#e2e8f0" : "#1a1a1a",
+    textMuted: isColor ? "#94a3b8" : "#666666",
+    accent: isColor ? "#a855f7" : "#333333",
+    accentBg: isColor ? "#a855f720" : "#f0f0f0",
+    boxBg: isColor ? "#252540" : "#f8f8f8",
+    border: isColor ? "#3f3f5c" : "#cccccc",
+    borderLight: isColor ? "#3f3f5c40" : "#e0e0e0",
+    gold: isColor ? "#fbbf24" : "#666666",
+    profDot: isColor ? "#a855f7" : "#333333",
+    profDotInactive: isColor ? "#3f3f5c" : "#cccccc",
+  };
+
+  return StyleSheet.create({
+    page: {
+      flexDirection: "column",
+      backgroundColor: colors.pageBg,
+      padding: 30,
+      fontFamily: "Roboto",
+      color: colors.text,
+    },
+    header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "flex-start",
+      marginBottom: 20,
+      paddingBottom: 15,
+      borderBottomWidth: 2,
+      borderBottomColor: colors.accent,
+    },
+    characterName: {
+      fontSize: 28,
+      fontWeight: 700,
+      color: colors.accent,
+    },
+    subtitle: {
+      fontSize: 12,
+      color: colors.textMuted,
+      marginTop: 4,
+    },
+    levelBadge: {
+      backgroundColor: colors.accent,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 8,
+    },
+    levelText: {
+      fontSize: 14,
+      fontWeight: 700,
+      color: isColor ? "#ffffff" : "#ffffff",
+    },
+    section: {
+      marginBottom: 16,
+    },
+    sectionTitle: {
+      fontSize: 14,
+      fontWeight: 700,
+      color: colors.accent,
+      marginBottom: 8,
+      paddingBottom: 4,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderLight,
+    },
+    row: {
+      flexDirection: "row",
+      gap: 10,
+    },
+    column: {
+      flex: 1,
+    },
+    statsGrid: {
+      flexDirection: "row",
+      gap: 8,
+      marginBottom: 16,
+    },
+    statBox: {
+      flex: 1,
+      backgroundColor: colors.boxBg,
+      borderRadius: 8,
+      padding: 10,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    statValue: {
+      fontSize: 20,
+      fontWeight: 700,
+      color: colors.text,
+    },
+    statModifier: {
+      fontSize: 12,
+      color: colors.accent,
+      marginTop: 2,
+    },
+    statLabel: {
+      fontSize: 8,
+      color: colors.textMuted,
+      marginTop: 4,
+      textTransform: "uppercase",
+    },
+    combatGrid: {
+      flexDirection: "row",
+      gap: 10,
+      marginBottom: 16,
+    },
+    combatBox: {
+      flex: 1,
+      backgroundColor: colors.boxBg,
+      borderRadius: 8,
+      padding: 12,
+      alignItems: "center",
+      borderWidth: 1,
+      borderColor: colors.border,
+    },
+    combatValue: {
+      fontSize: 24,
+      fontWeight: 700,
+      color: colors.text,
+    },
+    combatLabel: {
+      fontSize: 9,
+      color: colors.textMuted,
+      marginTop: 4,
+    },
+    skillsGrid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 4,
+    },
+    skillItem: {
+      width: "48%",
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingVertical: 3,
+      paddingHorizontal: 6,
+      borderRadius: 4,
+    },
+    skillItemProficient: {
+      backgroundColor: colors.accentBg,
+    },
+    skillName: {
+      fontSize: 8,
+      color: colors.textMuted,
+    },
+    skillNameProficient: {
+      color: colors.accent,
+      fontWeight: 700,
+    },
+    skillModifier: {
+      fontSize: 9,
+      fontWeight: 700,
+      color: colors.text,
+    },
+    featureItem: {
+      backgroundColor: colors.boxBg,
+      borderRadius: 6,
+      padding: 8,
+      marginBottom: 6,
+    },
+    featureName: {
+      fontSize: 10,
+      fontWeight: 700,
+      color: colors.text,
+    },
+    featureSource: {
+      fontSize: 8,
+      color: colors.accent,
+    },
+    featureDescription: {
+      fontSize: 8,
+      color: colors.textMuted,
+      marginTop: 4,
+      lineHeight: 1.4,
+    },
+    spellLevel: {
+      marginBottom: 8,
+    },
+    spellLevelTitle: {
+      fontSize: 10,
+      fontWeight: 700,
+      color: colors.accent,
+      marginBottom: 4,
+    },
+    spellList: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 4,
+    },
+    spellItem: {
+      backgroundColor: colors.boxBg,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 4,
+      fontSize: 8,
+      color: colors.text,
+    },
+    equipmentItem: {
+      flexDirection: "row",
+      justifyContent: "space-between",
+      paddingVertical: 4,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.borderLight,
+    },
+    equipmentName: {
+      fontSize: 9,
+      color: colors.text,
+    },
+    equipmentDetails: {
+      fontSize: 8,
+      color: colors.textMuted,
+    },
+    inventoryGrid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 4,
+    },
+    inventoryItem: {
+      backgroundColor: colors.boxBg,
+      paddingHorizontal: 8,
+      paddingVertical: 4,
+      borderRadius: 4,
+    },
+    inventoryText: {
+      fontSize: 8,
+      color: colors.text,
+    },
+    currencyRow: {
+      flexDirection: "row",
+      gap: 8,
+      marginTop: 8,
+    },
+    currencyItem: {
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+    },
+    currencyLabel: {
+      fontSize: 8,
+      color: colors.textMuted,
+    },
+    currencyValue: {
+      fontSize: 10,
+      fontWeight: 700,
+      color: colors.gold,
+    },
+    footer: {
+      position: "absolute",
+      bottom: 20,
+      left: 30,
+      right: 30,
+      flexDirection: "row",
+      justifyContent: "space-between",
+      alignItems: "center",
+      paddingTop: 10,
+      borderTopWidth: 1,
+      borderTopColor: colors.border,
+    },
+    footerText: {
+      fontSize: 8,
+      color: colors.textMuted,
+    },
+    backstoryText: {
+      fontSize: 10,
+      color: colors.text,
+      lineHeight: 1.6,
+    },
+    personalitySection: {
+      marginBottom: 12,
+    },
+    personalityLabel: {
+      fontSize: 9,
+      fontWeight: 700,
+      color: colors.accent,
+      marginBottom: 4,
+    },
+    personalityText: {
+      fontSize: 9,
+      color: colors.textMuted,
+      lineHeight: 1.4,
+    },
+    savingThrowsGrid: {
+      flexDirection: "row",
+      flexWrap: "wrap",
+      gap: 6,
+    },
+    savingThrowItem: {
+      width: "30%",
+      flexDirection: "row",
+      alignItems: "center",
+      gap: 4,
+      paddingVertical: 4,
+      paddingHorizontal: 6,
+      borderRadius: 4,
+      backgroundColor: colors.boxBg,
+    },
+    savingThrowProficient: {
+      backgroundColor: colors.accentBg,
+      borderWidth: 1,
+      borderColor: colors.borderLight,
+    },
+    proficiencyDot: {
+      width: 6,
+      height: 6,
+      borderRadius: 3,
+      backgroundColor: colors.profDotInactive,
+    },
+    proficiencyDotActive: {
+      backgroundColor: colors.profDot,
+    },
+    savingThrowLabel: {
+      fontSize: 8,
+      color: colors.textMuted,
+    },
+    savingThrowValue: {
+      fontSize: 9,
+      fontWeight: 700,
+      color: colors.text,
+      marginLeft: "auto",
+    },
+  });
+};
 
 const ATTR_NAMES: Record<string, string> = {
   strength: "FOR",
@@ -384,10 +397,12 @@ const SKILLS = [
 
 interface CharacterPDFProps {
   character: any;
+  theme: 'color' | 'bw';
 }
 
 // PDF Document Component
-function CharacterPDFDocument({ character }: CharacterPDFProps) {
+function CharacterPDFDocument({ character, theme }: CharacterPDFProps) {
+  const styles = createStyles(theme);
   const attributes = character.attributes || {};
   const skills = character.skills || {};
   const savingThrows = character.saving_throws || {};
@@ -882,28 +897,31 @@ export function CharacterPDFExport({
   variant = "default",
 }: CharacterPDFExportProps) {
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
-  const handleExport = async () => {
+  const handleExport = async (theme: 'color' | 'bw') => {
     if (!character) return;
 
     setIsGenerating(true);
+    setIsOpen(false);
     try {
       const blob = await pdf(
-        <CharacterPDFDocument character={character} />
+        <CharacterPDFDocument character={character} theme={theme} />
       ).toBlob();
 
       // Create download link
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `${character.name.replace(/\s+/g, "_")}_ficha.pdf`;
+      const suffix = theme === 'bw' ? '_pb' : '';
+      link.download = `${character.name.replace(/\s+/g, "_")}_ficha${suffix}.pdf`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
 
       toast.success("PDF gerado com sucesso!", {
-        description: `Ficha de ${character.name} exportada`,
+        description: `Ficha de ${character.name} exportada ${theme === 'bw' ? '(preto e branco)' : '(colorido)'}`,
         icon: "📄",
       });
     } catch (error) {
@@ -918,29 +936,62 @@ export function CharacterPDFExport({
 
   if (variant === "icon") {
     return (
-      <Button
-        variant="ghost"
-        size="icon"
-        onClick={handleExport}
-        disabled={isGenerating}
-        className="h-9 w-9"
-      >
-        {isGenerating ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <FileDown className="h-4 w-4" />
-        )}
-      </Button>
+      <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="ghost"
+            size="icon"
+            disabled={isGenerating}
+            className="h-9 w-9"
+          >
+            {isGenerating ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <FileDown className="h-4 w-4" />
+            )}
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => handleExport('color')} className="gap-2">
+            <Palette className="h-4 w-4 text-purple-400" />
+            <span>PDF Colorido</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem onClick={() => handleExport('bw')} className="gap-2">
+            <Printer className="h-4 w-4" />
+            <span>PDF Preto & Branco</span>
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
     );
   }
 
   return (
-    <button
-      onClick={handleExport}
-      disabled={isGenerating}
-      className="text-sm font-medium text-foreground hover:text-primary transition-colors disabled:opacity-50"
-    >
-      {isGenerating ? "Gerando..." : "Exportar PDF"}
-    </button>
+    <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
+      <DropdownMenuTrigger asChild>
+        <button
+          disabled={isGenerating}
+          className="text-sm font-medium text-foreground hover:text-primary transition-colors disabled:opacity-50 flex items-center gap-2"
+        >
+          {isGenerating ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Gerando...
+            </>
+          ) : (
+            "Exportar PDF"
+          )}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="start">
+        <DropdownMenuItem onClick={() => handleExport('color')} className="gap-2">
+          <Palette className="h-4 w-4 text-purple-400" />
+          <span>PDF Colorido</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => handleExport('bw')} className="gap-2">
+          <Printer className="h-4 w-4" />
+          <span>PDF Preto & Branco</span>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
