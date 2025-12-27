@@ -726,11 +726,64 @@ function CharacterPDFDocument({ character }: CharacterPDFProps) {
         character.personality_traits ||
         character.ideals ||
         character.bonds ||
-        character.flaws) && (
+        character.flaws ||
+        character.age ||
+        character.goals) && (
         <Page size="A4" style={styles.page}>
           <Text style={[styles.characterName, { marginBottom: 20 }]}>
             {character.name} - Personalidade & História
           </Text>
+
+          {/* Physical Appearance */}
+          {(character.age || character.height || character.weight || character.eyes || character.hair || character.skin) && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Aparência Física</Text>
+              <View style={[styles.row, { flexWrap: 'wrap', gap: 8 }]}>
+                {character.age && (
+                  <View style={{ width: '30%', marginBottom: 4 }}>
+                    <Text style={{ fontSize: 8, color: '#94a3b8' }}>Idade</Text>
+                    <Text style={{ fontSize: 10, color: '#e2e8f0' }}>{character.age}</Text>
+                  </View>
+                )}
+                {character.height && (
+                  <View style={{ width: '30%', marginBottom: 4 }}>
+                    <Text style={{ fontSize: 8, color: '#94a3b8' }}>Altura</Text>
+                    <Text style={{ fontSize: 10, color: '#e2e8f0' }}>{character.height}</Text>
+                  </View>
+                )}
+                {character.weight && (
+                  <View style={{ width: '30%', marginBottom: 4 }}>
+                    <Text style={{ fontSize: 8, color: '#94a3b8' }}>Peso</Text>
+                    <Text style={{ fontSize: 10, color: '#e2e8f0' }}>{character.weight}</Text>
+                  </View>
+                )}
+                {character.eyes && (
+                  <View style={{ width: '30%', marginBottom: 4 }}>
+                    <Text style={{ fontSize: 8, color: '#94a3b8' }}>Olhos</Text>
+                    <Text style={{ fontSize: 10, color: '#e2e8f0' }}>{character.eyes}</Text>
+                  </View>
+                )}
+                {character.hair && (
+                  <View style={{ width: '30%', marginBottom: 4 }}>
+                    <Text style={{ fontSize: 8, color: '#94a3b8' }}>Cabelo</Text>
+                    <Text style={{ fontSize: 10, color: '#e2e8f0' }}>{character.hair}</Text>
+                  </View>
+                )}
+                {character.skin && (
+                  <View style={{ width: '30%', marginBottom: 4 }}>
+                    <Text style={{ fontSize: 8, color: '#94a3b8' }}>Pele</Text>
+                    <Text style={{ fontSize: 10, color: '#e2e8f0' }}>{character.skin}</Text>
+                  </View>
+                )}
+              </View>
+              {character.distinctive_features && (
+                <View style={{ marginTop: 8 }}>
+                  <Text style={{ fontSize: 8, color: '#a855f7', fontWeight: 700 }}>Características Distintivas</Text>
+                  <Text style={{ fontSize: 9, color: '#94a3b8', marginTop: 2 }}>{character.distinctive_features}</Text>
+                </View>
+              )}
+            </View>
+          )}
 
           <View style={styles.row}>
             <View style={styles.column}>
@@ -770,10 +823,24 @@ function CharacterPDFDocument({ character }: CharacterPDFProps) {
             </View>
           </View>
 
+          {character.goals && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Objetivos & Motivações</Text>
+              <Text style={styles.backstoryText}>{character.goals}</Text>
+            </View>
+          )}
+
           {character.backstory && (
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>História</Text>
               <Text style={styles.backstoryText}>{character.backstory}</Text>
+            </View>
+          )}
+
+          {character.allies_organizations && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Aliados & Organizações</Text>
+              <Text style={styles.backstoryText}>{character.allies_organizations}</Text>
             </View>
           )}
 

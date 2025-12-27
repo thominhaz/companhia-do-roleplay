@@ -1651,6 +1651,64 @@ export function CharacterSheet() {
 
             {/* Inventory removed - moved to Inventário tab */}
 
+            {/* Physical Appearance Section */}
+            {(character.age || character.height || character.weight || character.eyes || character.hair || character.skin || character.distinctive_features) && (
+              <SheetCard>
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                    <User className="w-4 h-4 text-primary" />
+                    Aparência Física
+                  </h3>
+                </div>
+                
+                <div className="grid grid-cols-3 gap-2 mb-3">
+                  {character.age && (
+                    <div className="bg-muted/30 rounded-xl p-2 text-center">
+                      <p className="text-[10px] uppercase text-muted-foreground">Idade</p>
+                      <p className="text-xs font-medium">{character.age}</p>
+                    </div>
+                  )}
+                  {character.height && (
+                    <div className="bg-muted/30 rounded-xl p-2 text-center">
+                      <p className="text-[10px] uppercase text-muted-foreground">Altura</p>
+                      <p className="text-xs font-medium">{character.height}</p>
+                    </div>
+                  )}
+                  {character.weight && (
+                    <div className="bg-muted/30 rounded-xl p-2 text-center">
+                      <p className="text-[10px] uppercase text-muted-foreground">Peso</p>
+                      <p className="text-xs font-medium">{character.weight}</p>
+                    </div>
+                  )}
+                  {character.eyes && (
+                    <div className="bg-muted/30 rounded-xl p-2 text-center">
+                      <p className="text-[10px] uppercase text-muted-foreground">Olhos</p>
+                      <p className="text-xs font-medium">{character.eyes}</p>
+                    </div>
+                  )}
+                  {character.hair && (
+                    <div className="bg-muted/30 rounded-xl p-2 text-center">
+                      <p className="text-[10px] uppercase text-muted-foreground">Cabelo</p>
+                      <p className="text-xs font-medium">{character.hair}</p>
+                    </div>
+                  )}
+                  {character.skin && (
+                    <div className="bg-muted/30 rounded-xl p-2 text-center">
+                      <p className="text-[10px] uppercase text-muted-foreground">Pele</p>
+                      <p className="text-xs font-medium">{character.skin}</p>
+                    </div>
+                  )}
+                </div>
+                
+                {character.distinctive_features && (
+                  <div className="bg-muted/30 rounded-xl p-3">
+                    <p className="text-[10px] uppercase text-primary font-semibold mb-1">Características Distintivas</p>
+                    <p className="text-xs text-muted-foreground">{character.distinctive_features}</p>
+                  </div>
+                )}
+              </SheetCard>
+            )}
+
             {/* Personality & Backstory Section */}
             <SheetCard>
               <div className="flex items-center justify-between mb-3">
@@ -1696,16 +1754,32 @@ export function CharacterSheet() {
                 </div>
               )}
 
+              {/* Goals */}
+              {character.goals && (
+                <div className="bg-muted/30 rounded-xl p-3 mb-3">
+                  <p className="text-[10px] uppercase text-primary font-semibold mb-1">Objetivos</p>
+                  <p className="text-xs text-muted-foreground line-clamp-3">{character.goals}</p>
+                </div>
+              )}
+
               {/* Backstory */}
               {character.backstory && (
-                <div className="bg-muted/30 rounded-xl p-3">
+                <div className="bg-muted/30 rounded-xl p-3 mb-3">
                   <p className="text-[10px] uppercase text-primary font-semibold mb-1">História</p>
                   <p className="text-xs text-muted-foreground line-clamp-5">{character.backstory}</p>
                 </div>
               )}
 
+              {/* Allies & Organizations */}
+              {character.allies_organizations && (
+                <div className="bg-muted/30 rounded-xl p-3">
+                  <p className="text-[10px] uppercase text-primary font-semibold mb-1">Aliados & Organizações</p>
+                  <p className="text-xs text-muted-foreground line-clamp-3">{character.allies_organizations}</p>
+                </div>
+              )}
+
               {/* Empty state */}
-              {!character.personality_traits && !character.ideals && !character.bonds && !character.flaws && !character.backstory && (
+              {!character.personality_traits && !character.ideals && !character.bonds && !character.flaws && !character.backstory && !character.goals && (
                 <div className="text-center py-6 text-muted-foreground">
                   <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-50" />
                   <p className="text-xs">Nenhuma informação de personalidade</p>

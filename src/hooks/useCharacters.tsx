@@ -50,6 +50,16 @@ export interface CharacterDB {
   image_url: string | null;
   is_archived: boolean;
   conditions: string[];
+  // Physical appearance fields
+  age: string | null;
+  height: string | null;
+  weight: string | null;
+  eyes: string | null;
+  hair: string | null;
+  skin: string | null;
+  distinctive_features: string | null;
+  goals: string | null;
+  allies_organizations: string | null;
   created_at: string;
   updated_at: string;
 }
