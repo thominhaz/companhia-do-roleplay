@@ -1,4 +1,4 @@
-import { MessageCircle, Github, Instagram, Coffee, Heart, Users, ExternalLink } from "lucide-react";
+import { MessageCircle, Instagram, Coffee, Heart, Users, ExternalLink } from "lucide-react";
 
 const communityLinks = [
   {
@@ -17,15 +17,6 @@ const communityLinks = [
     icon: Instagram,
     href: "https://instagram.com/go20app",
     gradient: "from-[#E1306C] to-[#833AB4]",
-    external: true,
-  },
-  {
-    id: "github",
-    label: "GitHub",
-    description: "Contribua com código",
-    icon: Github,
-    href: "https://github.com/go20app",
-    gradient: "from-muted-foreground to-muted-foreground/70",
     external: true,
   },
   {
