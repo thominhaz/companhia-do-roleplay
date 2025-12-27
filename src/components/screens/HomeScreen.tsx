@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Loader2, Calendar } from "lucide-react";
 import { 
   Plus, 
@@ -10,7 +11,7 @@ import {
   Flame
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, SubscriptionTier } from "@/hooks/useSubscription";
 import { useCharacters, CharacterDB } from "@/hooks/useCharacters";
 import { useAllCampaigns, CampaignDB } from "@/hooks/useCampaigns";
 import { useUpcomingSessions } from "@/hooks/useSessions";
@@ -22,6 +23,8 @@ import { NotificationBell } from "@/components/notifications/NotificationBell";
 import { CommunitySection } from "@/components/home/CommunitySection";
 import { toast } from "sonner";
 import type { TabRoute } from "@/types";
+import { UpgradeModal } from "@/components/menu/UpgradeModal";
+import { SubscriptionSheet } from "@/components/menu/SubscriptionSheet";
 
 interface HomeScreenProps {
   onNavigate?: (tab: TabRoute) => void;
@@ -129,6 +132,12 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const { data: upcomingSessions, isLoading: loadingSessions } = useUpcomingSessions(1);
   const navigate = useNavigate();
 
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [upgradeRequiredTier, setUpgradeRequiredTier] = useState<SubscriptionTier>('aldeao');
+  const [upgradeFeatureName, setUpgradeFeatureName] = useState("");
+  const [upgradeFeatureDescription, setUpgradeFeatureDescription] = useState<string | undefined>();
+  const [subscriptionSheetOpen, setSubscriptionSheetOpen] = useState(false);
+
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Aventureiro";
   const currentTier = subscription?.tier || 'visitante';
   const isPaidTier = currentTier === 'heroi' || currentTier === 'mestre';
@@ -136,6 +145,13 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
   const isLoading = loadingChars || loadingCampaigns;
   const nextSession = upcomingSessions?.[0];
+
+  const showUpgradeModal = (requiredTier: SubscriptionTier, featureName: string, description?: string) => {
+    setUpgradeRequiredTier(requiredTier);
+    setUpgradeFeatureName(featureName);
+    setUpgradeFeatureDescription(description);
+    setUpgradeModalOpen(true);
+  };
 
   // Get most recent character as active
   const activeCharacter = characters?.[0];
@@ -325,9 +341,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                       return;
                     }
                     if (isVisitante) {
-                      toast.error("Resgate um código de acesso para criar personagens", {
-                        description: "Apoie o Go20 no Catarse para obter seu código"
-                      });
+                      showUpgradeModal('aldeao', 'Criar Personagens', 'Crie e gerencie fichas de personagem completas');
                       return;
                     }
                     navigate('/?tab=characters&create=true');
@@ -343,9 +357,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                       return;
                     }
                     if (isVisitante) {
-                      toast.error("Resgate um código de acesso para entrar em campanhas", {
-                        description: "Apoie o Go20 no Catarse para obter seu código"
-                      });
+                      showUpgradeModal('aldeao', 'Entrar em Campanhas', 'Participe de campanhas com outros jogadores');
                       return;
                     }
                     navigate('/?tab=campaigns&join=true');
@@ -364,9 +376,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                       return;
                     }
                     if (isVisitante) {
-                      toast.error("Resgate um código de acesso para usar as notas rápidas", {
-                        description: "Apoie o Go20 no Catarse para obter seu código"
-                      });
+                      showUpgradeModal('aldeao', 'Notas Rápidas', 'Anote ideias, lembretes e informações importantes');
                       return;
                     }
                     navigate('/?tab=tools&tool=notes');
@@ -427,6 +437,20 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
 
       {/* Community Section */}
       <CommunitySection />
+
+      <UpgradeModal
+        open={upgradeModalOpen}
+        onOpenChange={setUpgradeModalOpen}
+        requiredTier={upgradeRequiredTier}
+        featureName={upgradeFeatureName}
+        featureDescription={upgradeFeatureDescription}
+        onOpenSubscription={() => setSubscriptionSheetOpen(true)}
+      />
+
+      <SubscriptionSheet
+        open={subscriptionSheetOpen}
+        onOpenChange={setSubscriptionSheetOpen}
+      />
     </div>
   );
 }

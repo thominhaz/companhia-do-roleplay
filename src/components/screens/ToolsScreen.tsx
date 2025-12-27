@@ -25,9 +25,11 @@ import { HealingRest } from "@/components/tools/HealingRest";
 import { HomebrewForge } from "@/components/homebrew/HomebrewForge";
 import { QuickNotes } from "@/components/tools/QuickNotes";
 import { AppHeader } from "@/components/layout/AppHeader";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, SubscriptionTier } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import { UpgradeModal } from "@/components/menu/UpgradeModal";
+import { SubscriptionSheet } from "@/components/menu/SubscriptionSheet";
 
 type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | "homebrew" | "notes" | null;
 
@@ -132,15 +134,28 @@ export function ToolsScreen() {
   const { data: subscription } = useSubscription();
   const { user } = useAuth();
   
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [upgradeRequiredTier, setUpgradeRequiredTier] = useState<SubscriptionTier>('aldeao');
+  const [upgradeFeatureName, setUpgradeFeatureName] = useState("");
+  const [upgradeFeatureDescription, setUpgradeFeatureDescription] = useState<string | undefined>();
+  const [subscriptionSheetOpen, setSubscriptionSheetOpen] = useState(false);
+  
   const isVisitante = subscription?.tier === 'visitante';
   const canUseForge = subscription?.canUseForge ?? false;
+
+  const showUpgradeModal = (requiredTier: SubscriptionTier, featureName: string, description?: string) => {
+    setUpgradeRequiredTier(requiredTier);
+    setUpgradeFeatureName(featureName);
+    setUpgradeFeatureDescription(description);
+    setUpgradeModalOpen(true);
+  };
 
   // Handle URL params for opening specific tool
   useEffect(() => {
     const toolParam = searchParams.get('tool');
     if (toolParam === 'notes') {
       if (isVisitante) {
-        toast.error("Resgate um código de acesso para usar as Notas Rápidas");
+        showUpgradeModal('aldeao', 'Notas Rápidas', 'Anote ideias, lembretes e informações importantes');
       } else {
         setActiveTool('notes');
       }
@@ -162,17 +177,13 @@ export function ToolsScreen() {
   const handleToolClick = (tool: typeof tools[0]) => {
     // Check if tool requires access and user is visitante
     if (tool.requiresAccess && isVisitante) {
-      toast.error("Resgate um código de acesso para usar esta ferramenta", {
-        description: "Apoie o Go20 no Catarse para obter seu código"
-      });
+      showUpgradeModal('aldeao', tool.name, tool.description);
       return;
     }
     
     // Check if it's the Forge and user doesn't have access (Aldeão)
     if (tool.id === 'homebrew' && !canUseForge) {
-      toast.error("A Forja requer o plano Herói ou superior", {
-        description: "Faça upgrade do seu plano para criar conteúdo homebrew"
-      });
+      showUpgradeModal('heroi', 'A Forja', 'Crie magias, itens e conteúdo homebrew personalizado');
       return;
     }
     
@@ -327,6 +338,20 @@ export function ToolsScreen() {
           </div>
         </section>
       </main>
+
+      <UpgradeModal
+        open={upgradeModalOpen}
+        onOpenChange={setUpgradeModalOpen}
+        requiredTier={upgradeRequiredTier}
+        featureName={upgradeFeatureName}
+        featureDescription={upgradeFeatureDescription}
+        onOpenSubscription={() => setSubscriptionSheetOpen(true)}
+      />
+
+      <SubscriptionSheet
+        open={subscriptionSheetOpen}
+        onOpenChange={setSubscriptionSheetOpen}
+      />
     </div>
   );
 }
