@@ -486,7 +486,7 @@ function CharacterPDFDocument({ character, theme }: CharacterPDFProps) {
             <Text style={styles.combatLabel}>Iniciativa</Text>
           </View>
           <View style={styles.combatBox}>
-            <Text style={styles.combatValue}>{character.speed}ft</Text>
+            <Text style={styles.combatValue}>{character.speed}m</Text>
             <Text style={styles.combatLabel}>Deslocamento</Text>
           </View>
           <View style={styles.combatBox}>
