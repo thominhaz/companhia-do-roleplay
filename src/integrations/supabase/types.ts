@@ -1044,7 +1044,9 @@ export type Database = {
       }
       characters: {
         Row: {
+          age: string | null
           alignment: string | null
+          allies_organizations: string | null
           armor_class: number
           attributes: Json
           background: string | null
@@ -1056,10 +1058,15 @@ export type Database = {
           currency: Json
           current_hp: number
           death_saves: Json
+          distinctive_features: string | null
           equipment: Json
           experience: number
+          eyes: string | null
           features: Json
           flaws: string | null
+          goals: string | null
+          hair: string | null
+          height: string | null
           hit_dice: Json
           id: string
           ideals: string | null
@@ -1077,6 +1084,7 @@ export type Database = {
           race: string
           saving_throws: Json
           skills: Json
+          skin: string | null
           speed: number
           spellcasting: Json | null
           spells: Json
@@ -1084,9 +1092,12 @@ export type Database = {
           temporary_hp: number
           updated_at: string
           user_id: string
+          weight: string | null
         }
         Insert: {
+          age?: string | null
           alignment?: string | null
+          allies_organizations?: string | null
           armor_class?: number
           attributes?: Json
           background?: string | null
@@ -1098,10 +1109,15 @@ export type Database = {
           currency?: Json
           current_hp?: number
           death_saves?: Json
+          distinctive_features?: string | null
           equipment?: Json
           experience?: number
+          eyes?: string | null
           features?: Json
           flaws?: string | null
+          goals?: string | null
+          hair?: string | null
+          height?: string | null
           hit_dice?: Json
           id?: string
           ideals?: string | null
@@ -1119,6 +1135,7 @@ export type Database = {
           race: string
           saving_throws?: Json
           skills?: Json
+          skin?: string | null
           speed?: number
           spellcasting?: Json | null
           spells?: Json
@@ -1126,9 +1143,12 @@ export type Database = {
           temporary_hp?: number
           updated_at?: string
           user_id: string
+          weight?: string | null
         }
         Update: {
+          age?: string | null
           alignment?: string | null
+          allies_organizations?: string | null
           armor_class?: number
           attributes?: Json
           background?: string | null
@@ -1140,10 +1160,15 @@ export type Database = {
           currency?: Json
           current_hp?: number
           death_saves?: Json
+          distinctive_features?: string | null
           equipment?: Json
           experience?: number
+          eyes?: string | null
           features?: Json
           flaws?: string | null
+          goals?: string | null
+          hair?: string | null
+          height?: string | null
           hit_dice?: Json
           id?: string
           ideals?: string | null
@@ -1161,6 +1186,7 @@ export type Database = {
           race?: string
           saving_throws?: Json
           skills?: Json
+          skin?: string | null
           speed?: number
           spellcasting?: Json | null
           spells?: Json
@@ -1168,6 +1194,7 @@ export type Database = {
           temporary_hp?: number
           updated_at?: string
           user_id?: string
+          weight?: string | null
         }
         Relationships: []
       }

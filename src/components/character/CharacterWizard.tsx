@@ -337,6 +337,16 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       languages: [...selectedRace.languages, ...data.extraLanguages],
       image_url: null,
       conditions: [],
+      // Physical appearance fields
+      age: data.age || null,
+      height: data.height || null,
+      weight: data.weight || null,
+      eyes: data.eyes || null,
+      hair: data.hair || null,
+      skin: data.skin || null,
+      distinctive_features: data.distinctiveFeatures || null,
+      goals: data.goals || null,
+      allies_organizations: data.alliesOrganizations || null,
     };
 
     await createCharacter.mutateAsync(character);
