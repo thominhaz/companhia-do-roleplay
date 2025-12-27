@@ -12,7 +12,8 @@ import {
   Zap,
   Gem,
   Sword,
-  StickyNote
+  StickyNote,
+  Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DiceRoller } from "@/components/tools/DiceRoller";
@@ -24,6 +25,8 @@ import { HealingRest } from "@/components/tools/HealingRest";
 import { HomebrewForge } from "@/components/homebrew/HomebrewForge";
 import { QuickNotes } from "@/components/tools/QuickNotes";
 import { AppHeader } from "@/components/layout/AppHeader";
+import { useSubscription } from "@/hooks/useSubscription";
+import { toast } from "sonner";
 
 type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | "homebrew" | "notes" | null;
 
@@ -36,6 +39,7 @@ const tools = [
     color: "from-primary to-primary/70",
     featured: true,
     toolKey: "dice" as ActiveTool,
+    requiresAccess: false,
   },
   {
     id: "spells",
@@ -45,6 +49,7 @@ const tools = [
     color: "from-secondary to-secondary/70",
     featured: true,
     path: "/grimoire",
+    requiresAccess: false,
   },
   {
     id: "magic-items",
@@ -54,6 +59,7 @@ const tools = [
     color: "from-purple-500 to-purple-500/70",
     featured: true,
     toolKey: "magic-items" as ActiveTool,
+    requiresAccess: false,
   },
   {
     id: "conditions",
@@ -63,6 +69,7 @@ const tools = [
     color: "from-neon-blue to-neon-blue/70",
     featured: false,
     toolKey: "conditions" as ActiveTool,
+    requiresAccess: false,
   },
   {
     id: "weapons-armor",
@@ -72,6 +79,7 @@ const tools = [
     color: "from-gold to-gold/70",
     featured: false,
     toolKey: "weapons-armor" as ActiveTool,
+    requiresAccess: false,
   },
   {
     id: "rules",
@@ -81,6 +89,7 @@ const tools = [
     color: "from-orange-500 to-orange-500/70",
     featured: false,
     toolKey: "rules" as ActiveTool,
+    requiresAccess: false,
   },
   {
     id: "healing",
@@ -90,6 +99,7 @@ const tools = [
     color: "from-red-500 to-red-500/70",
     featured: false,
     toolKey: "healing" as ActiveTool,
+    requiresAccess: false,
   },
   {
     id: "homebrew",
@@ -99,6 +109,7 @@ const tools = [
     color: "from-primary to-primary/70",
     featured: true,
     toolKey: "homebrew" as ActiveTool,
+    requiresAccess: true,
   },
   {
     id: "notes",
@@ -108,6 +119,7 @@ const tools = [
     color: "from-amber-500 to-amber-500/70",
     featured: true,
     toolKey: "notes" as ActiveTool,
+    requiresAccess: true,
   },
 ];
 
@@ -116,18 +128,25 @@ export function ToolsScreen() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTool, setActiveTool] = useState<ActiveTool>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const { data: subscription } = useSubscription();
+  
+  const isVisitante = subscription?.tier === 'visitante';
 
   // Handle URL params for opening specific tool
   useEffect(() => {
     const toolParam = searchParams.get('tool');
     if (toolParam === 'notes') {
-      setActiveTool('notes');
+      if (isVisitante) {
+        toast.error("Resgate um código de acesso para usar as Notas Rápidas");
+      } else {
+        setActiveTool('notes');
+      }
       setSearchParams({}, { replace: true });
     } else if (toolParam === 'dice') {
       setActiveTool('dice');
       setSearchParams({}, { replace: true });
     }
-  }, [searchParams, setSearchParams]);
+  }, [searchParams, setSearchParams, isVisitante]);
   
   const filteredTools = tools.filter((t) => 
     t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -138,6 +157,14 @@ export function ToolsScreen() {
   const otherTools = filteredTools.filter((t) => !t.featured);
 
   const handleToolClick = (tool: typeof tools[0]) => {
+    // Check if tool requires access and user is visitante
+    if (tool.requiresAccess && isVisitante) {
+      toast.error("Resgate um código de acesso para usar esta ferramenta", {
+        description: "Apoie o Go20 no Catarse para obter seu código"
+      });
+      return;
+    }
+    
     if (tool.path) {
       navigate(tool.path);
     } else if (tool.toolKey) {
@@ -199,22 +226,29 @@ export function ToolsScreen() {
           <div className="grid grid-cols-2 gap-2.5 sm:gap-3 stagger-fast">
             {featuredTools.map((tool, index) => {
               const Icon = tool.icon;
+              const isLocked = tool.requiresAccess && isVisitante;
               return (
                 <button
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className={cn(
-                    "p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br text-left card-shine",
+                    "p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br text-left card-shine relative overflow-hidden",
                     tool.color,
+                    isLocked && "opacity-60",
                     "hover:scale-[1.02] hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.4),0_0_20px_rgba(255,159,85,0.15)] active:scale-[0.98] transition-all duration-300"
                   )}
                 >
+                  {isLocked && (
+                    <div className="absolute top-2 right-2">
+                      <Lock className="w-4 h-4 text-foreground/80" />
+                    </div>
+                  )}
                   <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-foreground mb-2 sm:mb-3" />
                   <h3 className="text-xs sm:text-sm font-semibold text-foreground">
                     {tool.name}
                   </h3>
                   <p className="text-[10px] sm:text-xs text-foreground/70 mt-0.5 line-clamp-2">
-                    {tool.description}
+                    {isLocked ? "Requer código de acesso" : tool.description}
                   </p>
                 </button>
               );
@@ -230,13 +264,15 @@ export function ToolsScreen() {
           <div className="space-y-1.5 sm:space-y-2 stagger-container">
             {otherTools.map((tool, index) => {
               const Icon = tool.icon;
+              const isLocked = tool.requiresAccess && isVisitante;
               return (
                 <button
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className={cn(
                     "w-full glass-card rounded-lg sm:rounded-xl p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3 card-hover-subtle",
-                    "text-left"
+                    "text-left",
+                    isLocked && "opacity-60"
                   )}
                 >
                   <div
@@ -252,10 +288,14 @@ export function ToolsScreen() {
                       {tool.name}
                     </h3>
                     <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
-                      {tool.description}
+                      {isLocked ? "Requer código de acesso" : tool.description}
                     </p>
                   </div>
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0 transition-transform group-hover:translate-x-1" />
+                  {isLocked ? (
+                    <Lock className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground flex-shrink-0 transition-transform group-hover:translate-x-1" />
+                  )}
                 </button>
               );
             })}

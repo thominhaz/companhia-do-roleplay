@@ -2007,7 +2007,13 @@ export type Database = {
         | "session_reminder"
         | "campaign_update"
         | "chat_message"
-      subscription_status: "free" | "premium" | "aldeao" | "heroi" | "mestre"
+      subscription_status:
+        | "free"
+        | "premium"
+        | "aldeao"
+        | "heroi"
+        | "mestre"
+        | "visitante"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -2154,7 +2160,14 @@ export const Constants = {
         "campaign_update",
         "chat_message",
       ],
-      subscription_status: ["free", "premium", "aldeao", "heroi", "mestre"],
+      subscription_status: [
+        "free",
+        "premium",
+        "aldeao",
+        "heroi",
+        "mestre",
+        "visitante",
+      ],
     },
   },
 } as const
