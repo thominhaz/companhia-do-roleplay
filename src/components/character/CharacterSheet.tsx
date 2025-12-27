@@ -1651,6 +1651,68 @@ export function CharacterSheet() {
 
             {/* Inventory removed - moved to Inventário tab */}
 
+            {/* Personality & Backstory Section */}
+            <SheetCard>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-primary" />
+                  Personalidade & História
+                </h3>
+              </div>
+              
+              {/* Personality Traits Grid */}
+              <div className="grid grid-cols-2 gap-2 mb-3">
+                {character.personality_traits && (
+                  <div className="bg-muted/30 rounded-xl p-3">
+                    <p className="text-[10px] uppercase text-primary font-semibold mb-1">Traços</p>
+                    <p className="text-xs text-muted-foreground line-clamp-3">{character.personality_traits}</p>
+                  </div>
+                )}
+                {character.ideals && (
+                  <div className="bg-muted/30 rounded-xl p-3">
+                    <p className="text-[10px] uppercase text-primary font-semibold mb-1">Ideais</p>
+                    <p className="text-xs text-muted-foreground line-clamp-3">{character.ideals}</p>
+                  </div>
+                )}
+                {character.bonds && (
+                  <div className="bg-muted/30 rounded-xl p-3">
+                    <p className="text-[10px] uppercase text-primary font-semibold mb-1">Vínculos</p>
+                    <p className="text-xs text-muted-foreground line-clamp-3">{character.bonds}</p>
+                  </div>
+                )}
+                {character.flaws && (
+                  <div className="bg-muted/30 rounded-xl p-3">
+                    <p className="text-[10px] uppercase text-primary font-semibold mb-1">Defeitos</p>
+                    <p className="text-xs text-muted-foreground line-clamp-3">{character.flaws}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Alignment */}
+              {character.alignment && (
+                <div className="bg-muted/30 rounded-xl p-3 mb-3">
+                  <p className="text-[10px] uppercase text-primary font-semibold mb-1">Alinhamento</p>
+                  <p className="text-xs text-foreground">{character.alignment}</p>
+                </div>
+              )}
+
+              {/* Backstory */}
+              {character.backstory && (
+                <div className="bg-muted/30 rounded-xl p-3">
+                  <p className="text-[10px] uppercase text-primary font-semibold mb-1">História</p>
+                  <p className="text-xs text-muted-foreground line-clamp-5">{character.backstory}</p>
+                </div>
+              )}
+
+              {/* Empty state */}
+              {!character.personality_traits && !character.ideals && !character.bonds && !character.flaws && !character.backstory && (
+                <div className="text-center py-6 text-muted-foreground">
+                  <BookOpen className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-xs">Nenhuma informação de personalidade</p>
+                </div>
+              )}
+            </SheetCard>
+
             {/* Notes Preview */}
             <SheetCard>
               <div className="flex items-center justify-between mb-3">
@@ -1668,9 +1730,9 @@ export function CharacterSheet() {
                   Editar
                 </Button>
               </div>
-              <div className="bg-muted/30 rounded-xl p-3 min-h-[100px]">
+              <div className="bg-muted/30 rounded-xl p-3 min-h-[60px]">
                 <p className="text-xs text-muted-foreground">
-                  {character.backstory || 'Clique em editar para adicionar anotações...'}
+                  Clique em editar para adicionar anotações...
                 </p>
               </div>
             </SheetCard>

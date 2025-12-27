@@ -868,23 +868,12 @@ export function CharacterPDFExport({
   }
 
   return (
-    <Button
-      variant="outline"
+    <button
       onClick={handleExport}
       disabled={isGenerating}
-      className="gap-2"
+      className="text-sm font-medium text-foreground hover:text-primary transition-colors disabled:opacity-50"
     >
-      {isGenerating ? (
-        <>
-          <Loader2 className="h-4 w-4 animate-spin" />
-          Gerando...
-        </>
-      ) : (
-        <>
-          <FileDown className="h-4 w-4" />
-          Exportar PDF
-        </>
-      )}
-    </Button>
+      {isGenerating ? "Gerando..." : "Exportar PDF"}
+    </button>
   );
 }
