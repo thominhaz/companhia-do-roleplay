@@ -26,6 +26,7 @@ import { HomebrewForge } from "@/components/homebrew/HomebrewForge";
 import { QuickNotes } from "@/components/tools/QuickNotes";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 
 type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | "homebrew" | "notes" | null;
@@ -129,6 +130,7 @@ export function ToolsScreen() {
   const [activeTool, setActiveTool] = useState<ActiveTool>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const { data: subscription } = useSubscription();
+  const { user } = useAuth();
   
   const isVisitante = subscription?.tier === 'visitante';
 
@@ -203,6 +205,16 @@ export function ToolsScreen() {
       <AppHeader
         title="Ferramentas"
         subtitle="Compêndio e utilitários"
+        rightContent={
+          !user ? (
+            <button 
+              onClick={() => navigate("/auth")}
+              className="px-4 py-2 text-sm font-medium bg-muted hover:bg-muted/80 rounded-xl text-foreground transition-colors"
+            >
+              Entrar
+            </button>
+          ) : undefined
+        }
       >
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
