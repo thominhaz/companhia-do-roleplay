@@ -256,7 +256,7 @@ export function HelpSheet({ open, onOpenChange }: HelpSheetProps) {
                 </a>
                 
                 <a 
-                  href="https://discord.gg/go20" 
+                  href="https://discord.gg/AP9UeE5paj"
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 p-3 rounded-xl bg-background hover:bg-accent transition-colors"
