@@ -133,6 +133,7 @@ export function ToolsScreen() {
   const { user } = useAuth();
   
   const isVisitante = subscription?.tier === 'visitante';
+  const canUseForge = subscription?.canUseForge ?? false;
 
   // Handle URL params for opening specific tool
   useEffect(() => {
@@ -163,6 +164,14 @@ export function ToolsScreen() {
     if (tool.requiresAccess && isVisitante) {
       toast.error("Resgate um código de acesso para usar esta ferramenta", {
         description: "Apoie o Go20 no Catarse para obter seu código"
+      });
+      return;
+    }
+    
+    // Check if it's the Forge and user doesn't have access (Aldeão)
+    if (tool.id === 'homebrew' && !canUseForge) {
+      toast.error("A Forja requer o plano Herói ou superior", {
+        description: "Faça upgrade do seu plano para criar conteúdo homebrew"
       });
       return;
     }
@@ -238,7 +247,9 @@ export function ToolsScreen() {
           <div className="grid grid-cols-2 gap-2.5 sm:gap-3 stagger-fast">
             {featuredTools.map((tool, index) => {
               const Icon = tool.icon;
-              const isLocked = tool.requiresAccess && isVisitante;
+              const isLockedVisitante = tool.requiresAccess && isVisitante;
+              const isLockedForge = tool.id === 'homebrew' && !canUseForge;
+              const isLocked = isLockedVisitante || isLockedForge;
               return (
                 <button
                   key={tool.id}
@@ -260,7 +271,7 @@ export function ToolsScreen() {
                     {tool.name}
                   </h3>
                   <p className="text-[10px] sm:text-xs text-foreground/70 mt-0.5 line-clamp-2">
-                    {isLocked ? "Requer código de acesso" : tool.description}
+                    {isLockedVisitante ? "Requer código de acesso" : isLockedForge ? "Requer plano Herói" : tool.description}
                   </p>
                 </button>
               );
@@ -276,7 +287,9 @@ export function ToolsScreen() {
           <div className="space-y-1.5 sm:space-y-2 stagger-container">
             {otherTools.map((tool, index) => {
               const Icon = tool.icon;
-              const isLocked = tool.requiresAccess && isVisitante;
+              const isLockedVisitante = tool.requiresAccess && isVisitante;
+              const isLockedForge = tool.id === 'homebrew' && !canUseForge;
+              const isLocked = isLockedVisitante || isLockedForge;
               return (
                 <button
                   key={tool.id}
@@ -300,7 +313,7 @@ export function ToolsScreen() {
                       {tool.name}
                     </h3>
                     <p className="text-[10px] sm:text-xs text-muted-foreground truncate">
-                      {isLocked ? "Requer código de acesso" : tool.description}
+                      {isLockedVisitante ? "Requer código de acesso" : isLockedForge ? "Requer plano Herói" : tool.description}
                     </p>
                   </div>
                   {isLocked ? (

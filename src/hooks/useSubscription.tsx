@@ -165,7 +165,7 @@ export function useSubscription() {
         canCreateCampaign: tier === 'mestre',
         canCreateHomebrew: tier === 'heroi' || tier === 'mestre',
         canUseQuickNotes: tier !== 'visitante',
-        canUseForge: tier !== 'visitante',
+        canUseForge: tier === 'heroi' || tier === 'mestre',
         limits,
       };
     },
