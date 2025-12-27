@@ -1,4 +1,4 @@
-import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Wand2, Skull, Check, Lock, Loader2, LogIn, Swords, Trash2, LogOut, Eye } from "lucide-react";
+import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, Wand2, Skull, Check, Lock, Loader2, LogIn, Swords, Trash2, LogOut, Eye, Gift } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -400,6 +400,7 @@ export function CampaignsScreen() {
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
   const canCreateCampaign = subscription?.canCreateCampaign ?? false;
+  const isVisitante = subscription?.tier === 'visitante';
   const deleteCampaign = useDeleteCampaign();
   const leaveCampaign = useLeaveCampaign();
 
@@ -502,7 +503,7 @@ export function CampaignsScreen() {
         title="Campanhas"
         rightContent={
           <div className="flex items-center gap-2">
-            {subscription?.tier && (
+            {subscription?.tier && !isVisitante && (
               <div className={cn(
                 "px-2.5 py-1 rounded-full flex items-center gap-1.5 text-xs font-semibold",
                 subscription.tier === 'mestre' && "bg-gradient-to-r from-amber-500 to-yellow-500 text-black",
@@ -514,37 +515,45 @@ export function CampaignsScreen() {
                 <span className="capitalize">{subscription.tier}</span>
               </div>
             )}
-            {user ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowJoinSheet(true)}
-                className="gap-1"
-              >
-                <Users className="w-4 h-4" />
-                Participar
-              </Button>
-            ) : (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => navigate("/auth")}
-                className="gap-1"
-              >
-                <LogIn className="w-4 h-4" />
-                Entrar
-              </Button>
+            {!isVisitante && (
+              user ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowJoinSheet(true)}
+                  className="gap-1"
+                >
+                  <Users className="w-4 h-4" />
+                  Participar
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => navigate("/auth")}
+                  className="gap-1"
+                >
+                  <LogIn className="w-4 h-4" />
+                  Entrar
+                </Button>
+              )
             )}
             <button 
               onClick={handleCreateCampaign}
-              className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-purple-700 flex items-center justify-center shadow-lg"
+              disabled={isVisitante}
+              className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
+                isVisitante 
+                  ? "bg-muted" 
+                  : "bg-gradient-to-br from-primary to-purple-700"
+              }`}
             >
-              <Plus className="w-5 h-5 text-foreground" />
+              {isVisitante ? <Lock className="w-5 h-5 text-muted-foreground" /> : <Plus className="w-5 h-5 text-foreground" />}
             </button>
           </div>
         }
       >
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+        {!isVisitante && (
+          <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           <button 
             onClick={() => setActiveFilter('all')}
             className={cn(
@@ -563,21 +572,50 @@ export function CampaignsScreen() {
           >
             Mestrando ({masterCampaigns.length})
           </button>
-          <button 
-            onClick={() => setActiveFilter('playing')}
-            className={cn(
-              "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
-              activeFilter === 'playing' ? "bg-primary text-foreground" : "bg-dark text-muted-foreground"
-            )}
-          >
-            Jogando ({playerCampaigns.length})
-          </button>
-        </div>
+            <button 
+              onClick={() => setActiveFilter('playing')}
+              className={cn(
+                "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
+                activeFilter === 'playing' ? "bg-primary text-foreground" : "bg-dark text-muted-foreground"
+              )}
+            >
+              Jogando ({playerCampaigns.length})
+            </button>
+          </div>
+        )}
       </AppHeader>
 
       {isLoading ? (
         <div className="flex items-center justify-center py-20">
           <Loader2 className="w-8 h-8 animate-spin text-primary" />
+        </div>
+      ) : isVisitante ? (
+        // Visitante view - show access gate
+        <div className="px-4 sm:px-5 mt-4 sm:mt-6">
+          <div className="text-center py-12 sm:py-16">
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-muted flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 sm:w-10 sm:h-10 text-muted-foreground" />
+            </div>
+            <h3 className="text-base sm:text-lg font-semibold mb-2">
+              Acesso Restrito
+            </h3>
+            <p className="text-muted-foreground text-sm mb-6 px-4 max-w-md mx-auto">
+              Para criar e participar de campanhas, você precisa resgatar um código de acesso. 
+              Apoie o Go20 no Catarse para obter seu código!
+            </p>
+            <div className="space-y-3">
+              <Button
+                onClick={() => window.open('https://catarse.me/go20', '_blank')}
+                className="bg-gradient-primary"
+              >
+                <Gift className="w-4 h-4 mr-2" />
+                Apoiar no Catarse
+              </Button>
+              <p className="text-xs text-muted-foreground">
+                Já tem um código? Vá em Menu → Assinatura para resgatar
+              </p>
+            </div>
+          </div>
         </div>
       ) : totalCampaigns === 0 ? (
         <div className="px-5 py-20 text-center">
