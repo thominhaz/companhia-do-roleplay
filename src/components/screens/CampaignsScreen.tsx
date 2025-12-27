@@ -649,7 +649,13 @@ export function CampaignsScreen() {
           <div className="flex gap-3 justify-center">
             <Button
               variant="outline"
-              onClick={() => setShowJoinSheet(true)}
+              onClick={() => {
+                if (isVisitante) {
+                  showUpgradeModal('aldeao', 'Entrar em Campanhas', 'Participe de campanhas com outros jogadores');
+                } else {
+                  setShowJoinSheet(true);
+                }
+              }}
             >
               <LogIn className="w-4 h-4 mr-2" />
               Entrar em Campanha
