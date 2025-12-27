@@ -130,8 +130,9 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   const navigate = useNavigate();
 
   const displayName = user?.user_metadata?.display_name || user?.email?.split("@")[0] || "Aventureiro";
-  const currentTier = subscription?.tier || 'aldeao';
+  const currentTier = subscription?.tier || 'visitante';
   const isPaidTier = currentTier === 'heroi' || currentTier === 'mestre';
+  const isVisitante = currentTier === 'visitante';
 
   const isLoading = loadingChars || loadingCampaigns;
   const nextSession = upcomingSessions?.[0];
@@ -323,6 +324,12 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                       });
                       return;
                     }
+                    if (isVisitante) {
+                      toast.error("Resgate um código de acesso para criar personagens", {
+                        description: "Apoie o Go20 no Catarse para obter seu código"
+                      });
+                      return;
+                    }
                     navigate('/?tab=characters&create=true');
                     break;
                   case 'join':
@@ -332,6 +339,12 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                           label: "Entrar",
                           onClick: () => navigate("/auth")
                         }
+                      });
+                      return;
+                    }
+                    if (isVisitante) {
+                      toast.error("Resgate um código de acesso para entrar em campanhas", {
+                        description: "Apoie o Go20 no Catarse para obter seu código"
                       });
                       return;
                     }
@@ -347,6 +360,12 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                           label: "Entrar",
                           onClick: () => navigate("/auth")
                         }
+                      });
+                      return;
+                    }
+                    if (isVisitante) {
+                      toast.error("Resgate um código de acesso para usar as notas rápidas", {
+                        description: "Apoie o Go20 no Catarse para obter seu código"
                       });
                       return;
                     }
