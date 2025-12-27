@@ -85,7 +85,7 @@ export function CommunitySection() {
 
         <div className="mt-4 pt-4 border-t border-border/30">
           <p className="text-xs text-center text-muted-foreground">
-            Go20 é um projeto open source feito com <Heart className="w-3 h-3 inline text-magenta-red" /> pela comunidade
+            Go20 é um projeto feito com <Heart className="w-3 h-3 inline text-magenta-red" /> para a comunidade
           </p>
         </div>
       </div>
