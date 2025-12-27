@@ -19,6 +19,7 @@ import { formatDistanceToNow, format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { CommunitySection } from "@/components/home/CommunitySection";
 import { toast } from "sonner";
 import type { TabRoute } from "@/types";
 
@@ -404,6 +405,9 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </div>
         )}
       </section>
+
+      {/* Community Section */}
+      <CommunitySection />
     </div>
   );
 }
