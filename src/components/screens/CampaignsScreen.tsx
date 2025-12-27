@@ -2,11 +2,13 @@ import { Plus, Crown, Users, Calendar, MoreVertical, MessageCircle, StickyNote, 
 import { cn } from "@/lib/utils";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, SubscriptionTier } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { useMasterCampaigns, usePlayerCampaigns, CampaignDB, useDeleteCampaign } from "@/hooks/useCampaigns";
 import { useLeaveCampaign } from "@/hooks/useSessions";
 import { toast } from "sonner";
+import { UpgradeModal } from "@/components/menu/UpgradeModal";
+import { SubscriptionSheet } from "@/components/menu/SubscriptionSheet";
 import { format, formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
@@ -396,6 +398,13 @@ export function CampaignsScreen() {
   const [campaignToDelete, setCampaignToDelete] = useState<CampaignDB | null>(null);
   const [campaignToLeave, setCampaignToLeave] = useState<CampaignDB | null>(null);
 
+  // Upgrade modal state
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [upgradeRequiredTier, setUpgradeRequiredTier] = useState<SubscriptionTier>('aldeao');
+  const [upgradeFeatureName, setUpgradeFeatureName] = useState("");
+  const [upgradeFeatureDescription, setUpgradeFeatureDescription] = useState<string | undefined>();
+  const [subscriptionSheetOpen, setSubscriptionSheetOpen] = useState(false);
+
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
@@ -403,6 +412,13 @@ export function CampaignsScreen() {
   const isVisitante = subscription?.tier === 'visitante';
   const deleteCampaign = useDeleteCampaign();
   const leaveCampaign = useLeaveCampaign();
+
+  const showUpgradeModal = (requiredTier: SubscriptionTier, featureName: string, description?: string) => {
+    setUpgradeRequiredTier(requiredTier);
+    setUpgradeFeatureName(featureName);
+    setUpgradeFeatureDescription(description);
+    setUpgradeModalOpen(true);
+  };
 
   const { data: masterData, isLoading: loadingMaster } = useMasterCampaigns();
   const { data: playerData, isLoading: loadingPlayer } = usePlayerCampaigns();
@@ -515,28 +531,32 @@ export function CampaignsScreen() {
                 <span className="capitalize">{subscription.tier}</span>
               </div>
             )}
-            {!isVisitante && (
-              user ? (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowJoinSheet(true)}
-                  className="gap-1"
-                >
-                  <Users className="w-4 h-4" />
-                  Participar
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => navigate("/auth")}
-                  className="gap-1"
-                >
-                  <LogIn className="w-4 h-4" />
-                  Entrar
-                </Button>
-              )
+            {user ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (isVisitante) {
+                    showUpgradeModal('aldeao', 'Participar de Campanhas', 'Entre em campanhas e jogue com outros aventureiros');
+                  } else {
+                    setShowJoinSheet(true);
+                  }
+                }}
+                className="gap-1"
+              >
+                <Users className="w-4 h-4" />
+                Participar
+              </Button>
+            ) : (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/auth")}
+                className="gap-1"
+              >
+                <LogIn className="w-4 h-4" />
+                Entrar
+              </Button>
             )}
             <button 
               onClick={handleCreateCampaign}
@@ -785,6 +805,20 @@ export function CampaignsScreen() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <UpgradeModal
+        open={upgradeModalOpen}
+        onOpenChange={setUpgradeModalOpen}
+        requiredTier={upgradeRequiredTier}
+        featureName={upgradeFeatureName}
+        featureDescription={upgradeFeatureDescription}
+        onOpenSubscription={() => setSubscriptionSheetOpen(true)}
+      />
+
+      <SubscriptionSheet
+        open={subscriptionSheetOpen}
+        onOpenChange={setSubscriptionSheetOpen}
+      />
     </div>
   );
 }
