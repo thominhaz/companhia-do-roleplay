@@ -377,7 +377,6 @@ function PlayerCampaignCard({ campaign, masterName, onClick, onChatClick, onNote
 
 export function CampaignsScreen() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [showPremiumModal, setShowPremiumModal] = useState(false);
   const [showCreateSheet, setShowCreateSheet] = useState(false);
   const [showJoinSheet, setShowJoinSheet] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<CampaignDB | null>(null);
@@ -444,7 +443,7 @@ export function CampaignsScreen() {
       return;
     }
     if (!canCreateCampaign) {
-      setShowPremiumModal(true);
+      showUpgradeModal('mestre', 'Criar Campanhas', 'Crie e gerencie suas próprias campanhas como Mestre');
       return;
     }
     setShowCreateSheet(true);
@@ -722,11 +721,6 @@ export function CampaignsScreen() {
       )}
 
       {/* Modals & Sheets */}
-      <PremiumModal
-        isOpen={showPremiumModal}
-        onClose={() => setShowPremiumModal(false)}
-      />
-
       <CreateCampaignSheet
         open={showCreateSheet}
         onOpenChange={setShowCreateSheet}
