@@ -540,14 +540,14 @@ export function CampaignsScreen() {
             )}
             <button 
               onClick={handleCreateCampaign}
-              disabled={isVisitante}
+              disabled={!canCreateCampaign}
               className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
-                isVisitante 
-                  ? "bg-muted" 
-                  : "bg-gradient-to-br from-primary to-purple-700"
+                canCreateCampaign 
+                  ? "bg-gradient-to-br from-amber-500 to-yellow-500" 
+                  : "bg-muted"
               }`}
             >
-              {isVisitante ? <Lock className="w-5 h-5 text-muted-foreground" /> : <Plus className="w-5 h-5 text-foreground" />}
+              {canCreateCampaign ? <Plus className="w-5 h-5 text-black" /> : <Lock className="w-5 h-5 text-muted-foreground" />}
             </button>
           </div>
         }
