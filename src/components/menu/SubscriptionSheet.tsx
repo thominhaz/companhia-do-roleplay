@@ -12,6 +12,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { PlanComparisonSection } from "./PlanComparisonSection";
 
 interface SubscriptionSheetProps {
   open: boolean;
@@ -254,6 +255,9 @@ export function SubscriptionSheet({ open, onOpenChange }: SubscriptionSheetProps
               );
             })}
           </div>
+
+          {/* Plan Comparison Section */}
+          <PlanComparisonSection currentTier={currentTier} />
 
           {/* Redeem Code Section with Catarse Info */}
           <div className="p-4 rounded-xl border border-border bg-card space-y-4">
