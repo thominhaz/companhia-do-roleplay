@@ -75,6 +75,7 @@ import { useCharacterDocuments } from "@/hooks/useDocuments";
 import { CharacterFactionReputations } from "./CharacterFactionReputations";
 import { InventoryTab } from "./InventoryTab";
 import { CharacterPDFExport } from "./CharacterPDFExport";
+import { EditAppearanceSheet } from "./EditAppearanceSheet";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -277,6 +278,7 @@ export function CharacterSheet() {
   const [skillsTab, setSkillsTab] = useState('pericias');
   const [showLevelUp, setShowLevelUp] = useState(false);
   const [showEditStats, setShowEditStats] = useState(false);
+  const [showEditAppearance, setShowEditAppearance] = useState(false);
   const [showSpells, setShowSpells] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -741,6 +743,14 @@ export function CharacterSheet() {
       show: true,
     },
     {
+      id: 'edit-appearance',
+      label: 'Aparência & Personalidade',
+      icon: User,
+      color: 'pink',
+      onClick: () => setShowEditAppearance(true),
+      show: true,
+    },
+    {
       id: 'levelup',
       label: 'Subir de Nível',
       icon: TrendingUp,
@@ -811,6 +821,7 @@ export function CharacterSheet() {
       cyan: { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
       orange: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
       emerald: { bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
+      pink: { bg: 'bg-pink-500/20', text: 'text-pink-400' },
     };
     return colors[color] || { bg: 'bg-muted', text: 'text-muted-foreground' };
   };
@@ -2391,6 +2402,13 @@ export function CharacterSheet() {
           characterName={character.name}
         />
       )}
+
+      {/* Edit Appearance & Personality Sheet */}
+      <EditAppearanceSheet
+        character={character}
+        open={showEditAppearance}
+        onOpenChange={setShowEditAppearance}
+      />
     </div>
   );
 }
