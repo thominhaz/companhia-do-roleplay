@@ -34,7 +34,8 @@ import {
   ArrowRightLeft,
   Scroll,
   Users,
-  Package
+  Package,
+  FileDown
 } from "lucide-react";
 import advancementData from "@/data/rules/avanco-personagem.json";
 import { calculateFeatBonuses } from "@/lib/featEffects";
@@ -73,6 +74,7 @@ import { DocumentsSheet } from "./DocumentsSheet";
 import { useCharacterDocuments } from "@/hooks/useDocuments";
 import { CharacterFactionReputations } from "./CharacterFactionReputations";
 import { InventoryTab } from "./InventoryTab";
+import { CharacterPDFExport } from "./CharacterPDFExport";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -788,6 +790,15 @@ export function CharacterSheet() {
       show: !!characterCampaign,
       count: unreadDocumentsCount,
     },
+    {
+      id: 'export-pdf',
+      label: 'Exportar PDF',
+      icon: FileDown,
+      color: 'emerald',
+      onClick: () => {}, // handled by custom component
+      show: true,
+      isExportPdf: true,
+    },
   ];
 
   const getColorClasses = (color: string) => {
@@ -799,6 +810,7 @@ export function CharacterSheet() {
       violet: { bg: 'bg-violet-500/20', text: 'text-violet-400' },
       cyan: { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
       orange: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
+      emerald: { bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
     };
     return colors[color] || { bg: 'bg-muted', text: 'text-muted-foreground' };
   };
@@ -842,6 +854,21 @@ export function CharacterSheet() {
                 {menuActions.filter(action => action.show).map((action) => {
                   const Icon = action.icon;
                   const colorClasses = getColorClasses(action.color);
+                  
+                  // Special handling for PDF export
+                  if ((action as any).isExportPdf) {
+                    return (
+                      <div key={action.id} className="px-1">
+                        <div className="flex items-center gap-3 px-3 py-2.5 rounded-lg">
+                          <div className={`w-8 h-8 rounded-lg ${colorClasses.bg} flex items-center justify-center shrink-0`}>
+                            <Icon className={`w-4 h-4 ${colorClasses.text}`} />
+                          </div>
+                          <CharacterPDFExport character={character} />
+                        </div>
+                      </div>
+                    );
+                  }
+                  
                   return (
                     <DropdownMenuItem 
                       key={action.id}
@@ -907,6 +934,19 @@ export function CharacterSheet() {
             {menuActions.filter(action => action.show).map((action) => {
               const Icon = action.icon;
               const colorClasses = getColorClasses(action.color);
+              
+              // Special handling for PDF export
+              if ((action as any).isExportPdf) {
+                return (
+                  <div key={action.id} className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-muted/50 transition-colors">
+                    <div className={`w-8 h-8 rounded-lg ${colorClasses.bg} flex items-center justify-center shrink-0`}>
+                      <Icon className={`w-4 h-4 ${colorClasses.text}`} />
+                    </div>
+                    <CharacterPDFExport character={character} />
+                  </div>
+                );
+              }
+              
               return (
                 <button
                   key={action.id}
