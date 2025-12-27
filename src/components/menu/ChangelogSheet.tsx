@@ -5,7 +5,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, Bug, Wrench, Zap, Rocket, Brain, FileText, Store, Users, Swords, Gem, Clock, Flag, Hammer, FileDown } from "lucide-react";
+import { Sparkles, Bug, Wrench, Zap, Rocket, Brain, FileText, Store, Users, Swords, Gem, Clock, Flag, Hammer, FileDown, BookOpen, Wand2, ScrollText } from "lucide-react";
 
 interface ChangelogEntry {
   version: string;
@@ -62,6 +62,21 @@ const changelog: ChangelogEntry[] = [
 ];
 
 const upcomingFeatures: UpcomingFeature[] = [
+  {
+    icon: ScrollText,
+    title: "Resumo de Sessão Automático (IA)",
+    description: "Ao final de uma sessão, a IA analisa os logs de chat e combate para gerar um recap narrativo que pode ser salvo como nota da campanha.",
+  },
+  {
+    icon: Wand2,
+    title: "Consultor de Magias (IA)",
+    description: "Pergunte em linguagem natural qual magia usar em determinada situação e receba sugestões contextuais das magias disponíveis para seu personagem.",
+  },
+  {
+    icon: BookOpen,
+    title: "Assistente de Regras (IA)",
+    description: "Tire dúvidas sobre regras do D&D 5e em linguagem natural. A IA consulta o SRD e responde com precisão, citando as fontes.",
+  },
   {
     icon: Brain,
     title: "Sistema de Stress e Sanidade",
