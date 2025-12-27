@@ -151,17 +151,27 @@ export function CharactersScreen() {
         title="Personagens"
         subtitle={user && subscription && !isVisitante ? `${subscription.characterCount}/${subscription.limits.maxCharacters === 'unlimited' ? '∞' : subscription.limits.maxCharacters} personagens` : undefined}
         rightContent={
-          <button 
-            onClick={handleCreateCharacter}
-            disabled={!user || !canCreateCharacter}
-            className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
-              canCreateCharacter 
-                ? "bg-gradient-to-br from-primary to-purple-700" 
-                : "bg-muted"
-            }`}
-          >
-            {canCreateCharacter ? <Plus className="w-5 h-5" /> : <Lock className="w-5 h-5 text-muted-foreground" />}
-          </button>
+          <div className="flex items-center gap-2">
+            {!user && (
+              <button 
+                onClick={() => navigate("/auth")}
+                className="px-4 py-2 text-sm font-medium bg-muted hover:bg-muted/80 rounded-xl text-foreground transition-colors"
+              >
+                Entrar
+              </button>
+            )}
+            <button 
+              onClick={handleCreateCharacter}
+              disabled={!user || !canCreateCharacter}
+              className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
+                canCreateCharacter 
+                  ? "bg-gradient-to-br from-primary to-purple-700" 
+                  : "bg-muted"
+              }`}
+            >
+              {canCreateCharacter ? <Plus className="w-5 h-5" /> : <Lock className="w-5 h-5 text-muted-foreground" />}
+            </button>
+          </div>
         }
       >
         {!isVisitante && (
