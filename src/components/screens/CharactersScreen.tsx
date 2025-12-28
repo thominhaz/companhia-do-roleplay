@@ -18,7 +18,9 @@ import {
   Gift
 } from "lucide-react";
 import { useCharacters, useArchiveCharacter, useDeleteCharacter } from "@/hooks/useCharacters";
-import { useSubscription } from "@/hooks/useSubscription";
+import { useSubscription, SubscriptionTier } from "@/hooks/useSubscription";
+import { UpgradeModal } from "@/components/menu/UpgradeModal";
+import { SubscriptionSheet } from "@/components/menu/SubscriptionSheet";
 import { useAuth } from "@/hooks/useAuth";
 import { CharacterWizard } from "@/components/character/CharacterWizard";
 import { formatDistanceToNow } from "date-fns";
@@ -82,6 +84,11 @@ export function CharactersScreen() {
   const [showWizard, setShowWizard] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [characterToDelete, setCharacterToDelete] = useState<string | null>(null);
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [upgradeModalTier, setUpgradeModalTier] = useState<SubscriptionTier>('aldeao');
+  const [upgradeModalFeature, setUpgradeModalFeature] = useState('');
+  const [upgradeModalDescription, setUpgradeModalDescription] = useState('');
+  const [subscriptionSheetOpen, setSubscriptionSheetOpen] = useState(false);
   
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
@@ -90,6 +97,13 @@ export function CharactersScreen() {
   const deleteCharacter = useDeleteCharacter();
 
   const isVisitante = subscription?.tier === 'visitante';
+
+  const showUpgradeModal = (tier: SubscriptionTier, feature: string, description: string) => {
+    setUpgradeModalTier(tier);
+    setUpgradeModalFeature(feature);
+    setUpgradeModalDescription(description);
+    setUpgradeModalOpen(true);
+  };
 
   // Open wizard if ?create=true in URL
   useEffect(() => {
@@ -103,7 +117,14 @@ export function CharactersScreen() {
 
   const handleCreateCharacter = () => {
     if (!user) return;
-    if (!canCreateCharacter) return;
+    if (isVisitante) {
+      showUpgradeModal('aldeao', 'Criar Personagens', 'Crie e gerencie seus personagens de RPG');
+      return;
+    }
+    if (!canCreateCharacter) {
+      showUpgradeModal('heroi', 'Mais Personagens', 'Aumente seu limite de personagens');
+      return;
+    }
     setShowWizard(true);
   };
 
@@ -400,6 +421,25 @@ export function CharactersScreen() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Upgrade Modal */}
+      <UpgradeModal
+        open={upgradeModalOpen}
+        onOpenChange={setUpgradeModalOpen}
+        requiredTier={upgradeModalTier}
+        featureName={upgradeModalFeature}
+        featureDescription={upgradeModalDescription}
+        onOpenSubscription={() => {
+          setUpgradeModalOpen(false);
+          setSubscriptionSheetOpen(true);
+        }}
+      />
+
+      {/* Subscription Sheet */}
+      <SubscriptionSheet
+        open={subscriptionSheetOpen}
+        onOpenChange={setSubscriptionSheetOpen}
+      />
     </div>
   );
 }
