@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Combatant } from "@/hooks/useCombat";
+import { Combatant, useUpdateCombatant } from "@/hooks/useCombat";
 import { supabase } from "@/integrations/supabase/client";
 import { getModifier } from "@/data/srd";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { HomebrewMonsterData, MonsterAction } from "@/types";
 import {
@@ -23,7 +24,11 @@ import {
   FlameKindling,
   ShieldOff,
   Languages,
-  Target
+  Target,
+  Pencil,
+  Check,
+  Minus,
+  Plus
 } from "lucide-react";
 
 interface CombatantStatBlockProps {
@@ -95,6 +100,9 @@ export function CombatantStatBlock({
   const [homebrewMonster, setHomebrewMonster] = useState<HomebrewMonster | null>(null);
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'stats' | 'actions'>('stats');
+  const [isEditingHp, setIsEditingHp] = useState(false);
+  const [hpValue, setHpValue] = useState("");
+  const updateCombatant = useUpdateCombatant();
 
   // Fetch character data if combatant has character_id
   useEffect(() => {
@@ -181,6 +189,90 @@ export function CombatantStatBlock({
     return "bg-green-500";
   };
 
+  const startEditHp = () => {
+    setHpValue(combatant.current_hp.toString());
+    setIsEditingHp(true);
+  };
+
+  const saveHp = () => {
+    const newHp = parseInt(hpValue);
+    if (!isNaN(newHp) && newHp >= 0 && newHp <= combatant.max_hp) {
+      updateCombatant.mutate({
+        id: combatant.id,
+        encounterId: combatant.encounter_id,
+        current_hp: newHp,
+        syncToCharacter: combatant.is_player
+      });
+    }
+    setIsEditingHp(false);
+  };
+
+  const adjustHp = (delta: number) => {
+    const newHp = Math.max(0, Math.min(combatant.max_hp, combatant.current_hp + delta));
+    updateCombatant.mutate({
+      id: combatant.id,
+      encounterId: combatant.encounter_id,
+      current_hp: newHp,
+      syncToCharacter: combatant.is_player
+    });
+  };
+
+  const HpQuickEdit = () => (
+    <div className="flex items-center gap-1">
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-6 w-6"
+        onClick={() => adjustHp(-1)}
+      >
+        <Minus className="w-3 h-3" />
+      </Button>
+      {isEditingHp ? (
+        <div className="flex items-center gap-1">
+          <Input
+            type="number"
+            value={hpValue}
+            onChange={(e) => setHpValue(e.target.value)}
+            className="w-14 h-6 text-xs text-center"
+            min={0}
+            max={combatant.max_hp}
+            autoFocus
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') saveHp();
+              if (e.key === 'Escape') setIsEditingHp(false);
+            }}
+          />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-6 w-6 text-green-500"
+            onClick={saveHp}
+          >
+            <Check className="w-3 h-3" />
+          </Button>
+        </div>
+      ) : (
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-6 px-2 text-xs"
+          onClick={startEditHp}
+        >
+          <Pencil className="w-3 h-3 mr-1" />
+          Editar
+        </Button>
+      )}
+      <Button
+        variant="ghost"
+        size="icon"
+        className="h-6 w-6"
+        onClick={() => adjustHp(1)}
+      >
+        <Plus className="w-3 h-3" />
+      </Button>
+    </div>
+  );
+
   const renderMonsterAction = (action: MonsterAction, index: number) => (
     <motion.div
       key={index}
@@ -249,7 +341,7 @@ export function CombatantStatBlock({
             {/* Basic Stats */}
             <div className="space-y-1 text-sm">
               <p><span className="font-bold text-red-400">Classe de Armadura</span> {combatant.armor_class}</p>
-              <p className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-bold text-red-400">Pontos de Vida</span> 
                 <span>{combatant.current_hp} / {combatant.max_hp}</span>
                 {data.hit_points && (
@@ -262,7 +354,8 @@ export function CombatantStatBlock({
                     ({data.hit_points})
                   </Button>
                 )}
-              </p>
+                <HpQuickEdit />
+              </div>
               <p><span className="font-bold text-red-400">Deslocamento</span> {data.speed}</p>
             </div>
 
@@ -463,6 +556,11 @@ export function CombatantStatBlock({
               </div>
             </div>
 
+            {/* HP Quick Edit */}
+            <div className="flex items-center justify-center">
+              <HpQuickEdit />
+            </div>
+
             {/* Attributes */}
             <div className="grid grid-cols-6 gap-1 text-center">
               {Object.entries(ATTR_NAMES).map(([key, abbr]) => {
@@ -555,7 +653,7 @@ export function CombatantStatBlock({
           </div>
 
           {/* HP Bar */}
-          <div className="space-y-1">
+          <div className="space-y-2">
             <div className="h-3 bg-muted rounded-full overflow-hidden">
               <motion.div
                 className={getHpColor()}
@@ -564,6 +662,10 @@ export function CombatantStatBlock({
                 transition={{ type: "spring", stiffness: 100 }}
                 style={{ height: '100%' }}
               />
+            </div>
+            {/* HP Quick Edit */}
+            <div className="flex items-center justify-center">
+              <HpQuickEdit />
             </div>
           </div>
 
