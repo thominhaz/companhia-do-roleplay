@@ -509,7 +509,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                   </div>
 
                   {/* Right: Stat Block Panel */}
-                  <div className="w-[360px] hidden md:block">
+                  <div className="w-[360px] hidden md:block overflow-hidden">
                     <CombatantStatBlock
                       combatant={selectedCombatant}
                       campaignId={campaignId}
