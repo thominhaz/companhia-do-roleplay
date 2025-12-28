@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { HomebrewMonsterData, MonsterAction } from "@/types";
+import { PlayerCharacterSheet } from "../dashboard/PlayerCharacterSheet";
 import {
   Heart,
   Shield,
@@ -28,7 +29,8 @@ import {
   Pencil,
   Check,
   Minus,
-  Plus
+  Plus,
+  FileText
 } from "lucide-react";
 
 interface CombatantStatBlockProps {
@@ -102,6 +104,7 @@ export function CombatantStatBlock({
   const [activeTab, setActiveTab] = useState<'stats' | 'actions'>('stats');
   const [isEditingHp, setIsEditingHp] = useState(false);
   const [hpValue, setHpValue] = useState("");
+  const [showFullSheet, setShowFullSheet] = useState(false);
   const updateCombatant = useUpdateCombatant();
 
   // Fetch character data if combatant has character_id
@@ -512,95 +515,115 @@ export function CombatantStatBlock({
     const attributes = characterData.attributes as Record<string, number>;
 
     return (
-      <div className="h-full flex flex-col bg-card border-l border-border">
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-blue-900/20 to-cyan-900/20">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden border-2 border-blue-500/50 bg-blue-500/20">
-              {characterData.image_url ? (
-                <img src={characterData.image_url} alt={characterData.name} className="w-full h-full object-cover" />
-              ) : (
-                <User className="w-6 h-6 text-blue-400" />
-              )}
+      <>
+        <div className="h-full flex flex-col bg-card border-l border-border">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-blue-900/20 to-cyan-900/20">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden border-2 border-blue-500/50 bg-blue-500/20">
+                {characterData.image_url ? (
+                  <img src={characterData.image_url} alt={characterData.name} className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-6 h-6 text-blue-400" />
+                )}
+              </div>
+              <div>
+                <h2 className="text-lg font-bold">{characterData.name}</h2>
+                <p className="text-xs text-muted-foreground">
+                  {characterData.race} • {characterData.class} Nv {characterData.level}
+                </p>
+              </div>
             </div>
-            <div>
-              <h2 className="text-lg font-bold">{characterData.name}</h2>
-              <p className="text-xs text-muted-foreground">
-                {characterData.race} • {characterData.class} Nv {characterData.level}
-              </p>
-            </div>
+            <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
+              <X className="w-4 h-4" />
+            </Button>
           </div>
-          <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8">
-            <X className="w-4 h-4" />
-          </Button>
-        </div>
 
-        <ScrollArea className="flex-1">
-          <div className="p-4 space-y-4">
-            {/* Combat Stats Row */}
-            <div className="grid grid-cols-3 gap-2">
-              <div className="bg-muted/30 rounded-lg p-3 text-center">
-                <Heart className="w-5 h-5 mx-auto mb-1 text-red-500" />
-                <div className="text-lg font-bold">{combatant.current_hp}/{combatant.max_hp}</div>
-                <div className="text-[10px] text-muted-foreground">HP</div>
-              </div>
-              <div className="bg-muted/30 rounded-lg p-3 text-center">
-                <Shield className="w-5 h-5 mx-auto mb-1 text-blue-500" />
-                <div className="text-lg font-bold">{combatant.armor_class}</div>
-                <div className="text-[10px] text-muted-foreground">CA</div>
-              </div>
-              <div className="bg-muted/30 rounded-lg p-3 text-center">
-                <Zap className="w-5 h-5 mx-auto mb-1 text-yellow-500" />
-                <div className="text-lg font-bold">{combatant.initiative}</div>
-                <div className="text-[10px] text-muted-foreground">Init</div>
-              </div>
-            </div>
+          <ScrollArea className="flex-1">
+            <div className="p-4 space-y-4">
+              {/* View Full Sheet Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full gap-2"
+                onClick={() => setShowFullSheet(true)}
+              >
+                <FileText className="w-4 h-4" />
+                Ver Ficha Completa
+              </Button>
 
-            {/* HP Quick Edit */}
-            <div className="flex items-center justify-center">
-              <HpQuickEdit />
-            </div>
-
-            {/* Attributes */}
-            <div className="grid grid-cols-6 gap-1 text-center">
-              {Object.entries(ATTR_NAMES).map(([key, abbr]) => {
-                const value = attributes[key] || 10;
-                const modifier = getModifier(value);
-                return (
-                  <div 
-                    key={key}
-                    className="cursor-pointer hover:bg-muted/50 rounded p-2 transition-colors"
-                    onClick={() => onRollDice?.(`1d20${modifier >= 0 ? '+' : ''}${modifier}`, `Teste de ${abbr}`)}
-                  >
-                    <div className="text-xs font-bold text-blue-400">{abbr}</div>
-                    <div className="text-sm font-bold">{value}</div>
-                    <div className={cn("text-xs", modifier >= 0 ? "text-green-500" : "text-red-500")}>
-                      {modifier >= 0 ? '+' : ''}{modifier}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Conditions */}
-            {combatant.conditions.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-muted-foreground uppercase">Condições Ativas</h4>
-                <div className="flex flex-wrap gap-1">
-                  {combatant.conditions.map((condition) => {
-                    const condData = CONDITIONS.find(c => c.name === condition);
-                    return (
-                      <Badge key={condition} className={cn("text-xs", condData?.color || "bg-muted")}>
-                        {condData?.icon} {condition}
-                      </Badge>
-                    );
-                  })}
+              {/* Combat Stats Row */}
+              <div className="grid grid-cols-3 gap-2">
+                <div className="bg-muted/30 rounded-lg p-3 text-center">
+                  <Heart className="w-5 h-5 mx-auto mb-1 text-red-500" />
+                  <div className="text-lg font-bold">{combatant.current_hp}/{combatant.max_hp}</div>
+                  <div className="text-[10px] text-muted-foreground">HP</div>
+                </div>
+                <div className="bg-muted/30 rounded-lg p-3 text-center">
+                  <Shield className="w-5 h-5 mx-auto mb-1 text-blue-500" />
+                  <div className="text-lg font-bold">{combatant.armor_class}</div>
+                  <div className="text-[10px] text-muted-foreground">CA</div>
+                </div>
+                <div className="bg-muted/30 rounded-lg p-3 text-center">
+                  <Zap className="w-5 h-5 mx-auto mb-1 text-yellow-500" />
+                  <div className="text-lg font-bold">{combatant.initiative}</div>
+                  <div className="text-[10px] text-muted-foreground">Init</div>
                 </div>
               </div>
-            )}
-          </div>
-        </ScrollArea>
-      </div>
+
+              {/* HP Quick Edit */}
+              <div className="flex items-center justify-center">
+                <HpQuickEdit />
+              </div>
+
+              {/* Attributes */}
+              <div className="grid grid-cols-6 gap-1 text-center">
+                {Object.entries(ATTR_NAMES).map(([key, abbr]) => {
+                  const value = attributes[key] || 10;
+                  const modifier = getModifier(value);
+                  return (
+                    <div 
+                      key={key}
+                      className="cursor-pointer hover:bg-muted/50 rounded p-2 transition-colors"
+                      onClick={() => onRollDice?.(`1d20${modifier >= 0 ? '+' : ''}${modifier}`, `Teste de ${abbr}`)}
+                    >
+                      <div className="text-xs font-bold text-blue-400">{abbr}</div>
+                      <div className="text-sm font-bold">{value}</div>
+                      <div className={cn("text-xs", modifier >= 0 ? "text-green-500" : "text-red-500")}>
+                        {modifier >= 0 ? '+' : ''}{modifier}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Conditions */}
+              {combatant.conditions.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-xs font-semibold text-muted-foreground uppercase">Condições Ativas</h4>
+                  <div className="flex flex-wrap gap-1">
+                    {combatant.conditions.map((condition) => {
+                      const condData = CONDITIONS.find(c => c.name === condition);
+                      return (
+                        <Badge key={condition} className={cn("text-xs", condData?.color || "bg-muted")}>
+                          {condData?.icon} {condition}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Full Character Sheet Modal */}
+        <PlayerCharacterSheet
+          characterId={combatant.character_id || ''}
+          open={showFullSheet}
+          onOpenChange={setShowFullSheet}
+        />
+      </>
     );
   }
 
