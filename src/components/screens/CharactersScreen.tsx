@@ -181,17 +181,36 @@ export function CharactersScreen() {
                 Entrar
               </button>
             )}
-            <button 
-              onClick={handleCreateCharacter}
-              disabled={!user || !canCreateCharacter}
-              className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
-                canCreateCharacter 
-                  ? "bg-gradient-to-br from-primary to-purple-700" 
-                  : "bg-muted"
-              }`}
-            >
-              {canCreateCharacter ? <Plus className="w-5 h-5" /> : <Lock className="w-5 h-5 text-muted-foreground" />}
-            </button>
+            <div className="relative group">
+              <button 
+                onClick={handleCreateCharacter}
+                disabled={!user}
+                className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
+                  canCreateCharacter 
+                    ? "bg-gradient-to-br from-primary to-purple-700" 
+                    : "bg-muted"
+                }`}
+              >
+                {canCreateCharacter ? <Plus className="w-5 h-5" /> : <Lock className="w-5 h-5 text-muted-foreground" />}
+              </button>
+              {/* Tooltip for limit reached */}
+              {user && !canCreateCharacter && !isVisitante && (
+                <div className="absolute right-0 top-full mt-2 w-48 p-2 bg-popover border border-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <p className="text-xs text-muted-foreground text-center">
+                    Você atingiu o limite de {subscription?.limits.maxCharacters} personagens. 
+                    <span className="text-primary font-medium block mt-1">Faça upgrade para criar mais!</span>
+                  </p>
+                </div>
+              )}
+              {user && isVisitante && (
+                <div className="absolute right-0 top-full mt-2 w-48 p-2 bg-popover border border-border rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                  <p className="text-xs text-muted-foreground text-center">
+                    Resgate um código de acesso para criar personagens.
+                    <span className="text-primary font-medium block mt-1">Apoie no Catarse!</span>
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
         }
       >
