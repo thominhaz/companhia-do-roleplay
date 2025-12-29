@@ -13,7 +13,8 @@ import {
   Gem,
   Sword,
   StickyNote,
-  Lock
+  Lock,
+  Crown
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DiceRoller } from "@/components/tools/DiceRoller";
@@ -24,6 +25,7 @@ import { BasicRules } from "@/components/tools/BasicRules";
 import { HealingRest } from "@/components/tools/HealingRest";
 import { HomebrewForge } from "@/components/homebrew/HomebrewForge";
 import { QuickNotes } from "@/components/tools/QuickNotes";
+import { SupporterGallery } from "@/components/supporters/SupporterGallery";
 import { AppHeader } from "@/components/layout/AppHeader";
 import { useSubscription, SubscriptionTier } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
@@ -31,7 +33,7 @@ import { toast } from "sonner";
 import { UpgradeModal } from "@/components/menu/UpgradeModal";
 import { SubscriptionSheet } from "@/components/menu/SubscriptionSheet";
 
-type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | "homebrew" | "notes" | null;
+type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | "homebrew" | "notes" | "supporter-gallery" | null;
 
 const tools = [
   {
@@ -123,6 +125,16 @@ const tools = [
     featured: true,
     toolKey: "notes" as ActiveTool,
     requiresAccess: true,
+  },
+  {
+    id: "supporter-gallery",
+    name: "Galeria de Apoiadores",
+    description: "NPCs e itens criados pela comunidade",
+    icon: Crown,
+    color: "from-amber-400 to-purple-500",
+    featured: true,
+    toolKey: "supporter-gallery" as ActiveTool,
+    requiresAccess: false,
   },
 ];
 
@@ -218,6 +230,27 @@ export function ToolsScreen() {
   }
   if (activeTool === "notes") {
     return <QuickNotes onBack={() => setActiveTool(null)} />;
+  }
+  if (activeTool === "supporter-gallery") {
+    return (
+      <div className="min-h-screen bg-darker pb-24">
+        <AppHeader
+          title="Galeria de Apoiadores"
+          subtitle="Conteúdo da comunidade"
+          rightContent={
+            <button
+              onClick={() => setActiveTool(null)}
+              className="px-3 py-1.5 text-sm font-medium bg-muted hover:bg-muted/80 rounded-lg transition-colors"
+            >
+              Voltar
+            </button>
+          }
+        />
+        <main className="px-4 py-4 max-w-4xl mx-auto">
+          <SupporterGallery />
+        </main>
+      </div>
+    );
   }
 
   return (
