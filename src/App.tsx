@@ -16,6 +16,7 @@ import Checklist from "@/pages/Checklist";
 import Supporters from "@/pages/Supporters";
 import AdminSupporters from "@/pages/AdminSupporters";
 import SupporterForms from "@/pages/SupporterForms";
+import SupporterSubmission from "@/pages/SupporterSubmission";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
                 <Route path="/apoiadores" element={<Supporters />} />
                 <Route path="/admin/apoiadores" element={<AdminSupporters />} />
                 <Route path="/admin/apoiadores/formularios" element={<SupporterForms />} />
+                <Route path="/apoiadores/submeter" element={<SupporterSubmission />} />
                 {/* Tab redirects - redirect to Index with tab query param */}
                 <Route path="/characters" element={<RedirectWithParams to="/?tab=characters" />} />
                 <Route path="/campaigns" element={<RedirectWithParams to="/?tab=campaigns" />} />
