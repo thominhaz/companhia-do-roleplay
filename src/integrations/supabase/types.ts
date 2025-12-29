@@ -2032,6 +2032,54 @@ export type Database = {
         }
         Relationships: []
       }
+      supporter_submissions: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          creator_message: string | null
+          creator_name: string
+          creator_tier: string
+          data: Json
+          id: string
+          promo_code: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          submission_type: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          creator_message?: string | null
+          creator_name: string
+          creator_tier: string
+          data: Json
+          id?: string
+          promo_code: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submission_type: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          creator_message?: string | null
+          creator_name?: string
+          creator_tier?: string
+          data?: Json
+          id?: string
+          promo_code?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          submission_type?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       token_redemptions: {
         Row: {
           id: string

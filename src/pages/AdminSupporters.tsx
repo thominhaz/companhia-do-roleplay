@@ -30,7 +30,8 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Plus, Pencil, Trash2, Shield, Loader2, Users, Sword, Star, User, FileText } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2, Shield, Loader2, Users, Sword, Star, User, FileText, Inbox, Check, X, ExternalLink } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet";
 import { SupporterNPC, SupporterItem, tierConfig, rarityConfig } from "@/hooks/useSupporterContent";
@@ -84,7 +85,26 @@ export default function AdminSupporters() {
   const navigate = useNavigate();
   const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState("supporters");
+  const [activeTab, setActiveTab] = useState("submissions");
+
+  // Submissions state
+  interface Submission {
+    id: string;
+    promo_code: string;
+    submission_type: "npc" | "item";
+    status: "pending" | "approved" | "rejected";
+    creator_name: string;
+    creator_tier: string;
+    creator_message: string | null;
+    data: Record<string, any>;
+    admin_notes: string | null;
+    created_at: string;
+  }
+  const [submissions, setSubmissions] = useState<Submission[]>([]);
+  const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
+  const [reviewDialogOpen, setReviewDialogOpen] = useState(false);
+  const [adminNotes, setAdminNotes] = useState("");
+  const [processingSubmission, setProcessingSubmission] = useState(false);
 
   // Supporters state
   const [supporters, setSupporters] = useState<Supporter[]>([]);
@@ -178,6 +198,13 @@ export default function AdminSupporters() {
     async function fetchData() {
       if (!isAdmin) return;
 
+      // Fetch submissions
+      const { data: submissionsData } = await supabase
+        .from("supporter_submissions")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (submissionsData) setSubmissions(submissionsData as Submission[]);
+
       // Fetch supporters
       const { data: supportersData } = await supabase
         .from("catarse_supporters")
@@ -203,6 +230,126 @@ export default function AdminSupporters() {
     }
     fetchData();
   }, [isAdmin]);
+
+  // Submission review functions
+  const openReviewDialog = (submission: Submission) => {
+    setSelectedSubmission(submission);
+    setAdminNotes(submission.admin_notes || "");
+    setReviewDialogOpen(true);
+  };
+
+  const handleApproveSubmission = async () => {
+    if (!selectedSubmission) return;
+    setProcessingSubmission(true);
+
+    try {
+      const data = selectedSubmission.data;
+      
+      if (selectedSubmission.submission_type === "npc") {
+        // Create NPC
+        const { error: npcError } = await supabase.from("supporter_npcs").insert({
+          name: data.name,
+          title: data.title,
+          description: data.description,
+          appearance: data.appearance,
+          personality: data.personality,
+          backstory: data.backstory,
+          occupation: data.occupation,
+          location: data.location,
+          image_url: data.image_url,
+          tags: data.tags,
+          creator_name: selectedSubmission.creator_name,
+          creator_tier: selectedSubmission.creator_tier,
+          creator_message: selectedSubmission.creator_message,
+          is_visible: true,
+          is_featured: false,
+        });
+        if (npcError) throw npcError;
+      } else {
+        // Create Item
+        const { error: itemError } = await supabase.from("supporter_items").insert({
+          name: data.name,
+          description: data.description,
+          rarity: data.rarity,
+          item_type: data.item_type,
+          requires_attunement: data.requires_attunement,
+          attunement_requirements: data.attunement_requirements,
+          properties: data.properties,
+          damage: data.damage,
+          damage_type: data.damage_type,
+          ac_bonus: data.ac_bonus,
+          image_url: data.image_url,
+          tags: data.tags,
+          creator_name: selectedSubmission.creator_name,
+          creator_tier: selectedSubmission.creator_tier,
+          creator_message: selectedSubmission.creator_message,
+          is_visible: true,
+          is_featured: false,
+        });
+        if (itemError) throw itemError;
+      }
+
+      // Update submission status
+      const { error: updateError } = await supabase
+        .from("supporter_submissions")
+        .update({
+          status: "approved",
+          admin_notes: adminNotes.trim() || null,
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq("id", selectedSubmission.id);
+
+      if (updateError) throw updateError;
+
+      setSubmissions((prev) =>
+        prev.map((s) =>
+          s.id === selectedSubmission.id ? { ...s, status: "approved" as const, admin_notes: adminNotes.trim() || null } : s
+        )
+      );
+
+      toast.success("Submissão aprovada e conteúdo criado!");
+      setReviewDialogOpen(false);
+      setSelectedSubmission(null);
+    } catch (error: any) {
+      console.error("Error approving submission:", error);
+      toast.error(error.message || "Erro ao aprovar submissão");
+    } finally {
+      setProcessingSubmission(false);
+    }
+  };
+
+  const handleRejectSubmission = async () => {
+    if (!selectedSubmission) return;
+    setProcessingSubmission(true);
+
+    try {
+      const { error } = await supabase
+        .from("supporter_submissions")
+        .update({
+          status: "rejected",
+          admin_notes: adminNotes.trim() || null,
+          reviewed_at: new Date().toISOString(),
+        })
+        .eq("id", selectedSubmission.id);
+
+      if (error) throw error;
+
+      setSubmissions((prev) =>
+        prev.map((s) =>
+          s.id === selectedSubmission.id ? { ...s, status: "rejected" as const, admin_notes: adminNotes.trim() || null } : s
+        )
+      );
+
+      toast.success("Submissão rejeitada");
+      setReviewDialogOpen(false);
+      setSelectedSubmission(null);
+    } catch (error: any) {
+      console.error("Error rejecting submission:", error);
+      toast.error(error.message || "Erro ao rejeitar submissão");
+    } finally {
+      setProcessingSubmission(false);
+    }
+  };
 
   // Supporter functions
   const resetSupporterForm = () => {
@@ -651,6 +798,10 @@ export default function AdminSupporters() {
         <main className="container px-4 py-6">
           <Tabs value={activeTab} onValueChange={setActiveTab}>
             <TabsList className="w-full mb-6">
+              <TabsTrigger value="submissions" className="flex-1 gap-2">
+                <Inbox className="h-4 w-4" />
+                <span className="hidden sm:inline">Submissões</span>
+              </TabsTrigger>
               <TabsTrigger value="supporters" className="flex-1 gap-2">
                 <Users className="h-4 w-4" />
                 <span className="hidden sm:inline">Apoiadores</span>
@@ -664,6 +815,173 @@ export default function AdminSupporters() {
                 <span className="hidden sm:inline">Itens</span>
               </TabsTrigger>
             </TabsList>
+
+            {/* Submissions Tab */}
+            <TabsContent value="submissions">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Submissões Pendentes</h2>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const url = `${window.location.origin}/apoiadores/submeter`;
+                    navigator.clipboard.writeText(url);
+                    toast.success("Link copiado!");
+                  }}
+                  className="gap-2"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Copiar Link
+                </Button>
+              </div>
+
+              {submissions.length === 0 ? (
+                <div className="text-center py-12 text-muted-foreground">
+                  <Inbox className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                  <p>Nenhuma submissão ainda.</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {submissions.map((submission) => (
+                    <div
+                      key={submission.id}
+                      className="p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer"
+                      onClick={() => openReviewDialog(submission)}
+                    >
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            {submission.submission_type === "npc" ? (
+                              <User className="h-4 w-4 text-primary" />
+                            ) : (
+                              <Sword className="h-4 w-4 text-amber-500" />
+                            )}
+                            <span className="font-medium truncate">
+                              {submission.data.name || "Sem nome"}
+                            </span>
+                            <Badge
+                              variant={
+                                submission.status === "pending"
+                                  ? "secondary"
+                                  : submission.status === "approved"
+                                  ? "default"
+                                  : "destructive"
+                              }
+                            >
+                              {submission.status === "pending"
+                                ? "Pendente"
+                                : submission.status === "approved"
+                                ? "Aprovado"
+                                : "Rejeitado"}
+                            </Badge>
+                          </div>
+                          <p className="text-sm text-muted-foreground">
+                            Por: <span className="font-medium">{submission.creator_name}</span> ({submission.creator_tier})
+                          </p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Código: {submission.promo_code} • {new Date(submission.created_at).toLocaleDateString("pt-BR")}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Review Dialog */}
+              <Dialog open={reviewDialogOpen} onOpenChange={setReviewDialogOpen}>
+                <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+                  <DialogHeader>
+                    <DialogTitle>
+                      Revisar {selectedSubmission?.submission_type === "npc" ? "NPC" : "Item"}
+                    </DialogTitle>
+                  </DialogHeader>
+
+                  {selectedSubmission && (
+                    <div className="space-y-4">
+                      {/* Creator Info */}
+                      <div className="p-3 rounded-lg bg-muted/50">
+                        <p className="text-sm">
+                          <strong>Criador:</strong> {selectedSubmission.creator_name} ({selectedSubmission.creator_tier})
+                        </p>
+                        <p className="text-sm">
+                          <strong>Código:</strong> {selectedSubmission.promo_code}
+                        </p>
+                        {selectedSubmission.creator_message && (
+                          <p className="text-sm mt-2">
+                            <strong>Mensagem:</strong> {selectedSubmission.creator_message}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Submission Data */}
+                      <div className="space-y-2">
+                        <h4 className="font-medium">Dados da Submissão</h4>
+                        <div className="p-3 rounded-lg border space-y-2 text-sm">
+                          {Object.entries(selectedSubmission.data).map(([key, value]) => {
+                            if (!value) return null;
+                            const formattedKey = key.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
+                            return (
+                              <div key={key}>
+                                <strong>{formattedKey}:</strong>{" "}
+                                {Array.isArray(value) ? value.join(", ") : String(value)}
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Admin Notes */}
+                      <div className="space-y-2">
+                        <Label htmlFor="admin-notes">Notas do Admin (opcional)</Label>
+                        <Textarea
+                          id="admin-notes"
+                          value={adminNotes}
+                          onChange={(e) => setAdminNotes(e.target.value)}
+                          placeholder="Notas internas sobre a submissão"
+                          rows={2}
+                        />
+                      </div>
+
+                      {/* Action Buttons */}
+                      {selectedSubmission.status === "pending" ? (
+                        <div className="flex gap-3 pt-4">
+                          <Button
+                            variant="destructive"
+                            onClick={handleRejectSubmission}
+                            disabled={processingSubmission}
+                            className="flex-1 gap-2"
+                          >
+                            <X className="h-4 w-4" />
+                            Rejeitar
+                          </Button>
+                          <Button
+                            onClick={handleApproveSubmission}
+                            disabled={processingSubmission}
+                            className="flex-1 gap-2"
+                          >
+                            {processingSubmission ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (
+                              <Check className="h-4 w-4" />
+                            )}
+                            Aprovar
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="text-center py-4">
+                          <Badge
+                            variant={selectedSubmission.status === "approved" ? "default" : "destructive"}
+                          >
+                            {selectedSubmission.status === "approved" ? "Aprovado" : "Rejeitado"}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
+            </TabsContent>
 
             {/* Supporters Tab */}
             <TabsContent value="supporters">
