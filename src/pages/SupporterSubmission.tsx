@@ -11,7 +11,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, User, Sword, CheckCircle, Loader2, Shield } from "lucide-react";
+import { ArrowLeft, User, Sword, CheckCircle, Loader2, Shield, Upload, X, ImageIcon } from "lucide-react";
 
 interface PromoToken {
   id: string;
@@ -48,6 +48,9 @@ export default function SupporterSubmission() {
   const [npcOccupation, setNpcOccupation] = useState("");
   const [npcLocation, setNpcLocation] = useState("");
   const [npcImageUrl, setNpcImageUrl] = useState("");
+  const [npcImageFile, setNpcImageFile] = useState<File | null>(null);
+  const [npcImagePreview, setNpcImagePreview] = useState<string | null>(null);
+  const [uploadingNpcImage, setUploadingNpcImage] = useState(false);
   const [npcTags, setNpcTags] = useState("");
 
   // Item fields
@@ -62,6 +65,9 @@ export default function SupporterSubmission() {
   const [itemDamageType, setItemDamageType] = useState("");
   const [itemAcBonus, setItemAcBonus] = useState("");
   const [itemImageUrl, setItemImageUrl] = useState("");
+  const [itemImageFile, setItemImageFile] = useState<File | null>(null);
+  const [itemImagePreview, setItemImagePreview] = useState<string | null>(null);
+  const [uploadingItemImage, setUploadingItemImage] = useState(false);
   const [itemTags, setItemTags] = useState("");
 
   // Auto-validate if code is in URL
@@ -112,6 +118,86 @@ export default function SupporterSubmission() {
     }
   };
 
+  // Image upload handler
+  const handleImageUpload = async (file: File, type: "npc" | "item"): Promise<string | null> => {
+    const setUploading = type === "npc" ? setUploadingNpcImage : setUploadingItemImage;
+    setUploading(true);
+
+    try {
+      // Validate file
+      if (!file.type.startsWith("image/")) {
+        toast.error("Por favor, selecione uma imagem válida");
+        return null;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("A imagem deve ter no máximo 5MB");
+        return null;
+      }
+
+      // Generate unique filename
+      const fileExt = file.name.split(".").pop();
+      const fileName = `${type}-${Date.now()}-${Math.random().toString(36).substring(7)}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      // Upload to Supabase storage
+      const { error: uploadError } = await supabase.storage
+        .from("supporter-submissions")
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: urlData } = supabase.storage
+        .from("supporter-submissions")
+        .getPublicUrl(filePath);
+
+      return urlData.publicUrl;
+    } catch (err) {
+      console.error("Error uploading image:", err);
+      toast.error("Erro ao fazer upload da imagem");
+      return null;
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleNpcImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setNpcImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setNpcImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleItemImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setItemImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setItemImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeNpcImage = () => {
+    setNpcImageFile(null);
+    setNpcImagePreview(null);
+    setNpcImageUrl("");
+  };
+
+  const removeItemImage = () => {
+    setItemImageFile(null);
+    setItemImagePreview(null);
+    setItemImageUrl("");
+  };
+
   const handleSubmit = async () => {
     if (!validatedToken) return;
 
@@ -135,6 +221,18 @@ export default function SupporterSubmission() {
 
     setSubmitting(true);
     try {
+      // Upload image if provided
+      let finalNpcImageUrl = npcImageUrl;
+      let finalItemImageUrl = itemImageUrl;
+
+      if (submissionType === "npc" && npcImageFile) {
+        const uploadedUrl = await handleImageUpload(npcImageFile, "npc");
+        if (uploadedUrl) finalNpcImageUrl = uploadedUrl;
+      } else if (submissionType === "item" && itemImageFile) {
+        const uploadedUrl = await handleImageUpload(itemImageFile, "item");
+        if (uploadedUrl) finalItemImageUrl = uploadedUrl;
+      }
+
       const submissionData = submissionType === "npc" 
         ? {
             name: npcName.trim(),
@@ -145,7 +243,7 @@ export default function SupporterSubmission() {
             backstory: npcBackstory.trim() || null,
             occupation: npcOccupation.trim() || null,
             location: npcLocation.trim() || null,
-            image_url: npcImageUrl.trim() || null,
+            image_url: finalNpcImageUrl || null,
             tags: npcTags.trim() ? npcTags.split(",").map(t => t.trim()) : null,
           }
         : {
@@ -159,7 +257,7 @@ export default function SupporterSubmission() {
             damage: itemDamage.trim() || null,
             damage_type: itemDamageType.trim() || null,
             ac_bonus: itemAcBonus ? parseInt(itemAcBonus) : null,
-            image_url: itemImageUrl.trim() || null,
+            image_url: finalItemImageUrl || null,
             tags: itemTags.trim() ? itemTags.split(",").map(t => t.trim()) : null,
           };
 
@@ -390,12 +488,58 @@ export default function SupporterSubmission() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="npc-image">URL da Imagem</Label>
+                        <Label>Imagem do NPC</Label>
+                        {npcImagePreview ? (
+                          <div className="relative">
+                            <img
+                              src={npcImagePreview}
+                              alt="Preview"
+                              className="w-full h-48 object-cover rounded-lg border"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-2 right-2 h-8 w-8"
+                              onClick={removeNpcImage}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              {uploadingNpcImage ? (
+                                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                              ) : (
+                                <>
+                                  <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
+                                  <p className="text-sm text-muted-foreground">
+                                    Clique para fazer upload
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    PNG, JPG até 5MB
+                                  </p>
+                                </>
+                              )}
+                            </div>
+                            <input
+                              type="file"
+                              className="hidden"
+                              accept="image/*"
+                              onChange={handleNpcImageChange}
+                              disabled={uploadingNpcImage}
+                            />
+                          </label>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          Ou cole uma URL:
+                        </p>
                         <Input
-                          id="npc-image"
                           placeholder="https://..."
                           value={npcImageUrl}
                           onChange={(e) => setNpcImageUrl(e.target.value)}
+                          disabled={!!npcImageFile}
                         />
                       </div>
 
@@ -550,12 +694,58 @@ export default function SupporterSubmission() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="item-image">URL da Imagem</Label>
+                        <Label>Imagem do Item</Label>
+                        {itemImagePreview ? (
+                          <div className="relative">
+                            <img
+                              src={itemImagePreview}
+                              alt="Preview"
+                              className="w-full h-48 object-cover rounded-lg border"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              className="absolute top-2 right-2 h-8 w-8"
+                              onClick={removeItemImage}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ) : (
+                          <label className="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                            <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                              {uploadingItemImage ? (
+                                <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                              ) : (
+                                <>
+                                  <ImageIcon className="h-8 w-8 text-muted-foreground mb-2" />
+                                  <p className="text-sm text-muted-foreground">
+                                    Clique para fazer upload
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    PNG, JPG até 5MB
+                                  </p>
+                                </>
+                              )}
+                            </div>
+                            <input
+                              type="file"
+                              className="hidden"
+                              accept="image/*"
+                              onChange={handleItemImageChange}
+                              disabled={uploadingItemImage}
+                            />
+                          </label>
+                        )}
+                        <p className="text-xs text-muted-foreground">
+                          Ou cole uma URL:
+                        </p>
                         <Input
-                          id="item-image"
                           placeholder="https://..."
                           value={itemImageUrl}
                           onChange={(e) => setItemImageUrl(e.target.value)}
+                          disabled={!!itemImageFile}
                         />
                       </div>
 
