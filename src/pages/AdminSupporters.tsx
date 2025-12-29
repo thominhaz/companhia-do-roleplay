@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/dialog";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArrowLeft, Plus, Pencil, Trash2, Shield, Loader2, Users, Sword, Star, User } from "lucide-react";
+import { ArrowLeft, Plus, Pencil, Trash2, Shield, Loader2, Users, Sword, Star, User, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { Helmet } from "react-helmet";
 import { SupporterNPC, SupporterItem, tierConfig, rarityConfig } from "@/hooks/useSupporterContent";
@@ -636,6 +636,15 @@ export default function AdminSupporters() {
               </Button>
               <h1 className="text-lg font-bold">Admin - Galeria de Apoiadores</h1>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => navigate("/admin/apoiadores/formularios")}
+              className="gap-2"
+            >
+              <FileText className="h-4 w-4" />
+              <span className="hidden sm:inline">Formulários</span>
+            </Button>
           </div>
         </header>
 
