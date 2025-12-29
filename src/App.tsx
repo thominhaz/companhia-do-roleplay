@@ -14,6 +14,7 @@ import { SpellGrimoire } from "@/components/tools/SpellGrimoire";
 import ResetPassword from "@/pages/ResetPassword";
 import Checklist from "@/pages/Checklist";
 import Supporters from "@/pages/Supporters";
+import AdminSupporters from "@/pages/AdminSupporters";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
                 <Route path="/grimoire" element={<SpellGrimoire />} />
                 <Route path="/checklist" element={<Checklist />} />
                 <Route path="/apoiadores" element={<Supporters />} />
+                <Route path="/admin/apoiadores" element={<AdminSupporters />} />
                 {/* Tab redirects - redirect to Index with tab query param */}
                 <Route path="/characters" element={<RedirectWithParams to="/?tab=characters" />} />
                 <Route path="/campaigns" element={<RedirectWithParams to="/?tab=campaigns" />} />
