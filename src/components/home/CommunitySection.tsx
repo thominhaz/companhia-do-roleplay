@@ -1,4 +1,5 @@
-import { MessageCircle, Instagram, Coffee, Heart, Users, ExternalLink } from "lucide-react";
+import { MessageCircle, Instagram, Coffee, Heart, Users, ExternalLink, Crown } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const communityLinks = [
   {
@@ -28,9 +29,27 @@ const communityLinks = [
     gradient: "from-solar-orange to-solar-orange/70",
     external: true,
   },
+  {
+    id: "supporters",
+    label: "Apoiadores",
+    description: "Veja quem apoiou",
+    icon: Crown,
+    href: "/apoiadores",
+    gradient: "from-yellow-500 to-amber-600",
+    external: false,
+  },
 ];
 
 export function CommunitySection() {
+  const navigate = useNavigate();
+
+  const handleLinkClick = (link: typeof communityLinks[0], e: React.MouseEvent) => {
+    if (!link.external) {
+      e.preventDefault();
+      navigate(link.href);
+    }
+  };
+
   return (
     <section className="px-4 sm:px-5 mt-6 sm:mt-8">
       <div className="flex items-center gap-2 mb-3 sm:mb-4">
@@ -54,9 +73,10 @@ export function CommunitySection() {
             <a
               key={link.id}
               href={link.href}
+              onClick={(e) => handleLinkClick(link, e)}
               target={link.external ? "_blank" : undefined}
               rel={link.external ? "noopener noreferrer" : undefined}
-              className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-background/50 hover:bg-background/80 transition-all duration-300 card-hover"
+              className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-background/50 hover:bg-background/80 transition-all duration-300 card-hover cursor-pointer"
             >
               <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${link.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                 <link.icon className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
