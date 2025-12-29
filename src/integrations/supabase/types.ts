@@ -1900,6 +1900,138 @@ export type Database = {
         }
         Relationships: []
       }
+      supporter_items: {
+        Row: {
+          ac_bonus: number | null
+          attunement_requirements: string | null
+          created_at: string
+          creator_message: string | null
+          creator_name: string
+          creator_tier: string
+          damage: string | null
+          damage_type: string | null
+          description: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean
+          is_visible: boolean
+          item_type: string
+          name: string
+          properties: string | null
+          rarity: string
+          requires_attunement: boolean
+          tags: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          ac_bonus?: number | null
+          attunement_requirements?: string | null
+          created_at?: string
+          creator_message?: string | null
+          creator_name: string
+          creator_tier?: string
+          damage?: string | null
+          damage_type?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          is_visible?: boolean
+          item_type?: string
+          name: string
+          properties?: string | null
+          rarity?: string
+          requires_attunement?: boolean
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          ac_bonus?: number | null
+          attunement_requirements?: string | null
+          created_at?: string
+          creator_message?: string | null
+          creator_name?: string
+          creator_tier?: string
+          damage?: string | null
+          damage_type?: string | null
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          is_visible?: boolean
+          item_type?: string
+          name?: string
+          properties?: string | null
+          rarity?: string
+          requires_attunement?: boolean
+          tags?: string[] | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      supporter_npcs: {
+        Row: {
+          appearance: string | null
+          backstory: string | null
+          created_at: string
+          creator_message: string | null
+          creator_name: string
+          creator_tier: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_featured: boolean
+          is_visible: boolean
+          location: string | null
+          name: string
+          occupation: string | null
+          personality: string | null
+          tags: string[] | null
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          appearance?: string | null
+          backstory?: string | null
+          created_at?: string
+          creator_message?: string | null
+          creator_name: string
+          creator_tier?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          is_visible?: boolean
+          location?: string | null
+          name: string
+          occupation?: string | null
+          personality?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          appearance?: string | null
+          backstory?: string | null
+          created_at?: string
+          creator_message?: string | null
+          creator_name?: string
+          creator_tier?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_featured?: boolean
+          is_visible?: boolean
+          location?: string | null
+          name?: string
+          occupation?: string | null
+          personality?: string | null
+          tags?: string[] | null
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       token_redemptions: {
         Row: {
           id: string
