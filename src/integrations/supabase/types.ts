@@ -998,6 +998,33 @@ export type Database = {
         }
         Relationships: []
       }
+      catarse_supporters: {
+        Row: {
+          created_at: string
+          id: string
+          is_visible: boolean
+          message: string | null
+          name: string
+          tier: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          message?: string | null
+          name: string
+          tier?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_visible?: boolean
+          message?: string | null
+          name?: string
+          tier?: string
+        }
+        Relationships: []
+      }
       character_history: {
         Row: {
           change_type: string
