@@ -17,7 +17,7 @@ export function AppHeader({
       <div className="px-5 pt-4 pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <img alt="Go20" className="h-12 w-auto" src="/src/assets/logo-full.png" />
+            <img alt="Go20" className="h-16 w-auto" src="/src/assets/logo-full.png" />
           </div>
           {rightContent && <div className="flex items-center gap-2">
               {rightContent}
