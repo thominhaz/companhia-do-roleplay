@@ -32,6 +32,7 @@ import {
   Plus,
   FileText
 } from "lucide-react";
+import { escapePostgrestLikePattern } from "@/lib/postgrestUtils";
 
 interface CombatantStatBlockProps {
   combatant: Combatant | null;
@@ -147,11 +148,15 @@ export function CombatantStatBlock({
       try {
         const cleanName = combatant.name.replace(/^[^\w\s]+\s*/, '').trim();
         
+        // Escape special characters to prevent SQL injection
+        const escapedCleanName = escapePostgrestLikePattern(cleanName);
+        const escapedCombatantName = escapePostgrestLikePattern(combatant.name);
+        
         const { data: homebrew } = await supabase
           .from('homebrew_content')
           .select('*')
           .eq('type', 'monster')
-          .or(`name.ilike.%${cleanName}%,name.ilike.%${combatant.name}%`)
+          .or(`name.ilike.%${escapedCleanName}%,name.ilike.%${escapedCombatantName}%`)
           .maybeSingle();
 
         if (homebrew) {
