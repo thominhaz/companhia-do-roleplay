@@ -391,7 +391,23 @@ export default function AdminSupporters() {
     }
   };
 
-  // Supporter functions
+  const handleDeleteSubmission = async (id: string) => {
+    if (!confirm("Tem certeza que deseja excluir esta submissão?")) return;
+
+    try {
+      const { error } = await supabase
+        .from("supporter_submissions")
+        .delete()
+        .eq("id", id);
+
+      if (error) throw error;
+      setSubmissions((prev) => prev.filter((s) => s.id !== id));
+      toast.success("Submissão excluída!");
+    } catch (error: any) {
+      console.error("Error deleting submission:", error);
+      toast.error(error.message || "Erro ao excluir submissão");
+    }
+  };
   const resetSupporterForm = () => {
     setFormName("");
     setFormTier("apoiador");
@@ -885,11 +901,13 @@ export default function AdminSupporters() {
                   {submissions.map((submission) => (
                     <div
                       key={submission.id}
-                      className="p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer"
-                      onClick={() => openReviewDialog(submission)}
+                      className="p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
                     >
                       <div className="flex items-start justify-between gap-4">
-                        <div className="flex-1 min-w-0">
+                        <div 
+                          className="flex-1 min-w-0 cursor-pointer"
+                          onClick={() => openReviewDialog(submission)}
+                        >
                           <div className="flex items-center gap-2 mb-1">
                             {submission.submission_type === "npc" ? (
                               <User className="h-4 w-4 text-primary" />
@@ -922,6 +940,17 @@ export default function AdminSupporters() {
                             Código: {submission.promo_code} • {new Date(submission.created_at).toLocaleDateString("pt-BR")}
                           </p>
                         </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteSubmission(submission.id);
+                          }}
+                          className="text-destructive hover:text-destructive shrink-0"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                       </div>
                     </div>
                   ))}
