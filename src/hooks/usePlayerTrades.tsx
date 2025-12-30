@@ -11,6 +11,7 @@ import {
   addCurrency,
   normalizeCurrency
 } from "@/lib/currencyUtils";
+import { isValidUUID } from "@/lib/postgrestUtils";
 
 export interface ItemData {
   id?: string;
@@ -132,6 +133,12 @@ export function useCharacterTrades(characterId: string) {
     queryFn: async () => {
       const { data: user } = await supabase.auth.getUser();
       if (!user.user) return [];
+
+      // Validate characterId is a valid UUID to prevent injection
+      if (!isValidUUID(characterId)) {
+        console.error('Invalid character ID format');
+        return [];
+      }
 
       const { data, error } = await supabase
         .from("player_trades")

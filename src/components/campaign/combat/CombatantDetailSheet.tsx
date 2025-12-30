@@ -32,6 +32,7 @@ import {
   ShieldOff,
   Languages
 } from "lucide-react";
+import { escapePostgrestLikePattern } from "@/lib/postgrestUtils";
 
 interface CombatantDetailSheetProps {
   combatant: Combatant | null;
@@ -154,12 +155,16 @@ export function CombatantDetailSheet({
         // Try to find homebrew monster by name (strip emoji prefix if present)
         const cleanName = combatant.name.replace(/^[^\w\s]+\s*/, '').trim();
         
+        // Escape special characters to prevent SQL injection
+        const escapedCleanName = escapePostgrestLikePattern(cleanName);
+        const escapedCombatantName = escapePostgrestLikePattern(combatant.name);
+        
         // First try homebrew_content
         const { data: homebrew } = await supabase
           .from('homebrew_content')
           .select('*')
           .eq('type', 'monster')
-          .or(`name.ilike.%${cleanName}%,name.ilike.%${combatant.name}%`)
+          .or(`name.ilike.%${escapedCleanName}%,name.ilike.%${escapedCombatantName}%`)
           .maybeSingle();
 
         if (homebrew) {
@@ -176,7 +181,7 @@ export function CombatantDetailSheet({
             .from('campaign_npcs')
             .select('*')
             .eq('campaign_id', campaignId)
-            .ilike('name', `%${combatant.name}%`)
+            .ilike('name', `%${escapedCombatantName}%`)
             .maybeSingle();
 
           if (npc) {
