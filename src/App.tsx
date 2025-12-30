@@ -19,6 +19,7 @@ import SupporterForms from "@/pages/SupporterForms";
 import SupporterSubmission from "@/pages/SupporterSubmission";
 import Landing from "@/pages/Landing";
 import AdminStretchGoals from "@/pages/AdminStretchGoals";
+import Admin from "@/pages/Admin";
 
 const queryClient = new QueryClient();
 
