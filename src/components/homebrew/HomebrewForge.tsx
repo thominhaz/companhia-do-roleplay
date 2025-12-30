@@ -108,20 +108,25 @@ const itemRarityOptions = [
   { value: 'artifact', label: 'Artefato' },
 ];
 
-// Helper function to get singular form of content type labels
-const getSingularLabel = (label: string | undefined): string => {
-  if (!label) return 'item';
-  const singularMap: Record<string, string> = {
-    'Magias': 'magia',
-    'Itens': 'item',
-    'Raças': 'raça',
-    'Classes': 'classe',
-    'Subclasses': 'subclasse',
-    'Monstros': 'monstro',
-    'Antecedentes': 'antecedente',
-    'Talentos': 'talento',
+// Helper function to get singular form of content type labels with gender
+const getSingularInfo = (label: string | undefined): { singular: string; article: string } => {
+  if (!label) return { singular: 'item', article: 'Nenhum' };
+  const infoMap: Record<string, { singular: string; article: string }> = {
+    'Magias': { singular: 'magia', article: 'Nenhuma' },
+    'Itens': { singular: 'item', article: 'Nenhum' },
+    'Raças': { singular: 'raça', article: 'Nenhuma' },
+    'Classes': { singular: 'classe', article: 'Nenhuma' },
+    'Subclasses': { singular: 'subclasse', article: 'Nenhuma' },
+    'Monstros': { singular: 'monstro', article: 'Nenhum' },
+    'Antecedentes': { singular: 'antecedente', article: 'Nenhum' },
+    'Talentos': { singular: 'talento', article: 'Nenhum' },
   };
-  return singularMap[label] || label.toLowerCase().slice(0, -1);
+  return infoMap[label] || { singular: label.toLowerCase().slice(0, -1), article: 'Nenhum' };
+};
+
+// Legacy helper for backward compatibility
+const getSingularLabel = (label: string | undefined): string => {
+  return getSingularInfo(label).singular;
 };
 
 export function HomebrewForge({ onBack }: HomebrewForgeProps) {
@@ -648,12 +653,12 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
             <h3 className="font-semibold text-foreground">
               {searchQuery 
                 ? `Nenhum resultado para "${searchQuery}"`
-                : `Nenhuma ${getSingularLabel(selectedTypeInfo?.label)} criada`
+                : `${getSingularInfo(selectedTypeInfo?.label).article} ${getSingularInfo(selectedTypeInfo?.label).singular} ${getSingularInfo(selectedTypeInfo?.label).article === 'Nenhum' ? 'criado' : 'criada'}`
               }
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
               {canCreateHomebrew 
-                ? `Clique em "Criar" para adicionar sua primeira ${getSingularLabel(selectedTypeInfo?.label)}` 
+                ? `Clique em "Criar" para adicionar ${getSingularInfo(selectedTypeInfo?.label).article === 'Nenhum' ? 'seu primeiro' : 'sua primeira'} ${getSingularInfo(selectedTypeInfo?.label).singular}` 
                 : "Faça upgrade para criar conteúdo homebrew"
               }
             </p>
