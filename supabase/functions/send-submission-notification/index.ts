@@ -115,7 +115,7 @@ const handler = async (req: Request): Promise<Response> => {
       `;
 
     const emailResponse = await resend.emails.send({
-      from: "GO20 <onboarding@resend.dev>",
+      from: "GO20 <contato@go20.com.br>",
       to: [email],
       subject,
       html,
