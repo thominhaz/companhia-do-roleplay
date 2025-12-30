@@ -36,6 +36,7 @@ export default function SupporterSubmission() {
 
   // Creator info
   const [creatorName, setCreatorName] = useState("");
+  const [creatorEmail, setCreatorEmail] = useState("");
   const [creatorMessage, setCreatorMessage] = useState("");
 
   // NPC fields
@@ -267,6 +268,7 @@ export default function SupporterSubmission() {
         creator_name: creatorName.trim(),
         creator_tier: validatedToken.tier,
         creator_message: creatorMessage.trim() || null,
+        email: creatorEmail.trim() || null,
         data: submissionData,
       });
 
@@ -364,6 +366,19 @@ export default function SupporterSubmission() {
                       value={creatorName}
                       onChange={(e) => setCreatorName(e.target.value)}
                     />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="creator-email">Seu Email (para notificações)</Label>
+                    <Input
+                      id="creator-email"
+                      type="email"
+                      placeholder="seu@email.com"
+                      value={creatorEmail}
+                      onChange={(e) => setCreatorEmail(e.target.value)}
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Você receberá um email quando sua submissão for revisada
+                    </p>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="creator-message">Mensagem para a Comunidade</Label>

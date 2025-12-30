@@ -96,6 +96,7 @@ export default function AdminSupporters() {
     creator_name: string;
     creator_tier: string;
     creator_message: string | null;
+    email: string | null;
     data: Record<string, any>;
     admin_notes: string | null;
     created_at: string;
@@ -301,6 +302,25 @@ export default function AdminSupporters() {
 
       if (updateError) throw updateError;
 
+      // Send email notification
+      if (selectedSubmission.email) {
+        try {
+          await supabase.functions.invoke("send-submission-notification", {
+            body: {
+              email: selectedSubmission.email,
+              creatorName: selectedSubmission.creator_name,
+              submissionType: selectedSubmission.submission_type,
+              submissionName: data.name,
+              status: "approved",
+              adminNotes: adminNotes.trim() || undefined,
+            },
+          });
+        } catch (emailError) {
+          console.error("Error sending notification email:", emailError);
+          // Don't fail the whole operation if email fails
+        }
+      }
+
       setSubmissions((prev) =>
         prev.map((s) =>
           s.id === selectedSubmission.id ? { ...s, status: "approved" as const, admin_notes: adminNotes.trim() || null } : s
@@ -333,6 +353,24 @@ export default function AdminSupporters() {
         .eq("id", selectedSubmission.id);
 
       if (error) throw error;
+
+      // Send email notification
+      if (selectedSubmission.email) {
+        try {
+          await supabase.functions.invoke("send-submission-notification", {
+            body: {
+              email: selectedSubmission.email,
+              creatorName: selectedSubmission.creator_name,
+              submissionType: selectedSubmission.submission_type,
+              submissionName: selectedSubmission.data.name,
+              status: "rejected",
+              adminNotes: adminNotes.trim() || undefined,
+            },
+          });
+        } catch (emailError) {
+          console.error("Error sending notification email:", emailError);
+        }
+      }
 
       setSubmissions((prev) =>
         prev.map((s) =>

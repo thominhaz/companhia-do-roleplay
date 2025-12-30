@@ -2040,6 +2040,7 @@ export type Database = {
           creator_name: string
           creator_tier: string
           data: Json
+          email: string | null
           id: string
           promo_code: string
           reviewed_at: string | null
@@ -2055,6 +2056,7 @@ export type Database = {
           creator_name: string
           creator_tier: string
           data: Json
+          email?: string | null
           id?: string
           promo_code: string
           reviewed_at?: string | null
@@ -2070,6 +2072,7 @@ export type Database = {
           creator_name?: string
           creator_tier?: string
           data?: Json
+          email?: string | null
           id?: string
           promo_code?: string
           reviewed_at?: string | null
