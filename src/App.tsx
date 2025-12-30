@@ -18,6 +18,7 @@ import AdminSupporters from "@/pages/AdminSupporters";
 import SupporterForms from "@/pages/SupporterForms";
 import SupporterSubmission from "@/pages/SupporterSubmission";
 import Landing from "@/pages/Landing";
+import AdminStretchGoals from "@/pages/AdminStretchGoals";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
                 <Route path="/apoiadores" element={<Supporters />} />
                 <Route path="/admin/apoiadores" element={<AdminSupporters />} />
                 <Route path="/admin/apoiadores/formularios" element={<SupporterForms />} />
+                <Route path="/admin/metas" element={<AdminStretchGoals />} />
                 <Route path="/apoiadores/submeter" element={<SupporterSubmission />} />
                 {/* Tab redirects - redirect to Index with tab query param */}
                 <Route path="/characters" element={<RedirectWithParams to="/?tab=characters" />} />
