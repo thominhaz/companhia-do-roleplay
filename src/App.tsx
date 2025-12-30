@@ -17,6 +17,7 @@ import Supporters from "@/pages/Supporters";
 import AdminSupporters from "@/pages/AdminSupporters";
 import SupporterForms from "@/pages/SupporterForms";
 import SupporterSubmission from "@/pages/SupporterSubmission";
+import Landing from "@/pages/Landing";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
             <BrowserRouter>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/landing" element={<Landing />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/character/:id" element={<CharacterSheet />} />
