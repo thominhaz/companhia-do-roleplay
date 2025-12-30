@@ -361,21 +361,19 @@ export default function Landing() {
               </p>
             </div>
 
-            {/* Phase Tabs */}
+            {/* Phase Tabs - Navigation */}
             <div className="flex flex-wrap justify-center gap-2 mb-12">
               {phases.map((phase, index) => {
-                const isActive = activePhase === index;
                 const phaseCompleted = phase.goals.every(g => g.status === 'completed');
                 
                 return (
                   <button
                     key={phase.id}
-                    onClick={() => setActivePhase(index)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                      isActive 
-                        ? 'bg-cosmic-purple text-white' 
-                        : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
-                    }`}
+                    onClick={() => {
+                      const element = document.getElementById(`phase-${phase.id}`);
+                      element?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                    }}
+                    className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all bg-white/5 text-white/60 hover:bg-cosmic-purple hover:text-white"
                   >
                     <span>{phase.emoji}</span>
                     <span className="hidden sm:inline">{phase.name}</span>
@@ -385,121 +383,124 @@ export default function Landing() {
               })}
             </div>
 
-            {/* Timeline */}
+            {/* Timeline - All Goals */}
             <div className="relative">
               <ScrollArea className="w-full">
-                <div className="relative min-w-[800px] pb-8">
+                <div className="relative pb-8" style={{ minWidth: `${allGoals.length * 220}px` }}>
                   {/* Timeline Line */}
-                  <div className="absolute left-0 right-0 top-1/2 h-1 bg-gradient-to-r from-cosmic-purple/50 via-solar-orange/50 to-magenta-red/50 rounded-full" />
+                  <div className="absolute left-0 right-0 top-1/2 h-1 bg-gradient-to-r from-cosmic-purple via-solar-orange to-magenta-red rounded-full" />
                   
                   {/* Goals */}
-                  <div className="relative flex justify-between px-8">
-                    {phases[activePhase].goals.map((goal, index) => {
-                      const isAbove = index % 2 === 0;
-                      const PhaseIcon = phases[activePhase].icon;
-                      
-                      return (
-                        <div 
-                          key={goal.id} 
-                          className="relative flex flex-col items-center"
-                          style={{ flex: 1, maxWidth: '200px' }}
-                        >
-                          {/* Card - Above */}
-                          {isAbove && (
-                            <motion.div
-                              initial={{ opacity: 0, y: 20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: index * 0.1 }}
-                              className="mb-4"
-                            >
-                              <Card 
-                                className={`w-[180px] p-4 border transition-all hover:scale-105 cursor-pointer ${
-                                  goal.status === 'completed'
-                                    ? 'bg-cosmic-purple/20 border-cosmic-purple/50'
-                                    : goal.status === 'current'
-                                    ? 'bg-solar-orange/20 border-solar-orange/50'
-                                    : 'bg-white/5 border-white/20'
-                                }`}
-                              >
-                                <h4 className="font-bold text-white text-sm mb-1 line-clamp-2">{goal.title}</h4>
-                                <div className={`text-sm font-bold mb-2 ${
-                                  goal.status === 'completed' ? 'text-cosmic-purple' : 
-                                  goal.status === 'current' ? 'text-solar-orange' : 'text-white/50'
-                                }`}>
-                                  R$ {goal.value.toLocaleString('pt-BR')}
-                                </div>
-                                <p className="text-white/40 text-xs line-clamp-2">{goal.subtitle}</p>
-                              </Card>
-                            </motion.div>
-                          )}
-                          
-                          {/* Node */}
-                          <div className="relative z-10 my-4">
-                            <motion.div
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1 }}
-                              transition={{ delay: index * 0.05, type: "spring" }}
-                              className={`w-12 h-12 rounded-full flex items-center justify-center border-4 ${
-                                goal.status === 'completed'
-                                  ? 'bg-cosmic-purple border-cosmic-purple/50 text-white'
-                                  : goal.status === 'current'
-                                  ? 'bg-solar-orange border-solar-orange/50 text-white animate-pulse'
-                                  : 'bg-white/10 border-white/20 text-white/50'
-                              }`}
-                            >
-                              {goal.status === 'completed' ? (
-                                <CheckCircle2 className="h-5 w-5" />
-                              ) : (
-                                <span className="text-sm font-bold">{String(index + 1).padStart(2, '0')}</span>
-                              )}
-                            </motion.div>
-                            
-                            {/* Connector line to card */}
-                            <div className={`absolute left-1/2 w-px h-4 -translate-x-1/2 ${
-                              goal.status === 'completed' ? 'bg-cosmic-purple/50' : 
-                              goal.status === 'current' ? 'bg-solar-orange/50' : 'bg-white/20'
-                            } ${isAbove ? 'bottom-full' : 'top-full'}`} />
+                  <div className="relative flex">
+                    {phases.map((phase, phaseIndex) => (
+                      <div key={phase.id} id={`phase-${phase.id}`} className="flex">
+                        {/* Phase Marker */}
+                        <div className="relative flex flex-col items-center mx-2 first:ml-4">
+                          <div className="h-[120px]" /> {/* Spacer for above cards */}
+                          <div className="relative z-20 my-4">
+                            <div className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
+                              phase.goals.every(g => g.status === 'completed')
+                                ? 'bg-cosmic-purple text-white'
+                                : phase.goals.some(g => g.status === 'current')
+                                ? 'bg-solar-orange text-white'
+                                : 'bg-white/10 text-white/60'
+                            }`}>
+                              {phase.emoji} {phase.name}
+                            </div>
                           </div>
-                          
-                          {/* Card - Below */}
-                          {!isAbove && (
-                            <motion.div
-                              initial={{ opacity: 0, y: -20 }}
-                              animate={{ opacity: 1, y: 0 }}
-                              transition={{ delay: index * 0.1 }}
-                              className="mt-4"
-                            >
-                              <Card 
-                                className={`w-[180px] p-4 border transition-all hover:scale-105 cursor-pointer ${
-                                  goal.status === 'completed'
-                                    ? 'bg-cosmic-purple/20 border-cosmic-purple/50'
-                                    : goal.status === 'current'
-                                    ? 'bg-solar-orange/20 border-solar-orange/50'
-                                    : 'bg-white/5 border-white/20'
-                                }`}
-                              >
-                                <h4 className="font-bold text-white text-sm mb-1 line-clamp-2">{goal.title}</h4>
-                                <div className={`text-sm font-bold mb-2 ${
-                                  goal.status === 'completed' ? 'text-cosmic-purple' : 
-                                  goal.status === 'current' ? 'text-solar-orange' : 'text-white/50'
-                                }`}>
-                                  R$ {goal.value.toLocaleString('pt-BR')}
-                                </div>
-                                <p className="text-white/40 text-xs line-clamp-2">{goal.subtitle}</p>
-                              </Card>
-                            </motion.div>
-                          )}
+                          <div className="h-[120px]" /> {/* Spacer for below cards */}
                         </div>
-                      );
-                    })}
+                        
+                        {/* Phase Goals */}
+                        {phase.goals.map((goal, index) => {
+                          const globalIndex = allGoals.findIndex(g => g.id === goal.id);
+                          const isAbove = globalIndex % 2 === 0;
+                          
+                          return (
+                            <div 
+                              key={goal.id} 
+                              className="relative flex flex-col items-center w-[200px] flex-shrink-0"
+                            >
+                              {/* Card - Above */}
+                              <div className={`h-[120px] flex items-end pb-2 ${isAbove ? '' : 'invisible'}`}>
+                                {isAbove && (
+                                  <Card 
+                                    className={`w-[180px] p-3 border transition-all hover:scale-105 cursor-pointer ${
+                                      goal.status === 'completed'
+                                        ? 'bg-cosmic-purple/20 border-cosmic-purple/50'
+                                        : goal.status === 'current'
+                                        ? 'bg-solar-orange/20 border-solar-orange/50'
+                                        : 'bg-white/5 border-white/20'
+                                    }`}
+                                  >
+                                    <h4 className="font-bold text-white text-sm mb-1 line-clamp-2">{goal.title}</h4>
+                                    <div className={`text-sm font-bold mb-1 ${
+                                      goal.status === 'completed' ? 'text-cosmic-purple' : 
+                                      goal.status === 'current' ? 'text-solar-orange' : 'text-white/50'
+                                    }`}>
+                                      R$ {goal.value.toLocaleString('pt-BR')}
+                                    </div>
+                                    <p className="text-white/40 text-xs line-clamp-2">{goal.subtitle}</p>
+                                  </Card>
+                                )}
+                              </div>
+                              
+                              {/* Node */}
+                              <div className="relative z-10 my-2">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center border-3 ${
+                                  goal.status === 'completed'
+                                    ? 'bg-cosmic-purple border-cosmic-purple/50 text-white'
+                                    : goal.status === 'current'
+                                    ? 'bg-solar-orange border-solar-orange/50 text-white'
+                                    : 'bg-[#0a0a0f] border-white/30 text-white/50'
+                                }`}>
+                                  {goal.status === 'completed' ? (
+                                    <CheckCircle2 className="h-4 w-4" />
+                                  ) : (
+                                    <span className="text-xs font-bold">{String(globalIndex + 1).padStart(2, '0')}</span>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              {/* Card - Below */}
+                              <div className={`h-[120px] flex items-start pt-2 ${!isAbove ? '' : 'invisible'}`}>
+                                {!isAbove && (
+                                  <Card 
+                                    className={`w-[180px] p-3 border transition-all hover:scale-105 cursor-pointer ${
+                                      goal.status === 'completed'
+                                        ? 'bg-cosmic-purple/20 border-cosmic-purple/50'
+                                        : goal.status === 'current'
+                                        ? 'bg-solar-orange/20 border-solar-orange/50'
+                                        : 'bg-white/5 border-white/20'
+                                    }`}
+                                  >
+                                    <h4 className="font-bold text-white text-sm mb-1 line-clamp-2">{goal.title}</h4>
+                                    <div className={`text-sm font-bold mb-1 ${
+                                      goal.status === 'completed' ? 'text-cosmic-purple' : 
+                                      goal.status === 'current' ? 'text-solar-orange' : 'text-white/50'
+                                    }`}>
+                                      R$ {goal.value.toLocaleString('pt-BR')}
+                                    </div>
+                                    <p className="text-white/40 text-xs line-clamp-2">{goal.subtitle}</p>
+                                  </Card>
+                                )}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ))}
                   </div>
                 </div>
                 <ScrollBar orientation="horizontal" />
               </ScrollArea>
               
-              {/* Scroll hint */}
-              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-16 h-full bg-gradient-to-l from-[#0a0a0f] to-transparent pointer-events-none flex items-center justify-end pr-2">
-                <ChevronRight className="h-6 w-6 text-white/30 animate-pulse" />
+              {/* Scroll hints */}
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 w-12 h-full bg-gradient-to-r from-[#0a0a0f] to-transparent pointer-events-none flex items-center justify-start pl-2">
+                <ChevronLeft className="h-6 w-6 text-white/30" />
+              </div>
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 w-12 h-full bg-gradient-to-l from-[#0a0a0f] to-transparent pointer-events-none flex items-center justify-end pr-2">
+                <ChevronRight className="h-6 w-6 text-white/30" />
               </div>
             </div>
             
@@ -510,7 +511,7 @@ export default function Landing() {
                 <span className="text-white/60">Alcançada</span>
               </div>
               <div className="flex items-center gap-2">
-                <div className="w-4 h-4 rounded-full bg-solar-orange animate-pulse" />
+                <div className="w-4 h-4 rounded-full bg-solar-orange" />
                 <span className="text-white/60">Em Andamento</span>
               </div>
               <div className="flex items-center gap-2">
