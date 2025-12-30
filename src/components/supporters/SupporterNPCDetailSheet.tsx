@@ -2,10 +2,16 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { SupporterBadge } from "./SupporterBadge";
 import { SupporterNPC, tierConfig } from "@/hooks/useSupporterContent";
-import { User, MapPin, Briefcase, Quote, Star } from "lucide-react";
+import { User, MapPin, Briefcase, Quote, Star, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useHomebrew } from "@/hooks/useHomebrew";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import type { HomebrewMonsterData } from "@/types";
 
 interface SupporterNPCDetailSheetProps {
   npc: SupporterNPC | null;
@@ -14,9 +20,77 @@ interface SupporterNPCDetailSheetProps {
 }
 
 export function SupporterNPCDetailSheet({ npc, open, onOpenChange }: SupporterNPCDetailSheetProps) {
+  const { user } = useAuth();
+  const { data: subscription } = useSubscription();
+  const { createHomebrew, isCreating, canCreate } = useHomebrew();
+
+  const canUseForge = subscription?.canUseForge ?? false;
+
   if (!npc) return null;
 
   const tier = tierConfig[npc.creator_tier as keyof typeof tierConfig] || tierConfig.lendario;
+
+  const handleCopyToHomebrew = () => {
+    if (!user) {
+      toast.error("Você precisa estar logado para copiar NPCs");
+      return;
+    }
+
+    if (!canUseForge || !canCreate) {
+      toast.error("Você precisa ser premium para criar conteúdo homebrew");
+      return;
+    }
+
+    // NPCs from supporter gallery don't have stats, so we create a basic monster template
+    const homebrewData: HomebrewMonsterData = {
+      size: 'Medium',
+      type: 'humanoid',
+      alignment: 'neutral',
+      armor_class: 10,
+      hit_points: '1d8',
+      hp: 5,
+      ac: 10,
+      speed: '30 ft.',
+      attributes: {
+        strength: 10,
+        dexterity: 10,
+        constitution: 10,
+        intelligence: 10,
+        wisdom: 10,
+        charisma: 10,
+      },
+      challenge_rating: '0',
+      cr: '0',
+      xp: 0,
+      traits: npc.personality ? [{ name: 'Personalidade', description: npc.personality }] : [],
+      actions: [],
+    };
+
+    const description = [
+      npc.description,
+      npc.appearance && `**Aparência:** ${npc.appearance}`,
+      npc.backstory && `**História:** ${npc.backstory}`,
+      npc.occupation && `**Ocupação:** ${npc.occupation}`,
+      npc.location && `**Localização:** ${npc.location}`,
+      '',
+      `---`,
+      `*Copiado da Galeria de Apoiadores - Criado por ${npc.creator_name}*`,
+    ].filter(Boolean).join('\n\n');
+
+    createHomebrew({
+      type: 'monster',
+      name: npc.title ? `${npc.name}, ${npc.title}` : npc.name,
+      description,
+      icon: '👤',
+      data: homebrewData,
+      is_public: false,
+    }, {
+      onSuccess: () => {
+        toast.success(`"${npc.name}" copiado para sua Forja!`);
+        onOpenChange(false);
+      }
+    });
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -134,6 +208,20 @@ export function SupporterNPCDetailSheet({ npc, open, onOpenChange }: SupporterNP
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                   {npc.backstory}
                 </p>
+              </div>
+            )}
+
+            {user && canUseForge && (
+              <div className="pt-4">
+                <Button
+                  onClick={handleCopyToHomebrew}
+                  disabled={isCreating || !canCreate}
+                  className="w-full gap-2"
+                  variant="outline"
+                >
+                  <Copy className="w-4 h-4" />
+                  {isCreating ? "Copiando..." : "Copiar para minha Forja"}
+                </Button>
               </div>
             )}
           </div>

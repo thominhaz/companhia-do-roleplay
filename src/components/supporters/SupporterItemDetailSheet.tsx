@@ -2,10 +2,16 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sh
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import { SupporterBadge } from "./SupporterBadge";
 import { SupporterItem, tierConfig, rarityConfig } from "@/hooks/useSupporterContent";
-import { Sparkles, Quote, Star, Zap, Shield, Link2 } from "lucide-react";
+import { Sparkles, Quote, Star, Zap, Shield, Link2, Copy } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useHomebrew } from "@/hooks/useHomebrew";
+import { useSubscription } from "@/hooks/useSubscription";
+import { useAuth } from "@/hooks/useAuth";
+import { toast } from "sonner";
+import type { HomebrewItemData } from "@/types";
 
 interface SupporterItemDetailSheetProps {
   item: SupporterItem | null;
@@ -14,10 +20,74 @@ interface SupporterItemDetailSheetProps {
 }
 
 export function SupporterItemDetailSheet({ item, open, onOpenChange }: SupporterItemDetailSheetProps) {
+  const { user } = useAuth();
+  const { data: subscription } = useSubscription();
+  const { createHomebrew, isCreating, canCreate } = useHomebrew();
+
+  const canUseForge = subscription?.canUseForge ?? false;
+
+  if (!item) return null;
+
   if (!item) return null;
 
   const tier = tierConfig[item.creator_tier as keyof typeof tierConfig] || tierConfig.mestre_epico;
   const rarity = rarityConfig[item.rarity as keyof typeof rarityConfig] || rarityConfig.raro;
+
+  const handleCopyToHomebrew = () => {
+    if (!user) {
+      toast.error("Você precisa estar logado para copiar itens");
+      return;
+    }
+
+    if (!canUseForge || !canCreate) {
+      toast.error("Você precisa ser premium para criar conteúdo homebrew");
+      return;
+    }
+
+    const rarityMap: Record<string, HomebrewItemData['rarity']> = {
+      comum: 'common',
+      incomum: 'uncommon',
+      raro: 'rare',
+      muito_raro: 'very_rare',
+      lendario: 'legendary',
+      artefato: 'artifact',
+    };
+
+    const typeMap: Record<string, HomebrewItemData['type']> = {
+      arma: 'weapon',
+      armadura: 'armor',
+      maravilhoso: 'wondrous',
+      pocao: 'potion',
+      pergaminho: 'scroll',
+      varinha: 'wand',
+      anel: 'ring',
+    };
+
+    const homebrewData: HomebrewItemData = {
+      rarity: rarityMap[item.rarity] || 'rare',
+      type: typeMap[item.item_type] || 'wondrous',
+      requires_attunement: item.requires_attunement,
+      attunement_requirements: item.attunement_requirements || undefined,
+      properties: item.properties ? [item.properties] : undefined,
+      damage: item.damage || undefined,
+      damage_type: item.damage_type || undefined,
+      ac_bonus: item.ac_bonus || undefined,
+    };
+
+    createHomebrew({
+      type: 'item',
+      name: item.name,
+      description: `${item.description || ''}\n\n---\n*Copiado da Galeria de Apoiadores - Criado por ${item.creator_name}*`,
+      icon: '✨',
+      data: homebrewData,
+      is_public: false,
+    }, {
+      onSuccess: () => {
+        toast.success(`"${item.name}" copiado para sua Forja!`);
+        onOpenChange(false);
+      }
+    });
+  };
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -142,6 +212,20 @@ export function SupporterItemDetailSheet({ item, open, onOpenChange }: Supporter
                 <p className="text-sm text-muted-foreground whitespace-pre-wrap">
                   {item.properties}
                 </p>
+              </div>
+            )}
+
+            {user && canUseForge && (
+              <div className="pt-4">
+                <Button
+                  onClick={handleCopyToHomebrew}
+                  disabled={isCreating || !canCreate}
+                  className="w-full gap-2"
+                  variant="outline"
+                >
+                  <Copy className="w-4 h-4" />
+                  {isCreating ? "Copiando..." : "Copiar para minha Forja"}
+                </Button>
               </div>
             )}
           </div>
