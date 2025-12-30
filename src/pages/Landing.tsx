@@ -386,9 +386,9 @@ export default function Landing() {
             {/* Timeline - All Goals */}
             <div className="relative">
               <ScrollArea className="w-full">
-                <div className="relative pb-8" style={{ minWidth: `${allGoals.length * 220}px` }}>
+                <div className="relative py-4" style={{ minWidth: `${allGoals.length * 220}px` }}>
                   {/* Timeline Line */}
-                  <div className="absolute left-0 right-0 top-1/2 h-1 bg-gradient-to-r from-cosmic-purple via-solar-orange to-magenta-red rounded-full" />
+                  <div className="absolute left-0 right-0 top-1/2 h-1 bg-gradient-to-r from-cosmic-purple via-solar-orange to-magenta-red rounded-full" style={{ transform: 'translateY(-50%)' }} />
                   
                   {/* Goals */}
                   <div className="relative flex">
@@ -396,7 +396,7 @@ export default function Landing() {
                       <div key={phase.id} id={`phase-${phase.id}`} className="flex">
                         {/* Phase Marker */}
                         <div className="relative flex flex-col items-center mx-2 first:ml-4">
-                          <div className="h-[120px]" /> {/* Spacer for above cards */}
+                          <div className="h-[150px]" /> {/* Spacer for above cards */}
                           <div className="relative z-20 my-4">
                             <div className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap ${
                               phase.goals.every(g => g.status === 'completed')
@@ -408,7 +408,7 @@ export default function Landing() {
                               {phase.emoji} {phase.name}
                             </div>
                           </div>
-                          <div className="h-[120px]" /> {/* Spacer for below cards */}
+                          <div className="h-[150px]" /> {/* Spacer for below cards */}
                         </div>
                         
                         {/* Phase Goals */}
@@ -422,7 +422,7 @@ export default function Landing() {
                               className="relative flex flex-col items-center w-[200px] flex-shrink-0"
                             >
                               {/* Card - Above */}
-                              <div className={`h-[120px] flex items-end pb-2 ${isAbove ? '' : 'invisible'}`}>
+                              <div className={`h-[150px] flex items-end pb-4 ${isAbove ? '' : 'invisible'}`}>
                                 {isAbove && (
                                   <Card 
                                     className={`w-[180px] p-3 border transition-all hover:scale-105 cursor-pointer ${
@@ -463,7 +463,7 @@ export default function Landing() {
                               </div>
                               
                               {/* Card - Below */}
-                              <div className={`h-[120px] flex items-start pt-2 ${!isAbove ? '' : 'invisible'}`}>
+                              <div className={`h-[150px] flex items-start pt-4 ${!isAbove ? '' : 'invisible'}`}>
                                 {!isAbove && (
                                   <Card 
                                     className={`w-[180px] p-3 border transition-all hover:scale-105 cursor-pointer ${
