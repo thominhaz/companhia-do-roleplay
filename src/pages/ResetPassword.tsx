@@ -121,7 +121,7 @@ export default function ResetPassword() {
           <div className="flex-1 flex flex-col px-6 pt-8 pb-8 gap-8">
             {/* Brand Logo */}
             <div className="flex flex-col items-center gap-4">
-              <img src="/lovable-uploads/efa0d41b-14e0-4651-a827-05d928549cb9.png" alt="Go20" className="w-24 h-24 object-contain" />
+              <img src="/src/assets/logo-full.png" alt="Go20" className="h-16 w-auto object-contain" />
               <div className="text-center">
                 <h1 className="text-xl font-semibold text-slate-100 tracking-tight">Nova Senha</h1>
                 <p className="text-sm text-slate-500 mt-1">Crie uma nova senha para sua conta Go20</p>
