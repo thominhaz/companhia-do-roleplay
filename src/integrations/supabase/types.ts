@@ -472,6 +472,27 @@ export type Database = {
           },
         ]
       }
+      campaign_funding: {
+        Row: {
+          current_amount: number
+          goal_amount: number
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          current_amount?: number
+          goal_amount?: number
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          current_amount?: number
+          goal_amount?: number
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       campaign_message_reactions: {
         Row: {
           created_at: string
@@ -1872,6 +1893,54 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      stretch_goals: {
+        Row: {
+          created_at: string
+          description: string | null
+          goal_number: number
+          id: string
+          phase: string
+          phase_emoji: string | null
+          phase_order: number | null
+          sort_order: number
+          status: string
+          subtitle: string | null
+          title: string
+          updated_at: string
+          value: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          goal_number: number
+          id?: string
+          phase?: string
+          phase_emoji?: string | null
+          phase_order?: number | null
+          sort_order?: number
+          status?: string
+          subtitle?: string | null
+          title: string
+          updated_at?: string
+          value: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          goal_number?: number
+          id?: string
+          phase?: string
+          phase_emoji?: string | null
+          phase_order?: number | null
+          sort_order?: number
+          status?: string
+          subtitle?: string | null
+          title?: string
+          updated_at?: string
+          value?: number
+        }
+        Relationships: []
       }
       subscriptions: {
         Row: {
