@@ -407,7 +407,13 @@ function CharacterPDFDocument({ character, theme }: CharacterPDFProps) {
   const skills = character.skills || {};
   const savingThrows = character.saving_throws || {};
   const features = (character.features as any[]) || [];
-  const spells = (character.spells as any[]) || [];
+
+  const spellsRaw = (character.spells as any[]) ?? [];
+  const spells = (Array.isArray(spellsRaw) ? spellsRaw : []).filter((spell) => {
+    if (typeof spell === "string") return spell.trim().length > 0;
+    return !!spell && typeof spell === "object" && typeof (spell as any).name === "string";
+  });
+
   const equipment = (character.equipment as any[]) || [];
   const inventory = (character.inventory as any[]) || [];
   const currency = character.currency || {};

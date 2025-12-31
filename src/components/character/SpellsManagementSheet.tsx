@@ -169,12 +169,21 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
   }, [homebrewSpells]);
 
   useEffect(() => {
-    const charSpells = (character.spells as any[]) || [];
-    setSpells(charSpells.map(s => ({
-      name: typeof s === 'string' ? s : s.name,
-      level: typeof s === 'string' ? 0 : (s.level || 0),
-      prepared: typeof s === 'string' ? false : (s.prepared || false),
-    })));
+    const raw = (character.spells as any[]) ?? [];
+    const charSpells = Array.isArray(raw) ? raw : [];
+
+    setSpells(
+      charSpells
+        .filter((s) => {
+          if (typeof s === "string") return s.trim().length > 0;
+          return !!s && typeof s === "object" && typeof (s as any).name === "string";
+        })
+        .map((s) => ({
+          name: typeof s === "string" ? s : s.name,
+          level: typeof s === "string" ? 0 : (s.level || 0),
+          prepared: typeof s === "string" ? false : (s.prepared || false),
+        }))
+    );
 
     const spellcasting = character.spellcasting as any;
     if (spellcasting?.usedSlots) {
