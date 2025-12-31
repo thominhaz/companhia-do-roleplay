@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import logoFull from "@/assets/logo-full.png";
 import { motion } from "framer-motion";
+import { CharacterSheetPreview } from "@/components/landing/CharacterSheetPreview";
 
 interface StretchGoal {
   id: number;
@@ -268,29 +269,14 @@ export default function Landing() {
                 </div>
               </motion.div>
 
-              {/* Feature Cards Demo */}
+              {/* Character Sheet Preview */}
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, delay: 0.2 }}
-                className="hidden lg:block"
+                className="hidden lg:block max-w-sm mx-auto"
               >
-                <div className="grid grid-cols-2 gap-4">
-                  {features.map((feature, index) => (
-                    <motion.div
-                      key={feature.title}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
-                    >
-                      <Card className="p-4 bg-white/5 border-white/10 hover:bg-white/10 hover:border-cosmic-purple/50 transition-all cursor-pointer group">
-                        <feature.icon className="h-8 w-8 text-cosmic-purple mb-3 group-hover:text-solar-orange transition-colors" />
-                        <h3 className="font-semibold text-white mb-1">{feature.title}</h3>
-                        <p className="text-sm text-white/50">{feature.description}</p>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </div>
+                <CharacterSheetPreview />
               </motion.div>
             </div>
           </div>
