@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dices } from "lucide-react";
+import { DiceSVG } from "./DiceSVG";
 
 // Character images
 import elfaMaga from "@/assets/landing/elfa-maga.png";
@@ -80,36 +80,53 @@ function AttributeBox({ value, label }: { value: number; label: string }) {
   );
 }
 
+const diceTypes: ("d20" | "d8" | "d6")[] = ["d20", "d8", "d6"];
+const diceMaxValues = { d20: 20, d8: 8, d6: 6 };
+
 export function CharacterSheetPreview() {
   const [activeTheme, setActiveTheme] = useState(0);
   const [isRolling, setIsRolling] = useState(false);
-  const [diceResults, setDiceResults] = useState<number[]>([]);
+  const [diceResults, setDiceResults] = useState<number[]>([20, 8, 6]);
+  const rollIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const currentChar = demoCharacters[activeTheme].character;
 
-  const handleRoll = () => {
+  const handleRoll = useCallback(() => {
+    if (isRolling) return;
+    
     setIsRolling(true);
-    setDiceResults([]);
 
-    // Animate dice roll
-    const rollInterval = setInterval(() => {
+    // Clear any existing interval
+    if (rollIntervalRef.current) {
+      clearInterval(rollIntervalRef.current);
+    }
+
+    // Animate dice values during roll
+    rollIntervalRef.current = setInterval(() => {
       setDiceResults([
         Math.floor(Math.random() * 20) + 1,
-        Math.floor(Math.random() * 12) + 1,
+        Math.floor(Math.random() * 8) + 1,
         Math.floor(Math.random() * 6) + 1,
       ]);
-    }, 100);
+    }, 80);
 
+    // Stop rolling after animation
     setTimeout(() => {
-      clearInterval(rollInterval);
+      if (rollIntervalRef.current) {
+        clearInterval(rollIntervalRef.current);
+        rollIntervalRef.current = null;
+      }
+      
+      // Set final results
       setDiceResults([
         Math.floor(Math.random() * 20) + 1,
-        Math.floor(Math.random() * 12) + 1,
+        Math.floor(Math.random() * 8) + 1,
         Math.floor(Math.random() * 6) + 1,
       ]);
+      
       setIsRolling(false);
-    }, 800);
-  };
+    }, 1000);
+  }, [isRolling]);
 
   return (
     <div className="relative">
@@ -192,23 +209,16 @@ export function CharacterSheetPreview() {
               </div>
             </div>
 
-            {/* Dice Display */}
-            <div className="flex justify-center gap-3">
-              {[20, 12, 6].map((die, index) => (
-                <motion.div
-                  key={die}
-                  animate={isRolling ? { rotate: [0, 360], scale: [1, 1.2, 1] } : {}}
-                  transition={{ duration: 0.3, repeat: isRolling ? Infinity : 0 }}
-                  className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg border-2 ${
-                    index === 0 
-                      ? "bg-cosmic-purple/30 border-cosmic-purple text-cosmic-purple" 
-                      : index === 1 
-                        ? "bg-solar-orange/30 border-solar-orange text-solar-orange"
-                        : "bg-cyan-blue/30 border-cyan-blue text-cyan-blue"
-                  }`}
-                >
-                  {diceResults[index] || die}
-                </motion.div>
+            {/* Dice Display with SVG Dice */}
+            <div className="flex justify-center gap-4 py-2">
+              {diceTypes.map((dieType, index) => (
+                <DiceSVG
+                  key={dieType}
+                  type={dieType}
+                  value={diceResults[index]}
+                  isRolling={isRolling}
+                  size={52}
+                />
               ))}
             </div>
 
@@ -216,7 +226,7 @@ export function CharacterSheetPreview() {
             <Button 
               onClick={handleRoll}
               disabled={isRolling}
-              className="w-full bg-gradient-to-r from-cosmic-purple to-solar-orange hover:opacity-90 text-white font-semibold gap-2"
+              className="w-full bg-gradient-to-r from-cosmic-purple to-solar-orange hover:opacity-90 text-white font-semibold gap-2 disabled:opacity-70"
             >
               <Dices className="w-4 h-4" />
               {isRolling ? "ROLANDO..." : "ROLAR"}
