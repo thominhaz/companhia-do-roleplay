@@ -50,11 +50,12 @@ const SCHOOLS: Record<string, string> = {
 };
 
 // Map class IDs to Portuguese class names used in spell data
+// Note: spell data uses "Clerigo" without accent
 const CLASS_NAME_MAP: Record<string, string> = {
   wizard: 'Mago',
   sorcerer: 'Feiticeiro',
   bard: 'Bardo',
-  cleric: 'Clérigo',
+  cleric: 'Clerigo',
   druid: 'Druida',
   warlock: 'Bruxo',
   paladin: 'Paladino',
