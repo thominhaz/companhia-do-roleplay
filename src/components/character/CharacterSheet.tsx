@@ -434,22 +434,44 @@ export function CharacterSheet() {
 
   // Map character spells to full spell data
   const characterSpellsWithData = useMemo(() => {
-    if (!character?.spells) return [];
-    const charSpells = character.spells as any[];
-    return charSpells.map((spell: any) => {
-      const spellName = typeof spell === 'string' ? spell : spell.name;
-      const fullData = allSpellsData.find(s => 
-        s.name.toLowerCase() === spellName.toLowerCase() || 
-        s.originalName?.toLowerCase() === spellName.toLowerCase()
-      );
-      return {
-        id: spellName,
-        fullData,
-        displayName: fullData?.name || (typeof spellName === 'string' 
-          ? spellName.split('_').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ')
-          : spellName),
-      };
-    });
+    const raw = (character?.spells as any[]) ?? [];
+    const charSpells = Array.isArray(raw) ? raw : [];
+
+    return charSpells
+      .filter((spell) => {
+        if (typeof spell === "string") return spell.trim().length > 0;
+        return (
+          !!spell &&
+          typeof spell === "object" &&
+          typeof (spell as any).name === "string" &&
+          (spell as any).name.trim().length > 0
+        );
+      })
+      .map((spell: any) => {
+        const spellName: string = typeof spell === "string" ? spell : spell.name;
+        const normalized = spellName.toLowerCase();
+
+        const fullData = allSpellsData.find(
+          (s) =>
+            s.name.toLowerCase() === normalized ||
+            s.originalName?.toLowerCase() === normalized
+        );
+
+        return {
+          id: spellName,
+          fullData,
+          displayName:
+            fullData?.name ||
+            spellName
+              .split("_")
+              .map((word: string) =>
+                word
+                  ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                  : ""
+              )
+              .join(" "),
+        };
+      });
   }, [character?.spells, allSpellsData]);
 
   // Helper to update conditions with combat sync
