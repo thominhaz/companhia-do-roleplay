@@ -1235,7 +1235,7 @@ export function CharacterSheet() {
                 </div>
               </div>
 
-              <Separator className="my-4" />
+              <Separator className="my-6 bg-border/50" />
 
               {/* HP Bar */}
               <div className="space-y-3">
