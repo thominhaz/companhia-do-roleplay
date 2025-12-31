@@ -1,12 +1,16 @@
+import { useState } from 'react';
 import { BACKGROUNDS, ALIGNMENTS, ALL_SKILLS, ALL_TOOLS, ALL_LANGUAGES } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Check, Sparkles, BookOpen, Wrench, Languages } from 'lucide-react';
+import { Check, Sparkles, BookOpen, Wrench, Languages, X, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHomebrew } from '@/hooks/useHomebrew';
 import { Badge } from '@/components/ui/badge';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface BackgroundStepProps {
   data: WizardData;
@@ -17,6 +21,7 @@ export function BackgroundStep({ data, updateData }: BackgroundStepProps) {
   const { homebrewContent: homebrewBackgrounds } = useHomebrew('background');
   const selectedBackground = BACKGROUNDS.find(b => b.id === data.background);
   const isCustomBackground = data.background === 'custom';
+  const [showCustomSheet, setShowCustomSheet] = useState(false);
 
   const toggleCustomSkill = (skillId: string) => {
     const current = data.customBackgroundSkills;
@@ -36,8 +41,45 @@ export function BackgroundStep({ data, updateData }: BackgroundStepProps) {
     }
   };
 
+  const handleSelectCustom = () => {
+    updateData({ 
+      background: 'custom',
+      customBackgroundSkills: data.customBackgroundSkills || [],
+      customBackgroundProficiencies: data.customBackgroundProficiencies || [],
+      customBackgroundName: data.customBackgroundName || '',
+      customBackgroundFeature: data.customBackgroundFeature || ''
+    });
+    setShowCustomSheet(true);
+  };
+
+  const getCustomSummary = () => {
+    const parts: string[] = [];
+    if (data.customBackgroundName) {
+      parts.push(data.customBackgroundName);
+    }
+    if (data.customBackgroundSkills.length > 0) {
+      const skillNames = data.customBackgroundSkills.map(s => 
+        ALL_SKILLS.find(sk => sk.id === s)?.name || s
+      );
+      parts.push(`Perícias: ${skillNames.join(', ')}`);
+    }
+    if (data.customBackgroundProficiencies.length > 0) {
+      const profNames = data.customBackgroundProficiencies.map(p => {
+        if (p.startsWith('lang:')) {
+          return ALL_LANGUAGES.find(l => l.id === p.replace('lang:', ''))?.name || p;
+        }
+        if (p.startsWith('tool:')) {
+          return ALL_TOOLS.find(t => t.id === p.replace('tool:', ''))?.name || p;
+        }
+        return p;
+      });
+      parts.push(`Proficiências: ${profNames.join(', ')}`);
+    }
+    return parts.length > 0 ? parts.join(' • ') : 'Clique para configurar';
+  };
+
   return (
-    <div className="px-4 py-6 space-y-6">
+    <div className="px-4 py-6 pb-24 space-y-6">
       <div>
         <h2 className="text-2xl font-bold mb-2">História do Personagem</h2>
         <p className="text-muted-foreground text-sm">
@@ -64,12 +106,11 @@ export function BackgroundStep({ data, updateData }: BackgroundStepProps) {
           Baseado no SRD 5.1 - Apenas o Acólito é oficial. Use a opção customizada para criar outros conceitos.
         </p>
         <div className="grid grid-cols-1 gap-2">
-          {BACKGROUNDS.map((bg) => (
+          {BACKGROUNDS.filter(bg => !bg.isCustom).map((bg) => (
             <button
               key={bg.id}
               onClick={() => updateData({ 
                 background: bg.id,
-                // Reset custom fields when switching
                 customBackgroundSkills: [],
                 customBackgroundProficiencies: [],
                 customBackgroundName: '',
@@ -90,11 +131,6 @@ export function BackgroundStep({ data, updateData }: BackgroundStepProps) {
                       SRD 5.1
                     </Badge>
                   )}
-                  {bg.isCustom && (
-                    <Badge variant="outline" className="text-[10px] bg-solar-orange/10 text-solar-orange border-solar-orange/30">
-                      Livre
-                    </Badge>
-                  )}
                 </div>
                 {data.background === bg.id && (
                   <Check className="w-4 h-4 text-primary" />
@@ -103,6 +139,36 @@ export function BackgroundStep({ data, updateData }: BackgroundStepProps) {
               <p className="text-sm text-muted-foreground">{bg.description}</p>
             </button>
           ))}
+          
+          {/* Custom Background - Opens Sheet */}
+          <button
+            onClick={handleSelectCustom}
+            className={cn(
+              "p-4 rounded-xl border text-left transition-all",
+              isCustomBackground
+                ? "border-solar-orange bg-solar-orange/10"
+                : "border-border bg-card hover:border-solar-orange/50"
+            )}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-solar-orange" />
+                <span className="font-semibold">Customizado</span>
+                <Badge variant="outline" className="text-[10px] bg-solar-orange/10 text-solar-orange border-solar-orange/30">
+                  Livre
+                </Badge>
+              </div>
+              <div className="flex items-center gap-2">
+                {isCustomBackground && (
+                  <Check className="w-4 h-4 text-solar-orange" />
+                )}
+                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+              </div>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {isCustomBackground ? getCustomSummary() : 'Crie seu próprio antecedente com perícias e proficiências à sua escolha.'}
+            </p>
+          </button>
           
           {/* Homebrew Backgrounds */}
           {homebrewBackgrounds.length > 0 && homebrewBackgrounds.map((bg) => (
@@ -133,7 +199,7 @@ export function BackgroundStep({ data, updateData }: BackgroundStepProps) {
           ))}
         </div>
 
-        {/* Background Details */}
+        {/* Background Details for non-custom */}
         {selectedBackground && !isCustomBackground && (
           <div className="p-4 rounded-xl bg-muted/30 space-y-3">
             <div className="flex items-center gap-2 text-sm">
@@ -160,117 +226,58 @@ export function BackgroundStep({ data, updateData }: BackgroundStepProps) {
           </div>
         )}
 
-        {/* Custom Background Options */}
+        {/* Custom Background Summary (when selected but sheet closed) */}
         {isCustomBackground && (
-          <div className="space-y-4 p-4 rounded-xl bg-muted/30 border border-solar-orange/20">
-            <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-solar-orange" />
-              <h3 className="font-semibold text-solar-orange">Customizar Antecedente</h3>
-            </div>
-
-            {/* Custom Name */}
-            <div className="space-y-2">
-              <Label>Nome do Antecedente (opcional)</Label>
-              <Input
-                value={data.customBackgroundName}
-                onChange={(e) => updateData({ customBackgroundName: e.target.value })}
-                placeholder="Ex: Mercenário, Estudioso, Artista..."
-                className="bg-card"
-              />
-            </div>
-
-            {/* Skills Selection */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" />
-                  Escolha 2 Perícias
-                </Label>
-                <span className="text-xs text-muted-foreground">
-                  {data.customBackgroundSkills.length}/2
+          <div className="p-4 rounded-xl bg-solar-orange/10 border border-solar-orange/30 space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 text-solar-orange" />
+                <span className="font-medium text-solar-orange">
+                  {data.customBackgroundName || 'Antecedente Customizado'}
                 </span>
               </div>
-              <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
-                {ALL_SKILLS.map(skill => (
-                  <button
-                    key={skill.id}
-                    onClick={() => toggleCustomSkill(skill.id)}
-                    disabled={!data.customBackgroundSkills.includes(skill.id) && data.customBackgroundSkills.length >= 2}
-                    className={cn(
-                      "px-2 py-1.5 rounded-lg text-xs text-left transition-all",
-                      data.customBackgroundSkills.includes(skill.id)
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-card border border-border hover:border-primary/50 disabled:opacity-40"
-                    )}
-                  >
-                    {skill.name}
-                  </button>
-                ))}
-              </div>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={() => setShowCustomSheet(true)}
+                className="text-solar-orange hover:text-solar-orange hover:bg-solar-orange/20"
+              >
+                Editar
+              </Button>
             </div>
-
-            {/* Proficiencies Selection (Tools or Languages) */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="flex items-center gap-2">
-                  <Wrench className="w-4 h-4" />
-                  Escolha 2 (Idiomas ou Ferramentas)
-                </Label>
-                <span className="text-xs text-muted-foreground">
-                  {data.customBackgroundProficiencies.length}/2
+            {data.customBackgroundSkills.length > 0 && (
+              <div className="flex items-center gap-2 text-sm">
+                <BookOpen className="w-4 h-4 text-solar-orange" />
+                <span className="font-medium">Perícias:</span>
+                <span className="text-muted-foreground">
+                  {data.customBackgroundSkills.map(s => 
+                    ALL_SKILLS.find(sk => sk.id === s)?.name || s
+                  ).join(', ')}
                 </span>
               </div>
-              
-              <p className="text-xs text-muted-foreground">Idiomas:</p>
-              <div className="grid grid-cols-2 gap-1.5 max-h-32 overflow-y-auto">
-                {ALL_LANGUAGES.map(lang => (
-                  <button
-                    key={`lang-${lang.id}`}
-                    onClick={() => toggleCustomProficiency(`lang:${lang.id}`)}
-                    disabled={!data.customBackgroundProficiencies.includes(`lang:${lang.id}`) && data.customBackgroundProficiencies.length >= 2}
-                    className={cn(
-                      "px-2 py-1.5 rounded-lg text-xs text-left transition-all",
-                      data.customBackgroundProficiencies.includes(`lang:${lang.id}`)
-                        ? "bg-cyan-blue text-background"
-                        : "bg-card border border-border hover:border-cyan-blue/50 disabled:opacity-40"
-                    )}
-                  >
-                    {lang.name}
-                  </button>
-                ))}
+            )}
+            {data.customBackgroundProficiencies.length > 0 && (
+              <div className="flex items-center gap-2 text-sm">
+                <Wrench className="w-4 h-4 text-solar-orange" />
+                <span className="font-medium">Proficiências:</span>
+                <span className="text-muted-foreground">
+                  {data.customBackgroundProficiencies.map(p => {
+                    if (p.startsWith('lang:')) {
+                      return ALL_LANGUAGES.find(l => l.id === p.replace('lang:', ''))?.name || p;
+                    }
+                    if (p.startsWith('tool:')) {
+                      return ALL_TOOLS.find(t => t.id === p.replace('tool:', ''))?.name || p;
+                    }
+                    return p;
+                  }).join(', ')}
+                </span>
               </div>
-
-              <p className="text-xs text-muted-foreground mt-2">Ferramentas:</p>
-              <div className="grid grid-cols-2 gap-1.5 max-h-32 overflow-y-auto">
-                {ALL_TOOLS.map(tool => (
-                  <button
-                    key={`tool-${tool.id}`}
-                    onClick={() => toggleCustomProficiency(`tool:${tool.id}`)}
-                    disabled={!data.customBackgroundProficiencies.includes(`tool:${tool.id}`) && data.customBackgroundProficiencies.length >= 2}
-                    className={cn(
-                      "px-2 py-1.5 rounded-lg text-xs text-left transition-all truncate",
-                      data.customBackgroundProficiencies.includes(`tool:${tool.id}`)
-                        ? "bg-cosmic-purple text-white"
-                        : "bg-card border border-border hover:border-cosmic-purple/50 disabled:opacity-40"
-                    )}
-                    title={tool.name}
-                  >
-                    {tool.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Custom Feature */}
-            <div className="space-y-2">
-              <Label>Característica (opcional)</Label>
-              <Textarea
-                value={data.customBackgroundFeature}
-                onChange={(e) => updateData({ customBackgroundFeature: e.target.value })}
-                placeholder="Descreva uma habilidade especial ou vantagem social do seu antecedente..."
-                className="bg-card min-h-[60px]"
-              />
-            </div>
+            )}
+            {data.customBackgroundFeature && (
+              <p className="text-sm text-muted-foreground italic">
+                {data.customBackgroundFeature}
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -344,6 +351,135 @@ export function BackgroundStep({ data, updateData }: BackgroundStepProps) {
           />
         </div>
       </div>
+
+      {/* Custom Background Sheet */}
+      <Sheet open={showCustomSheet} onOpenChange={setShowCustomSheet}>
+        <SheetContent side="bottom" className="h-[85vh] bg-background">
+          <SheetHeader className="pb-4">
+            <SheetTitle className="flex items-center gap-2 text-solar-orange">
+              <Sparkles className="w-5 h-5" />
+              Customizar Antecedente
+            </SheetTitle>
+          </SheetHeader>
+          
+          <ScrollArea className="h-[calc(85vh-120px)] pr-4">
+            <div className="space-y-6 pb-6">
+              {/* Custom Name */}
+              <div className="space-y-2">
+                <Label>Nome do Antecedente (opcional)</Label>
+                <Input
+                  value={data.customBackgroundName}
+                  onChange={(e) => updateData({ customBackgroundName: e.target.value })}
+                  placeholder="Ex: Mercenário, Estudioso, Artista..."
+                  className="bg-card"
+                />
+              </div>
+
+              {/* Skills Selection */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="flex items-center gap-2">
+                    <BookOpen className="w-4 h-4" />
+                    Escolha 2 Perícias
+                  </Label>
+                  <Badge variant={data.customBackgroundSkills.length >= 2 ? "default" : "outline"}>
+                    {data.customBackgroundSkills.length}/2
+                  </Badge>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {ALL_SKILLS.map(skill => (
+                    <button
+                      key={skill.id}
+                      onClick={() => toggleCustomSkill(skill.id)}
+                      disabled={!data.customBackgroundSkills.includes(skill.id) && data.customBackgroundSkills.length >= 2}
+                      className={cn(
+                        "px-3 py-2 rounded-lg text-sm text-left transition-all",
+                        data.customBackgroundSkills.includes(skill.id)
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-card border border-border hover:border-primary/50 disabled:opacity-40"
+                      )}
+                    >
+                      {skill.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Languages Selection */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label className="flex items-center gap-2">
+                    <Languages className="w-4 h-4" />
+                    Idiomas ou Ferramentas (2 total)
+                  </Label>
+                  <Badge variant={data.customBackgroundProficiencies.length >= 2 ? "default" : "outline"}>
+                    {data.customBackgroundProficiencies.length}/2
+                  </Badge>
+                </div>
+                
+                <p className="text-xs text-muted-foreground font-medium">Idiomas:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {ALL_LANGUAGES.map(lang => (
+                    <button
+                      key={`lang-${lang.id}`}
+                      onClick={() => toggleCustomProficiency(`lang:${lang.id}`)}
+                      disabled={!data.customBackgroundProficiencies.includes(`lang:${lang.id}`) && data.customBackgroundProficiencies.length >= 2}
+                      className={cn(
+                        "px-3 py-2 rounded-lg text-sm text-left transition-all",
+                        data.customBackgroundProficiencies.includes(`lang:${lang.id}`)
+                          ? "bg-cyan-blue text-background"
+                          : "bg-card border border-border hover:border-cyan-blue/50 disabled:opacity-40"
+                      )}
+                    >
+                      {lang.name}
+                    </button>
+                  ))}
+                </div>
+
+                <p className="text-xs text-muted-foreground font-medium mt-3">Ferramentas:</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {ALL_TOOLS.map(tool => (
+                    <button
+                      key={`tool-${tool.id}`}
+                      onClick={() => toggleCustomProficiency(`tool:${tool.id}`)}
+                      disabled={!data.customBackgroundProficiencies.includes(`tool:${tool.id}`) && data.customBackgroundProficiencies.length >= 2}
+                      className={cn(
+                        "px-3 py-2 rounded-lg text-sm text-left transition-all truncate",
+                        data.customBackgroundProficiencies.includes(`tool:${tool.id}`)
+                          ? "bg-cosmic-purple text-white"
+                          : "bg-card border border-border hover:border-cosmic-purple/50 disabled:opacity-40"
+                      )}
+                      title={tool.name}
+                    >
+                      {tool.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Custom Feature */}
+              <div className="space-y-2">
+                <Label>Característica (opcional)</Label>
+                <Textarea
+                  value={data.customBackgroundFeature}
+                  onChange={(e) => updateData({ customBackgroundFeature: e.target.value })}
+                  placeholder="Descreva uma habilidade especial ou vantagem social do seu antecedente..."
+                  className="bg-card min-h-[100px]"
+                />
+              </div>
+            </div>
+          </ScrollArea>
+
+          <div className="pt-4 border-t">
+            <Button 
+              onClick={() => setShowCustomSheet(false)} 
+              className="w-full bg-solar-orange hover:bg-solar-orange/90"
+            >
+              Confirmar Antecedente
+            </Button>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
