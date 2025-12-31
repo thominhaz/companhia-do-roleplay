@@ -164,6 +164,29 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
     });
   }, [allSpells, convertedHomebrewSpells, search, className]);
 
+  const combinedSpells = useMemo(
+    () => [...convertedHomebrewSpells, ...allSpells],
+    [convertedHomebrewSpells, allSpells]
+  );
+
+  // Selected spells (for the "Magias Selecionadas" section)
+  const selectedCantripObjects = useMemo(() => {
+    return combinedSpells.filter((s) => selectedCantrips.includes(s.name));
+  }, [combinedSpells, selectedCantrips]);
+
+  const selectedSpellObjects = useMemo(() => {
+    return combinedSpells.filter((s) => selectedSpells.includes(s.name));
+  }, [combinedSpells, selectedSpells]);
+
+  // Available spells (hide selected from the lists below)
+  const availableCantrips = useMemo(() => {
+    return cantrips.filter((s) => !selectedCantrips.includes(s.name));
+  }, [cantrips, selectedCantrips]);
+
+  const availableFirstLevelSpells = useMemo(() => {
+    return firstLevelSpells.filter((s) => !selectedSpells.includes(s.name));
+  }, [firstLevelSpells, selectedSpells]);
+
   if (!spellcastingInfo) {
     return (
       <div className="p-4 text-center">
@@ -179,26 +202,26 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
   const handleToggleCantrip = (spellName: string) => {
     const current = [...selectedCantrips];
     const index = current.indexOf(spellName);
-    
+
     if (index > -1) {
       current.splice(index, 1);
     } else if (current.length < spellcastingInfo.cantrips) {
       current.push(spellName);
     }
-    
+
     updateData({ selectedCantrips: current });
   };
 
   const handleToggleSpell = (spellName: string) => {
     const current = [...selectedSpells];
     const index = current.indexOf(spellName);
-    
+
     if (index > -1) {
       current.splice(index, 1);
     } else if (current.length < spellcastingInfo.spells) {
       current.push(spellName);
     }
-    
+
     updateData({ selectedSpells: current });
   };
 
@@ -210,24 +233,6 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
       </div>
     );
   }
-
-  // Get selected spell objects for display
-  const selectedCantripObjects = useMemo(() => {
-    return [...allSpells, ...convertedHomebrewSpells].filter(s => selectedCantrips.includes(s.name));
-  }, [allSpells, convertedHomebrewSpells, selectedCantrips]);
-
-  const selectedSpellObjects = useMemo(() => {
-    return [...allSpells, ...convertedHomebrewSpells].filter(s => selectedSpells.includes(s.name));
-  }, [allSpells, convertedHomebrewSpells, selectedSpells]);
-
-  // Filter out selected spells from the main lists
-  const availableCantrips = useMemo(() => {
-    return cantrips.filter(s => !selectedCantrips.includes(s.name));
-  }, [cantrips, selectedCantrips]);
-
-  const availableFirstLevelSpells = useMemo(() => {
-    return firstLevelSpells.filter(s => !selectedSpells.includes(s.name));
-  }, [firstLevelSpells, selectedSpells]);
 
   return (
     <div className="p-4 pb-24 space-y-4">
