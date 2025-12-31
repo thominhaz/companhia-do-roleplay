@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -104,13 +104,15 @@ export function SpellCastDialog({
   const [showConcentrationWarning, setShowConcentrationWarning] = useState(false);
 
   // Reset selected level when spell changes
-  useMemo(() => {
-    if (spell && spell.level > 0) {
+  useEffect(() => {
+    if (!spell) return;
+
+    if (spell.level > 0) {
       setSelectedLevel(spell.level);
     } else {
       setSelectedLevel(null);
     }
-  }, [spell]);
+  }, [spell.name, spell.level]);
 
   if (!spell) return null;
 
