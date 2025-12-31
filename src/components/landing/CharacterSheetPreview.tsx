@@ -4,6 +4,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dices } from "lucide-react";
 
+// Character images
+import elfaMaga from "@/assets/landing/elfa-maga.png";
+import guerreiroPaladino from "@/assets/landing/guerreiro-paladino.png";
+import anaoClerigo from "@/assets/landing/anao-clerigo.png";
+
 interface DemoCharacter {
   name: string;
   race: string;
@@ -22,36 +27,36 @@ interface DemoCharacter {
 
 const demoCharacters: { theme: string; character: DemoCharacter }[] = [
   {
-    theme: "Clássico",
+    theme: "Clérigo",
     character: {
-      name: "Anão Grande",
+      name: "Thorin Barbavermelhão",
       race: "Anão",
       class: "Clérigo",
       background: "Acólito",
-      imageUrl: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=150&h=150&fit=crop&crop=face",
-      attributes: { forca: 13, destreza: 12, constituicao: 15, inteligencia: 12, sabedoria: 15, carisma: 8 },
+      imageUrl: anaoClerigo,
+      attributes: { forca: 13, destreza: 10, constituicao: 15, inteligencia: 12, sabedoria: 16, carisma: 8 },
     },
   },
   {
-    theme: "Mago",
+    theme: "Maga",
     character: {
-      name: "Elara Moonwhisper",
+      name: "Elara Luavante",
       race: "Elfa",
       class: "Maga",
       background: "Sábio",
-      imageUrl: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&h=150&fit=crop&crop=face",
+      imageUrl: elfaMaga,
       attributes: { forca: 8, destreza: 14, constituicao: 12, inteligencia: 17, sabedoria: 13, carisma: 10 },
     },
   },
   {
-    theme: "Guerreiro",
+    theme: "Paladino",
     character: {
-      name: "Thorn Ironfist",
+      name: "Aldric Punoférreo",
       race: "Humano",
-      class: "Guerreiro",
+      class: "Paladino",
       background: "Soldado",
-      imageUrl: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face",
-      attributes: { forca: 16, destreza: 13, constituicao: 14, inteligencia: 10, sabedoria: 11, carisma: 12 },
+      imageUrl: guerreiroPaladino,
+      attributes: { forca: 16, destreza: 10, constituicao: 14, inteligencia: 10, sabedoria: 12, carisma: 15 },
     },
   },
 ];
