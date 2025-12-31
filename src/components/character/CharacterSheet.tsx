@@ -1234,11 +1234,15 @@ export function CharacterSheet() {
                   })}
                 </div>
               </div>
+            </SheetCard>
 
-              <Separator className="my-6 bg-border/50" />
-
-              {/* HP Bar */}
+            {/* HP Section - Separate Card */}
+            <SheetCard>
               <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-primary" />
+                  Pontos de Vida
+                </h3>
                 <h3 className="text-sm font-semibold text-foreground">Pontos de Vida</h3>
                 
                 {/* HP Progress Bar */}
@@ -1371,9 +1375,11 @@ export function CharacterSheet() {
                   </Button>
                 </div>
               </div>
+            </SheetCard>
 
-              {/* Quick Stats */}
-              <div className="grid grid-cols-4 gap-2 mt-4">
+            {/* Quick Stats */}
+            <SheetCard>
+              <div className="grid grid-cols-4 gap-2">
                 <div className="bg-muted/30 rounded-xl p-2 text-center">
                   <Shield className="w-4 h-4 mx-auto mb-1 text-primary" />
                   <p className="text-lg font-bold">{effectiveAC}</p>
@@ -1395,10 +1401,11 @@ export function CharacterSheet() {
                   <p className="text-[10px] text-muted-foreground">Prof.</p>
                 </div>
               </div>
+            </SheetCard>
 
-
-              {/* Conditions Section */}
-              <div className="mt-4 bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
+            {/* Conditions Section */}
+            <SheetCard>
+              <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-sm font-semibold text-orange-400 flex items-center gap-2">
                     <Swords className="w-4 h-4" />
