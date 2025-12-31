@@ -85,8 +85,9 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
   const spellcastingInfo = SPELLCASTING_CLASSES[data.class];
   const className = CLASS_NAME_MAP[data.class] || '';
   
-  const selectedCantrips = data.selectedCantrips || [];
-  const selectedSpells = data.selectedSpells || [];
+  // Memoize selected arrays to prevent infinite re-renders
+  const selectedCantrips = useMemo(() => data.selectedCantrips || [], [data.selectedCantrips]);
+  const selectedSpells = useMemo(() => data.selectedSpells || [], [data.selectedSpells]);
 
   useEffect(() => {
     const loadSpells = async () => {
