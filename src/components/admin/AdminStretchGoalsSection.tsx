@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -303,22 +303,24 @@ interface GoalEditSheetProps {
 function GoalEditSheet({ goal, isOpen, onClose, onSave, isLoading }: GoalEditSheetProps) {
   const [formData, setFormData] = useState<Partial<StretchGoal>>({});
 
-  const handleOpen = () => {
-    if (goal) {
-      setFormData(goal);
-    } else {
-      setFormData({
-        value: 0,
-        title: "",
-        subtitle: "",
-        description: "",
-        phase: "FUNDAÇÃO",
-        phase_emoji: "🏰",
-        phase_order: 1,
-        status: "pending",
-      });
+  useEffect(() => {
+    if (isOpen) {
+      if (goal) {
+        setFormData(goal);
+      } else {
+        setFormData({
+          value: 0,
+          title: "",
+          subtitle: "",
+          description: "",
+          phase: "FUNDAÇÃO",
+          phase_emoji: "🏰",
+          phase_order: 1,
+          status: "pending",
+        });
+      }
     }
-  };
+  }, [isOpen, goal]);
 
   const handlePhaseChange = (phaseName: string) => {
     const phase = PHASES.find((p) => p.name === phaseName);
@@ -334,8 +336,7 @@ function GoalEditSheet({ goal, isOpen, onClose, onSave, isLoading }: GoalEditShe
 
   return (
     <Sheet open={isOpen} onOpenChange={(open) => {
-      if (open) handleOpen();
-      else onClose();
+      if (!open) onClose();
     }}>
       <SheetContent className="overflow-y-auto">
         <SheetHeader>
