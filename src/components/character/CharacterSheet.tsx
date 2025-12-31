@@ -57,6 +57,7 @@ import { InventoryManagementSheet } from "./InventoryManagementSheet";
 import { SpellCastDialog, SPELL_SLOTS_BY_LEVEL, type ActiveConcentration } from "./SpellCastDialog";
 import { useAddCombatLog } from "@/hooks/useCombatLogs";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -1233,6 +1234,8 @@ export function CharacterSheet() {
                   })}
                 </div>
               </div>
+
+              <Separator className="my-4" />
 
               {/* HP Bar */}
               <div className="space-y-3">
