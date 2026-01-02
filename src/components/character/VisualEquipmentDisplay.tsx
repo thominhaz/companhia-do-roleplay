@@ -81,9 +81,11 @@ export function VisualEquipmentDisplay({ character, onEquipItem, onUnequipItem }
   const updateCharacter = useUpdateCharacter();
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [imageLoaded, setImageLoaded] = useState(false);
-  
-  const equipment = (character.equipment as EquipmentItem[]) || [];
-  
+
+  const equipment = (Array.isArray(character.equipment) ? character.equipment : []).filter(
+    (item: any) =>
+      !!item && typeof item === "object" && typeof item.name === "string" && item.name.trim().length > 0
+  ) as EquipmentItem[];
   // Parse equipped items into slots
   const equippedBySlot: Record<string, EquipmentItem | null> = {
     helmet: null,
