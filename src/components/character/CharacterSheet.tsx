@@ -2379,15 +2379,40 @@ export function CharacterSheet() {
       <PlayerTradeModal
         characterId={character.id}
         characterInventory={[
-          ...((character.inventory as any[]) || []),
-          ...((character.equipment as any[]) || []).map((item: any) => ({
-            id: item.id,
-            name: item.name,
-            description: item.description,
-            quantity: item.quantity || 1,
-            category: item.type === 'weapon' ? 'Armas' : item.type === 'armor' ? 'Armaduras' : item.type === 'shield' ? 'Escudos' : item.category,
-            rarity: item.rarity,
-          }))
+          ...(((character.inventory as any[]) ?? []).filter(
+            (item: any) => item && typeof item === "object" && typeof item.name === "string"
+          )),
+          ...(() => {
+            const eq: any = character.equipment;
+            const eqArr = Array.isArray(eq)
+              ? eq
+              : eq && typeof eq === "object"
+                ? [
+                    ...(Array.isArray(eq.weapons) ? eq.weapons : []),
+                    ...(Array.isArray(eq.armor) ? eq.armor : []),
+                    ...(Array.isArray(eq.shields) ? eq.shields : []),
+                    ...(Array.isArray(eq.items) ? eq.items : []),
+                  ]
+                : [];
+
+            return (Array.isArray(eqArr) ? eqArr : [])
+              .filter((item: any) => item && typeof item === "object" && typeof item.name === "string")
+              .map((item: any) => ({
+                id: item.id,
+                name: item.name,
+                description: item.description,
+                quantity: item.quantity || 1,
+                category:
+                  item.type === "weapon"
+                    ? "Armas"
+                    : item.type === "armor"
+                      ? "Armaduras"
+                      : item.type === "shield"
+                        ? "Escudos"
+                        : item.category,
+                rarity: item.rarity,
+              }));
+          })(),
         ]}
         characterCurrency={{
           platinum: (character.currency as any)?.platinum || 0,
@@ -2407,19 +2432,52 @@ export function CharacterSheet() {
           characterId={character.id}
           characterInventory={[
             // Itens do inventário (não equipados)
-            ...((character.inventory as any[]) || []).filter((item: any) => !item.isEquipped),
-            // Itens do equipamento (não equipados) - filtra armas/armaduras equipadas
-            ...((character.equipment as any[]) || [])
-              .filter((item: any) => !item.isEquipped)
-              .map((item: any) => ({
-                id: item.id,
-                name: item.name,
-                description: item.description,
-                quantity: item.quantity || 1,
-                category: item.type === 'weapon' ? 'Armas' : item.type === 'armor' ? 'Armaduras' : item.type === 'shield' ? 'Escudos' : item.category,
-                rarity: item.rarity,
-                source: 'equipment', // Marca a origem para saber onde remover
-              }))
+            ...(((character.inventory as any[]) ?? []).filter(
+              (item: any) =>
+                item &&
+                typeof item === "object" &&
+                typeof item.name === "string" &&
+                !item.isEquipped
+            )),
+            // Itens do equipamento (não equipados) - suporta formatos antigos e novos
+            ...(() => {
+              const eq: any = character.equipment;
+              const eqArr = Array.isArray(eq)
+                ? eq
+                : eq && typeof eq === "object"
+                  ? [
+                      ...(Array.isArray(eq.weapons) ? eq.weapons : []),
+                      ...(Array.isArray(eq.armor) ? eq.armor : []),
+                      ...(Array.isArray(eq.shields) ? eq.shields : []),
+                      ...(Array.isArray(eq.items) ? eq.items : []),
+                    ]
+                  : [];
+
+              return (Array.isArray(eqArr) ? eqArr : [])
+                .filter(
+                  (item: any) =>
+                    item &&
+                    typeof item === "object" &&
+                    typeof item.name === "string" &&
+                    !item.isEquipped
+                )
+                .map((item: any) => ({
+                  id: item.id,
+                  name: item.name,
+                  description: item.description,
+                  quantity: item.quantity || 1,
+                  category:
+                    item.type === "weapon"
+                      ? "Armas"
+                      : item.type === "armor"
+                        ? "Armaduras"
+                        : item.type === "shield"
+                          ? "Escudos"
+                          : item.category,
+                  rarity: item.rarity,
+                  source: "equipment", // Marca a origem para saber onde remover
+                }));
+            })(),
           ]}
           campaignPlayers={campaignPlayers || []}
         />
