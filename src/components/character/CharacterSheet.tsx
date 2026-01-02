@@ -552,8 +552,18 @@ export function CharacterSheet() {
   });
   
   // Calculate feat bonuses (initiative, AC, speed, passive bonuses, HP)
-  const features = character.features as Array<{ name: string; source?: string; level?: number; description?: string }> | undefined;
-  const featBonuses = calculateFeatBonuses(features, character.level);
+  const rawFeatures = character.features as any;
+  const allFeatures = Array.isArray(rawFeatures)
+    ? rawFeatures.filter(
+        (f: any) =>
+          f &&
+          typeof f === "object" &&
+          typeof f.name === "string" &&
+          f.name.trim().length > 0
+      )
+    : [];
+
+  const featBonuses = calculateFeatBonuses(allFeatures as any, character.level);
   
   // Calculate effective stats with feat bonuses
   const effectiveInitiative = character.initiative + featBonuses.initiative;
@@ -1625,10 +1635,15 @@ export function CharacterSheet() {
                   <div className="space-y-2">
                     {/* Feats Section */}
                     {(() => {
-                      const features = character.features as any[];
-                      const feats = features?.filter(f => f.type === 'feat' || f.source === 'Talento') || [];
-                      const classFeatures = features?.filter(f => f.type !== 'feat' && f.source !== 'Talento') || [];
-                      
+                      const isFeat = (f: any) =>
+                        f?.type === 'feat' ||
+                        f?.source === 'Talento' ||
+                        f?.source?.toLowerCase?.() === 'feat' ||
+                        f?.source?.toLowerCase?.() === 'talento';
+
+                      const feats = allFeatures.filter(isFeat);
+                      const classFeatures = allFeatures.filter((f: any) => !isFeat(f));
+
                       return (
                         <>
                           {feats.length > 0 && (
@@ -1660,7 +1675,7 @@ export function CharacterSheet() {
                               ))}
                             </div>
                           )}
-                          
+
                           {classFeatures.length > 0 && (
                             <div>
                               <h4 className="text-xs font-semibold text-primary uppercase tracking-wider mb-2 flex items-center gap-2">
@@ -1680,8 +1695,8 @@ export function CharacterSheet() {
                               ))}
                             </div>
                           )}
-                          
-                          {(!features || features.length === 0) && (
+
+                          {allFeatures.length === 0 && (
                             <p className="text-sm text-muted-foreground text-center py-8">Nenhuma habilidade ou talento</p>
                           )}
                         </>
