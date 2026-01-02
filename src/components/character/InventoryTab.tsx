@@ -100,24 +100,26 @@ export function InventoryTab({ character, characterCampaign, campaignPlayers }: 
   const [searchQuery, setSearchQuery] = useState("");
   const [showInventorySheet, setShowInventorySheet] = useState(false);
   const [showTradeSheet, setShowTradeSheet] = useState(false);
-  
-  const equipment = (character.equipment as any[]) || [];
-  const inventory = (character.inventory as any[]) || [];
-  const currency = character.currency as any || {};
-  
+
+  const isValidItem = (item: any): item is { name: string } =>
+    !!item && typeof item === "object" && typeof item.name === "string" && item.name.trim().length > 0;
+
+  const equipment = (Array.isArray(character.equipment) ? character.equipment : []).filter(isValidItem);
+  const inventory = (Array.isArray(character.inventory) ? character.inventory : []).filter(isValidItem);
+  const currency = (character.currency as any) || {};
+
   // Combine and categorize items
   const allItems = [
-    ...equipment.map(item => ({ ...item, source: 'equipment' })),
-    ...inventory.map(item => ({ ...item, source: 'inventory' })),
+    ...equipment.map((item) => ({ ...item, source: "equipment" })),
+    ...inventory.map((item) => ({ ...item, source: "inventory" })),
   ];
-  
-  const filteredItems = allItems.filter(item => 
-    item.name?.toLowerCase().includes(searchQuery.toLowerCase())
+
+  const filteredItems = allItems.filter((item) =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  
-  const equippedItems = filteredItems.filter(item => item.isEquipped || item.equipped);
-  const unequippedItems = filteredItems.filter(item => !item.isEquipped && !item.equipped);
-  
+
+  const equippedItems = filteredItems.filter((item) => item.isEquipped || item.equipped);
+  const unequippedItems = filteredItems.filter((item) => !item.isEquipped && !item.equipped);
   // Currency display
   const currencies = [
     { key: 'platinum', label: 'Platina', abbr: 'PL', color: 'text-slate-300', value: currency.platinum || 0 },
@@ -302,18 +304,25 @@ export function InventoryTab({ character, characterCampaign, campaignPlayers }: 
           campaignId={characterCampaign.id}
           characterId={character.id}
           characterInventory={[
-            ...inventory.filter((item: any) => !item.isEquipped),
+            ...inventory.filter((item: any) => item && !item.isEquipped),
             ...equipment
-              .filter((item: any) => !item.isEquipped)
+              .filter((item: any) => item && !item.isEquipped)
               .map((item: any) => ({
                 id: item.id,
                 name: item.name,
                 description: item.description,
                 quantity: item.quantity || 1,
-                category: item.type === 'weapon' ? 'Armas' : item.type === 'armor' ? 'Armaduras' : item.type === 'shield' ? 'Escudos' : item.category,
+                category:
+                  item.type === "weapon"
+                    ? "Armas"
+                    : item.type === "armor"
+                      ? "Armaduras"
+                      : item.type === "shield"
+                        ? "Escudos"
+                        : item.category,
                 rarity: item.rarity,
-                source: 'equipment',
-              }))
+                source: "equipment",
+              })),
           ]}
           campaignPlayers={campaignPlayers || []}
         />

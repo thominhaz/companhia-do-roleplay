@@ -115,8 +115,11 @@ export function InventoryManagementSheet({ open, onOpenChange, character }: Inve
     quantity: "1",
   });
 
-  const equipment = (character.equipment || []) as EquipmentItem[];
-  const inventory = (character.inventory || []) as any[];
+  const isValidItem = (item: any): item is { id?: string; name: string } =>
+    !!item && typeof item === "object" && typeof item.name === "string" && item.name.trim().length > 0;
+
+  const equipment = (Array.isArray(character.equipment) ? character.equipment : []).filter(isValidItem) as EquipmentItem[];
+  const inventory = (Array.isArray(character.inventory) ? character.inventory : []).filter(isValidItem) as any[];
   const attributes = character.attributes as Record<string, number>;
   const dexMod = getModifier(attributes?.dexterity || 10);
   const strMod = getModifier(attributes?.strength || 10);
