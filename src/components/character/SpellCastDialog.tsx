@@ -105,14 +105,18 @@ export function SpellCastDialog({
 
   // Reset selected level when spell changes
   useEffect(() => {
-    if (!spell) return;
+    if (!spell) {
+      setSelectedLevel(null);
+      setShowConcentrationWarning(false);
+      return;
+    }
 
     if (spell.level > 0) {
       setSelectedLevel(spell.level);
     } else {
       setSelectedLevel(null);
     }
-  }, [spell.name, spell.level]);
+  }, [spell?.name, spell?.level]);
 
   if (!spell) return null;
 
