@@ -126,10 +126,11 @@ export function SpellCastDialog({
   const hasActiveConcentration = !!activeConcentration;
 
   // Available levels for upcasting (spell level to 9th)
+  const spellLevel = spell?.level ?? 0;
   const availableLevels = useMemo(() => {
-    if (isCantrip) return [];
+    if (isCantrip || spellLevel === 0) return [];
     const levels: { level: number; available: number; max: number }[] = [];
-    for (let i = spell.level; i <= 9; i++) {
+    for (let i = spellLevel; i <= 9; i++) {
       const max = spellSlots[i - 1] || 0;
       const used = usedSlots[i - 1] || 0;
       if (max > 0) {
@@ -137,7 +138,7 @@ export function SpellCastDialog({
       }
     }
     return levels;
-  }, [spell.level, spellSlots, usedSlots, isCantrip]);
+  }, [spellLevel, spellSlots, usedSlots, isCantrip]);
 
   const canCast = isCantrip || (selectedLevel !== null && availableLevels.some(l => l.level === selectedLevel && l.available > 0));
 
