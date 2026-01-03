@@ -118,17 +118,16 @@ export function SpellCastDialog({
     }
   }, [spell?.name, spell?.level]);
 
-  if (!spell) return null;
-
-  const isCantrip = spell.level === 0;
-  const isConcentration = spell.concentration || false;
-  const schoolInfo = spell.school ? SPELL_SCHOOLS[spell.school.toLowerCase()] : null;
+  const hasSpell = !!spell;
+  const spellLevel = spell?.level ?? 0;
+  const isCantrip = hasSpell && spellLevel === 0;
+  const isConcentration = !!spell?.concentration;
+  const schoolInfo = spell?.school ? SPELL_SCHOOLS[spell.school.toLowerCase()] : null;
   const hasActiveConcentration = !!activeConcentration;
 
   // Available levels for upcasting (spell level to 9th)
-  const spellLevel = spell?.level ?? 0;
   const availableLevels = useMemo(() => {
-    if (isCantrip || spellLevel === 0) return [];
+    if (!hasSpell || isCantrip || spellLevel === 0) return [];
     const levels: { level: number; available: number; max: number }[] = [];
     for (let i = spellLevel; i <= 9; i++) {
       const max = spellSlots[i - 1] || 0;
@@ -138,9 +137,16 @@ export function SpellCastDialog({
       }
     }
     return levels;
-  }, [spellLevel, spellSlots, usedSlots, isCantrip]);
+  }, [hasSpell, isCantrip, spellLevel, spellSlots, usedSlots]);
 
-  const canCast = isCantrip || (selectedLevel !== null && availableLevels.some(l => l.level === selectedLevel && l.available > 0));
+  const canCast =
+    hasSpell &&
+    (isCantrip ||
+      (selectedLevel !== null &&
+        availableLevels.some((l) => l.level === selectedLevel && l.available > 0)));
+
+  if (!spell) return null;
+
 
   const handleCast = () => {
     // Check for concentration conflict
