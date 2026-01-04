@@ -10,6 +10,8 @@ export interface CampaignDB {
   description: string | null;
   image_url: string | null;
   invite_code: string | null;
+  theme_color: string | null;
+  icon: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -186,6 +188,31 @@ export function useDeleteCampaign() {
     },
     onError: () => {
       toast.error('Erro ao remover campanha');
+    },
+  });
+}
+
+export function useUpdateCampaign() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ id, ...updates }: { id: string; name?: string; description?: string; image_url?: string; theme_color?: string; icon?: string }) => {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .update(updates)
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data as CampaignDB;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+      toast.success('Campanha atualizada!');
+    },
+    onError: () => {
+      toast.error('Erro ao atualizar campanha');
     },
   });
 }

@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { CampaignDB, useDeleteCampaign } from "@/hooks/useCampaigns";
 import { Button } from "@/components/ui/button";
-import { Settings, Trash2, Copy, Share2 } from "lucide-react";
+import { Settings, Trash2, Copy, Share2, Palette } from "lucide-react";
 import { toast } from "sonner";
 import { DiscordWebhookConfig } from "../DiscordWebhookConfig";
+import { CampaignAppearanceSettings } from "./CampaignAppearanceSettings";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -15,6 +16,11 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 
 interface DashboardSettingsProps {
   campaign: CampaignDB & { discord_webhook_url?: string | null };
@@ -23,6 +29,7 @@ interface DashboardSettingsProps {
 
 export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps) {
   const deleteCampaign = useDeleteCampaign();
+  const [appearanceOpen, setAppearanceOpen] = useState(false);
 
   const handleCopyInviteCode = () => {
     if (campaign.invite_code) {
@@ -63,6 +70,27 @@ export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps)
           </div>
         </div>
       )}
+
+      {/* Appearance Settings */}
+      <Collapsible open={appearanceOpen} onOpenChange={setAppearanceOpen}>
+        <CollapsibleTrigger asChild>
+          <div className="bg-card rounded-xl p-4 border border-border cursor-pointer hover:bg-accent/50 transition-colors">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Palette className="w-5 h-5 text-muted-foreground" />
+                <div>
+                  <h3 className="font-semibold">Aparência</h3>
+                  <p className="text-xs text-muted-foreground">Personalize cores e ícone da campanha</p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground">{appearanceOpen ? '▲' : '▼'}</span>
+            </div>
+          </div>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="mt-2">
+          <CampaignAppearanceSettings campaign={campaign} />
+        </CollapsibleContent>
+      </Collapsible>
 
       {/* Discord Integration */}
       <div className="bg-card rounded-xl p-4 border border-border">

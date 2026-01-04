@@ -988,33 +988,39 @@ export type Database = {
           created_at: string
           description: string | null
           discord_webhook_url: string | null
+          icon: string | null
           id: string
           image_url: string | null
           invite_code: string | null
           master_id: string
           name: string
+          theme_color: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           description?: string | null
           discord_webhook_url?: string | null
+          icon?: string | null
           id?: string
           image_url?: string | null
           invite_code?: string | null
           master_id: string
           name: string
+          theme_color?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           description?: string | null
           discord_webhook_url?: string | null
+          icon?: string | null
           id?: string
           image_url?: string | null
           invite_code?: string | null
           master_id?: string
           name?: string
+          theme_color?: string | null
           updated_at?: string
         }
         Relationships: []
