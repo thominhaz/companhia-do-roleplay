@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Combatant, useUpdateCombatant } from "@/hooks/useCombat";
 import { supabase } from "@/integrations/supabase/client";
 import { getModifier } from "@/data/srd";
@@ -10,6 +10,8 @@ import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { HomebrewMonsterData, MonsterAction } from "@/types";
 import { PlayerCharacterSheet } from "../dashboard/PlayerCharacterSheet";
+import { MonsterDetailSheet } from "@/components/tools/MonsterDetailSheet";
+import { loadAllMonsters, Monster } from "@/data/monsters/index";
 import {
   Heart,
   Shield,
@@ -106,7 +108,24 @@ export function CombatantStatBlock({
   const [isEditingHp, setIsEditingHp] = useState(false);
   const [hpValue, setHpValue] = useState("");
   const [showFullSheet, setShowFullSheet] = useState(false);
+  const [showMonsterSheet, setShowMonsterSheet] = useState(false);
   const updateCombatant = useUpdateCombatant();
+
+  // Load all SRD monsters
+  const allMonsters = useMemo(() => loadAllMonsters(), []);
+
+  // Find SRD monster by combatant name
+  const srdMonster = useMemo(() => {
+    if (!combatant || combatant.is_player || combatant.character_id) return null;
+    
+    const cleanName = combatant.name.replace(/^[^\w\s]+\s*/, '').replace(/\s*\d+$/, '').trim().toLowerCase();
+    
+    return allMonsters.find(m => 
+      m.name.toLowerCase() === cleanName ||
+      m.name.toLowerCase().includes(cleanName) ||
+      cleanName.includes(m.name.toLowerCase())
+    ) || null;
+  }, [combatant, allMonsters]);
 
   // Fetch character data if combatant has character_id
   useEffect(() => {
@@ -634,87 +653,111 @@ export function CombatantStatBlock({
 
   // Generic combatant (no detailed data)
   return (
-    <div className="h-full flex flex-col bg-card border-l border-border overflow-hidden">
-      <div className="flex items-center justify-between p-4 border-b border-border flex-shrink-0">
-        <div className="flex items-center gap-3 min-w-0 flex-1">
-          <div className={cn(
-            "w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0",
-            combatant.is_player ? "bg-blue-500/20" : "bg-red-500/20"
-          )}>
-            {combatant.is_player ? (
-              <User className="w-6 h-6 text-blue-400" />
-            ) : (
-              <Skull className="w-6 h-6 text-red-400" />
-            )}
+    <>
+      <div className="h-full flex flex-col bg-card border-l border-border overflow-hidden">
+        <div className="flex items-center justify-between p-4 border-b border-border flex-shrink-0">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className={cn(
+              "w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0",
+              combatant.is_player ? "bg-blue-500/20" : "bg-red-500/20"
+            )}>
+              {combatant.is_player ? (
+                <User className="w-6 h-6 text-blue-400" />
+              ) : (
+                <Skull className="w-6 h-6 text-red-400" />
+              )}
+            </div>
+            <div className="min-w-0 flex-1">
+              <h2 className="text-lg font-bold truncate">{combatant.name}</h2>
+              <p className="text-xs text-muted-foreground">
+                {combatant.is_player ? 'Jogador' : srdMonster ? 'Monstro SRD' : 'Monstro/NPC'}
+              </p>
+            </div>
           </div>
-          <div className="min-w-0 flex-1">
-            <h2 className="text-lg font-bold truncate">{combatant.name}</h2>
-            <p className="text-xs text-muted-foreground">
-              {combatant.is_player ? 'Jogador' : 'Monstro/NPC'}
-            </p>
-          </div>
+          <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 flex-shrink-0">
+            <X className="w-4 h-4" />
+          </Button>
         </div>
-        <Button variant="ghost" size="icon" onClick={onClose} className="h-8 w-8 flex-shrink-0">
-          <X className="w-4 h-4" />
-        </Button>
-      </div>
 
-      <ScrollArea className="flex-1">
-        <div className="p-4 space-y-4">
-          {/* Combat Stats */}
-          <div className="grid grid-cols-3 gap-2">
-            <div className="bg-muted/30 rounded-lg p-3 text-center">
-              <Heart className="w-5 h-5 mx-auto mb-1 text-red-500" />
-              <div className="text-lg font-bold">{combatant.current_hp}/{combatant.max_hp}</div>
-              <div className="text-[10px] text-muted-foreground">HP</div>
-            </div>
-            <div className="bg-muted/30 rounded-lg p-3 text-center">
-              <Shield className="w-5 h-5 mx-auto mb-1 text-blue-500" />
-              <div className="text-lg font-bold">{combatant.armor_class}</div>
-              <div className="text-[10px] text-muted-foreground">CA</div>
-            </div>
-            <div className="bg-muted/30 rounded-lg p-3 text-center">
-              <Zap className="w-5 h-5 mx-auto mb-1 text-yellow-500" />
-              <div className="text-lg font-bold">{combatant.initiative}</div>
-              <div className="text-[10px] text-muted-foreground">Init</div>
-            </div>
-          </div>
+        <ScrollArea className="flex-1">
+          <div className="p-4 space-y-4">
+            {/* View Full Monster Sheet Button for SRD monsters */}
+            {srdMonster && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full gap-2"
+                onClick={() => setShowMonsterSheet(true)}
+              >
+                <BookOpen className="w-4 h-4" />
+                Ver Ficha Completa
+              </Button>
+            )}
 
-          {/* HP Bar */}
-          <div className="space-y-2">
-            <div className="h-3 bg-muted rounded-full overflow-hidden">
-              <motion.div
-                className={getHpColor()}
-                initial={false}
-                animate={{ width: `${hpPercent}%` }}
-                transition={{ type: "spring", stiffness: 100 }}
-                style={{ height: '100%' }}
-              />
-            </div>
-            {/* HP Quick Edit */}
-            <div className="flex items-center justify-center">
-              <HpQuickEdit />
-            </div>
-          </div>
-
-          {/* Conditions */}
-          {combatant.conditions.length > 0 && (
-            <div className="space-y-2">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase">Condições Ativas</h4>
-              <div className="flex flex-wrap gap-1">
-                {combatant.conditions.map((condition) => {
-                  const condData = CONDITIONS.find(c => c.name === condition);
-                  return (
-                    <Badge key={condition} className={cn("text-xs", condData?.color || "bg-muted")}>
-                      {condData?.icon} {condition}
-                    </Badge>
-                  );
-                })}
+            {/* Combat Stats */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="bg-muted/30 rounded-lg p-3 text-center">
+                <Heart className="w-5 h-5 mx-auto mb-1 text-red-500" />
+                <div className="text-lg font-bold">{combatant.current_hp}/{combatant.max_hp}</div>
+                <div className="text-[10px] text-muted-foreground">HP</div>
+              </div>
+              <div className="bg-muted/30 rounded-lg p-3 text-center">
+                <Shield className="w-5 h-5 mx-auto mb-1 text-blue-500" />
+                <div className="text-lg font-bold">{combatant.armor_class}</div>
+                <div className="text-[10px] text-muted-foreground">CA</div>
+              </div>
+              <div className="bg-muted/30 rounded-lg p-3 text-center">
+                <Zap className="w-5 h-5 mx-auto mb-1 text-yellow-500" />
+                <div className="text-lg font-bold">{combatant.initiative}</div>
+                <div className="text-[10px] text-muted-foreground">Init</div>
               </div>
             </div>
-          )}
-        </div>
-      </ScrollArea>
-    </div>
+
+            {/* HP Bar */}
+            <div className="space-y-2">
+              <div className="h-3 bg-muted rounded-full overflow-hidden">
+                <motion.div
+                  className={getHpColor()}
+                  initial={false}
+                  animate={{ width: `${hpPercent}%` }}
+                  transition={{ type: "spring", stiffness: 100 }}
+                  style={{ height: '100%' }}
+                />
+              </div>
+              {/* HP Quick Edit */}
+              <div className="flex items-center justify-center">
+                <HpQuickEdit />
+              </div>
+            </div>
+
+            {/* Conditions */}
+            {combatant.conditions.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase">Condições Ativas</h4>
+                <div className="flex flex-wrap gap-1">
+                  {combatant.conditions.map((condition) => {
+                    const condData = CONDITIONS.find(c => c.name === condition);
+                    return (
+                      <Badge key={condition} className={cn("text-xs", condData?.color || "bg-muted")}>
+                        {condData?.icon} {condition}
+                      </Badge>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </ScrollArea>
+      </div>
+
+      {/* Full Monster Sheet Modal for SRD monsters */}
+      {srdMonster && (
+        <MonsterDetailSheet
+          monster={srdMonster}
+          open={showMonsterSheet}
+          onOpenChange={setShowMonsterSheet}
+        />
+      )}
+    </>
   );
 }
