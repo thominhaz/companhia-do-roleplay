@@ -14,11 +14,13 @@ import {
   Sword,
   StickyNote,
   Lock,
-  Crown
+  Crown,
+  Skull
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { DiceRoller } from "@/components/tools/DiceRoller";
 import { MagicItemsCompendium } from "@/components/tools/MagicItemsCompendium";
+import { MonstersCompendium } from "@/components/tools/MonstersCompendium";
 import { ConditionsReference } from "@/components/tools/ConditionsReference";
 import { WeaponsArmorList } from "@/components/tools/WeaponsArmorList";
 import { BasicRules } from "@/components/tools/BasicRules";
@@ -33,7 +35,7 @@ import { toast } from "sonner";
 import { UpgradeModal } from "@/components/menu/UpgradeModal";
 import { SubscriptionSheet } from "@/components/menu/SubscriptionSheet";
 
-type ActiveTool = "dice" | "magic-items" | "conditions" | "weapons-armor" | "rules" | "healing" | "homebrew" | "notes" | "supporter-gallery" | null;
+type ActiveTool = "dice" | "magic-items" | "monsters" | "conditions" | "weapons-armor" | "rules" | "healing" | "homebrew" | "notes" | "supporter-gallery" | null;
 
 const tools = [
   {
@@ -64,6 +66,16 @@ const tools = [
     color: "from-purple-500 to-purple-500/70",
     featured: true,
     toolKey: "magic-items" as ActiveTool,
+    requiresAccess: false,
+  },
+  {
+    id: "monsters",
+    name: "Bestiário",
+    description: "Compêndio de monstros SRD",
+    icon: Skull,
+    color: "from-red-600 to-red-600/70",
+    featured: true,
+    toolKey: "monsters" as ActiveTool,
     requiresAccess: false,
   },
   {
@@ -212,6 +224,27 @@ export function ToolsScreen() {
   }
   if (activeTool === "magic-items") {
     return <MagicItemsCompendium onBack={() => setActiveTool(null)} />;
+  }
+  if (activeTool === "monsters") {
+    return (
+      <div className="min-h-screen bg-darker pb-24">
+        <AppHeader
+          title="Bestiário"
+          subtitle="Compêndio de monstros SRD"
+          rightContent={
+            <button
+              onClick={() => setActiveTool(null)}
+              className="px-3 py-1.5 text-sm font-medium bg-muted hover:bg-muted/80 rounded-lg transition-colors"
+            >
+              Voltar
+            </button>
+          }
+        />
+        <main className="h-[calc(100vh-120px)]">
+          <MonstersCompendium />
+        </main>
+      </div>
+    );
   }
   if (activeTool === "conditions") {
     return <ConditionsReference onBack={() => setActiveTool(null)} />;

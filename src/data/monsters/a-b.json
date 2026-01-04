@@ -1,0 +1,679 @@
+[
+  {
+    "name": "Aboleth",
+    "meta": "Aberração grande, leal e mau",
+    "armorClass": "17 (armadura natural)",
+    "hitPoints": "135 (18d10 + 36)",
+    "speed": "3m, natação 12m",
+    "stats": {
+      "STR": "21 (+5)",
+      "DEX": "9 (-1)",
+      "CON": "15 (+2)",
+      "INT": "18 (+4)",
+      "WIS": "15 (+2)",
+      "CHA": "18 (+4)"
+    },
+    "savingThrows": "Con +6, Int +8, Sab +6",
+    "skills": "História +12, Percepção +10",
+    "damageVulnerabilities": null,
+    "damageResistances": null,
+    "damageImmunities": null,
+    "conditionImmunities": null,
+    "senses": "visão no escuro 36m, Percepção passiva 20",
+    "languages": "Dialeto Subterrâneo, telepatia 36m",
+    "challenge": "10 (5,900 XP)",
+    "traits": [
+      {
+        "name": "Anfíbio",
+        "description": "O aboleth pode respirar ar e água."
+      },
+      {
+        "name": "Nuvem de Muco",
+        "description": "Enquanto estiver submerso, o aboleth é cercado por muco transformador. Uma criatura que tocar o aboleth ou que acertá-lo com um ataque corpo a corpo enquanto estiver a até 1,5m dele deve fazer um teste de resistência de Constituição CD 14. Em uma falha, a criatura fica doente por 1d4 horas. A criatura doente só pode respirar embaixo d'água."
+      },
+      {
+        "name": "Telepatia Sondadora",
+        "description": "Se uma criatura se comunicar telepaticamente com o aboleth, o aboleth descobre os maiores desejos da criatura, caso o aboleth possa vê-la."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Ataques Múltiplos",
+        "description": "O aboleth realiza três ataques de tentáculo."
+      },
+      {
+        "name": "Tentáculo",
+        "description": "Ataque com Arma Corpo a Corpo: +9 para acertar, alcance 3m, um alvo. Acerto: 12 (2d6 + 5) de dano de concussão. Se o alvo for uma criatura, ela deve obter sucesso em um teste de resistência de Constituição CD 14 ou ficará doente. A doença não tem efeito por 1 minuto e pode ser removida por qualquer magia que cure doenças. Após 1 minuto, a pele da criatura doente torna-se translúcida e viscosa, a criatura não pode recuperar pontos de vida a menos que esteja submersa, e a doença só pode ser removida por cura completa ou outra magia de cura de doenças de 6º nível ou superior. Quando a criatura está fora de um corpo d'água, ela sofre 6 (1d12) de dano ácido a cada 10 minutos, a menos que umidade seja aplicada à pele antes que 10 minutos tenham se passado."
+      },
+      {
+        "name": "Cauda",
+        "description": "Ataque com Arma Corpo a Corpo: +9 para acertar, alcance 3m, um alvo. Acerto: 15 (3d6 + 5) de dano de concussão."
+      },
+      {
+        "name": "Escravizar (3/Dia)",
+        "description": "O aboleth mira uma criatura que ele possa ver a até 9m dele. O alvo deve obter sucesso em um teste de resistência de Sabedoria CD 14 ou ficará magicamente enfeitiçado pelo aboleth até que o aboleth morra ou até que esteja em um plano de existência diferente do alvo. O alvo enfeitiçado está sob o controle do aboleth e não pode realizar reações, e o aboleth e o alvo podem se comunicar telepaticamente a qualquer distância. Sempre que o alvo enfeitiçado sofrer dano, ele pode repetir o teste de resistência. Em um sucesso, o efeito termina. Não mais que uma vez a cada 24 horas, o alvo também pode repetir o teste de resistência quando estiver a pelo menos 1 milha de distância do aboleth."
+      }
+    ],
+    "legendaryActions": {
+      "description": "O aboleth pode realizar 3 ações lendárias, escolhendo entre as opções abaixo. Apenas uma opção de ação lendária pode ser usada por vez e apenas no final do turno de outra criatura. O aboleth recupera ações lendárias gastas no início de seu turno.",
+      "actions": [
+        {
+          "name": "Detectar",
+          "description": "O aboleth realiza um teste de Sabedoria (Percepção)."
+        },
+        {
+          "name": "Chicoteada de Cauda",
+          "description": "O aboleth realiza um ataque de cauda."
+        },
+        {
+          "name": "Dreno Psíquico (Custa 2 Ações)",
+          "description": "Uma criatura enfeitiçada pelo aboleth sofre 10 (3d6) de dano psíquico, e o aboleth recupera pontos de vida iguais ao dano que a criatura sofreu."
+        }
+      ]
+    },
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Deva",
+    "meta": "Celestial médio, leal e bom",
+    "armorClass": "17 (armadura natural)",
+    "hitPoints": "136 (16d8 + 64)",
+    "speed": "9m, voo 27m",
+    "stats": {
+      "STR": "18 (+4)",
+      "DEX": "18 (+4)",
+      "CON": "18 (+4)",
+      "INT": "17 (+3)",
+      "WIS": "20 (+5)",
+      "CHA": "20 (+5)"
+    },
+    "savingThrows": "Sab +9, Car +9",
+    "skills": "Intuição +9, Percepção +9",
+    "damageVulnerabilities": null,
+    "damageResistances": ["radiante", "concussão, perfurante e cortante de ataques não mágicos"],
+    "damageImmunities": null,
+    "conditionImmunities": ["enfeitiçado", "exaustão", "amedrontado"],
+    "senses": "visão no escuro 36m, Percepção passiva 19",
+    "languages": "todos, telepatia 36m",
+    "challenge": "10 (5,900 XP)",
+    "traits": [
+      {
+        "name": "Armas Angélicas",
+        "description": "Os ataques com arma do deva são mágicos. Quando o deva acerta com qualquer arma, a arma causa 4d8 de dano radiante extra (incluído no ataque)."
+      },
+      {
+        "name": "Conjuração Inata",
+        "description": "A habilidade de conjuração do deva é Carisma (CD de resistência de magia 17). O deva pode conjurar inatamente as seguintes magias, exigindo apenas componentes verbais:\nÀ vontade: detectar o bem e mal\n1/dia cada: comunhão, reviver os mortos"
+      },
+      {
+        "name": "Resistência à Magia",
+        "description": "O deva tem vantagem em testes de resistência contra magias e outros efeitos mágicos."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Ataques Múltiplos",
+        "description": "O deva realiza dois ataques corpo a corpo."
+      },
+      {
+        "name": "Maça",
+        "description": "Ataque com Arma Corpo a Corpo: +8 para acertar, alcance 1,5m, um alvo. Acerto: 7 (1d6 + 4) de dano de concussão mais 18 (4d8) de dano radiante."
+      },
+      {
+        "name": "Toque Curativo (3/Dia)",
+        "description": "O deva toca outra criatura. O alvo magicamente recupera 20 (4d8 + 2) pontos de vida e é libertado de qualquer maldição, doença, veneno, cegueira ou surdez."
+      },
+      {
+        "name": "Mudar Forma",
+        "description": "O deva se transforma magicamente em um humanoide ou besta que tenha um nível de desafio igual ou inferior ao seu, ou volta para sua forma verdadeira. Ele reverte para sua forma verdadeira se morrer. Qualquer equipamento que ele esteja usando ou carregando é absorvido ou transportado pela nova forma (escolha do deva). Em uma nova forma, o deva mantém suas estatísticas de jogo e habilidade de falar, mas sua CA, modos de deslocamento, Força, Destreza e sentidos especiais são substituídos pelos da nova forma, e ele ganha quaisquer estatísticas e capacidades (exceto características de classe, ações lendárias e ações de covil) que a nova forma tenha, mas que ele não possua."
+      }
+    ],
+    "legendaryActions": null,
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Planetar",
+    "meta": "Celestial grande, leal e bom",
+    "armorClass": "19 (armadura natural)",
+    "hitPoints": "200 (16d10 + 112)",
+    "speed": "12m, voo 36m",
+    "stats": {
+      "STR": "24 (+7)",
+      "DEX": "20 (+5)",
+      "CON": "24 (+7)",
+      "INT": "19 (+4)",
+      "WIS": "22 (+6)",
+      "CHA": "25 (+7)"
+    },
+    "savingThrows": "Con +12, Sab +11, Car +12",
+    "skills": "Percepção +11",
+    "damageVulnerabilities": null,
+    "damageResistances": ["radiante", "concussão, perfurante e cortante de ataques não mágicos"],
+    "damageImmunities": null,
+    "conditionImmunities": ["enfeitiçado", "exaustão", "amedrontado"],
+    "senses": "visão verdadeira 36m, Percepção passiva 21",
+    "languages": "todos, telepatia 36m",
+    "challenge": "16 (15,000 XP)",
+    "traits": [
+      {
+        "name": "Armas Angélicas",
+        "description": "Os ataques com arma do planetar são mágicos. Quando o planetar acerta com qualquer arma, a arma causa 5d8 de dano radiante extra (incluído no ataque)."
+      },
+      {
+        "name": "Percepção Divina",
+        "description": "O planetar sabe se ouvir uma mentira."
+      },
+      {
+        "name": "Conjuração Inata",
+        "description": "A habilidade de conjuração do planetar é Carisma (CD de resistência de magia 20). O planetar pode conjurar inatamente as seguintes magias, não exigindo componentes materiais:\nÀ vontade: detectar o bem e mal, invisibilidade (apenas a si mesmo)\n3/dia cada: barreira de lâminas, dissipar o bem e mal, coluna de chamas, reviver os mortos\n1/dia cada: comunhão, controlar o clima, praga de insetos"
+      },
+      {
+        "name": "Resistência à Magia",
+        "description": "O planetar tem vantagem em testes de resistência contra magias e outros efeitos mágicos."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Ataques Múltiplos",
+        "description": "O planetar realiza dois ataques corpo a corpo."
+      },
+      {
+        "name": "Espada Larga",
+        "description": "Ataque com Arma Corpo a Corpo: +12 para acertar, alcance 1,5m, um alvo. Acerto: 21 (4d6 + 7) de dano cortante mais 22 (5d8) de dano radiante."
+      },
+      {
+        "name": "Toque Curativo (4/Dia)",
+        "description": "O planetar toca outra criatura. O alvo magicamente recupera 30 (6d8 + 3) pontos de vida e é libertado de qualquer maldição, doença, veneno, cegueira ou surdez."
+      }
+    ],
+    "legendaryActions": null,
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Solar",
+    "meta": "Celestial grande, leal e bom",
+    "armorClass": "21 (armadura natural)",
+    "hitPoints": "243 (18d10 + 144)",
+    "speed": "15m, voo 45m",
+    "stats": {
+      "STR": "26 (+8)",
+      "DEX": "22 (+6)",
+      "CON": "26 (+8)",
+      "INT": "25 (+7)",
+      "WIS": "25 (+7)",
+      "CHA": "30 (+10)"
+    },
+    "savingThrows": "Int +14, Sab +14, Car +17",
+    "skills": "Percepção +14",
+    "damageVulnerabilities": null,
+    "damageResistances": ["radiante", "concussão, perfurante e cortante de ataques não mágicos"],
+    "damageImmunities": ["necrótico", "veneno"],
+    "conditionImmunities": ["enfeitiçado", "exaustão", "amedrontado", "envenenado"],
+    "senses": "visão verdadeira 36m, Percepção passiva 24",
+    "languages": "todos, telepatia 36m",
+    "challenge": "21 (33,000 XP)",
+    "traits": [
+      {
+        "name": "Armas Angélicas",
+        "description": "Os ataques com arma do solar são mágicos. Quando o solar acerta com qualquer arma, a arma causa 6d8 de dano radiante extra (incluído no ataque)."
+      },
+      {
+        "name": "Percepção Divina",
+        "description": "O solar sabe se ouvir uma mentira."
+      },
+      {
+        "name": "Conjuração Inata",
+        "description": "A habilidade de conjuração do solar é Carisma (CD de resistência de magia 25). Ele pode conjurar inatamente as seguintes magias, não exigindo componentes materiais:\nÀ vontade: detectar o bem e mal, invisibilidade (apenas a si mesmo)\n3/dia cada: barreira de lâminas, dissipar o bem e mal, ressurreição\n1/dia cada: comunhão, controlar o clima"
+      },
+      {
+        "name": "Resistência à Magia",
+        "description": "O solar tem vantagem em testes de resistência contra magias e outros efeitos mágicos."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Ataques Múltiplos",
+        "description": "O solar realiza dois ataques com espada larga."
+      },
+      {
+        "name": "Espada Larga",
+        "description": "Ataque com Arma Corpo a Corpo: +15 para acertar, alcance 1,5m, um alvo. Acerto: 22 (4d6 + 8) de dano cortante mais 27 (6d8) de dano radiante."
+      },
+      {
+        "name": "Arco Longo Assassino",
+        "description": "Ataque com Arma à Distância: +13 para acertar, alcance 45m/180m, um alvo. Acerto: 15 (2d8 + 6) de dano perfurante mais 27 (6d8) de dano radiante. Se o alvo for uma criatura que tenha 100 pontos de vida ou menos, ela deve obter sucesso em um teste de resistência de Constituição CD 15 ou morrer."
+      },
+      {
+        "name": "Espada Voadora",
+        "description": "O solar solta sua espada larga para que flutue magicamente em um espaço desocupado a até 1,5m dele. Se o solar puder ver a espada, ele pode comandá-la mentalmente como uma ação bônus para voar até 15m e realizar um ataque contra um alvo ou retornar para as mãos do solar. Se a espada flutuante for alvo de qualquer efeito, o solar é considerado como estando segurando-a. A espada flutuante cai se o solar morrer."
+      },
+      {
+        "name": "Toque Curativo (4/Dia)",
+        "description": "O solar toca outra criatura. O alvo magicamente recupera 40 (8d8 + 4) pontos de vida e é libertado de qualquer maldição, doença, veneno, cegueira ou surdez."
+      }
+    ],
+    "legendaryActions": {
+      "description": "O solar pode realizar 3 ações lendárias, escolhendo entre as opções abaixo. Apenas uma opção de ação lendária pode ser usada por vez e apenas no final do turno de outra criatura. O solar recupera ações lendárias gastas no início de seu turno.",
+      "actions": [
+        {
+          "name": "Teletransporte",
+          "description": "O solar se teletransporta magicamente, junto com qualquer equipamento que esteja usando ou carregando, até 36m para um espaço desocupado que ele possa ver."
+        },
+        {
+          "name": "Explosão Calcinante (Custa 2 Ações)",
+          "description": "O solar emite energia divina mágica. Cada criatura de sua escolha em um raio de 3m deve fazer um teste de resistência de Destreza CD 23, sofrendo 14 (4d6) de dano de fogo mais 14 (4d6) de dano radiante em uma falha, ou metade desse dano em um sucesso."
+        },
+        {
+          "name": "Olhar Cegante (Custa 3 Ações)",
+          "description": "O solar mira uma criatura que ele possa ver a até 9m dele. Se o alvo puder vê-lo, o alvo deve obter sucesso em um teste de resistência de Constituição CD 15 ou ficar cego até que uma magia como restauração menor remova a cegueira."
+        }
+      ]
+    },
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Armadura Animada",
+    "meta": "Construto médio, imparcial",
+    "armorClass": "18 (armadura natural)",
+    "hitPoints": "33 (6d8 + 6)",
+    "speed": "7.5m",
+    "stats": {
+      "STR": "14 (+2)",
+      "DEX": "11 (+0)",
+      "CON": "13 (+1)",
+      "INT": "1 (-5)",
+      "WIS": "3 (-4)",
+      "CHA": "1 (-5)"
+    },
+    "savingThrows": null,
+    "skills": null,
+    "damageVulnerabilities": null,
+    "damageResistances": null,
+    "damageImmunities": ["veneno", "psíquico"],
+    "conditionImmunities": ["cego", "enfeitiçado", "surdo", "exaustão", "amedrontado", "paralisado", "petrificado", "envenenado"],
+    "senses": "percepção às cegas 18m (cego além desse raio), Percepção passiva 6",
+    "languages": "—",
+    "challenge": "1 (200 XP)",
+    "traits": [
+      {
+        "name": "Suscetibilidade a Antimagia",
+        "description": "A armadura fica incapacitada enquanto estiver na área de um campo antimagia. Se for alvo de dissipar magia, a armadura deve obter sucesso em um teste de resistência de Constituição contra a CD de resistência de magia do conjurador ou ficará inconsciente por 1 minuto."
+      },
+      {
+        "name": "Falsa Aparência",
+        "description": "Enquanto a armadura permanecer imóvel, ela é indistinguível de uma armadura normal."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Ataques Múltiplos",
+        "description": "A armadura realiza dois ataques corpo a corpo."
+      },
+      {
+        "name": "Pancada",
+        "description": "Ataque com Arma Corpo a Corpo: +4 para acertar, alcance 1,5m, um alvo. Acerto: 5 (1d6 + 2) de dano de concussão."
+      }
+    ],
+    "legendaryActions": null,
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Espada Voadora",
+    "meta": "Construto pequeno, imparcial",
+    "armorClass": "17 (armadura natural)",
+    "hitPoints": "17 (5d6)",
+    "speed": "0m, voo 15m (flutuar)",
+    "stats": {
+      "STR": "12 (+1)",
+      "DEX": "15 (+2)",
+      "CON": "11 (+0)",
+      "INT": "1 (-5)",
+      "WIS": "5 (-3)",
+      "CHA": "1 (-5)"
+    },
+    "savingThrows": "Des +4",
+    "skills": null,
+    "damageVulnerabilities": null,
+    "damageResistances": null,
+    "damageImmunities": ["veneno", "psíquico"],
+    "conditionImmunities": ["cego", "enfeitiçado", "surdo", "amedrontado", "paralisado", "petrificado", "envenenado"],
+    "senses": "percepção às cegas 18m (cego além desse raio), Percepção passiva 7",
+    "languages": "—",
+    "challenge": "1/4 (50 XP)",
+    "traits": [
+      {
+        "name": "Suscetibilidade a Antimagia",
+        "description": "A espada fica incapacitada enquanto estiver na área de um campo antimagia. Se for alvo de dissipar magia, a espada deve obter sucesso em um teste de resistência de Constituição contra a CD de resistência de magia do conjurador ou ficará inconsciente por 1 minuto."
+      },
+      {
+        "name": "Falsa Aparência",
+        "description": "Enquanto a espada permanecer imóvel e não estiver voando, ela é indistinguível de uma espada normal."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Espada Longa",
+        "description": "Ataque com Arma Corpo a Corpo: +3 para acertar, alcance 1,5m, um alvo. Acerto: 5 (1d8 + 1) de dano cortante."
+      }
+    ],
+    "legendaryActions": null,
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Tapete de Sufocamento",
+    "meta": "Construto grande, imparcial",
+    "armorClass": "12",
+    "hitPoints": "33 (6d10)",
+    "speed": "3m",
+    "stats": {
+      "STR": "17 (+3)",
+      "DEX": "14 (+2)",
+      "CON": "10 (+0)",
+      "INT": "1 (-5)",
+      "WIS": "3 (-4)",
+      "CHA": "1 (-5)"
+    },
+    "savingThrows": null,
+    "skills": null,
+    "damageVulnerabilities": null,
+    "damageResistances": null,
+    "damageImmunities": ["veneno", "psíquico"],
+    "conditionImmunities": ["cego", "enfeitiçado", "surdo", "amedrontado", "paralisado", "petrificado", "envenenado"],
+    "senses": "percepção às cegas 18m (cego além desse raio), Percepção passiva 6",
+    "languages": "—",
+    "challenge": "2 (450 XP)",
+    "traits": [
+      {
+        "name": "Suscetibilidade a Antimagia",
+        "description": "O tapete fica incapacitado enquanto estiver na área de um campo antimagia. Se for alvo de dissipar magia, o tapete deve obter sucesso em um teste de resistência de Constituição contra a CD de resistência de magia do conjurador ou ficará inconsciente por 1 minuto."
+      },
+      {
+        "name": "Transferência de Dano",
+        "description": "Enquanto estiver agarrando uma criatura, o tapete sofre apenas metade do dano causado a ele, e a criatura agarrada pelo tapete sofre a outra metade."
+      },
+      {
+        "name": "Falsa Aparência",
+        "description": "Enquanto o tapete permanecer imóvel, ele é indistinguível de um tapete normal."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Sufocar",
+        "description": "Ataque com Arma Corpo a Corpo: +5 para acertar, alcance 1,5m, uma criatura Média ou menor. Acerto: A criatura fica agarrada (CD de escape 13). Até esse agarrão terminar, o alvo está contido, cego e em risco de sufocamento, e o tapete não pode sufocar outro alvo. Além disso, no início de cada turno do alvo, o alvo sofre 10 (2d6 + 3) de dano de concussão."
+      }
+    ],
+    "legendaryActions": null,
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Ankheg",
+    "meta": "Monstruosidade grande, imparcial",
+    "armorClass": "14 (armadura natural), 11 enquanto estiver caído",
+    "hitPoints": "39 (6d10 + 6)",
+    "speed": "9m, escavação 3m",
+    "stats": {
+      "STR": "17 (+3)",
+      "DEX": "11 (+0)",
+      "CON": "13 (+1)",
+      "INT": "1 (-5)",
+      "WIS": "13 (+1)",
+      "CHA": "6 (-2)"
+    },
+    "savingThrows": null,
+    "skills": null,
+    "damageVulnerabilities": null,
+    "damageResistances": null,
+    "damageImmunities": null,
+    "conditionImmunities": null,
+    "senses": "visão no escuro 18m, sentido sísmico 18m, Percepção passiva 11",
+    "languages": "—",
+    "challenge": "2 (450 XP)",
+    "traits": [],
+    "actions": [
+      {
+        "name": "Mordida",
+        "description": "Ataque com Arma Corpo a Corpo: +5 para acertar, alcance 1,5m, um alvo. Acerto: 10 (2d6 + 3) de dano cortante mais 3 (1d6) de dano ácido. Se o alvo for uma criatura Grande ou menor, ele fica agarrado (CD de escape 13). Até esse agarrão terminar, o ankheg pode morder apenas a criatura agarrada e tem vantagem nas jogadas de ataque para fazê-lo."
+      },
+      {
+        "name": "Rajada de Ácido (Recarga 6)",
+        "description": "O ankheg cospe ácido em uma linha de 9m de comprimento e 1,5m de largura, desde que não tenha nenhuma criatura agarrada. Cada criatura nessa linha deve fazer um teste de resistência de Destreza CD 13, sofrendo 10 (3d6) de dano ácido em uma falha, ou metade desse dano em um sucesso."
+      }
+    ],
+    "legendaryActions": null,
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Azer",
+    "meta": "Elemental médio, leal e neutro",
+    "armorClass": "17 (armadura natural, escudo)",
+    "hitPoints": "39 (6d8 + 12)",
+    "speed": "9m",
+    "stats": {
+      "STR": "17 (+3)",
+      "DEX": "12 (+1)",
+      "CON": "15 (+2)",
+      "INT": "12 (+1)",
+      "WIS": "13 (+1)",
+      "CHA": "10 (+0)"
+    },
+    "savingThrows": "Con +4",
+    "skills": null,
+    "damageVulnerabilities": null,
+    "damageResistances": null,
+    "damageImmunities": ["fogo", "veneno"],
+    "conditionImmunities": ["envenenado"],
+    "senses": "Percepção passiva 11",
+    "languages": "Ignan",
+    "challenge": "2 (450 XP)",
+    "traits": [
+      {
+        "name": "Corpo Aquecido",
+        "description": "Uma criatura que tocar o azer ou acertá-lo com um ataque corpo a corpo enquanto estiver a até 1,5m dele sofre 5 (1d10) de dano de fogo."
+      },
+      {
+        "name": "Armas Aquecidas",
+        "description": "Quando o azer acerta com uma arma corpo a corpo de metal, ele causa 3 (1d6) de dano de fogo extra (incluído no ataque)."
+      },
+      {
+        "name": "Iluminação",
+        "description": "O azer emana luz plena em um raio de 3m e luz penumbra por 3m adicionais."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Martelo de Guerra",
+        "description": "Ataque com Arma Corpo a Corpo: +5 para acertar, alcance 1,5m, um alvo. Acerto: 7 (1d8 + 3) de dano de concussão, ou 8 (1d10 + 3) de dano de concussão se usado com duas mãos para realizar um ataque corpo a corpo, mais 3 (1d6) de dano de fogo."
+      }
+    ],
+    "legendaryActions": null,
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Basilisco",
+    "meta": "Monstruosidade média, imparcial",
+    "armorClass": "15 (armadura natural)",
+    "hitPoints": "52 (8d8 + 16)",
+    "speed": "6m",
+    "stats": {
+      "STR": "16 (+3)",
+      "DEX": "8 (-1)",
+      "CON": "15 (+2)",
+      "INT": "2 (-4)",
+      "WIS": "8 (-1)",
+      "CHA": "7 (-2)"
+    },
+    "savingThrows": null,
+    "skills": null,
+    "damageVulnerabilities": null,
+    "damageResistances": null,
+    "damageImmunities": null,
+    "conditionImmunities": null,
+    "senses": "visão no escuro 18m, Percepção passiva 9",
+    "languages": "—",
+    "challenge": "3 (700 XP)",
+    "traits": [
+      {
+        "name": "Olhar Petrificante",
+        "description": "Se uma criatura começar seu turno a até 9m do basilisco e ambos puderem ver um ao outro, o basilisco pode forçar a criatura a fazer um teste de resistência de Constituição CD 12 se o basilisco não estiver incapacitado. Em uma falha, a criatura magicamente começa a se transformar em pedra e fica contida. Ela deve repetir o teste de resistência no final do próximo turno dela. Em um sucesso, o efeito termina. Em uma falha, a criatura é petrificada até ser libertada pela magia restauração maior ou outra magia. Uma criatura que não estiver surpresa pode desviar o olhar para evitar o teste de resistência no início do turno dela. Se fizer isso, ela não pode ver o basilisco até o início do próximo turno dela, quando pode desviar o olhar novamente. Se ela olhar para o basilisco nesse meio tempo, ela deve fazer o teste imediatamente. Se o basilisco vir seu reflexo a até 9m dele em luz plena, ele confunde a si mesmo com um rival e se torna alvo de seu próprio olhar."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Mordida",
+        "description": "Ataque com Arma Corpo a Corpo: +5 para acertar, alcance 1,5m, um alvo. Acerto: 10 (2d6 + 3) de dano perfurante mais 7 (2d6) de dano de veneno."
+      }
+    ],
+    "legendaryActions": null,
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Behir",
+    "meta": "Monstruosidade enorme, neutro e mau",
+    "armorClass": "17 (armadura natural)",
+    "hitPoints": "168 (16d12 + 64)",
+    "speed": "15m, escalada 12m",
+    "stats": {
+      "STR": "23 (+6)",
+      "DEX": "16 (+3)",
+      "CON": "18 (+4)",
+      "INT": "7 (-2)",
+      "WIS": "14 (+2)",
+      "CHA": "12 (+1)"
+    },
+    "savingThrows": null,
+    "skills": "Percepção +6, Furtividade +7",
+    "damageVulnerabilities": null,
+    "damageResistances": null,
+    "damageImmunities": ["elétrico"],
+    "conditionImmunities": null,
+    "senses": "visão no escuro 27m, Percepção passiva 16",
+    "languages": "Dracônico",
+    "challenge": "11 (7,200 XP)",
+    "traits": [],
+    "actions": [
+      {
+        "name": "Ataques Múltiplos",
+        "description": "O behir realiza dois ataques: um com sua mordida e um para constringir."
+      },
+      {
+        "name": "Mordida",
+        "description": "Ataque com Arma Corpo a Corpo: +10 para acertar, alcance 3m, um alvo. Acerto: 22 (3d10 + 6) de dano perfurante."
+      },
+      {
+        "name": "Constringir",
+        "description": "Ataque com Arma Corpo a Corpo: +10 para acertar, alcance 1,5m, uma criatura Grande ou menor. Acerto: 17 (2d10 + 6) de dano de concussão mais 17 (2d10 + 6) de dano cortante. O alvo fica agarrado (CD de escape 16) se o behir já não estiver constringindo uma criatura, e o alvo fica contido até esse agarrão terminar."
+      },
+      {
+        "name": "Sopro Elétrico (Recarga 5-6)",
+        "description": "O behir exala uma linha de relâmpagos de 6m de comprimento e 1,5m de largura. Cada criatura nessa linha deve fazer um teste de resistência de Destreza CD 16, sofrendo 66 (12d10) de dano elétrico em uma falha, ou metade desse dano em um sucesso."
+      },
+      {
+        "name": "Engolir",
+        "description": "O behir realiza um ataque de mordida contra um alvo Médio ou menor que esteja agarrando. Se o ataque acertar, o alvo também é engolido, e o agarrão termina. Enquanto estiver engolido, o alvo está cego e contido, tem cobertura total contra ataques e outros efeitos fora do behir, e sofre 21 (6d6) de dano ácido no início de cada turno do behir. Um behir pode ter apenas uma criatura engolida por vez. Se o behir sofrer 30 de dano ou mais em um único turno da criatura engolida, o behir deve obter sucesso em um teste de resistência de Constituição CD 14 no final desse turno ou regurgitar a criatura, que cai caída em um espaço a até 3m do behir. Se o behir morrer, uma criatura engolida não está mais contida por ele e pode escapar do cadáver usando 4,5m de movimento, saindo caída."
+      }
+    ],
+    "legendaryActions": null,
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Bugbear",
+    "meta": "Humanoide médio (goblinoide), caótico e mau",
+    "armorClass": "16 (corselete de couro, escudo)",
+    "hitPoints": "27 (5d8 + 5)",
+    "speed": "9m",
+    "stats": {
+      "STR": "15 (+2)",
+      "DEX": "14 (+2)",
+      "CON": "13 (+1)",
+      "INT": "8 (-1)",
+      "WIS": "11 (+0)",
+      "CHA": "9 (-1)"
+    },
+    "savingThrows": null,
+    "skills": "Furtividade +6, Sobrevivência +2",
+    "damageVulnerabilities": null,
+    "damageResistances": null,
+    "damageImmunities": null,
+    "conditionImmunities": null,
+    "senses": "visão no escuro 18m, Percepção passiva 10",
+    "languages": "Comum, Goblin",
+    "challenge": "1 (200 XP)",
+    "traits": [
+      {
+        "name": "Bruto",
+        "description": "Uma arma corpo a corpo causa um dado extra de seu dano quando o bugbear acerta com ela (incluído no ataque)."
+      },
+      {
+        "name": "Ataque Surpresa",
+        "description": "Se o bugbear surpreender uma criatura e acertá-la com um ataque durante a primeira rodada de combate, o alvo sofre 7 (2d6) de dano extra do ataque."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Maça Estrela",
+        "description": "Ataque com Arma Corpo a Corpo: +4 para acertar, alcance 1,5m, um alvo. Acerto: 11 (2d8 + 2) de dano perfurante."
+      },
+      {
+        "name": "Azagaia",
+        "description": "Ataque com Arma Corpo a Corpo ou à Distância: +4 para acertar, alcance 1,5m ou distância 9m/36m, um alvo. Acerto: 9 (2d6 + 2) de dano perfurante corpo a corpo ou 5 (1d6 + 2) de dano perfurante à distância."
+      }
+    ],
+    "legendaryActions": null,
+    "lairActions": null,
+    "regionalEffects": null
+  },
+  {
+    "name": "Bulette",
+    "meta": "Monstruosidade grande, imparcial",
+    "armorClass": "17 (armadura natural)",
+    "hitPoints": "94 (9d10 + 45)",
+    "speed": "12m, escavação 12m",
+    "stats": {
+      "STR": "19 (+4)",
+      "DEX": "11 (+0)",
+      "CON": "21 (+5)",
+      "INT": "2 (-4)",
+      "WIS": "10 (+0)",
+      "CHA": "5 (-3)"
+    },
+    "savingThrows": null,
+    "skills": "Percepção +6",
+    "damageVulnerabilities": null,
+    "damageResistances": null,
+    "damageImmunities": null,
+    "conditionImmunities": null,
+    "senses": "visão no escuro 18m, sentido sísmico 18m, Percepção passiva 16",
+    "languages": "—",
+    "challenge": "5 (1,800 XP)",
+    "traits": [
+      {
+        "name": "Salto Estacionário",
+        "description": "O salto em distância do bulette é de até 9m e seu salto em altura é de até 4,5m, com ou sem pegar impulso."
+      }
+    ],
+    "actions": [
+      {
+        "name": "Mordida",
+        "description": "Ataque com Arma Corpo a Corpo: +7 para acertar, alcance 1,5m, um alvo. Acerto: 30 (4d12 + 4) de dano perfurante."
+      },
+      {
+        "name": "Salto Mortal",
+        "description": "Se o bulette pular pelo menos 4,5m como parte de seu movimento, ele pode então usar esta ação para aterrissar em seus pés em um espaço que contenha uma ou mais outras criaturas. Cada uma dessas criaturas deve obter sucesso em um teste de resistência de Força ou Destreza CD 16 (escolha do alvo) ou será derrubada e sofrerá 14 (3d6 + 4) de dano de concussão mais 14 (3d6 + 4) de dano cortante. Em um sucesso, a criatura sofre apenas metade do dano, não é derrubada e é empurrada 1,5m para fora do espaço do bulette para um espaço desocupado à escolha da criatura. Se nenhum espaço desocupado estiver ao alcance, a criatura cai caída no espaço do bulette."
+      }
+    ],
+    "legendaryActions": null,
+    "lairActions": null,
+    "regionalEffects": null
+  }
+]
