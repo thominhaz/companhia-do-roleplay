@@ -46,13 +46,22 @@ export function MonsterStatBlock({ monster, compact = false }: MonsterStatBlockP
     );
   }
 
+  const statLabels: Record<string, string> = {
+    STR: "FOR",
+    DEX: "DES",
+    CON: "CON",
+    INT: "INT",
+    WIS: "SAB",
+    CHA: "CAR"
+  };
+
   return (
     <div className="space-y-4">
       {/* Stats Grid */}
       <div className="grid grid-cols-6 gap-2 text-center">
         {Object.entries(monster.stats).map(([stat, value]) => (
           <div key={stat} className="bg-muted/50 rounded-lg p-2">
-            <div className="text-xs text-muted-foreground font-medium">{stat}</div>
+            <div className="text-xs text-muted-foreground font-medium">{statLabels[stat] || stat}</div>
             <div className="text-sm font-bold">{value}</div>
           </div>
         ))}
