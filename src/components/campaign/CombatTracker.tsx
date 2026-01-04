@@ -30,6 +30,7 @@ import { CombatantDetailSheet } from "./combat/CombatantDetailSheet";
 import { CombatantStatBlock } from "./combat/CombatantStatBlock";
 import { InitiativeListCard } from "./combat/InitiativeListCard";
 import { CombatDiceRoller, useDiceRoller } from "./combat/CombatDiceRoller";
+import { loadAllMonsters, Monster } from "@/data/monsters/index";
 import { 
   Swords, 
   Plus, 
@@ -53,7 +54,8 @@ import {
   Crown,
   LayoutGrid,
   LayoutList,
-  Dices
+  Dices,
+  BookOpen
 } from "lucide-react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
@@ -112,9 +114,11 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
   const [showAddCombatant, setShowAddCombatant] = useState(false);
   const [hpDialog, setHpDialog] = useState<HpDialogState>({ open: false, combatant: null, mode: 'damage' });
   const [hpAmount, setHpAmount] = useState("");
-  const [combatantType, setCombatantType] = useState<'monster' | 'npc' | 'player' | 'homebrew'>('monster');
+  const [combatantType, setCombatantType] = useState<'monster' | 'npc' | 'player' | 'homebrew' | 'srd'>('monster');
   const [selectedPlayerId, setSelectedPlayerId] = useState("");
   const [selectedHomebrewMonster, setSelectedHomebrewMonster] = useState("");
+  const [selectedSrdMonster, setSelectedSrdMonster] = useState("");
+  const [srdMonsterSearch, setSrdMonsterSearch] = useState("");
   const [activeTab, setActiveTab] = useState<'combatants' | 'log' | 'dice'>('combatants');
   const [realtimeConnected, setRealtimeConnected] = useState(true);
   const [selectedCombatant, setSelectedCombatant] = useState<Combatant | null>(null);
@@ -132,6 +136,15 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
 
   // Check if user has Pro features
   const hasProFeatures = subscription?.limits.hasCombatTracker ?? false;
+
+  // Load SRD monsters
+  const srdMonsters = useMemo(() => loadAllMonsters(), []);
+  const filteredSrdMonsters = useMemo(() => {
+    if (!srdMonsterSearch) return srdMonsters.slice(0, 50); // Show first 50 by default
+    return srdMonsters.filter(m => 
+      m.name.toLowerCase().includes(srdMonsterSearch.toLowerCase())
+    ).slice(0, 50);
+  }, [srdMonsters, srdMonsterSearch]);
 
   // Fetch campaign players for the player selection
   const { data: campaignPlayers } = useCampaignPlayers(campaignId);
@@ -604,7 +617,31 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                   {/* Combatant Type Selection */}
                   <div className="space-y-2">
                     <Label>Tipo de Combatente</Label>
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid grid-cols-3 gap-2">
+                      <Button
+                        variant={combatantType === 'srd' ? "default" : "outline"}
+                        className="flex-1"
+                        onClick={() => {
+                          setCombatantType('srd');
+                          setSelectedPlayerId("");
+                          setSelectedHomebrewMonster("");
+                          setSelectedSrdMonster("");
+                          setSrdMonsterSearch("");
+                          setNewCombatant(prev => ({ 
+                            ...prev, 
+                            is_player: false, 
+                            character_id: null,
+                            name: "",
+                            initiative: 10,
+                            current_hp: 10,
+                            max_hp: 10,
+                            armor_class: 10,
+                          }));
+                        }}
+                      >
+                        <BookOpen className="w-4 h-4 mr-1" />
+                        Bestiário
+                      </Button>
                       <Button
                         variant={combatantType === 'monster' ? "default" : "outline"}
                         className="flex-1"
@@ -612,6 +649,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                           setCombatantType('monster');
                           setSelectedPlayerId("");
                           setSelectedHomebrewMonster("");
+                          setSelectedSrdMonster("");
                           setNewCombatant(prev => ({ 
                             ...prev, 
                             is_player: false, 
@@ -625,7 +663,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                         }}
                       >
                         <Skull className="w-4 h-4 mr-1" />
-                        Monstro
+                        Manual
                       </Button>
                       <Button
                         variant={combatantType === 'homebrew' ? "default" : "outline"}
@@ -634,6 +672,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                           setCombatantType('homebrew');
                           setSelectedPlayerId("");
                           setSelectedHomebrewMonster("");
+                          setSelectedSrdMonster("");
                         }}
                         disabled={homebrewMonsters.length === 0}
                       >
@@ -647,6 +686,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                           setCombatantType('npc');
                           setSelectedPlayerId("");
                           setSelectedHomebrewMonster("");
+                          setSelectedSrdMonster("");
                           setNewCombatant(prev => ({ 
                             ...prev, 
                             is_player: false, 
@@ -660,11 +700,12 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                       </Button>
                       <Button
                         variant={combatantType === 'player' ? "default" : "outline"}
-                        className="flex-1"
+                        className="flex-1 col-span-2"
                         onClick={() => {
                           setCombatantType('player');
                           setSelectedPlayerId("");
                           setSelectedHomebrewMonster("");
+                          setSelectedSrdMonster("");
                           setNewCombatant(prev => ({ 
                             ...prev, 
                             is_player: true, 
@@ -678,6 +719,102 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                       </Button>
                     </div>
                   </div>
+
+                  {/* SRD Monster Selection */}
+                  {combatantType === 'srd' && (
+                    <div className="space-y-2">
+                      <Label>Buscar no Bestiário SRD</Label>
+                      <Input
+                        placeholder="Digite o nome do monstro..."
+                        value={srdMonsterSearch}
+                        onChange={(e) => setSrdMonsterSearch(e.target.value)}
+                        className="bg-muted/50 border-0"
+                      />
+                      <ScrollArea className="h-48">
+                        <div className="space-y-1">
+                          {filteredSrdMonsters.map(monster => {
+                            const isSelected = selectedSrdMonster === monster.name;
+                            return (
+                              <button
+                                key={monster.name}
+                              onClick={() => {
+                                  setSelectedSrdMonster(monster.name);
+                                  // Parse HP from monster
+                                  const hpMatch = monster.hitPoints?.match(/(\d+)/);
+                                  const hp = hpMatch ? parseInt(hpMatch[1]) : 10;
+                                  // Parse AC from monster
+                                  const acMatch = monster.armorClass?.match(/(\d+)/);
+                                  const ac = acMatch ? parseInt(acMatch[1]) : 10;
+                                  // Get DEX modifier for initiative (stats.DEX is a string like "14")
+                                  const dexScore = parseInt(monster.stats?.DEX) || 10;
+                                  const dexMod = Math.floor((dexScore - 10) / 2);
+                                  const initiative = Math.floor(Math.random() * 20) + 1 + dexMod;
+                                  
+                                  setNewCombatant({
+                                    name: monster.name,
+                                    initiative,
+                                    current_hp: hp,
+                                    max_hp: hp,
+                                    armor_class: ac,
+                                    is_player: false,
+                                    character_id: null,
+                                  });
+                                }}
+                                className={cn(
+                                  "w-full text-left px-3 py-2 rounded-lg transition-colors flex items-center justify-between",
+                                  isSelected 
+                                    ? "bg-primary text-primary-foreground" 
+                                    : "hover:bg-muted/50"
+                                )}
+                              >
+                                <span className="font-medium">{monster.name}</span>
+                                <span className={cn(
+                                  "text-xs",
+                                  isSelected ? "text-primary-foreground/70" : "text-muted-foreground"
+                                )}>
+                                  ND {monster.challenge?.split('(')[0].trim() || '?'}
+                                </span>
+                              </button>
+                            );
+                          })}
+                          {filteredSrdMonsters.length === 0 && (
+                            <p className="text-center text-muted-foreground text-sm py-4">
+                              Nenhum monstro encontrado
+                            </p>
+                          )}
+                        </div>
+                      </ScrollArea>
+                      
+                      {selectedSrdMonster && (
+                        <div className="bg-primary/10 rounded-xl p-3 border border-primary/30">
+                          <p className="font-medium mb-2">{newCombatant.name}</p>
+                          <div className="grid grid-cols-3 gap-2 text-sm">
+                            <div className="flex items-center gap-2">
+                              <Heart className="w-4 h-4 text-red-500" />
+                              <span>{newCombatant.max_hp} HP</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Shield className="w-4 h-4 text-blue-500" />
+                              <span>CA {newCombatant.armor_class}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Zap className="w-4 h-4 text-yellow-500" />
+                              <span>Init {newCombatant.initiative}</span>
+                            </div>
+                          </div>
+                          <div className="mt-2 space-y-2">
+                            <Label className="text-xs">Ajustar Iniciativa</Label>
+                            <Input
+                              type="number"
+                              value={newCombatant.initiative}
+                              onChange={(e) => setNewCombatant(prev => ({ ...prev, initiative: parseInt(e.target.value) || 0 }))}
+                              className="h-8"
+                            />
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Homebrew Monster Selection */}
                   {combatantType === 'homebrew' && (
