@@ -22,15 +22,8 @@ export function MonsterDetailSheet({ monster, open, onOpenChange }: MonsterDetai
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="h-[90vh] p-0">
         <SheetHeader className="p-4 pb-0">
-          <div className="flex items-start justify-between">
-            <div>
-              <SheetTitle className="text-xl">{monster.name}</SheetTitle>
-              <p className="text-sm text-muted-foreground italic">{monster.meta}</p>
-            </div>
-            <Badge variant="secondary" className="text-sm">
-              ND {monster.challenge}
-            </Badge>
-          </div>
+          <SheetTitle className="text-xl">{monster.name}</SheetTitle>
+          <p className="text-sm text-muted-foreground italic">{monster.meta}</p>
         </SheetHeader>
 
         <ScrollArea className="h-[calc(90vh-80px)] px-4 pb-4">
