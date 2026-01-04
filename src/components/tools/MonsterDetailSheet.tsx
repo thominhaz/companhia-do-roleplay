@@ -12,9 +12,10 @@ interface MonsterDetailSheetProps {
   monster: Monster | null;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  hideAddToCombat?: boolean;
 }
 
-export function MonsterDetailSheet({ monster, open, onOpenChange }: MonsterDetailSheetProps) {
+export function MonsterDetailSheet({ monster, open, onOpenChange, hideAddToCombat = false }: MonsterDetailSheetProps) {
   const [showAddToCombat, setShowAddToCombat] = useState(false);
 
   if (!monster) return null;
@@ -32,15 +33,17 @@ export function MonsterDetailSheet({ monster, open, onOpenChange }: MonsterDetai
                 <SheetTitle className="text-xl">{monster.name}</SheetTitle>
                 <p className="text-sm text-muted-foreground italic">{monster.meta}</p>
               </div>
-              <Button 
-                size="sm" 
-                variant="destructive" 
-                className="gap-1"
-                onClick={() => setShowAddToCombat(true)}
-              >
-                <Swords className="w-4 h-4" />
-                Combate
-              </Button>
+              {!hideAddToCombat && (
+                <Button 
+                  size="sm" 
+                  variant="destructive" 
+                  className="gap-1"
+                  onClick={() => setShowAddToCombat(true)}
+                >
+                  <Swords className="w-4 h-4" />
+                  Combate
+                </Button>
+              )}
             </div>
           </SheetHeader>
 

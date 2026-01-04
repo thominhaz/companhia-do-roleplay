@@ -11,7 +11,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { HomebrewMonsterData, MonsterAction } from "@/types";
 import { PlayerCharacterSheet } from "../dashboard/PlayerCharacterSheet";
 import { MonsterDetailSheet } from "@/components/tools/MonsterDetailSheet";
-import { loadAllMonsters, Monster } from "@/data/monsters/index";
+import { loadAllMonsters, Monster, MonsterStats } from "@/data/monsters/index";
 import {
   Heart,
   Shield,
@@ -651,7 +651,17 @@ export function CombatantStatBlock({
     );
   }
 
-  // Generic combatant (no detailed data)
+  // Generic combatant (no detailed data) - but show SRD monster stats if available
+  const srdStats = srdMonster?.stats;
+  const ATTR_KEYS_SRD: { key: keyof MonsterStats; abbr: string }[] = [
+    { key: 'STR', abbr: 'FOR' },
+    { key: 'DEX', abbr: 'DES' },
+    { key: 'CON', abbr: 'CON' },
+    { key: 'INT', abbr: 'INT' },
+    { key: 'WIS', abbr: 'SAB' },
+    { key: 'CHA', abbr: 'CAR' },
+  ];
+
   return (
     <>
       <div className="h-full flex flex-col bg-card border-l border-border overflow-hidden">
@@ -730,6 +740,50 @@ export function CombatantStatBlock({
               </div>
             </div>
 
+            {/* SRD Monster Attributes */}
+            {srdStats && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase">Atributos</h4>
+                <div className="grid grid-cols-6 gap-1 text-center">
+                  {ATTR_KEYS_SRD.map(({ key, abbr }) => {
+                    const value = parseInt(srdStats[key]) || 10;
+                    const modifier = getModifier(value);
+                    return (
+                      <div 
+                        key={abbr}
+                        className="cursor-pointer hover:bg-muted/50 rounded p-2 transition-colors"
+                        onClick={() => onRollDice?.(`1d20${modifier >= 0 ? '+' : ''}${modifier}`, `Teste de ${abbr}`)}
+                      >
+                        <div className="text-xs font-bold text-red-400">{abbr}</div>
+                        <div className="text-sm font-bold">{value}</div>
+                        <div className={cn("text-xs", modifier >= 0 ? "text-green-500" : "text-red-500")}>
+                          {modifier >= 0 ? '+' : ''}{modifier}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* SRD Monster additional info */}
+            {srdMonster && (
+              <div className="space-y-1 text-sm">
+                {srdMonster.speed && (
+                  <p><span className="font-semibold text-red-400">Deslocamento:</span> {srdMonster.speed}</p>
+                )}
+                {srdMonster.senses && (
+                  <p><span className="font-semibold text-red-400">Sentidos:</span> {srdMonster.senses}</p>
+                )}
+                {srdMonster.languages && (
+                  <p><span className="font-semibold text-red-400">Idiomas:</span> {srdMonster.languages}</p>
+                )}
+                {srdMonster.challenge && (
+                  <p><span className="font-semibold text-red-400">Nível de Desafio:</span> {srdMonster.challenge}</p>
+                )}
+              </div>
+            )}
+
             {/* Conditions */}
             {combatant.conditions.length > 0 && (
               <div className="space-y-2">
@@ -750,12 +804,13 @@ export function CombatantStatBlock({
         </ScrollArea>
       </div>
 
-      {/* Full Monster Sheet Modal for SRD monsters */}
+      {/* Full Monster Sheet Modal for SRD monsters - hide add to combat button */}
       {srdMonster && (
         <MonsterDetailSheet
           monster={srdMonster}
           open={showMonsterSheet}
           onOpenChange={setShowMonsterSheet}
+          hideAddToCombat
         />
       )}
     </>
