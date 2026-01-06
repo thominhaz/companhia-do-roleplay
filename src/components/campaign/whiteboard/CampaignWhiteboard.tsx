@@ -7,6 +7,8 @@ import {
   DefaultSpinner,
   TLEditorSnapshot,
   Editor,
+  defaultShapeUtils,
+  defaultBindingUtils,
 } from "tldraw";
 import "tldraw/tldraw.css";
 import { throttle } from "lodash";
@@ -42,8 +44,15 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
   });
   const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
 
-  // Create the store
-  const store = useMemo(() => createTLStore(), []);
+  // Create the store (IMPORTANT: include default shape/binding utils)
+  const store = useMemo(
+    () =>
+      createTLStore({
+        shapeUtils: defaultShapeUtils,
+        bindingUtils: defaultBindingUtils,
+      }),
+    []
+  );
 
   // Check if mobile on mount
   useEffect(() => {
