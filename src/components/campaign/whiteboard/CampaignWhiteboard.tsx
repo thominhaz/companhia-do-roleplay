@@ -10,7 +10,6 @@ import {
   defaultBindingUtils,
 } from "tldraw";
 import { getAssetUrls } from "@tldraw/assets/selfHosted";
-import "tldraw/tldraw.css";
 import { throttle } from "lodash";
 import { MonitorX, Loader2, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
@@ -280,7 +279,7 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
       {/* tldraw canvas */}
       <div
         ref={viewportRef}
-        className="flex-1 min-h-[540px] rounded-lg overflow-hidden border border-border"
+        className="relative w-full h-[min(70vh,720px)] rounded-lg overflow-hidden border border-border"
       >
         <Tldraw
           store={store}
