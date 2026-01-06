@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { WhiteboardCanvas } from "./WhiteboardCanvas";
 import { WhiteboardToolbar } from "./WhiteboardToolbar";
 import {
@@ -21,28 +21,34 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { supabase } from "@/integrations/supabase/client";
+import { compressImage } from "@/lib/imageCompression";
 
 interface CampaignWhiteboardProps {
   campaignId: string;
 }
 
 type Tool = 'select' | 'sticky_note' | 'text' | 'image' | 'connection';
+type ConnectionMode = 'idle' | 'selecting_from' | 'selecting_to';
 
 export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
   const [activeTool, setActiveTool] = useState<Tool>('select');
   const [activeColor, setActiveColor] = useState('#fef08a');
   const [showClearDialog, setShowClearDialog] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [connectionMode, setConnectionMode] = useState<ConnectionMode>('idle');
+  const [connectionFromId, setConnectionFromId] = useState<string | null>(null);
 
   // Check if mobile on mount
-  useState(() => {
+  useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 1024);
     };
     checkMobile();
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
-  });
+  }, []);
 
   const { data: elements = [], isLoading } = useWhiteboardElements(campaignId);
   const createElement = useCreateWhiteboardElement();
@@ -76,6 +82,87 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
     toast.success('Alterações salvas automaticamente!');
   };
 
+  const handleToolChange = (tool: Tool) => {
+    if (tool === 'connection') {
+      setConnectionMode('selecting_from');
+      setConnectionFromId(null);
+    } else {
+      setConnectionMode('idle');
+      setConnectionFromId(null);
+    }
+    setActiveTool(tool);
+  };
+
+  const handleConnectionSelect = useCallback((elementId: string) => {
+    if (connectionMode === 'selecting_from') {
+      setConnectionFromId(elementId);
+      setConnectionMode('selecting_to');
+    } else if (connectionMode === 'selecting_to' && connectionFromId) {
+      // Create connection between connectionFromId and elementId
+      if (connectionFromId !== elementId) {
+        createElement.mutate({
+          campaign_id: campaignId,
+          element_type: 'connection',
+          x: 0,
+          y: 0,
+          connection_from: connectionFromId,
+          connection_to: elementId,
+          connection_style: 'straight',
+        });
+        toast.success('Conexão criada!');
+      }
+      // Reset connection mode
+      setConnectionMode('idle');
+      setConnectionFromId(null);
+      setActiveTool('select');
+    }
+  }, [connectionMode, connectionFromId, campaignId, createElement]);
+
+  const handleImageUpload = async (file: File) => {
+    try {
+      setIsUploading(true);
+      
+      // Compress image
+      const compressedFile = await compressImage(file, 1200, 0.8);
+      
+      // Generate unique filename
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${campaignId}/${Date.now()}.${fileExt}`;
+      
+      // Upload to storage
+      const { data, error } = await supabase.storage
+        .from('campaign-images')
+        .upload(fileName, compressedFile);
+      
+      if (error) {
+        throw error;
+      }
+      
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('campaign-images')
+        .getPublicUrl(data.path);
+      
+      // Create image element
+      createElement.mutate({
+        campaign_id: campaignId,
+        element_type: 'image',
+        x: 100,
+        y: 100,
+        width: 200,
+        height: 200,
+        image_url: publicUrl,
+      });
+      
+      toast.success('Imagem adicionada!');
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Erro ao enviar imagem');
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
   // Show mobile message
   if (isMobile) {
     return (
@@ -104,12 +191,15 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
       <div className="flex justify-center">
         <WhiteboardToolbar
           activeTool={activeTool}
-          onToolChange={setActiveTool}
+          onToolChange={handleToolChange}
           activeColor={activeColor}
           onColorChange={setActiveColor}
           onClear={handleClear}
           onSave={handleSave}
+          onImageUpload={handleImageUpload}
           isSaving={createElement.isPending || updateElement.isPending}
+          isUploading={isUploading}
+          connectionMode={connectionMode}
         />
       </div>
 
@@ -120,9 +210,11 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
           onElementCreate={handleElementCreate}
           onElementUpdate={handleElementUpdate}
           onElementDelete={handleElementDelete}
+          onConnectionSelect={handleConnectionSelect}
           campaignId={campaignId}
           activeTool={activeTool}
           activeColor={activeColor}
+          connectionMode={connectionMode}
         />
       </div>
 

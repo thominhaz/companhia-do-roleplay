@@ -7,11 +7,11 @@ import {
   Image,
   Link2,
   Trash2,
-  Palette,
   Save,
-  Undo,
+  Loader2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { useRef } from "react";
 
 type Tool = 'select' | 'sticky_note' | 'text' | 'image' | 'connection';
 
@@ -22,7 +22,10 @@ interface WhiteboardToolbarProps {
   onColorChange: (color: string) => void;
   onClear: () => void;
   onSave: () => void;
+  onImageUpload: (file: File) => void;
   isSaving?: boolean;
+  isUploading?: boolean;
+  connectionMode?: 'idle' | 'selecting_from' | 'selecting_to';
 }
 
 const STICKY_COLORS = [
@@ -51,10 +54,40 @@ export function WhiteboardToolbar({
   onColorChange,
   onClear,
   onSave,
+  onImageUpload,
   isSaving,
+  isUploading,
+  connectionMode = 'idle',
 }: WhiteboardToolbarProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleToolClick = (tool: Tool) => {
+    if (tool === 'image') {
+      fileInputRef.current?.click();
+    } else {
+      onToolChange(tool);
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      onImageUpload(file);
+      e.target.value = '';
+    }
+  };
+
   return (
     <div className="flex items-center gap-2 p-2 bg-card border border-border rounded-lg shadow-lg">
+      {/* Hidden file input */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        className="hidden"
+      />
+
       {/* Tools */}
       <div className="flex items-center gap-1 border-r border-border pr-2">
         {tools.map((tool) => (
@@ -62,17 +95,30 @@ export function WhiteboardToolbar({
             key={tool.id}
             variant={activeTool === tool.id ? 'default' : 'ghost'}
             size="icon"
-            onClick={() => onToolChange(tool.id)}
+            onClick={() => handleToolClick(tool.id)}
             title={tool.label}
+            disabled={tool.id === 'image' && isUploading}
             className={cn(
               "h-9 w-9",
-              activeTool === tool.id && "bg-primary text-primary-foreground"
+              activeTool === tool.id && "bg-primary text-primary-foreground",
+              tool.id === 'connection' && connectionMode !== 'idle' && "ring-2 ring-primary animate-pulse"
             )}
           >
-            <tool.icon className="h-4 w-4" />
+            {tool.id === 'image' && isUploading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <tool.icon className="h-4 w-4" />
+            )}
           </Button>
         ))}
       </div>
+
+      {/* Connection mode indicator */}
+      {connectionMode !== 'idle' && (
+        <div className="text-xs text-muted-foreground px-2 border-r border-border">
+          {connectionMode === 'selecting_from' ? 'Selecione origem' : 'Selecione destino'}
+        </div>
+      )}
 
       {/* Color picker */}
       <Popover>
