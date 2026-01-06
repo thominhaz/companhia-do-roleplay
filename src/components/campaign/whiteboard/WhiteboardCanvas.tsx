@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Canvas as FabricCanvas, Rect, IText, Line, FabricObject, Shadow } from "fabric";
+import { Canvas as FabricCanvas, Rect, IText, Line, FabricObject, Shadow, FabricImage } from "fabric";
 import { WhiteboardElement } from "@/hooks/useWhiteboard";
 
 interface WhiteboardCanvasProps {
@@ -7,9 +7,11 @@ interface WhiteboardCanvasProps {
   onElementCreate: (element: Omit<WhiteboardElement, 'id' | 'created_at' | 'updated_at'>) => void;
   onElementUpdate: (id: string, updates: Partial<WhiteboardElement>) => void;
   onElementDelete: (id: string) => void;
+  onConnectionSelect?: (elementId: string) => void;
   campaignId: string;
   activeTool: 'select' | 'sticky_note' | 'text' | 'image' | 'connection';
   activeColor: string;
+  connectionMode: 'idle' | 'selecting_from' | 'selecting_to';
 }
 
 // Extend FabricObject to include our custom data
@@ -22,9 +24,11 @@ export function WhiteboardCanvas({
   onElementCreate,
   onElementUpdate,
   onElementDelete,
+  onConnectionSelect,
   campaignId,
   activeTool,
   activeColor,
+  connectionMode,
 }: WhiteboardCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fabricCanvasRef = useRef<FabricCanvas | null>(null);
@@ -72,11 +76,13 @@ export function WhiteboardCanvas({
   // Update selection mode based on active tool
   useEffect(() => {
     if (!fabricCanvasRef.current) return;
-    fabricCanvasRef.current.selection = activeTool === 'select';
+    fabricCanvasRef.current.selection = activeTool === 'select' || activeTool === 'connection';
     
     // Update cursor
     if (activeTool === 'select') {
       fabricCanvasRef.current.defaultCursor = 'default';
+    } else if (activeTool === 'connection') {
+      fabricCanvasRef.current.defaultCursor = 'pointer';
     } else {
       fabricCanvasRef.current.defaultCursor = 'crosshair';
     }
@@ -89,7 +95,16 @@ export function WhiteboardCanvas({
     const canvas = fabricCanvasRef.current;
 
     const handleMouseDown = (e: any) => {
-      if (activeTool === 'select') return;
+      // Handle connection mode - selecting elements
+      if (activeTool === 'connection' && e.target) {
+        const target = e.target as CustomFabricObject;
+        if (target.data?.elementId && target.data?.elementType !== 'connection') {
+          onConnectionSelect?.(target.data.elementId);
+        }
+        return;
+      }
+
+      if (activeTool === 'select' || activeTool === 'connection') return;
       if (e.target) return; // Clicked on existing object
 
       const pointer = canvas.getViewportPoint(e.e);
@@ -125,7 +140,7 @@ export function WhiteboardCanvas({
     return () => {
       canvas.off('mouse:down', handleMouseDown);
     };
-  }, [activeTool, activeColor, campaignId, isReady, onElementCreate]);
+  }, [activeTool, activeColor, campaignId, isReady, onElementCreate, onConnectionSelect]);
 
   // Handle object modifications
   useEffect(() => {
@@ -205,14 +220,23 @@ export function WhiteboardCanvas({
 
     // Remove deleted elements
     elementsMapRef.current.forEach((obj, id) => {
-      if (!currentIds.has(id)) {
+      if (!currentIds.has(id) && !id.endsWith('_text')) {
         canvas.remove(obj);
         elementsMapRef.current.delete(id);
+        // Also remove associated text
+        const textObj = elementsMapRef.current.get(id + '_text');
+        if (textObj) {
+          canvas.remove(textObj);
+          elementsMapRef.current.delete(id + '_text');
+        }
       }
     });
 
-    // Add or update elements
-    elements.forEach((element) => {
+    // Add or update elements - first non-connections, then connections
+    const nonConnections = elements.filter(e => e.element_type !== 'connection');
+    const connections = elements.filter(e => e.element_type === 'connection');
+
+    nonConnections.forEach((element) => {
       const existingObj = elementsMapRef.current.get(element.id);
 
       if (existingObj) {
@@ -227,9 +251,39 @@ export function WhiteboardCanvas({
       }
     });
 
+    // Now handle connections after all elements exist
+    connections.forEach((element) => {
+      const existingObj = elementsMapRef.current.get(element.id);
+      if (!existingObj) {
+        createFabricObject(element, canvas);
+      } else {
+        // Update connection line positions
+        updateConnectionLine(element, existingObj as Line);
+      }
+    });
+
     canvas.renderAll();
     isLoadingRef.current = false;
   }, [elements, isReady]);
+
+  const updateConnectionLine = (element: WhiteboardElement, line: Line) => {
+    const fromEl = elements.find(e => e.id === element.connection_from);
+    const toEl = elements.find(e => e.id === element.connection_to);
+
+    if (fromEl && toEl) {
+      const fromCenterX = fromEl.x + (fromEl.width || 100) / 2;
+      const fromCenterY = fromEl.y + (fromEl.height || 50) / 2;
+      const toCenterX = toEl.x + (toEl.width || 100) / 2;
+      const toCenterY = toEl.y + (toEl.height || 50) / 2;
+
+      line.set({
+        x1: fromCenterX,
+        y1: fromCenterY,
+        x2: toCenterX,
+        y2: toCenterY,
+      });
+    }
+  };
 
   const createFabricObject = (element: WhiteboardElement, canvas: FabricCanvas) => {
     let obj: CustomFabricObject | null = null;
@@ -281,15 +335,39 @@ export function WhiteboardCanvas({
       obj.data = { elementId: element.id, elementType: 'text' };
     }
 
+    if (element.element_type === 'image' && element.image_url) {
+      FabricImage.fromURL(element.image_url, { crossOrigin: 'anonymous' }).then((img) => {
+        const imgObj = img as CustomFabricObject;
+        imgObj.set({
+          left: element.x,
+          top: element.y,
+          scaleX: element.width ? element.width / (img.width || 1) : 0.5,
+          scaleY: element.height ? element.height / (img.height || 1) : 0.5,
+          angle: element.rotation || 0,
+        });
+        imgObj.data = { elementId: element.id, elementType: 'image' };
+        canvas.add(imgObj);
+        elementsMapRef.current.set(element.id, imgObj);
+        canvas.renderAll();
+      });
+      return; // Async load
+    }
+
     if (element.element_type === 'connection' && element.connection_from && element.connection_to) {
       const fromEl = elements.find(e => e.id === element.connection_from);
       const toEl = elements.find(e => e.id === element.connection_to);
 
       if (fromEl && toEl) {
-        obj = new Line([fromEl.x, fromEl.y, toEl.x, toEl.y], {
+        const fromCenterX = fromEl.x + (fromEl.width || 100) / 2;
+        const fromCenterY = fromEl.y + (fromEl.height || 50) / 2;
+        const toCenterX = toEl.x + (toEl.width || 100) / 2;
+        const toCenterY = toEl.y + (toEl.height || 50) / 2;
+
+        obj = new Line([fromCenterX, fromCenterY, toCenterX, toCenterY], {
           stroke: '#6366f1',
           strokeWidth: 2,
-          selectable: false,
+          selectable: true,
+          strokeDashArray: element.connection_style === 'dashed' ? [5, 5] : undefined,
         }) as CustomFabricObject;
 
         obj.data = { elementId: element.id, elementType: 'connection' };
@@ -308,8 +386,13 @@ export function WhiteboardCanvas({
   }, [syncElementsToCanvas]);
 
   return (
-    <div ref={containerRef} className="w-full h-full min-h-[600px] bg-[#1a1a2e] rounded-lg overflow-hidden">
+    <div ref={containerRef} className="w-full h-full min-h-[600px] bg-[#1a1a2e] rounded-lg overflow-hidden relative">
       <canvas ref={canvasRef} />
+      {connectionMode !== 'idle' && (
+        <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground px-3 py-1 rounded-full text-sm font-medium animate-pulse">
+          {connectionMode === 'selecting_from' ? 'Clique no elemento de origem' : 'Clique no elemento de destino'}
+        </div>
+      )}
     </div>
   );
 }
