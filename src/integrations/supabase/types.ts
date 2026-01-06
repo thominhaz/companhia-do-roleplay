@@ -983,6 +983,94 @@ export type Database = {
           },
         ]
       }
+      campaign_whiteboard_elements: {
+        Row: {
+          background_color: string | null
+          campaign_id: string
+          connection_from: string | null
+          connection_style: string | null
+          connection_to: string | null
+          content: string | null
+          created_at: string
+          element_type: string
+          font_size: number | null
+          height: number | null
+          id: string
+          image_url: string | null
+          rotation: number | null
+          text_color: string | null
+          updated_at: string
+          width: number | null
+          x: number
+          y: number
+          z_index: number | null
+        }
+        Insert: {
+          background_color?: string | null
+          campaign_id: string
+          connection_from?: string | null
+          connection_style?: string | null
+          connection_to?: string | null
+          content?: string | null
+          created_at?: string
+          element_type: string
+          font_size?: number | null
+          height?: number | null
+          id?: string
+          image_url?: string | null
+          rotation?: number | null
+          text_color?: string | null
+          updated_at?: string
+          width?: number | null
+          x?: number
+          y?: number
+          z_index?: number | null
+        }
+        Update: {
+          background_color?: string | null
+          campaign_id?: string
+          connection_from?: string | null
+          connection_style?: string | null
+          connection_to?: string | null
+          content?: string | null
+          created_at?: string
+          element_type?: string
+          font_size?: number | null
+          height?: number | null
+          id?: string
+          image_url?: string | null
+          rotation?: number | null
+          text_color?: string | null
+          updated_at?: string
+          width?: number | null
+          x?: number
+          y?: number
+          z_index?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_whiteboard_elements_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_whiteboard_elements_connection_from_fkey"
+            columns: ["connection_from"]
+            isOneToOne: false
+            referencedRelation: "campaign_whiteboard_elements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_whiteboard_elements_connection_to_fkey"
+            columns: ["connection_to"]
+            isOneToOne: false
+            referencedRelation: "campaign_whiteboard_elements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
           created_at: string
