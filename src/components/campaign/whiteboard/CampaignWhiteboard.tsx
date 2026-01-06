@@ -71,10 +71,9 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
           .eq("element_type", "tldraw_snapshot")
           .order("created_at", { ascending: false })
           .limit(1)
-          .single();
+          .maybeSingle();
 
-        if (error && error.code !== "PGRST116") {
-          // PGRST116 = no rows
+        if (error) {
           throw error;
         }
 
@@ -109,7 +108,7 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
           .eq("campaign_id", campaignId)
           .eq("element_type", "tldraw_snapshot")
           .limit(1)
-          .single();
+          .maybeSingle();
 
         if (existingData) {
           await supabase
