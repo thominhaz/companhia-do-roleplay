@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { CampaignDB, useDeleteCampaign } from "@/hooks/useCampaigns";
 import { Button } from "@/components/ui/button";
-import { Settings, Trash2, Copy, Share2, Palette } from "lucide-react";
+import { Settings, Trash2, Copy, Share2, Palette, Hammer } from "lucide-react";
 import { toast } from "sonner";
 import { DiscordWebhookConfig } from "../DiscordWebhookConfig";
 import { CampaignAppearanceSettings } from "./CampaignAppearanceSettings";
+import { HomebrewSharingSettings } from "./HomebrewSharingSettings";
+import { HomebrewShareRequestsPanel } from "./HomebrewShareRequestsPanel";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,13 +25,14 @@ import {
 } from "@/components/ui/collapsible";
 
 interface DashboardSettingsProps {
-  campaign: CampaignDB & { discord_webhook_url?: string | null };
+  campaign: CampaignDB & { discord_webhook_url?: string | null; homebrew_sharing_policy?: string };
   onClose: () => void;
 }
 
 export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps) {
   const deleteCampaign = useDeleteCampaign();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
+  const [homebrewOpen, setHomebrewOpen] = useState(false);
 
   const handleCopyInviteCode = () => {
     if (campaign.invite_code) {
@@ -71,6 +74,11 @@ export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps)
         </div>
       )}
 
+      {/* Homebrew Share Requests */}
+      {campaign.homebrew_sharing_policy === 'approval_required' && (
+        <HomebrewShareRequestsPanel campaignId={campaign.id} />
+      )}
+
       {/* Appearance Settings */}
       <Collapsible open={appearanceOpen} onOpenChange={setAppearanceOpen}>
         <CollapsibleTrigger asChild>
@@ -89,6 +97,27 @@ export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps)
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-2">
           <CampaignAppearanceSettings campaign={campaign} />
+        </CollapsibleContent>
+      </Collapsible>
+
+      {/* Homebrew Sharing Settings */}
+      <Collapsible open={homebrewOpen} onOpenChange={setHomebrewOpen}>
+        <CollapsibleTrigger asChild>
+          <div className="bg-card rounded-xl p-4 border border-border cursor-pointer hover:bg-accent/50 transition-colors">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Hammer className="w-5 h-5 text-muted-foreground" />
+                <div>
+                  <h3 className="font-semibold">Compartilhamento de Homebrew</h3>
+                  <p className="text-xs text-muted-foreground">Permita jogadores contribuírem no compêndio</p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground">{homebrewOpen ? '▲' : '▼'}</span>
+            </div>
+          </div>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="mt-2 bg-card rounded-xl p-4 border border-border">
+          <HomebrewSharingSettings campaign={campaign} />
         </CollapsibleContent>
       </Collapsible>
 
