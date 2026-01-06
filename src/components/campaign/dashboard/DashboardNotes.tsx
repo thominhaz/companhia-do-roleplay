@@ -68,7 +68,9 @@ export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
         {isMaster && (
           <TabsContent value="whiteboard" className="mt-0">
             <div className="bg-card rounded-xl border border-border overflow-hidden">
-              <CampaignWhiteboard campaignId={campaign.id} />
+              {activeTab === "whiteboard" && (
+                <CampaignWhiteboard campaignId={campaign.id} />
+              )}
             </div>
           </TabsContent>
         )}
