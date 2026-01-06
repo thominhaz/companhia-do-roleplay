@@ -1,16 +1,19 @@
-import { useState, useCallback, useEffect } from "react";
-import { WhiteboardCanvas } from "./WhiteboardCanvas";
-import { WhiteboardToolbar } from "./WhiteboardToolbar";
+import { useEffect, useMemo, useState, useCallback, useLayoutEffect } from "react";
 import {
-  useWhiteboardElements,
-  useCreateWhiteboardElement,
-  useUpdateWhiteboardElement,
-  useDeleteWhiteboardElement,
-  useClearWhiteboard,
-  WhiteboardElement,
-} from "@/hooks/useWhiteboard";
-import { Loader2, MonitorX } from "lucide-react";
+  Tldraw,
+  createTLStore,
+  getSnapshot,
+  loadSnapshot,
+  DefaultSpinner,
+  TLEditorSnapshot,
+  Editor,
+} from "tldraw";
+import "tldraw/tldraw.css";
+import { throttle } from "lodash";
+import { MonitorX, Loader2, Save, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,24 +24,26 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { supabase } from "@/integrations/supabase/client";
-import { compressImage } from "@/lib/imageCompression";
 
 interface CampaignWhiteboardProps {
   campaignId: string;
 }
 
-type Tool = 'select' | 'sticky_note' | 'text' | 'image' | 'connection';
-type ConnectionMode = 'idle' | 'selecting_from' | 'selecting_to';
+type LoadingState =
+  | { status: "loading" }
+  | { status: "ready" }
+  | { status: "error"; error: string };
 
 export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
-  const [activeTool, setActiveTool] = useState<Tool>('select');
-  const [activeColor, setActiveColor] = useState('#fef08a');
-  const [showClearDialog, setShowClearDialog] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
-  const [isUploading, setIsUploading] = useState(false);
-  const [connectionMode, setConnectionMode] = useState<ConnectionMode>('idle');
-  const [connectionFromId, setConnectionFromId] = useState<string | null>(null);
+  const [showClearDialog, setShowClearDialog] = useState(false);
+  const [loadingState, setLoadingState] = useState<LoadingState>({
+    status: "loading",
+  });
+  const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
+
+  // Create the store
+  const store = useMemo(() => createTLStore(), []);
 
   // Check if mobile on mount
   useEffect(() => {
@@ -46,121 +51,129 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
       setIsMobile(window.innerWidth < 1024);
     };
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
-  const { data: elements = [], isLoading } = useWhiteboardElements(campaignId);
-  const createElement = useCreateWhiteboardElement();
-  const updateElement = useUpdateWhiteboardElement();
-  const deleteElement = useDeleteWhiteboardElement();
-  const clearWhiteboard = useClearWhiteboard();
+  // Load and save whiteboard data
+  useLayoutEffect(() => {
+    if (isMobile) return;
 
-  const handleElementCreate = useCallback((element: Omit<WhiteboardElement, 'id' | 'created_at' | 'updated_at'>) => {
-    createElement.mutate(element);
-    setActiveTool('select'); // Switch back to select after creating
-  }, [createElement]);
+    setLoadingState({ status: "loading" });
 
-  const handleElementUpdate = useCallback((id: string, updates: Partial<WhiteboardElement>) => {
-    updateElement.mutate({ id, campaignId, ...updates });
-  }, [updateElement, campaignId]);
+    // Load from database
+    const loadFromDb = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("campaign_whiteboard_elements")
+          .select("*")
+          .eq("campaign_id", campaignId)
+          .eq("element_type", "tldraw_snapshot")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .single();
 
-  const handleElementDelete = useCallback((id: string) => {
-    deleteElement.mutate({ id, campaignId });
-  }, [deleteElement, campaignId]);
+        if (error && error.code !== "PGRST116") {
+          // PGRST116 = no rows
+          throw error;
+        }
+
+        if (data?.content) {
+          try {
+            const snapshot = JSON.parse(data.content) as TLEditorSnapshot;
+            loadSnapshot(store, snapshot);
+          } catch (parseError) {
+            console.error("Error parsing snapshot:", parseError);
+          }
+        }
+
+        setLoadingState({ status: "ready" });
+      } catch (error: any) {
+        console.error("Error loading whiteboard:", error);
+        setLoadingState({ status: "error", error: error.message });
+      }
+    };
+
+    loadFromDb();
+
+    // Save to database on changes (throttled)
+    const saveToDb = throttle(async () => {
+      try {
+        const snapshot = getSnapshot(store);
+        const content = JSON.stringify(snapshot);
+
+        // Upsert the snapshot
+        const { data: existingData } = await supabase
+          .from("campaign_whiteboard_elements")
+          .select("id")
+          .eq("campaign_id", campaignId)
+          .eq("element_type", "tldraw_snapshot")
+          .limit(1)
+          .single();
+
+        if (existingData) {
+          await supabase
+            .from("campaign_whiteboard_elements")
+            .update({
+              content,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", existingData.id);
+        } else {
+          await supabase.from("campaign_whiteboard_elements").insert({
+            campaign_id: campaignId,
+            element_type: "tldraw_snapshot",
+            x: 0,
+            y: 0,
+            content,
+          });
+        }
+      } catch (error) {
+        console.error("Error saving whiteboard:", error);
+      }
+    }, 2000);
+
+    const cleanupFn = store.listen(saveToDb);
+
+    return () => {
+      cleanupFn();
+      saveToDb.cancel();
+    };
+  }, [store, campaignId, isMobile]);
+
+  const handleEditorMount = useCallback((editor: Editor) => {
+    setEditorInstance(editor);
+  }, []);
 
   const handleClear = () => {
     setShowClearDialog(true);
   };
 
-  const confirmClear = () => {
-    clearWhiteboard.mutate(campaignId);
+  const confirmClear = async () => {
+    if (editorInstance) {
+      // Select all and delete
+      editorInstance.selectAll();
+      editorInstance.deleteShapes(editorInstance.getSelectedShapeIds());
+      
+      // Also clear from database
+      try {
+        await supabase
+          .from("campaign_whiteboard_elements")
+          .delete()
+          .eq("campaign_id", campaignId)
+          .eq("element_type", "tldraw_snapshot");
+        
+        toast.success("Whiteboard limpo!");
+      } catch (error) {
+        console.error("Error clearing whiteboard:", error);
+        toast.error("Erro ao limpar whiteboard");
+      }
+    }
     setShowClearDialog(false);
   };
 
-  const handleSave = () => {
-    toast.success('Alterações salvas automaticamente!');
-  };
-
-  const handleToolChange = (tool: Tool) => {
-    if (tool === 'connection') {
-      setConnectionMode('selecting_from');
-      setConnectionFromId(null);
-    } else {
-      setConnectionMode('idle');
-      setConnectionFromId(null);
-    }
-    setActiveTool(tool);
-  };
-
-  const handleConnectionSelect = useCallback((elementId: string) => {
-    if (connectionMode === 'selecting_from') {
-      setConnectionFromId(elementId);
-      setConnectionMode('selecting_to');
-    } else if (connectionMode === 'selecting_to' && connectionFromId) {
-      // Create connection between connectionFromId and elementId
-      if (connectionFromId !== elementId) {
-        createElement.mutate({
-          campaign_id: campaignId,
-          element_type: 'connection',
-          x: 0,
-          y: 0,
-          connection_from: connectionFromId,
-          connection_to: elementId,
-          connection_style: 'straight',
-        });
-        toast.success('Conexão criada!');
-      }
-      // Reset connection mode
-      setConnectionMode('idle');
-      setConnectionFromId(null);
-      setActiveTool('select');
-    }
-  }, [connectionMode, connectionFromId, campaignId, createElement]);
-
-  const handleImageUpload = async (file: File) => {
-    try {
-      setIsUploading(true);
-      
-      // Compress image
-      const compressedFile = await compressImage(file, 1200, 0.8);
-      
-      // Generate unique filename
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${campaignId}/${Date.now()}.${fileExt}`;
-      
-      // Upload to storage
-      const { data, error } = await supabase.storage
-        .from('campaign-images')
-        .upload(fileName, compressedFile);
-      
-      if (error) {
-        throw error;
-      }
-      
-      // Get public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('campaign-images')
-        .getPublicUrl(data.path);
-      
-      // Create image element
-      createElement.mutate({
-        campaign_id: campaignId,
-        element_type: 'image',
-        x: 100,
-        y: 100,
-        width: 200,
-        height: 200,
-        image_url: publicUrl,
-      });
-      
-      toast.success('Imagem adicionada!');
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      toast.error('Erro ao enviar imagem');
-    } finally {
-      setIsUploading(false);
-    }
+  const handleManualSave = () => {
+    toast.success("Alterações salvas automaticamente!");
   };
 
   // Show mobile message
@@ -168,16 +181,18 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
     return (
       <div className="flex flex-col items-center justify-center h-[400px] text-center p-6">
         <MonitorX className="w-16 h-16 text-muted-foreground mb-4" />
-        <h3 className="text-lg font-semibold mb-2">Disponível apenas no Desktop</h3>
+        <h3 className="text-lg font-semibold mb-2">
+          Disponível apenas no Desktop
+        </h3>
         <p className="text-muted-foreground text-sm">
-          O Whiteboard interativo requer uma tela maior para uma experiência adequada.
-          Acesse pelo computador para usar esta funcionalidade.
+          O Whiteboard interativo requer uma tela maior para uma experiência
+          adequada. Acesse pelo computador para usar esta funcionalidade.
         </p>
       </div>
     );
   }
 
-  if (isLoading) {
+  if (loadingState.status === "loading") {
     return (
       <div className="flex items-center justify-center h-[600px]">
         <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -185,44 +200,54 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
     );
   }
 
+  if (loadingState.status === "error") {
+    return (
+      <div className="flex flex-col items-center justify-center h-[600px] text-center p-6">
+        <div className="text-destructive text-lg font-semibold mb-2">
+          Erro ao carregar Whiteboard
+        </div>
+        <p className="text-muted-foreground text-sm">{loadingState.error}</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-col h-full gap-4">
-      {/* Toolbar */}
-      <div className="flex justify-center">
-        <WhiteboardToolbar
-          activeTool={activeTool}
-          onToolChange={handleToolChange}
-          activeColor={activeColor}
-          onColorChange={setActiveColor}
-          onClear={handleClear}
-          onSave={handleSave}
-          onImageUpload={handleImageUpload}
-          isSaving={createElement.isPending || updateElement.isPending}
-          isUploading={isUploading}
-          connectionMode={connectionMode}
-        />
+    <div className="flex flex-col h-full gap-2">
+      {/* Custom toolbar */}
+      <div className="flex items-center justify-between px-2">
+        <div className="text-sm text-muted-foreground">
+          Whiteboard interativo • Salva automaticamente
+        </div>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="sm" onClick={handleManualSave}>
+            <Save className="w-4 h-4 mr-1" />
+            Salvar
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleClear}
+            className="text-destructive hover:text-destructive"
+          >
+            <Trash2 className="w-4 h-4 mr-1" />
+            Limpar
+          </Button>
+        </div>
       </div>
 
-      {/* Canvas */}
-      <div className="flex-1 min-h-0">
-        <WhiteboardCanvas
-          elements={elements}
-          onElementCreate={handleElementCreate}
-          onElementUpdate={handleElementUpdate}
-          onElementDelete={handleElementDelete}
-          onConnectionSelect={handleConnectionSelect}
-          campaignId={campaignId}
-          activeTool={activeTool}
-          activeColor={activeColor}
-          connectionMode={connectionMode}
+      {/* tldraw canvas */}
+      <div className="flex-1 min-h-0 rounded-lg overflow-hidden border border-border" style={{ height: "calc(100vh - 280px)", minHeight: "500px" }}>
+        <Tldraw
+          store={store}
+          onMount={handleEditorMount}
+          inferDarkMode
         />
       </div>
 
       {/* Help text */}
-      <div className="text-center text-xs text-muted-foreground">
-        <span className="bg-muted px-2 py-1 rounded">Delete</span> para remover • 
-        Clique duas vezes no texto para editar • 
-        Arraste para mover elementos
+      <div className="text-center text-xs text-muted-foreground py-1">
+        Use as ferramentas para desenhar, criar formas, adicionar texto e
+        imagens • Arraste para mover • Scroll para zoom
       </div>
 
       {/* Clear confirmation */}
@@ -231,12 +256,16 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
           <AlertDialogHeader>
             <AlertDialogTitle>Limpar Whiteboard?</AlertDialogTitle>
             <AlertDialogDescription>
-              Isso irá remover todos os elementos do whiteboard. Esta ação não pode ser desfeita.
+              Isso irá remover todos os elementos do whiteboard. Esta ação não
+              pode ser desfeita.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmClear} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+            <AlertDialogAction
+              onClick={confirmClear}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
               Limpar Tudo
             </AlertDialogAction>
           </AlertDialogFooter>
