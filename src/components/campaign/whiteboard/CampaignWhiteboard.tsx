@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, useCallback, useLayoutEffect } from "react";
+import { useEffect, useMemo, useState, useCallback, useLayoutEffect, useRef } from "react";
 import {
   Tldraw,
   createTLStore,
@@ -43,6 +43,7 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
     status: "loading",
   });
   const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
+  const viewportRef = useRef<HTMLDivElement | null>(null);
 
   // Load assets from local bundle to avoid CORS issues
   const assetUrls = useMemo(() => getAssetUrls(), []);
@@ -163,8 +164,29 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
 
   const handleEditorMount = useCallback((editor: Editor) => {
     setEditorInstance(editor);
+
+    // Tabs/containers hidden at mount time can cause the editor to think
+    // the viewport is 0x0 and render “blank” until a resize happens.
+    requestAnimationFrame(() => {
+      if (viewportRef.current) {
+        editor.updateViewportScreenBounds(viewportRef.current);
+      }
+    });
   }, []);
 
+  useEffect(() => {
+    if (!editorInstance || !viewportRef.current) return;
+
+    const el = viewportRef.current;
+    editorInstance.updateViewportScreenBounds(el);
+
+    const ro = new ResizeObserver(() => {
+      editorInstance.updateViewportScreenBounds(el);
+    });
+
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [editorInstance]);
   const handleClear = () => {
     setShowClearDialog(true);
   };
@@ -256,7 +278,11 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
       </div>
 
       {/* tldraw canvas */}
-      <div className="flex-1 min-h-0 rounded-lg overflow-hidden border border-border" style={{ height: "calc(100vh - 280px)", minHeight: "500px" }}>
+      <div
+        ref={viewportRef}
+        className="flex-1 min-h-0 rounded-lg overflow-hidden border border-border"
+        style={{ height: "calc(100vh - 280px)", minHeight: "500px" }}
+      >
         <Tldraw
           store={store}
           onMount={handleEditorMount}
