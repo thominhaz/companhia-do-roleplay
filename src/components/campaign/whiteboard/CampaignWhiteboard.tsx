@@ -254,7 +254,7 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
   }
 
   return (
-    <div className="flex flex-col h-full gap-2">
+    <div className="flex flex-col gap-2 min-h-[660px]">
       {/* Custom toolbar */}
       <div className="flex items-center justify-between px-2">
         <div className="text-sm text-muted-foreground">
@@ -280,8 +280,7 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
       {/* tldraw canvas */}
       <div
         ref={viewportRef}
-        className="flex-1 min-h-0 rounded-lg overflow-hidden border border-border"
-        style={{ height: "calc(100vh - 280px)", minHeight: "500px" }}
+        className="flex-1 min-h-[540px] rounded-lg overflow-hidden border border-border"
       >
         <Tldraw
           store={store}
