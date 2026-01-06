@@ -988,6 +988,7 @@ export type Database = {
           created_at: string
           description: string | null
           discord_webhook_url: string | null
+          homebrew_sharing_policy: Database["public"]["Enums"]["homebrew_sharing_policy"]
           icon: string | null
           id: string
           image_url: string | null
@@ -1001,6 +1002,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           discord_webhook_url?: string | null
+          homebrew_sharing_policy?: Database["public"]["Enums"]["homebrew_sharing_policy"]
           icon?: string | null
           id?: string
           image_url?: string | null
@@ -1014,6 +1016,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           discord_webhook_url?: string | null
+          homebrew_sharing_policy?: Database["public"]["Enums"]["homebrew_sharing_policy"]
           icon?: string | null
           id?: string
           image_url?: string | null
@@ -1448,6 +1451,54 @@ export type Database = {
           version?: number
         }
         Relationships: []
+      }
+      homebrew_share_requests: {
+        Row: {
+          campaign_id: string
+          content_id: string
+          created_at: string
+          id: string
+          requester_id: string
+          responded_at: string | null
+          responded_by: string | null
+          status: string
+        }
+        Insert: {
+          campaign_id: string
+          content_id: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          responded_at?: string | null
+          responded_by?: string | null
+          status?: string
+        }
+        Update: {
+          campaign_id?: string
+          content_id?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          responded_at?: string | null
+          responded_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "homebrew_share_requests_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "homebrew_share_requests_content_id_fkey"
+            columns: ["content_id"]
+            isOneToOne: false
+            referencedRelation: "homebrew_content"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       homebrew_shares: {
         Row: {
@@ -2219,6 +2270,10 @@ export type Database = {
         Args: { _limit?: number; _user_id: string }
         Returns: boolean
       }
+      can_share_homebrew_in_campaign: {
+        Args: { _campaign_id: string; _user_id: string }
+        Returns: boolean
+      }
       count_user_characters: { Args: { _user_id: string }; Returns: number }
       count_user_homebrew: { Args: { _user_id: string }; Returns: number }
       create_notification: {
@@ -2315,6 +2370,7 @@ export type Database = {
         | "monster"
         | "background"
         | "feat"
+      homebrew_sharing_policy: "disabled" | "enabled" | "approval_required"
       homebrew_source: "user" | "master_shared" | "community"
       notification_type:
         | "campaign_invite"
@@ -2468,6 +2524,7 @@ export const Constants = {
         "background",
         "feat",
       ],
+      homebrew_sharing_policy: ["disabled", "enabled", "approval_required"],
       homebrew_source: ["user", "master_shared", "community"],
       notification_type: [
         "campaign_invite",
