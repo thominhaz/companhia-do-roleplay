@@ -4,12 +4,12 @@ import {
   createTLStore,
   getSnapshot,
   loadSnapshot,
-  DefaultSpinner,
   TLEditorSnapshot,
   Editor,
   defaultShapeUtils,
   defaultBindingUtils,
 } from "tldraw";
+import { getAssetUrls } from "@tldraw/assets/selfHosted";
 import "tldraw/tldraw.css";
 import { throttle } from "lodash";
 import { MonitorX, Loader2, Save, Trash2 } from "lucide-react";
@@ -43,6 +43,9 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
     status: "loading",
   });
   const [editorInstance, setEditorInstance] = useState<Editor | null>(null);
+
+  // Load assets from local bundle to avoid CORS issues
+  const assetUrls = useMemo(() => getAssetUrls(), []);
 
   // Create the store (IMPORTANT: include default shape/binding utils)
   const store = useMemo(
@@ -257,6 +260,7 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
         <Tldraw
           store={store}
           onMount={handleEditorMount}
+          assetUrls={assetUrls}
           inferDarkMode
         />
       </div>
