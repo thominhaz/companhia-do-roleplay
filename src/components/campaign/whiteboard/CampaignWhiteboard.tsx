@@ -102,30 +102,39 @@ export function CampaignWhiteboard({ campaignId }: CampaignWhiteboardProps) {
         const content = JSON.stringify(snapshot);
 
         // Upsert the snapshot
-        const { data: existingData } = await supabase
+        const { data: existingData, error: existingError } = await supabase
           .from("campaign_whiteboard_elements")
           .select("id")
           .eq("campaign_id", campaignId)
           .eq("element_type", "tldraw_snapshot")
+          .order("created_at", { ascending: false })
           .limit(1)
           .maybeSingle();
 
+        if (existingError) throw existingError;
+
         if (existingData) {
-          await supabase
+          const { error: updateError } = await supabase
             .from("campaign_whiteboard_elements")
             .update({
               content,
               updated_at: new Date().toISOString(),
             })
             .eq("id", existingData.id);
+
+          if (updateError) throw updateError;
         } else {
-          await supabase.from("campaign_whiteboard_elements").insert({
-            campaign_id: campaignId,
-            element_type: "tldraw_snapshot",
-            x: 0,
-            y: 0,
-            content,
-          });
+          const { error: insertError } = await supabase
+            .from("campaign_whiteboard_elements")
+            .insert({
+              campaign_id: campaignId,
+              element_type: "tldraw_snapshot",
+              x: 0,
+              y: 0,
+              content,
+            });
+
+          if (insertError) throw insertError;
         }
       } catch (error) {
         console.error("Error saving whiteboard:", error);
