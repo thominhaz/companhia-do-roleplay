@@ -15,6 +15,7 @@ export interface SubscriptionInfo {
   characterCount: number;
   canCreateCharacter: boolean;
   canCreateCampaign: boolean;
+  canJoinCampaign: boolean;
   canCreateHomebrew: boolean;
   canUseQuickNotes: boolean;
   canUseForge: boolean;
@@ -121,6 +122,7 @@ export function useSubscription() {
           characterCount: 0,
           canCreateCharacter: false,
           canCreateCampaign: false,
+          canJoinCampaign: false,
           canCreateHomebrew: false,
           canUseQuickNotes: false,
           canUseForge: false,
@@ -163,6 +165,7 @@ export function useSubscription() {
         characterCount: count,
         canCreateCharacter,
         canCreateCampaign: tier === 'mestre',
+        canJoinCampaign: tier !== 'visitante', // Aldeão, Herói e Mestre podem participar
         canCreateHomebrew: tier === 'heroi' || tier === 'mestre',
         canUseQuickNotes: tier !== 'visitante',
         canUseForge: tier === 'heroi' || tier === 'mestre',
