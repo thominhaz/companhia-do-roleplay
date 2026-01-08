@@ -46,6 +46,7 @@ import {
   Circle,
   DollarSign,
   Save,
+  Rocket,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -87,7 +88,8 @@ export default function AdminStretchGoalsSection() {
         phase: goal.phase || "FUNDAÇÃO",
         phase_emoji: goal.phase_emoji || "🏰",
         phase_order: goal.phase_order || 1,
-        status: (goal.status as "completed" | "current" | "pending") || "pending",
+        status: (goal.status as "completed" | "current" | "pending" | "released") || "pending",
+        feature_key: goal.feature_key || null,
       });
       setIsCreating(false);
     }
@@ -104,6 +106,8 @@ export default function AdminStretchGoalsSection() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
+      case "released":
+        return <Rocket className="h-4 w-4 text-cosmic-purple" />;
       case "completed":
         return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
       case "current":
@@ -115,6 +119,8 @@ export default function AdminStretchGoalsSection() {
 
   const getStatusBadge = (status: string) => {
     switch (status) {
+      case "released":
+        return <Badge className="bg-cosmic-purple/20 text-cosmic-purple border-cosmic-purple/30">Liberada 🚀</Badge>;
       case "completed":
         return <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">Concluída</Badge>;
       case "current":
@@ -216,6 +222,11 @@ export default function AdminStretchGoalsSection() {
                           </span>
                           <h4 className="font-semibold">{goal.title}</h4>
                           {getStatusBadge(goal.status)}
+                          {goal.feature_key && (
+                            <Badge variant="outline" className="text-xs font-mono">
+                              {goal.feature_key}
+                            </Badge>
+                          )}
                         </div>
                         <p className="text-sm text-muted-foreground mt-1">
                           {goal.subtitle}
@@ -317,6 +328,7 @@ function GoalEditSheet({ goal, isOpen, onClose, onSave, isLoading }: GoalEditShe
           phase_emoji: "🏰",
           phase_order: 1,
           status: "pending",
+          feature_key: "",
         });
       }
     }
@@ -399,15 +411,34 @@ function GoalEditSheet({ goal, isOpen, onClose, onSave, isLoading }: GoalEditShe
           </div>
 
           <div>
+            <Label>Feature Key</Label>
+            <Input
+              value={formData.feature_key || ""}
+              onChange={(e) => setFormData({ ...formData, feature_key: e.target.value })}
+              placeholder="ex: character_sheet, campaigns, forge"
+              className="font-mono"
+            />
+            <p className="text-xs text-muted-foreground mt-1">
+              Identificador único da funcionalidade (usado no código)
+            </p>
+          </div>
+
+          <div>
             <Label>Status</Label>
             <Select
               value={formData.status}
-              onValueChange={(value) => setFormData({ ...formData, status: value as "completed" | "current" | "pending" })}
+              onValueChange={(value) => setFormData({ ...formData, status: value as "completed" | "current" | "pending" | "released" })}
             >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="released">
+                  <div className="flex items-center gap-2">
+                    <Rocket className="h-4 w-4 text-cosmic-purple" />
+                    Liberada 🚀
+                  </div>
+                </SelectItem>
                 <SelectItem value="completed">
                   <div className="flex items-center gap-2">
                     <CheckCircle2 className="h-4 w-4 text-emerald-500" />

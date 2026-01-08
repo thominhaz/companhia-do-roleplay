@@ -12,8 +12,9 @@ export interface StretchGoal {
   phase: string;
   phase_emoji: string | null;
   phase_order: number | null;
-  status: "completed" | "current" | "pending";
+  status: "completed" | "current" | "pending" | "released";
   sort_order: number;
+  feature_key: string | null;
   created_at: string;
   updated_at: string;
 }
