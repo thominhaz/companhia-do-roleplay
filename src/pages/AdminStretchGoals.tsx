@@ -122,7 +122,8 @@ export default function AdminStretchGoals() {
         phase: goal.phase || "FUNDAÇÃO",
         phase_emoji: goal.phase_emoji || "🏰",
         phase_order: goal.phase_order || 1,
-        status: (goal.status as "completed" | "current" | "pending") || "pending",
+        status: (goal.status as "completed" | "current" | "pending" | "released") || "pending",
+        feature_key: goal.feature_key || null,
       });
       setIsCreating(false);
     }

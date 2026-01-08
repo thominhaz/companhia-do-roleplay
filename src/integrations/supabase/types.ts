@@ -2043,6 +2043,7 @@ export type Database = {
         Row: {
           created_at: string
           description: string | null
+          feature_key: string | null
           goal_number: number
           id: string
           phase: string
@@ -2058,6 +2059,7 @@ export type Database = {
         Insert: {
           created_at?: string
           description?: string | null
+          feature_key?: string | null
           goal_number: number
           id?: string
           phase?: string
@@ -2073,6 +2075,7 @@ export type Database = {
         Update: {
           created_at?: string
           description?: string | null
+          feature_key?: string | null
           goal_number?: number
           id?: string
           phase?: string
