@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -29,20 +29,13 @@ import {
   Shield,
   MessageSquare,
   Swords,
-  Target
+  Target,
+  Loader2
 } from "lucide-react";
 import logoFull from "@/assets/logo-full.png";
 import { motion } from "framer-motion";
 import { CharacterSheetPreview } from "@/components/landing/CharacterSheetPreview";
-
-interface StretchGoal {
-  id: number;
-  value: number;
-  title: string;
-  subtitle: string;
-  description: string;
-  status: "completed" | "current" | "pending";
-}
+import { useStretchGoals, useCampaignFunding, StretchGoal } from "@/hooks/useStretchGoals";
 
 interface Phase {
   id: number;
@@ -53,81 +46,14 @@ interface Phase {
   goals: StretchGoal[];
 }
 
-// Stretch Goals data based on Catarse campaign
-const phases: Phase[] = [
-  {
-    id: 1,
-    name: "FUNDAÇÃO",
-    emoji: "🏰",
-    icon: Castle,
-    color: "cosmic-purple",
-    goals: [
-      { id: 1, value: 600, title: "Primeiros Dados Rolados", subtitle: "Acesso Beta e servidores 24/7", description: "Ao atingirmos esta meta, abriremos os portões da Go20! Você terá acesso à versão Beta, poderá acessar o site imediatamente e revisar nossas ferramentas. Com esse valor, garantimos a infraestrutura para manter a Go20 online 24/7.", status: "completed" },
-      { id: 2, value: 900, title: "Ficha de Personagem", subtitle: "Criação guiada, cálculos automáticos...", description: "O coração de todo aventureiro! Lançamos o sistema completo de fichas: criação guiada passo a passo, cálculos automáticos de atributos e modificadores, gestão de magias, inventário e progressão de nível.", status: "completed" },
-      { id: 3, value: 1200, title: "Ferramentas do Mestre", subtitle: "Campanhas, Combat Tracker Pro...", description: "Ferramentas avançadas para quem senta atrás do escudo: criação e gestão de campanhas, Tracker de Combate com iniciativa automática e controle de HP, gestão de NPCs, Lojas e um chat integrado.", status: "completed" },
-      { id: 4, value: 1500, title: "Calendário de Aventuras", subtitle: "Agendamento, lembretes e confirmação...", description: "Nunca mais perca uma sessão! Sistema de Agendamento completo. O mestre marca data/hora e todos recebem lembretes automáticos. Inclui sistema de RSVP para você saber quem estará na mesa.", status: "completed" },
-      { id: 5, value: 1800, title: "Discord na Mesa", subtitle: "Webhooks para rolagens, lembretes...", description: "Integração total com seu servidor! A Go20 enviará automaticamente resultados de rolagens, lembretes de sessão e atualizações de combate via Webhook.", status: "completed" },
-      { id: 6, value: 2200, title: "Compêndio Expandido", subtitle: "Grimório, itens mágicos e SRD 5.1", description: "Uma biblioteca de conhecimento ao seu alcance! SRD 5.1 completo traduzido, permitindo arrastar e soltar magias, itens mágicos e condições diretamente para a ficha.", status: "completed" },
-      { id: 7, value: 2600, title: "Economia entre Jogadores", subtitle: "Trocas, presentes e vendas", description: "Sistema de Lojas Dinâmicas e Trocas P2P! Ofereça itens, negocie por ouro ou troque equipamentos com outros membros do grupo. Uma economia de RPG viva e funcional.", status: "completed" },
-      { id: 8, value: 3000, title: "Facções e Reputação", subtitle: "Organizações e mapa de relacionamentos", description: "Crie guildas, ordens e reinos. Cada personagem terá sua própria reputação que flutua conforme suas escolhas. Inclui mapa de relacionamentos e histórico de eventos.", status: "completed" },
-    ]
-  },
-  {
-    id: 2,
-    name: "EXPANSÃO",
-    emoji: "🛠️",
-    icon: Wrench,
-    color: "cyan-blue",
-    goals: [
-      { id: 9, value: 3500, title: "Forja do Homebrew", subtitle: "Crie magias, itens e monstros", description: "Sua criatividade não tem limites! Ferramenta completa para criar suas próprias raças, classes, magias e monstros que se integram ao sistema como conteúdo oficial.", status: "completed" },
-      { id: 10, value: 4000, title: "Oficina de Documentos", subtitle: "Cartas, pergaminhos e contratos", description: "Imersão máxima na entrega de pistas! Um editor visual para criar cartas seladas, pergaminhos antigos, contratos diabólicos e páginas de diário.", status: "current" },
-      { id: 11, value: 4500, title: "Modo Offline Completo", subtitle: "Acesso total sem internet", description: "Sua mesa não precisa de Wi-Fi! Modo offline completo, permitindo acesso a fichas, regras e rolagens mesmo sem conexão.", status: "pending" },
-      { id: 12, value: 5000, title: "Gerador de Encontros", subtitle: "Balanceamento e sugestões", description: "Mestres preparados em segundos! Sistema que sugere grupos de monstros baseados no nível do grupo, ambiente e dificuldade desejada.", status: "pending" },
-      { id: 13, value: 5500, title: "Gerador de Tesouros", subtitle: "Recompensas automáticas", description: "Porque todo mundo ama loot! Gere tesouros condizentes com o desafio, desde moedas até itens mágicos raros.", status: "pending" },
-      { id: 14, value: 6500, title: "Cronista Arcano (IA)", subtitle: "Resumos narrativos automáticos", description: "Chega de esquecer a última sessão! Nossa IA gera resumos narrativos épicos a partir dos logs de combate e notas.", status: "pending" },
-      { id: 15, value: 7500, title: "Sábio das Regras (IA)", subtitle: "Chatbot integrado para dúvidas", description: "Um juiz imparcial na mesa! Tire dúvidas de regras instantaneamente com nosso bot treinado no SRD 5e.", status: "pending" },
-    ]
-  },
-  {
-    id: 3,
-    name: "INOVAÇÃO",
-    emoji: "🔮",
-    icon: Wand2,
-    color: "solar-orange",
-    goals: [
-      { id: 16, value: 8500, title: "Dados Animados 3D", subtitle: "Simulação visual com física", description: "A satisfação de rolar dados físicos, agora na tela! Dados 3D com física realista, colisão e sons satisfatórios.", status: "pending" },
-      { id: 17, value: 10000, title: "Oficina de Mundos", subtitle: "Wiki de campanha completa", description: "O lar da sua Lore! Um sistema estilo Wiki para catalogar cidades, NPCs, divindades e linhas do tempo.", status: "pending" },
-      { id: 18, value: 12000, title: "App Nativo Mobile", subtitle: "iOS e Android otimizados", description: "O grande sonho: Go20 no seu bolso! Apps nativos com notificações push e widgets de ficha.", status: "pending" },
-      { id: 19, value: 15000, title: "Integração para Streams", subtitle: "Overlay para OBS/Twitch", description: "Overlays dinâmicos para OBS. Mostre iniciativa, HP e rolagens em tempo real na sua live.", status: "pending" },
-    ]
-  },
-  {
-    id: 4,
-    name: "EXPERIÊNCIA IMERSIVA",
-    emoji: "🎭",
-    icon: Drama,
-    color: "magenta-red",
-    goals: [
-      { id: 20, value: 18000, title: "Modo Teatro (Projeção)", subtitle: "Interface para TV/Projetor", description: "A união do presencial com o digital! Visualização especial para TV/Projetor na sala, sem mostrar segredos do Mestre.", status: "pending" },
-      { id: 21, value: 22000, title: "Trilha Sonora Integrada", subtitle: "Controle de músicas por ambiente", description: "O som dita o clima! Player integrado com playlists temáticas sincronizadas nos dispositivos de todos.", status: "pending" },
-      { id: 22, value: 25000, title: "Soundboard de Efeitos", subtitle: "Sons épicos instantâneos", description: "Mesa de som com efeitos prontos: explosões, rugidos de dragão, espadas colidindo. Imersão sonora ao clique.", status: "pending" },
-      { id: 23, value: 28000, title: "Arte e Identidade Visual", subtitle: "Ilustrações exclusivas", description: "Artistas profissionais criarão identidade visual única, ícones personalizados e ilustrações exclusivas.", status: "pending" },
-      { id: 24, value: 32000, title: "Imersão Atmosférica", subtitle: "Efeitos visuais de clima", description: "Efeitos visuais de ambiente: chuva, neblina, brasas de vulcão ou iluminação de tochas na interface.", status: "pending" },
-    ]
-  },
-  {
-    id: 5,
-    name: "MESA VIRTUAL",
-    emoji: "🗺️",
-    icon: Map,
-    color: "emerald",
-    goals: [
-      { id: 25, value: 38000, title: "VTT Básico Integrado", subtitle: "Grid, tokens e Fog of War", description: "A Go20 vira VTT completo! Mapas de batalha com grid, tokens em tempo real e névoa de guerra.", status: "pending" },
-      { id: 26, value: 42000, title: "Oficina de Tokens", subtitle: "Corte e customize imagens", description: "Transforme qualquer imagem em token! Ferramenta para cortar, adicionar bordas e salvar tokens perfeitos.", status: "pending" },
-      { id: 27, value: 50000, title: "Oficina de Mapas", subtitle: "Construa cenários no app", description: "Torne-se o arquiteto! Construtor de mapas leve para desenhar paredes, pisos e criar cenários rapidamente.", status: "pending" },
-    ]
-  },
-];
+// Map phase names to icons
+const phaseIcons: Record<string, { icon: React.ElementType; color: string }> = {
+  "FUNDAÇÃO": { icon: Castle, color: "cosmic-purple" },
+  "EXPANSÃO": { icon: Wrench, color: "cyan-blue" },
+  "INOVAÇÃO": { icon: Wand2, color: "solar-orange" },
+  "EXPERIÊNCIA IMERSIVA": { icon: Drama, color: "magenta-red" },
+  "MESA VIRTUAL": { icon: Map, color: "emerald" },
+};
 
 // FAQ data
 const faqData = [
@@ -157,10 +83,6 @@ const faqData = [
   },
 ];
 
-// Current funding
-const currentFunding = 3800;
-const fundingGoal = 50000;
-
 const features = [
   { icon: Dice6, title: "Rolagem de Dados", description: "Dados integrados com modificadores automáticos" },
   { icon: Shield, title: "Fichas Completas", description: "Criação guiada e cálculos automáticos" },
@@ -171,12 +93,57 @@ const features = [
 ];
 
 export default function Landing() {
+  const { data: stretchGoals = [], isLoading: isLoadingGoals } = useStretchGoals();
+  const { data: campaignFunding, isLoading: isLoadingFunding } = useCampaignFunding();
+  
+  const [activePhase, setActivePhase] = useState(0);
+
+  // Group goals by phase
+  const phases = useMemo(() => {
+    if (!stretchGoals.length) return [] as Phase[];
+    
+    const phaseMap = {} as Record<string, StretchGoal[]>;
+    
+    stretchGoals.forEach(goal => {
+      const phaseName = goal.phase || "FUNDAÇÃO";
+      if (!phaseMap[phaseName]) {
+        phaseMap[phaseName] = [];
+      }
+      phaseMap[phaseName].push(goal);
+    });
+
+    return Object.entries(phaseMap)
+      .sort((a, b) => {
+        const orderA = stretchGoals.find(g => g.phase === a[0])?.phase_order ?? 999;
+        const orderB = stretchGoals.find(g => g.phase === b[0])?.phase_order ?? 999;
+        return orderA - orderB;
+      })
+      .map((entry, index) => {
+        const phaseName = entry[0];
+        const goals = entry[1];
+        const phaseInfo = phaseIcons[phaseName] || { icon: Castle, color: "cosmic-purple" };
+        const firstGoal = goals[0];
+        
+        return {
+          id: index + 1,
+          name: phaseName,
+          emoji: firstGoal?.phase_emoji || "🎯",
+          icon: phaseInfo.icon,
+          color: phaseInfo.color,
+          goals: goals.sort((a, b) => a.sort_order - b.sort_order),
+        } as Phase;
+      });
+  }, [stretchGoals]);
+
   const allGoals = phases.flatMap(p => p.goals);
   const completedGoals = allGoals.filter(g => g.status === "completed").length;
   const currentGoal = allGoals.find(g => g.status === "current");
-  const progressPercent = (currentFunding / fundingGoal) * 100;
+  
+  const currentFunding = campaignFunding?.current_amount ?? 0;
+  const fundingGoal = campaignFunding?.goal_amount ?? 50000;
+  const progressPercent = fundingGoal > 0 ? (currentFunding / fundingGoal) * 100 : 0;
 
-  const [activePhase, setActivePhase] = useState(0);
+  const isLoading = isLoadingGoals || isLoadingFunding;
 
   return (
     <>
@@ -347,27 +314,38 @@ export default function Landing() {
               </p>
             </div>
 
-            {/* Phase Tabs - Navigation */}
-            <div className="flex flex-wrap justify-center gap-2 mb-12">
-              {phases.map((phase, index) => {
-                const phaseCompleted = phase.goals.every(g => g.status === 'completed');
-                
-                return (
-                  <button
-                    key={phase.id}
-                    onClick={() => {
-                      const element = document.getElementById(`phase-${phase.id}`);
-                      element?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-                    }}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all bg-white/5 text-white/60 hover:bg-cosmic-purple hover:text-white"
-                  >
-                    <span>{phase.emoji}</span>
-                    <span className="hidden sm:inline">{phase.name}</span>
-                    {phaseCompleted && <CheckCircle2 className="h-4 w-4 text-emerald-400" />}
-                  </button>
-                );
-              })}
-            </div>
+            {/* Loading State */}
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-cosmic-purple" />
+              </div>
+            ) : phases.length === 0 ? (
+              <div className="text-center py-12 text-white/50">
+                Nenhuma meta cadastrada ainda.
+              </div>
+            ) : (
+              <>
+                {/* Phase Tabs - Navigation */}
+                <div className="flex flex-wrap justify-center gap-2 mb-12">
+                  {phases.map((phase, index) => {
+                    const phaseCompleted = phase.goals.every(g => g.status === 'completed');
+                    
+                    return (
+                      <button
+                        key={phase.id}
+                        onClick={() => {
+                          const element = document.getElementById(`phase-${phase.id}`);
+                          element?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all bg-white/5 text-white/60 hover:bg-cosmic-purple hover:text-white"
+                      >
+                        <span>{phase.emoji}</span>
+                        <span className="hidden sm:inline">{phase.name}</span>
+                        {phaseCompleted && <CheckCircle2 className="h-4 w-4 text-emerald-400" />}
+                      </button>
+                    );
+                  })}
+                </div>
 
             {/* Timeline - All Goals */}
             <div className="relative">
@@ -505,6 +483,8 @@ export default function Landing() {
                 <span className="text-white/60">Futura</span>
               </div>
             </div>
+              </>
+            )}
           </div>
         </section>
 
