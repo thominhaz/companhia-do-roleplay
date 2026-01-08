@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 import { Loader2, Lock, Eye, EyeOff, ShieldCheck, Sword, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 import { supabase } from '@/integrations/supabase/client';
+import logoFull from '@/assets/logo-full.png';
 
 const passwordSchema = z.object({
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
@@ -121,7 +122,7 @@ export default function ResetPassword() {
           <div className="flex-1 flex flex-col px-6 pt-8 pb-8 gap-8">
             {/* Brand Logo */}
             <div className="flex flex-col items-center gap-4">
-              <img src="/src/assets/logo-full.png" alt="Go20" className="h-16 w-auto object-contain" />
+              <img src={logoFull} alt="Go20" className="h-16 w-auto object-contain" />
               <div className="text-center">
                 <h1 className="text-xl font-semibold text-slate-100 tracking-tight">Nova Senha</h1>
                 <p className="text-sm text-slate-500 mt-1">Crie uma nova senha para sua conta Go20</p>
