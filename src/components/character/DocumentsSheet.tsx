@@ -1,6 +1,6 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { useCharacterDocuments, useMarkDocumentRead, useSignDocument, CampaignDocument } from "@/hooks/useDocuments";
-import { FileText, Scroll, FileSignature, Check, Eye } from "lucide-react";
+import { FileText, Scroll, FileSignature, Check, Eye, BookOpen, MapPin, Crown, Feather } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Button } from "@/components/ui/button";
@@ -18,19 +18,29 @@ const TYPE_ICONS: Record<string, typeof FileText> = {
   letter: FileText,
   scroll: Scroll,
   contract: FileSignature,
+  book: BookOpen,
+  map: MapPin,
+  decree: Crown,
+  missive: Feather,
 };
 
 const TYPE_LABELS: Record<string, string> = {
   letter: 'Carta',
   scroll: 'Pergaminho',
   contract: 'Contrato',
+  book: 'Livro',
+  map: 'Mapa',
+  decree: 'Decreto',
+  missive: 'Missiva',
 };
 
 const STYLE_CLASSES: Record<string, string> = {
-  parchment: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800 text-amber-950 dark:text-amber-100',
-  elegant: 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100',
-  dark: 'bg-zinc-900 border-zinc-700 text-zinc-100',
-  royal: 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800 text-purple-950 dark:text-purple-100',
+  parchment: 'document-parchment',
+  elegant: 'document-elegant',
+  dark: 'document-dark',
+  royal: 'document-royal',
+  aged: 'document-aged',
+  arcane: 'document-arcane',
 };
 
 export function DocumentsSheet({ open, onOpenChange, characterId, characterName }: DocumentsSheetProps) {
@@ -128,47 +138,65 @@ export function DocumentsSheet({ open, onOpenChange, characterId, characterName 
                   </div>
 
                   {isExpanded && (
-                    <div className={`rounded-lg border-2 p-4 ${styleClass}`}>
-                      <div className="text-center mb-3">
-                        <Icon className="w-6 h-6 mx-auto mb-1 opacity-50" />
-                        <h3 className="font-serif font-bold">{doc.title}</h3>
-                      </div>
-                      
-                      <div className="whitespace-pre-wrap font-serif text-sm leading-relaxed">
-                        {doc.content || 'Documento sem conteúdo.'}
-                      </div>
-
-                      {doc.requires_signature && (
-                        <div className="mt-4 pt-3 border-t border-current/20">
-                          <p className="text-xs font-medium mb-2">Assinaturas:</p>
-                          {doc.signature_data.length > 0 && (
-                            <div className="space-y-1 mb-2">
-                              {doc.signature_data.map((sig, idx) => (
-                                <div key={idx} className="text-xs italic">
-                                  ✒️ {sig.character_name} - {format(new Date(sig.signed_at), "dd/MM/yyyy", { locale: ptBR })}
-                                </div>
-                              ))}
-                            </div>
-                          )}
-                          
-                          {alreadySigned ? (
-                            <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
-                              <Check className="w-3 h-3" />
-                              Você já assinou este documento
-                            </div>
-                          ) : (
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => handleSign(doc)}
-                              disabled={signDocument.isPending}
-                            >
-                              <FileSignature className="w-4 h-4 mr-2" />
-                              Assinar Documento
-                            </Button>
-                          )}
+                    <div className={`document-paper ${styleClass}`}>
+                      {/* Watermark */}
+                      {doc.watermark_type === 'signature' && doc.watermark_text && (
+                        <div className="document-watermark document-watermark-text">
+                          {doc.watermark_text}
                         </div>
                       )}
+                      {doc.watermark_type === 'image' && doc.watermark_image_url && (
+                        <div className="document-watermark">
+                          <img 
+                            src={doc.watermark_image_url} 
+                            alt="Watermark" 
+                            className="w-full h-full object-contain opacity-20"
+                          />
+                        </div>
+                      )}
+
+                      <div className="relative z-10">
+                        <div className="text-center mb-3">
+                          <Icon className="w-6 h-6 mx-auto mb-1 opacity-50" />
+                          <h3 className="font-serif font-bold">{doc.title}</h3>
+                        </div>
+                        
+                        <div className="whitespace-pre-wrap font-serif text-sm leading-relaxed">
+                          {doc.content || 'Documento sem conteúdo.'}
+                        </div>
+
+                        {doc.requires_signature && (
+                          <div className="mt-4 pt-3 border-t border-current/20">
+                            <p className="text-xs font-medium mb-2">Assinaturas:</p>
+                            {doc.signature_data.length > 0 && (
+                              <div className="space-y-1 mb-2">
+                                {doc.signature_data.map((sig, idx) => (
+                                  <div key={idx} className="text-xs italic">
+                                    ✒️ {sig.character_name} - {format(new Date(sig.signed_at), "dd/MM/yyyy", { locale: ptBR })}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {alreadySigned ? (
+                              <div className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                                <Check className="w-3 h-3" />
+                                Você já assinou este documento
+                              </div>
+                            ) : (
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => handleSign(doc)}
+                                disabled={signDocument.isPending}
+                              >
+                                <FileSignature className="w-4 h-4 mr-2" />
+                                Assinar Documento
+                              </Button>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

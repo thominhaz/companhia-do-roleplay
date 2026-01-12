@@ -1,7 +1,7 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { CampaignDocument, useDocumentDeliveries, useDeliverDocument } from "@/hooks/useDocuments";
-import { Scroll, FileText, FileSignature, Send, Check, Users } from "lucide-react";
+import { Scroll, FileText, FileSignature, Send, Check, Users, BookOpen, MapPin, Crown, Feather } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState } from "react";
@@ -15,16 +15,22 @@ interface DocumentPreviewSheetProps {
 }
 
 const STYLE_CLASSES: Record<string, string> = {
-  parchment: 'bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800 text-amber-950 dark:text-amber-100',
-  elegant: 'bg-slate-50 dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-slate-900 dark:text-slate-100',
-  dark: 'bg-zinc-900 border-zinc-700 text-zinc-100',
-  royal: 'bg-purple-50 dark:bg-purple-950/30 border-purple-200 dark:border-purple-800 text-purple-950 dark:text-purple-100',
+  parchment: 'document-parchment',
+  elegant: 'document-elegant',
+  dark: 'document-dark',
+  royal: 'document-royal',
+  aged: 'document-aged',
+  arcane: 'document-arcane',
 };
 
 const TYPE_ICONS: Record<string, typeof FileText> = {
   letter: FileText,
   scroll: Scroll,
   contract: FileSignature,
+  book: BookOpen,
+  map: MapPin,
+  decree: Crown,
+  missive: Feather,
 };
 
 export function DocumentPreviewSheet({ open, onOpenChange, document, players }: DocumentPreviewSheetProps) {
@@ -75,33 +81,51 @@ export function DocumentPreviewSheet({ open, onOpenChange, document, players }: 
         </SheetHeader>
 
         <div className="mt-4 space-y-4">
-          {/* Document Preview */}
-          <div className={`rounded-lg border-2 p-6 ${styleClass}`}>
-            <div className="text-center mb-4">
-              <Icon className="w-8 h-8 mx-auto mb-2 opacity-50" />
-              <h3 className="text-lg font-serif font-bold">{document.title}</h3>
-            </div>
-            
-            <div className="whitespace-pre-wrap font-serif text-sm leading-relaxed">
-              {document.content || 'Documento sem conteúdo.'}
-            </div>
-
-            {document.requires_signature && (
-              <div className="mt-6 pt-4 border-t border-current/20">
-                <p className="text-xs font-medium mb-2">Assinaturas:</p>
-                {document.signature_data.length > 0 ? (
-                  <div className="space-y-1">
-                    {document.signature_data.map((sig, idx) => (
-                      <div key={idx} className="text-xs italic">
-                        ✒️ {sig.character_name} - {format(new Date(sig.signed_at), "dd/MM/yyyy", { locale: ptBR })}
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <p className="text-xs italic opacity-60">Aguardando assinaturas...</p>
-                )}
+          {/* Document Preview with Paper Texture */}
+          <div className={`document-paper ${styleClass}`}>
+            {/* Watermark */}
+            {document.watermark_type === 'signature' && document.watermark_text && (
+              <div className="document-watermark document-watermark-text">
+                {document.watermark_text}
               </div>
             )}
+            {document.watermark_type === 'image' && document.watermark_image_url && (
+              <div className="document-watermark">
+                <img 
+                  src={document.watermark_image_url} 
+                  alt="Watermark" 
+                  className="w-full h-full object-contain opacity-20"
+                />
+              </div>
+            )}
+
+            <div className="relative z-10">
+              <div className="text-center mb-4">
+                <Icon className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                <h3 className="text-lg font-serif font-bold">{document.title}</h3>
+              </div>
+              
+              <div className="whitespace-pre-wrap font-serif text-sm leading-relaxed">
+                {document.content || 'Documento sem conteúdo.'}
+              </div>
+
+              {document.requires_signature && (
+                <div className="mt-6 pt-4 border-t border-current/20">
+                  <p className="text-xs font-medium mb-2">Assinaturas:</p>
+                  {document.signature_data.length > 0 ? (
+                    <div className="space-y-1">
+                      {document.signature_data.map((sig, idx) => (
+                        <div key={idx} className="text-xs italic">
+                          ✒️ {sig.character_name} - {format(new Date(sig.signed_at), "dd/MM/yyyy", { locale: ptBR })}
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs italic opacity-60">Aguardando assinaturas...</p>
+                  )}
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Delivery Status */}

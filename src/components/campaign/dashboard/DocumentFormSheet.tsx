@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useCreateDocument, useUpdateDocument, CampaignDocument } from "@/hooks/useDocuments";
-import { Scroll, FileText, FileSignature } from "lucide-react";
+import { Scroll, FileText, FileSignature, BookOpen, MapPin, Crown, Feather, Image } from "lucide-react";
 
 interface DocumentFormSheetProps {
   open: boolean;
@@ -20,50 +20,91 @@ const DOCUMENT_TYPES = [
   { value: 'letter', label: 'Carta', icon: FileText },
   { value: 'scroll', label: 'Pergaminho', icon: Scroll },
   { value: 'contract', label: 'Contrato', icon: FileSignature },
+  { value: 'book', label: 'Livro / Diário', icon: BookOpen },
+  { value: 'map', label: 'Mapa / Nota de Localização', icon: MapPin },
+  { value: 'decree', label: 'Decreto Real', icon: Crown },
+  { value: 'missive', label: 'Missiva Secreta', icon: Feather },
 ];
 
 const DOCUMENT_STYLES = [
   { value: 'parchment', label: 'Pergaminho Clássico' },
   { value: 'elegant', label: 'Elegante' },
   { value: 'dark', label: 'Sombrio' },
-  { value: 'royal', label: 'Real' },
+  { value: 'royal', label: 'Real / Nobre' },
+  { value: 'aged', label: 'Envelhecido' },
+  { value: 'arcane', label: 'Arcano / Místico' },
+];
+
+const WATERMARK_TYPES = [
+  { value: 'none', label: 'Sem marca d\'água' },
+  { value: 'signature', label: 'Assinatura / Texto' },
+  { value: 'image', label: 'Imagem (URL)' },
 ];
 
 export function DocumentFormSheet({ open, onOpenChange, campaignId, document }: DocumentFormSheetProps) {
-  const [title, setTitle] = useState(document?.title || '');
-  const [content, setContent] = useState(document?.content || '');
-  const [documentType, setDocumentType] = useState(document?.document_type || 'letter');
-  const [style, setStyle] = useState(document?.style || 'parchment');
-  const [requiresSignature, setRequiresSignature] = useState(document?.requires_signature || false);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [documentType, setDocumentType] = useState('letter');
+  const [style, setStyle] = useState('parchment');
+  const [requiresSignature, setRequiresSignature] = useState(false);
+  const [watermarkType, setWatermarkType] = useState('none');
+  const [watermarkText, setWatermarkText] = useState('');
+  const [watermarkImageUrl, setWatermarkImageUrl] = useState('');
 
   const createDocument = useCreateDocument();
   const updateDocument = useUpdateDocument();
 
   const isEditing = !!document;
 
+  // Reset form when document changes
+  useEffect(() => {
+    if (document) {
+      setTitle(document.title || '');
+      setContent(document.content || '');
+      setDocumentType(document.document_type || 'letter');
+      setStyle(document.style || 'parchment');
+      setRequiresSignature(document.requires_signature || false);
+      setWatermarkType(document.watermark_type || 'none');
+      setWatermarkText(document.watermark_text || '');
+      setWatermarkImageUrl(document.watermark_image_url || '');
+    } else {
+      setTitle('');
+      setContent('');
+      setDocumentType('letter');
+      setStyle('parchment');
+      setRequiresSignature(false);
+      setWatermarkType('none');
+      setWatermarkText('');
+      setWatermarkImageUrl('');
+    }
+  }, [document, open]);
+
   const handleSubmit = () => {
     if (!title.trim()) return;
+
+    const documentData = {
+      title,
+      content,
+      document_type: documentType,
+      style,
+      requires_signature: requiresSignature,
+      watermark_type: watermarkType === 'none' ? null : watermarkType,
+      watermark_text: watermarkType === 'signature' ? watermarkText : null,
+      watermark_image_url: watermarkType === 'image' ? watermarkImageUrl : null,
+    };
 
     if (isEditing) {
       updateDocument.mutate({
         id: document.id,
         campaignId,
-        title,
-        content,
-        document_type: documentType,
-        style,
-        requires_signature: requiresSignature
+        ...documentData
       }, {
         onSuccess: () => onOpenChange(false)
       });
     } else {
       createDocument.mutate({
         campaign_id: campaignId,
-        title,
-        content,
-        document_type: documentType,
-        style,
-        requires_signature: requiresSignature
+        ...documentData
       }, {
         onSuccess: () => {
           onOpenChange(false);
@@ -72,6 +113,9 @@ export function DocumentFormSheet({ open, onOpenChange, campaignId, document }: 
           setDocumentType('letter');
           setStyle('parchment');
           setRequiresSignature(false);
+          setWatermarkType('none');
+          setWatermarkText('');
+          setWatermarkImageUrl('');
         }
       });
     }
@@ -135,8 +179,45 @@ export function DocumentFormSheet({ open, onOpenChange, campaignId, document }: 
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="Escreva o conteúdo do documento..."
-              className="min-h-[200px]"
+              className="min-h-[200px] font-serif"
             />
+          </div>
+
+          {/* Watermark Section */}
+          <div className="space-y-3 p-3 rounded-lg border bg-muted/30">
+            <div className="flex items-center gap-2">
+              <Image className="w-4 h-4" />
+              <Label className="text-sm font-medium">Marca D'água</Label>
+            </div>
+            
+            <Select value={watermarkType} onValueChange={setWatermarkType}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {WATERMARK_TYPES.map(w => (
+                  <SelectItem key={w.value} value={w.value}>
+                    {w.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            {watermarkType === 'signature' && (
+              <Input
+                value={watermarkText}
+                onChange={(e) => setWatermarkText(e.target.value)}
+                placeholder="Ex: Selo da Corte Imperial"
+              />
+            )}
+
+            {watermarkType === 'image' && (
+              <Input
+                value={watermarkImageUrl}
+                onChange={(e) => setWatermarkImageUrl(e.target.value)}
+                placeholder="URL da imagem (PNG transparente)"
+              />
+            )}
           </div>
 
           {documentType === 'contract' && (

@@ -220,6 +220,9 @@ export type Database = {
           style: string | null
           title: string
           updated_at: string
+          watermark_image_url: string | null
+          watermark_text: string | null
+          watermark_type: string | null
         }
         Insert: {
           campaign_id: string
@@ -234,6 +237,9 @@ export type Database = {
           style?: string | null
           title: string
           updated_at?: string
+          watermark_image_url?: string | null
+          watermark_text?: string | null
+          watermark_type?: string | null
         }
         Update: {
           campaign_id?: string
@@ -248,6 +254,9 @@ export type Database = {
           style?: string | null
           title?: string
           updated_at?: string
+          watermark_image_url?: string | null
+          watermark_text?: string | null
+          watermark_type?: string | null
         }
         Relationships: [
           {

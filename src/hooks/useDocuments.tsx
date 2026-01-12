@@ -14,6 +14,9 @@ export interface CampaignDocument {
   is_signed: boolean;
   signature_data: { character_id: string; character_name: string; signed_at: string }[];
   requires_signature: boolean;
+  watermark_type: string | null;
+  watermark_text: string | null;
+  watermark_image_url: string | null;
   created_at: string;
   updated_at: string;
 }
