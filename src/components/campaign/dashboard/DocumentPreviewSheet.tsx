@@ -1,11 +1,14 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { CampaignDocument, useDocumentDeliveries, useDeliverDocument } from "@/hooks/useDocuments";
-import { Scroll, FileText, FileSignature, Send, Check, Users, BookOpen, MapPin, Crown, Feather } from "lucide-react";
+import { Scroll, FileText, FileSignature, Send, Check, Users, BookOpen, MapPin, Crown, Feather, Download, ImageIcon } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
+import html2canvas from "html2canvas";
 
 interface DocumentPreviewSheetProps {
   open: boolean;
@@ -36,6 +39,8 @@ const TYPE_ICONS: Record<string, typeof FileText> = {
 export function DocumentPreviewSheet({ open, onOpenChange, document, players }: DocumentPreviewSheetProps) {
   const [showDelivery, setShowDelivery] = useState(false);
   const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
+  const [isExporting, setIsExporting] = useState(false);
+  const documentRef = useRef<HTMLDivElement>(null);
   
   const { data: deliveries } = useDocumentDeliveries(document.id);
   const deliverDocument = useDeliverDocument();
@@ -47,6 +52,37 @@ export function DocumentPreviewSheet({ open, onOpenChange, document, players }: 
   const availablePlayers = players?.filter(p => 
     p.character_id && !deliveredCharacterIds.includes(p.character_id)
   ) || [];
+
+  const handleExport = async (exportFormat: 'png' | 'jpeg') => {
+    if (!documentRef.current) return;
+    
+    setIsExporting(true);
+    try {
+      const canvas = await html2canvas(documentRef.current, {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true,
+        logging: false,
+      });
+      
+      const mimeType = exportFormat === 'png' ? 'image/png' : 'image/jpeg';
+      const extension = exportFormat;
+      const quality = exportFormat === 'jpeg' ? 0.95 : undefined;
+      
+      const dataUrl = canvas.toDataURL(mimeType, quality);
+      const link = globalThis.document.createElement('a');
+      link.download = `${document.title.replace(/[^a-zA-Z0-9]/g, '_')}.${extension}`;
+      link.href = dataUrl;
+      link.click();
+      
+      toast.success(`Documento exportado como ${exportFormat.toUpperCase()}`);
+    } catch (error) {
+      console.error('Erro ao exportar documento:', error);
+      toast.error('Erro ao exportar documento');
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleDeliver = () => {
     if (selectedPlayers.length === 0) return;
@@ -81,8 +117,30 @@ export function DocumentPreviewSheet({ open, onOpenChange, document, players }: 
         </SheetHeader>
 
         <div className="mt-4 space-y-4">
+          {/* Export Button */}
+          <div className="flex justify-end">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" disabled={isExporting}>
+                  <Download className="w-4 h-4 mr-2" />
+                  {isExporting ? 'Exportando...' : 'Exportar'}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => handleExport('png')}>
+                  <ImageIcon className="w-4 h-4 mr-2" />
+                  Exportar como PNG
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => handleExport('jpeg')}>
+                  <ImageIcon className="w-4 h-4 mr-2" />
+                  Exportar como JPEG
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
           {/* Document Preview with Paper Texture */}
-          <div className={`document-paper ${styleClass}`}>
+          <div ref={documentRef} className={`document-paper ${styleClass}`}>
             {/* Watermark */}
             {document.watermark_type === 'signature' && document.watermark_text && (
               <div className="document-watermark document-watermark-text">
