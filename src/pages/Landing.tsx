@@ -30,7 +30,13 @@ import {
   MessageSquare,
   Swords,
   Target,
-  Loader2
+  Loader2,
+  BookOpen,
+  Gift,
+  Play,
+  Scroll,
+  Store,
+  UserCheck
 } from "lucide-react";
 import logoFull from "@/assets/logo-full.png";
 import { motion } from "framer-motion";
@@ -84,12 +90,66 @@ const faqData = [
 ];
 
 const features = [
-  { icon: Dice6, title: "Rolagem de Dados", description: "Dados integrados com modificadores automáticos" },
-  { icon: Shield, title: "Fichas Completas", description: "Criação guiada e cálculos automáticos" },
-  { icon: Swords, title: "Combat Tracker", description: "Combate sincronizado em tempo real" },
-  { icon: Users, title: "Campanhas Online", description: "Gerencie sua mesa com facilidade" },
-  { icon: MessageSquare, title: "Chat Integrado", description: "Comunicação entre mestre e jogadores" },
-  { icon: Wand2, title: "Homebrew", description: "Crie seu próprio conteúdo" },
+  { 
+    icon: Shield, 
+    title: "Fichas de Personagem", 
+    description: "Criação guiada passo a passo com cálculos automáticos de modificadores, HP, AC e proficiências.",
+    highlights: ["Wizard de criação", "Cálculos automáticos", "PDF exportável"]
+  },
+  { 
+    icon: Swords, 
+    title: "Combat Tracker Pro", 
+    description: "Rastreie iniciativas, HP, condições e turnos em tempo real. Todos os jogadores veem as atualizações instantaneamente.",
+    highlights: ["Tempo real", "Condições D&D 5e", "Log de combate"]
+  },
+  { 
+    icon: MessageSquare, 
+    title: "Chat & Comunicação", 
+    description: "Chat de campanha integrado com suporte a mensagens privadas entre mestre e jogadores.",
+    highlights: ["Chat em tempo real", "Mensagens privadas", "Notificações"]
+  },
+  { 
+    icon: Wand2, 
+    title: "Forja de Homebrew", 
+    description: "Crie suas próprias raças, classes, magias e monstros que funcionam perfeitamente no sistema.",
+    highlights: ["Raças e classes", "Magias customizadas", "Bestiário próprio"]
+  },
+  { 
+    icon: Store, 
+    title: "Lojas & Comércio", 
+    description: "Sistema de lojas da campanha com inventário, preços e transações entre jogadores.",
+    highlights: ["Lojas dinâmicas", "Trocas P2P", "Histórico"]
+  },
+  { 
+    icon: Scroll, 
+    title: "Documentos & Notas", 
+    description: "Crie cartas, pergaminhos e decretos estilizados para entregar aos jogadores.",
+    highlights: ["Estilos temáticos", "Exportar PNG", "Entrega seletiva"]
+  },
+];
+
+const howItWorks = [
+  {
+    step: 1,
+    icon: Rocket,
+    title: "Apoie o Projeto",
+    description: "Escolha um nível de apoio no Catarse e ajude a construir o Go20.",
+    color: "solar-orange"
+  },
+  {
+    step: 2,
+    icon: Gift,
+    title: "Resgate seu Código",
+    description: "Receba instantaneamente um código para ativar seu plano no app.",
+    color: "cosmic-purple"
+  },
+  {
+    step: 3,
+    icon: Play,
+    title: "Comece a Jogar!",
+    description: "Crie personagens, monte campanhas e convide seus amigos.",
+    color: "cyan-blue"
+  }
 ];
 
 export default function Landing() {
@@ -97,6 +157,7 @@ export default function Landing() {
   const { data: campaignFunding, isLoading: isLoadingFunding } = useCampaignFunding();
   
   const [activePhase, setActivePhase] = useState(0);
+  const [activeFeature, setActiveFeature] = useState(0);
 
   // Group goals by phase
   const phases = useMemo(() => {
@@ -244,6 +305,187 @@ export default function Landing() {
                 className="hidden lg:block max-w-sm mx-auto"
               >
                 <CharacterSheetPreview />
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works Section */}
+        <section className="py-16 md:py-20 bg-gradient-to-b from-[#0a0a0f] to-cosmic-purple/5">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-2 text-white/60 mb-2">
+                <UserCheck className="h-5 w-5" />
+                <span>Simples e Rápido</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Como Funciona
+              </h2>
+              <p className="text-white/50 max-w-xl mx-auto">
+                Em 3 passos você já está jogando com seus amigos
+              </p>
+            </div>
+
+            <div className="max-w-4xl mx-auto">
+              <div className="grid md:grid-cols-3 gap-8">
+                {howItWorks.map((item, index) => {
+                  const Icon = item.icon;
+                  return (
+                    <motion.div
+                      key={item.step}
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: index * 0.15 }}
+                      viewport={{ once: true }}
+                      className="relative"
+                    >
+                      {/* Connector Line */}
+                      {index < howItWorks.length - 1 && (
+                        <div className="hidden md:block absolute top-12 left-[60%] w-[80%] h-0.5 bg-gradient-to-r from-white/20 to-transparent" />
+                      )}
+                      
+                      <div className="flex flex-col items-center text-center">
+                        <div className={`
+                          w-24 h-24 rounded-2xl flex items-center justify-center mb-4
+                          ${item.color === 'solar-orange' ? 'bg-solar-orange/20 border-solar-orange/40' : ''}
+                          ${item.color === 'cosmic-purple' ? 'bg-cosmic-purple/20 border-cosmic-purple/40' : ''}
+                          ${item.color === 'cyan-blue' ? 'bg-cyan-blue/20 border-cyan-blue/40' : ''}
+                          border-2 relative
+                        `}>
+                          <Icon className={`h-10 w-10 ${
+                            item.color === 'solar-orange' ? 'text-solar-orange' :
+                            item.color === 'cosmic-purple' ? 'text-cosmic-purple' :
+                            'text-cyan-blue'
+                          }`} />
+                          <div className={`absolute -top-2 -right-2 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                            item.color === 'solar-orange' ? 'bg-solar-orange text-white' :
+                            item.color === 'cosmic-purple' ? 'bg-cosmic-purple text-white' :
+                            'bg-cyan-blue text-white'
+                          }`}>
+                            {item.step}
+                          </div>
+                        </div>
+                        <h3 className="text-xl font-bold text-white mb-2">{item.title}</h3>
+                        <p className="text-white/50 text-sm">{item.description}</p>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              <div className="text-center mt-10">
+                <Button
+                  size="lg"
+                  className="bg-gradient-to-r from-solar-orange to-magenta-red hover:opacity-90 text-white gap-2"
+                  onClick={() => window.open('https://www.catarse.me/go20', '_blank')}
+                >
+                  <Rocket className="h-5 w-5" />
+                  Começar Agora
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Feature Tabs Section */}
+        <section className="py-16 md:py-24 bg-[#0a0a0f]">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-2 text-white/60 mb-2">
+                <Sparkles className="h-5 w-5" />
+                <span>Funcionalidades</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Tudo que Você Precisa
+              </h2>
+              <p className="text-white/50 max-w-xl mx-auto">
+                Ferramentas poderosas para jogadores e mestres
+              </p>
+            </div>
+
+            <div className="max-w-5xl mx-auto">
+              {/* Tabs */}
+              <div className="flex flex-wrap justify-center gap-2 mb-8">
+                {features.map((feature, index) => {
+                  const Icon = feature.icon;
+                  return (
+                    <button
+                      key={index}
+                      onClick={() => setActiveFeature(index)}
+                      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
+                        activeFeature === index
+                          ? 'bg-cosmic-purple text-white shadow-lg shadow-cosmic-purple/25'
+                          : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
+                      }`}
+                    >
+                      <Icon className="h-4 w-4" />
+                      <span className="hidden sm:inline">{feature.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Feature Content */}
+              <motion.div
+                key={activeFeature}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="grid md:grid-cols-2 gap-8 items-center"
+              >
+                {/* Description Side */}
+                <div className="order-2 md:order-1">
+                  <div className="flex items-center gap-3 mb-4">
+                    {(() => {
+                      const Icon = features[activeFeature].icon;
+                      return <Icon className="h-8 w-8 text-cosmic-purple" />;
+                    })()}
+                    <h3 className="text-2xl font-bold text-white">
+                      {features[activeFeature].title}
+                    </h3>
+                  </div>
+                  <p className="text-white/60 text-lg mb-6">
+                    {features[activeFeature].description}
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {features[activeFeature].highlights.map((highlight, idx) => (
+                      <Badge 
+                        key={idx}
+                        className="bg-solar-orange/10 text-solar-orange border-solar-orange/20"
+                      >
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        {highlight}
+                      </Badge>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Visual Side - Mockup/Preview */}
+                <div className="order-1 md:order-2">
+                  <div className="relative">
+                    <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-cosmic-purple/20 to-solar-orange/10 border border-white/10 flex items-center justify-center overflow-hidden">
+                      <div className="text-center p-8">
+                        {(() => {
+                          const Icon = features[activeFeature].icon;
+                          return (
+                            <motion.div
+                              initial={{ scale: 0.8, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ duration: 0.4 }}
+                            >
+                              <Icon className="h-24 w-24 text-cosmic-purple/50 mx-auto mb-4" />
+                              <p className="text-white/40 text-sm">
+                                Preview interativo em breve
+                              </p>
+                            </motion.div>
+                          );
+                        })()}
+                      </div>
+                    </div>
+                    {/* Decorative elements */}
+                    <div className="absolute -z-10 top-4 left-4 w-full h-full rounded-2xl bg-cosmic-purple/10 blur-xl" />
+                  </div>
+                </div>
               </motion.div>
             </div>
           </div>
