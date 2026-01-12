@@ -141,21 +141,30 @@ export function DocumentPreviewSheet({ open, onOpenChange, document, players }: 
 
           {/* Document Preview with Paper Texture */}
           <div ref={documentRef} className={`document-paper ${styleClass}`}>
-            {/* Watermark */}
-            {document.watermark_type === 'signature' && document.watermark_text && (
-              <div className="document-watermark document-watermark-text">
-                {document.watermark_text}
+            {/* Seal/Watermark at top */}
+            {(document.watermark_type === 'signature' && document.watermark_text) || 
+             (document.watermark_type === 'image' && document.watermark_image_url) ? (
+              <div className="flex justify-center mb-4 pb-3 border-b border-current/10">
+                {document.watermark_type === 'signature' && document.watermark_text && (
+                  <div className="text-center">
+                    <div className="inline-block px-4 py-2 rounded-lg bg-current/5 border border-current/20">
+                      <span className="font-serif text-sm font-medium italic opacity-80">
+                        {document.watermark_text}
+                      </span>
+                    </div>
+                  </div>
+                )}
+                {document.watermark_type === 'image' && document.watermark_image_url && (
+                  <div className="w-20 h-20 flex items-center justify-center">
+                    <img 
+                      src={document.watermark_image_url} 
+                      alt="Selo" 
+                      className="max-w-full max-h-full object-contain"
+                    />
+                  </div>
+                )}
               </div>
-            )}
-            {document.watermark_type === 'image' && document.watermark_image_url && (
-              <div className="document-watermark">
-                <img 
-                  src={document.watermark_image_url} 
-                  alt="Watermark" 
-                  className="w-full h-full object-contain opacity-20"
-                />
-              </div>
-            )}
+            ) : null}
 
             <div className="relative z-10">
               <div className="text-center mb-4">
