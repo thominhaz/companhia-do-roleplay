@@ -1,14 +1,26 @@
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { CampaignDocument, useDocumentDeliveries, useDeliverDocument } from "@/hooks/useDocuments";
-import { Scroll, FileText, FileSignature, Send, Check, Users, BookOpen, MapPin, Crown, Feather, Download, ImageIcon } from "lucide-react";
+import {
+  Scroll,
+  FileText,
+  FileSignature,
+  Send,
+  Check,
+  Users,
+  BookOpen,
+  MapPin,
+  Crown,
+  Feather,
+  Download,
+  ImageIcon,
+} from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
-import html2canvas from "html2canvas";
 
 interface DocumentPreviewSheetProps {
   open: boolean;
@@ -26,7 +38,7 @@ const STYLE_CLASSES: Record<string, string> = {
   arcane: 'document-arcane',
 };
 
-const TYPE_ICONS: Record<string, typeof FileText> = {
+const TYPE_ICONS: Record<string, any> = {
   letter: FileText,
   scroll: Scroll,
   contract: FileSignature,
@@ -35,6 +47,28 @@ const TYPE_ICONS: Record<string, typeof FileText> = {
   decree: Crown,
   missive: Feather,
 };
+
+let html2canvasLoader: Promise<any> | null = null;
+
+async function getHtml2Canvas(): Promise<(element: HTMLElement, options?: any) => Promise<HTMLCanvasElement>> {
+  const w = globalThis as any;
+
+  if (w.html2canvas) return w.html2canvas;
+  if (!globalThis.document) throw new Error("html2canvas indisponível fora do navegador");
+
+  if (!html2canvasLoader) {
+    html2canvasLoader = new Promise((resolve, reject) => {
+      const script = globalThis.document.createElement("script");
+      script.src = "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+      script.async = true;
+      script.onload = () => resolve((globalThis as any).html2canvas);
+      script.onerror = () => reject(new Error("Falha ao carregar html2canvas"));
+      globalThis.document.head.appendChild(script);
+    });
+  }
+
+  return html2canvasLoader;
+}
 
 export function DocumentPreviewSheet({ open, onOpenChange, document, players }: DocumentPreviewSheetProps) {
   const [showDelivery, setShowDelivery] = useState(false);
@@ -48,16 +82,21 @@ export function DocumentPreviewSheet({ open, onOpenChange, document, players }: 
   const Icon = TYPE_ICONS[document.document_type] || FileText;
   const styleClass = STYLE_CLASSES[document.style] || STYLE_CLASSES.parchment;
 
+  const signatures: any[] = Array.isArray((document as any).signature_data)
+    ? ((document as any).signature_data as any[])
+    : [];
+
   const deliveredCharacterIds = deliveries?.map(d => d.character_id) || [];
   const availablePlayers = players?.filter(p => 
     p.character_id && !deliveredCharacterIds.includes(p.character_id)
   ) || [];
 
-  const handleExport = async (exportFormat: 'png' | 'jpeg') => {
+  const handleExport = async (exportFormat: "png" | "jpeg") => {
     if (!documentRef.current) return;
-    
+
     setIsExporting(true);
     try {
+      const html2canvas = await getHtml2Canvas();
       const canvas = await html2canvas(documentRef.current, {
         backgroundColor: null,
         scale: 2,
@@ -179,11 +218,11 @@ export function DocumentPreviewSheet({ open, onOpenChange, document, players }: 
               {document.requires_signature && (
                 <div className="mt-6 pt-4 border-t border-current/20">
                   <p className="text-xs font-medium mb-2">Assinaturas:</p>
-                  {document.signature_data.length > 0 ? (
+                  {signatures.length > 0 ? (
                     <div className="space-y-1">
-                      {document.signature_data.map((sig, idx) => (
+                      {signatures.map((sig: any, idx: number) => (
                         <div key={idx} className="text-xs italic">
-                          ✒️ {sig.character_name} - {format(new Date(sig.signed_at), "dd/MM/yyyy", { locale: ptBR })}
+                          ✒️ {sig?.character_name ?? "—"}{sig?.signed_at ? ` - ${format(new Date(sig.signed_at), "dd/MM/yyyy", { locale: ptBR })}` : ""}
                         </div>
                       ))}
                     </div>
