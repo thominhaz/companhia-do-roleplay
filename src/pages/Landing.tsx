@@ -41,7 +41,6 @@ import {
 import logoFull from "@/assets/logo-full.png";
 import { motion } from "framer-motion";
 import { CharacterSheetPreview } from "@/components/landing/CharacterSheetPreview";
-import { AnimatedHeroTitle } from "@/components/landing/AnimatedHeroTitle";
 import { useStretchGoals, useCampaignFunding, StretchGoal } from "@/hooks/useStretchGoals";
 
 interface Phase {
@@ -262,7 +261,13 @@ export default function Landing() {
                   Beta Aberta
                 </div>
                 
-                <AnimatedHeroTitle />
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
+                  <span className="text-white">Jogue </span>
+                  <span className="text-solar-orange">RPG</span>
+                  <br />
+                  <span className="text-white/90 italic">em qualquer </span>
+                  <span className="text-cyan-blue">aparelho.</span>
+                </h1>
                 
                 <p className="text-lg text-white/60 max-w-md mx-auto lg:mx-0">
                   O melhor companheiro de RPG do Brasil está com acesso liberado. 
