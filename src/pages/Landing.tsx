@@ -36,7 +36,12 @@ import {
   Play,
   Scroll,
   Store,
-  UserCheck
+  UserCheck,
+  Crown,
+  User,
+  Hammer,
+  X,
+  Check
 } from "lucide-react";
 import logoFull from "@/assets/logo-full.png";
 import { motion } from "framer-motion";
@@ -537,6 +542,251 @@ export default function Landing() {
                 <strong className="text-white">{completedGoals}</strong> de {allGoals.length} metas desbloqueadas
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Pricing Comparison Section */}
+        <section className="py-16 md:py-24 bg-gradient-to-b from-[#0a0a0f] to-cosmic-purple/10">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-2 text-white/60 mb-2">
+                <Crown className="h-5 w-5" />
+                <span>Planos & Acesso</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Escolha Seu Nível de Aventura
+              </h2>
+              <p className="text-white/50 max-w-xl mx-auto">
+                Apoie o projeto no Catarse e desbloqueie recursos exclusivos
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+              {/* Visitante */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0 }}
+                viewport={{ once: true }}
+              >
+                <Card className="relative h-full bg-white/5 border-white/10 p-6 flex flex-col">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
+                      <User className="h-6 w-6 text-white/60" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white">Visitante</h3>
+                      <p className="text-white/40 text-sm">Gratuito</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-white/50 text-sm mb-6">
+                    Explore o compêndio e ferramentas básicas
+                  </p>
+
+                  <ul className="space-y-3 mb-6 flex-grow">
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Compêndio SRD 5.1
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Rolador de dados
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/40">
+                      <X className="h-4 w-4 text-white/20 flex-shrink-0" />
+                      Criar personagens
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/40">
+                      <X className="h-4 w-4 text-white/20 flex-shrink-0" />
+                      Participar de campanhas
+                    </li>
+                  </ul>
+
+                  <Button 
+                    variant="outline" 
+                    className="w-full border-white/20 text-white/60 hover:bg-white/10"
+                    onClick={() => window.location.href = '/'}
+                  >
+                    Experimentar
+                  </Button>
+                </Card>
+              </motion.div>
+
+              {/* Aldeão */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+                viewport={{ once: true }}
+              >
+                <Card className="relative h-full bg-cyan-blue/10 border-cyan-blue/30 p-6 flex flex-col">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-cyan-blue/20 flex items-center justify-center">
+                      <Users className="h-6 w-6 text-cyan-blue" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white">Aldeão</h3>
+                      <p className="text-cyan-blue text-sm font-medium">R$ 10/mês</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-white/50 text-sm mb-6">
+                    Perfeito para jogadores iniciantes
+                  </p>
+
+                  <ul className="space-y-3 mb-6 flex-grow">
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Tudo do Visitante
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Até 3 personagens
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Notas rápidas
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Participar de campanhas
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/40">
+                      <X className="h-4 w-4 text-white/20 flex-shrink-0" />
+                      Forja de Homebrew
+                    </li>
+                  </ul>
+
+                  <Button 
+                    className="w-full bg-cyan-blue hover:bg-cyan-blue/80 text-white"
+                    onClick={() => window.open('https://www.catarse.me/go20', '_blank')}
+                  >
+                    Apoiar
+                  </Button>
+                </Card>
+              </motion.div>
+
+              {/* Herói */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                viewport={{ once: true }}
+              >
+                <Card className="relative h-full bg-cosmic-purple/10 border-cosmic-purple/30 p-6 flex flex-col">
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-cosmic-purple text-white border-0">
+                    Popular
+                  </Badge>
+                  
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-cosmic-purple/20 flex items-center justify-center">
+                      <Shield className="h-6 w-6 text-cosmic-purple" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white">Herói</h3>
+                      <p className="text-cosmic-purple text-sm font-medium">R$ 25/mês</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-white/50 text-sm mb-6">
+                    Para jogadores que querem mais
+                  </p>
+
+                  <ul className="space-y-3 mb-6 flex-grow">
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Tudo do Aldeão
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Até 20 personagens
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Temas personalizados
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Forja de Homebrew
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/40">
+                      <X className="h-4 w-4 text-white/20 flex-shrink-0" />
+                      Ferramentas de Mestre
+                    </li>
+                  </ul>
+
+                  <Button 
+                    className="w-full bg-cosmic-purple hover:bg-cosmic-purple/80 text-white"
+                    onClick={() => window.open('https://www.catarse.me/go20', '_blank')}
+                  >
+                    Apoiar
+                  </Button>
+                </Card>
+              </motion.div>
+
+              {/* Mestre */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+                viewport={{ once: true }}
+              >
+                <Card className="relative h-full bg-gradient-to-br from-solar-orange/20 to-magenta-red/20 border-solar-orange/40 p-6 flex flex-col">
+                  <div className="absolute inset-0 bg-gradient-to-br from-solar-orange/5 to-magenta-red/5 rounded-xl" />
+                  
+                  <div className="relative flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-solar-orange to-magenta-red flex items-center justify-center">
+                      <Crown className="h-6 w-6 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white">Mestre</h3>
+                      <p className="text-solar-orange text-sm font-medium">R$ 50/mês</p>
+                    </div>
+                  </div>
+                  
+                  <p className="relative text-white/50 text-sm mb-6">
+                    Acesso completo a todas as ferramentas
+                  </p>
+
+                  <ul className="relative space-y-3 mb-6 flex-grow">
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Tudo do Herói
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Personagens ilimitados
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Criar campanhas
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Combat Tracker Pro
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Integração Discord
+                    </li>
+                  </ul>
+
+                  <Button 
+                    className="relative w-full bg-gradient-to-r from-solar-orange to-magenta-red hover:opacity-90 text-white"
+                    onClick={() => window.open('https://www.catarse.me/go20', '_blank')}
+                  >
+                    <Rocket className="h-4 w-4 mr-2" />
+                    Apoiar
+                  </Button>
+                </Card>
+              </motion.div>
+            </div>
+
+            <p className="text-center text-white/40 text-sm mt-8 max-w-lg mx-auto">
+              Apoios recorrentes no Catarse garantem acesso enquanto estiver ativo. 
+              Níveis <strong className="text-white/60">Épico</strong> e <strong className="text-white/60">Lendário</strong> oferecem acesso vitalício.
+            </p>
           </div>
         </section>
 
