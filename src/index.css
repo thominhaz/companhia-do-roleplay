@@ -1202,7 +1202,6 @@ html.no-transitions *::after {
   padding: 1.5rem;
   border: 2px solid;
   overflow: hidden;
-  background-size: 200px 200px;
 }
 
 /* Parchment style - classic medieval */
