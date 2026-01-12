@@ -1233,26 +1233,30 @@ html.no-transitions *::after {
     0 4px 20px hsl(0 0% 0% / 0.4);
 }
 
-/* Elegant style - noble court */
+/* Elegant style - clean, sophisticated with subtle texture */
 .document-elegant {
-  background-color: hsl(210 20% 96%);
+  background-color: hsl(0 0% 98%);
   background-image: 
-    linear-gradient(135deg, hsl(210 20% 92% / 0.5) 25%, transparent 25%),
-    linear-gradient(225deg, hsl(210 20% 92% / 0.5) 25%, transparent 25%);
-  background-size: 20px 20px;
-  border-color: hsl(220 30% 70%);
-  color: hsl(220 25% 20%);
+    linear-gradient(to bottom, hsl(0 0% 96% / 0.5), transparent 2px),
+    linear-gradient(to right, hsl(0 0% 96% / 0.3), transparent 1px);
+  background-size: 100% 28px, 100% 100%;
+  border-color: hsl(0 0% 75%);
+  border-width: 1px;
+  color: hsl(0 0% 15%);
   box-shadow: 
-    inset 0 0 30px hsl(220 20% 80% / 0.4),
-    0 4px 20px hsl(0 0% 0% / 0.15);
+    inset 0 0 60px hsl(0 0% 90% / 0.4),
+    0 4px 20px hsl(0 0% 0% / 0.1);
 }
 
 .dark .document-elegant {
-  background-color: hsl(220 15% 15%);
-  border-color: hsl(220 20% 35%);
-  color: hsl(210 20% 90%);
+  background-color: hsl(0 0% 12%);
+  background-image: 
+    linear-gradient(to bottom, hsl(0 0% 15% / 0.5), transparent 2px);
+  background-size: 100% 28px;
+  border-color: hsl(0 0% 30%);
+  color: hsl(0 0% 90%);
   box-shadow: 
-    inset 0 0 30px hsl(220 15% 8% / 0.6),
+    inset 0 0 40px hsl(0 0% 5% / 0.5),
     0 4px 20px hsl(0 0% 0% / 0.4);
 }
 
@@ -1269,68 +1273,132 @@ html.no-transitions *::after {
     0 0 30px hsl(270 50% 20% / 0.3);
 }
 
-/* Royal style - golden regal */
+/* Royal style - imperial golden with ornate gold borders */
 .document-royal {
-  background-color: hsl(45 70% 92%);
-  background-image: 
-    repeating-linear-gradient(
-      45deg,
-      transparent,
-      transparent 10px,
-      hsl(45 60% 80% / 0.3) 10px,
-      hsl(45 60% 80% / 0.3) 11px
-    );
-  border-color: hsl(45 80% 50%);
+  background-color: hsl(45 50% 95%);
+  background-image: none;
+  border-width: 3px;
+  border-style: double;
+  border-color: hsl(43 85% 45%);
   color: hsl(30 40% 15%);
   box-shadow: 
-    inset 0 0 30px hsl(45 70% 70% / 0.4),
-    0 4px 20px hsl(45 80% 40% / 0.3);
+    inset 0 0 0 6px hsl(45 50% 95%),
+    inset 0 0 0 8px hsl(43 85% 50%),
+    inset 0 0 40px hsl(45 60% 80% / 0.3),
+    0 4px 25px hsl(43 70% 30% / 0.25);
+  position: relative;
+}
+
+.document-royal::before {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  right: 8px;
+  bottom: 8px;
+  border: 1px solid hsl(43 70% 55%);
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.document-royal::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(ellipse at 0% 0%, hsl(43 80% 50% / 0.15) 0%, transparent 30%),
+    radial-gradient(ellipse at 100% 0%, hsl(43 80% 50% / 0.15) 0%, transparent 30%),
+    radial-gradient(ellipse at 0% 100%, hsl(43 80% 50% / 0.15) 0%, transparent 30%),
+    radial-gradient(ellipse at 100% 100%, hsl(43 80% 50% / 0.15) 0%, transparent 30%);
+  pointer-events: none;
+  border-radius: 0.5rem;
 }
 
 .dark .document-royal {
-  background-color: hsl(40 30% 12%);
-  border-color: hsl(45 70% 45%);
-  color: hsl(45 40% 90%);
+  background-color: hsl(35 25% 10%);
+  border-color: hsl(43 80% 50%);
+  color: hsl(45 50% 90%);
   box-shadow: 
-    inset 0 0 40px hsl(45 30% 8% / 0.7),
-    0 0 20px hsl(45 80% 40% / 0.2);
+    inset 0 0 0 6px hsl(35 25% 10%),
+    inset 0 0 0 8px hsl(43 70% 45%),
+    inset 0 0 50px hsl(43 50% 20% / 0.4),
+    0 0 30px hsl(43 80% 40% / 0.2);
 }
 
-/* Aged style - worn, ancient */
-.document-aged {
-  background-color: hsl(35 35% 78%);
+.dark .document-royal::before {
+  border-color: hsl(43 60% 40%);
+}
+
+.dark .document-royal::after {
   background-image: 
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E"),
-    radial-gradient(ellipse at 30% 20%, hsl(30 40% 60% / 0.4) 0%, transparent 50%),
-    radial-gradient(ellipse at 70% 80%, hsl(30 40% 55% / 0.3) 0%, transparent 40%);
-  border-color: hsl(30 30% 50%);
-  color: hsl(25 30% 20%);
+    radial-gradient(ellipse at 0% 0%, hsl(43 70% 40% / 0.2) 0%, transparent 30%),
+    radial-gradient(ellipse at 100% 0%, hsl(43 70% 40% / 0.2) 0%, transparent 30%),
+    radial-gradient(ellipse at 0% 100%, hsl(43 70% 40% / 0.2) 0%, transparent 30%),
+    radial-gradient(ellipse at 100% 100%, hsl(43 70% 40% / 0.2) 0%, transparent 30%);
+}
+
+/* Aged style - worn parchment with stains and damage */
+.document-aged {
+  background-color: hsl(38 35% 82%);
+  background-image: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.08'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 15% 85%, hsl(25 45% 55% / 0.25) 0%, transparent 35%),
+    radial-gradient(ellipse at 85% 15%, hsl(30 40% 50% / 0.2) 0%, transparent 30%),
+    radial-gradient(ellipse at 50% 50%, transparent 50%, hsl(30 30% 60% / 0.15) 100%);
+  border-color: hsl(30 35% 55%);
+  border-width: 1px;
+  color: hsl(25 35% 22%);
   box-shadow: 
-    inset 0 0 50px hsl(30 30% 50% / 0.3),
-    0 4px 20px hsl(0 0% 0% / 0.25);
+    inset 0 0 80px hsl(30 40% 65% / 0.2),
+    inset 0 2px 4px hsl(30 30% 50% / 0.15),
+    0 4px 20px hsl(0 0% 0% / 0.2);
 }
 
 .dark .document-aged {
-  background-color: hsl(30 20% 16%);
-  border-color: hsl(30 25% 35%);
-  color: hsl(35 20% 80%);
+  background-color: hsl(32 22% 18%);
+  background-image: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.1'/%3E%3C/svg%3E"),
+    radial-gradient(ellipse at 15% 85%, hsl(25 30% 30% / 0.3) 0%, transparent 35%),
+    radial-gradient(ellipse at 85% 15%, hsl(30 25% 25% / 0.25) 0%, transparent 30%);
+  border-color: hsl(30 25% 40%);
+  color: hsl(38 22% 78%);
   box-shadow: 
-    inset 0 0 50px hsl(30 20% 8% / 0.6),
+    inset 0 0 60px hsl(30 20% 10% / 0.5),
     0 4px 20px hsl(0 0% 0% / 0.4);
 }
 
-/* Arcane style - mystical, magical */
+/* Arcane style - mystical purple with magical glow */
 .document-arcane {
-  background-color: hsl(260 30% 15%);
+  background-color: hsl(265 35% 12%);
   background-image: 
-    radial-gradient(circle at 50% 50%, hsl(280 60% 30% / 0.3) 0%, transparent 60%),
-    radial-gradient(circle at 20% 80%, hsl(200 60% 40% / 0.2) 0%, transparent 40%),
-    radial-gradient(circle at 80% 20%, hsl(320 60% 40% / 0.2) 0%, transparent 40%);
-  border-color: hsl(270 50% 50%);
-  color: hsl(260 30% 90%);
+    radial-gradient(circle at 50% 50%, hsl(275 50% 25% / 0.4) 0%, transparent 50%),
+    radial-gradient(circle at 10% 90%, hsl(220 60% 35% / 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 10%, hsl(280 60% 40% / 0.15) 0%, transparent 40%);
+  border-width: 2px;
+  border-color: hsl(270 60% 50%);
+  color: hsl(265 30% 88%);
   box-shadow: 
-    inset 0 0 60px hsl(270 50% 20% / 0.5),
-    0 0 30px hsl(270 60% 40% / 0.4);
+    inset 0 0 80px hsl(270 50% 15% / 0.6),
+    0 0 25px hsl(270 70% 45% / 0.35),
+    0 0 50px hsl(270 60% 40% / 0.2);
+}
+
+.document-arcane::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='50' cy='50' r='40' fill='none' stroke='%239370DB' stroke-width='0.3' opacity='0.15'/%3E%3Ccircle cx='50' cy='50' r='30' fill='none' stroke='%239370DB' stroke-width='0.2' opacity='0.1'/%3E%3C/svg%3E");
+  background-size: 150px 150px;
+  background-position: center;
+  pointer-events: none;
+  opacity: 0.5;
 }
 
 /* Watermark base */
