@@ -551,7 +551,7 @@ export default function Landing() {
             <div className="text-center mb-12">
               <div className="flex items-center justify-center gap-2 text-white/60 mb-2">
                 <Crown className="h-5 w-5" />
-                <span>Planos & Acesso</span>
+                <span>Níveis de Apoio</span>
               </div>
               <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 Escolha Seu Nível de Aventura
@@ -561,8 +561,9 @@ export default function Landing() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-              {/* Visitante */}
+            {/* Main Tiers - 2x2 Grid */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto mb-8">
+              {/* Apoiador */}
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -571,44 +572,44 @@ export default function Landing() {
               >
                 <Card className="relative h-full bg-white/5 border-white/10 p-6 flex flex-col">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center">
-                      <User className="h-6 w-6 text-white/60" />
+                    <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-2xl">
+                      🎲
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-white">Visitante</h3>
-                      <p className="text-white/40 text-sm">Gratuito</p>
+                      <h3 className="text-lg font-bold text-white">Apoiador</h3>
+                      <p className="text-white/40 text-sm">R$ 10/mês</p>
                     </div>
                   </div>
                   
                   <p className="text-white/50 text-sm mb-6">
-                    Explore o compêndio e ferramentas básicas
+                    Seu primeiro passo na aventura!
                   </p>
 
                   <ul className="space-y-3 mb-6 flex-grow">
                     <li className="flex items-center gap-2 text-sm text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Compêndio SRD 5.1
+                      Cargo "Apoiador" no Discord
                     </li>
                     <li className="flex items-center gap-2 text-sm text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Rolador de dados
+                      Canal privado de apoiadores
                     </li>
-                    <li className="flex items-center gap-2 text-sm text-white/40">
-                      <X className="h-4 w-4 text-white/20 flex-shrink-0" />
-                      Criar personagens
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Updates em primeira mão
                     </li>
-                    <li className="flex items-center gap-2 text-sm text-white/40">
-                      <X className="h-4 w-4 text-white/20 flex-shrink-0" />
-                      Participar de campanhas
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Nome nos agradecimentos
                     </li>
                   </ul>
 
                   <Button 
                     variant="outline" 
                     className="w-full border-white/20 text-white/60 hover:bg-white/10"
-                    onClick={() => window.location.href = '/'}
+                    onClick={() => window.open('https://www.catarse.me/go20', '_blank')}
                   >
-                    Experimentar
+                    Apoiar
                   </Button>
                 </Card>
               </motion.div>
@@ -622,23 +623,23 @@ export default function Landing() {
               >
                 <Card className="relative h-full bg-cyan-blue/10 border-cyan-blue/30 p-6 flex flex-col">
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-cyan-blue/20 flex items-center justify-center">
-                      <Users className="h-6 w-6 text-cyan-blue" />
+                    <div className="w-12 h-12 rounded-xl bg-cyan-blue/20 flex items-center justify-center text-2xl">
+                      🏠
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-white">Aldeão</h3>
-                      <p className="text-cyan-blue text-sm font-medium">R$ 10/mês</p>
+                      <p className="text-cyan-blue text-sm font-medium">R$ 25/mês</p>
                     </div>
                   </div>
                   
                   <p className="text-white/50 text-sm mb-6">
-                    Perfeito para jogadores iniciantes
+                    Sua jornada começa aqui!
                   </p>
 
                   <ul className="space-y-3 mb-6 flex-grow">
                     <li className="flex items-center gap-2 text-sm text-white/70">
-                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Tudo do Visitante
+                      <Sparkles className="h-4 w-4 text-cyan-blue flex-shrink-0" />
+                      Plano Aldeão ativo
                     </li>
                     <li className="flex items-center gap-2 text-sm text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
@@ -646,15 +647,11 @@ export default function Landing() {
                     </li>
                     <li className="flex items-center gap-2 text-sm text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Notas rápidas
+                      Participar de campanhas
                     </li>
                     <li className="flex items-center gap-2 text-sm text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Participar de campanhas
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-white/40">
-                      <X className="h-4 w-4 text-white/20 flex-shrink-0" />
-                      Forja de Homebrew
+                      Cargo "Aldeão" no Discord
                     </li>
                   </ul>
 
@@ -680,23 +677,23 @@ export default function Landing() {
                   </Badge>
                   
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-cosmic-purple/20 flex items-center justify-center">
-                      <Shield className="h-6 w-6 text-cosmic-purple" />
+                    <div className="w-12 h-12 rounded-xl bg-cosmic-purple/20 flex items-center justify-center text-2xl">
+                      ⚔️
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-white">Herói</h3>
-                      <p className="text-cosmic-purple text-sm font-medium">R$ 25/mês</p>
+                      <p className="text-cosmic-purple text-sm font-medium">R$ 50/mês</p>
                     </div>
                   </div>
                   
                   <p className="text-white/50 text-sm mb-6">
-                    Para jogadores que querem mais
+                    Para quem quer mais da aventura!
                   </p>
 
                   <ul className="space-y-3 mb-6 flex-grow">
                     <li className="flex items-center gap-2 text-sm text-white/70">
-                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Tudo do Aldeão
+                      <Sparkles className="h-4 w-4 text-cosmic-purple flex-shrink-0" />
+                      Plano Herói ativo
                     </li>
                     <li className="flex items-center gap-2 text-sm text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
@@ -704,15 +701,11 @@ export default function Landing() {
                     </li>
                     <li className="flex items-center gap-2 text-sm text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Temas personalizados
+                      Forja de Homebrew
                     </li>
                     <li className="flex items-center gap-2 text-sm text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Forja de Homebrew
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-white/40">
-                      <X className="h-4 w-4 text-white/20 flex-shrink-0" />
-                      Ferramentas de Mestre
+                      Acesso antecipado (beta)
                     </li>
                   </ul>
 
@@ -736,31 +729,27 @@ export default function Landing() {
                   <div className="absolute inset-0 bg-gradient-to-br from-solar-orange/5 to-magenta-red/5 rounded-xl" />
                   
                   <div className="relative flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-solar-orange to-magenta-red flex items-center justify-center">
-                      <Crown className="h-6 w-6 text-white" />
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-solar-orange to-magenta-red flex items-center justify-center text-2xl">
+                      👑
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-white">Mestre</h3>
-                      <p className="text-solar-orange text-sm font-medium">R$ 50/mês</p>
+                      <p className="text-solar-orange text-sm font-medium">R$ 80/mês</p>
                     </div>
                   </div>
                   
                   <p className="relative text-white/50 text-sm mb-6">
-                    Acesso completo a todas as ferramentas
+                    Lidere suas próprias aventuras!
                   </p>
 
                   <ul className="relative space-y-3 mb-6 flex-grow">
                     <li className="flex items-center gap-2 text-sm text-white/70">
-                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Tudo do Herói
+                      <Sparkles className="h-4 w-4 text-solar-orange flex-shrink-0" />
+                      Plano Mestre ativo
                     </li>
                     <li className="flex items-center gap-2 text-sm text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Personagens ilimitados
-                    </li>
-                    <li className="flex items-center gap-2 text-sm text-white/70">
-                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Criar campanhas
+                      Campanhas ilimitadas
                     </li>
                     <li className="flex items-center gap-2 text-sm text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
@@ -768,7 +757,7 @@ export default function Landing() {
                     </li>
                     <li className="flex items-center gap-2 text-sm text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                      Integração Discord
+                      Voto em enquetes
                     </li>
                   </ul>
 
@@ -783,9 +772,118 @@ export default function Landing() {
               </motion.div>
             </div>
 
+            {/* Premium Tiers */}
+            <div className="grid md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+              {/* Mestre Épico */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+                viewport={{ once: true }}
+              >
+                <Card className="relative h-full bg-gradient-to-br from-amber-500/10 to-yellow-500/10 border-amber-500/30 p-6">
+                  <Badge className="absolute -top-3 right-4 bg-amber-500 text-white border-0">
+                    🌟 Vitalício
+                  </Badge>
+                  
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-yellow-500 flex items-center justify-center text-2xl">
+                      🌟
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white">Mestre Épico</h3>
+                      <p className="text-amber-400 text-sm font-medium">R$ 200/mês</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-white/50 text-sm mb-4">
+                    Eternize-se no Go20!
+                  </p>
+
+                  <ul className="space-y-2 mb-6">
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Sparkles className="h-4 w-4 text-amber-400 flex-shrink-0" />
+                      Plano Mestre <strong className="text-amber-400">VITALÍCIO</strong>
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      NPC com seu nome no Compêndio
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Cargo permanente no Discord
+                    </li>
+                  </ul>
+
+                  <Button 
+                    className="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:opacity-90 text-white"
+                    onClick={() => window.open('https://www.catarse.me/go20', '_blank')}
+                  >
+                    Eternizar-se
+                  </Button>
+                </Card>
+              </motion.div>
+
+              {/* Lendário */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.5 }}
+                viewport={{ once: true }}
+              >
+                <Card className="relative h-full bg-gradient-to-br from-rose-500/10 to-pink-500/10 border-rose-500/30 p-6 overflow-hidden">
+                  <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-rose-500/10 via-transparent to-transparent" />
+                  <Badge className="absolute -top-3 right-4 bg-rose-500 text-white border-0">
+                    🐉 Limitado
+                  </Badge>
+                  
+                  <div className="relative flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-500 to-pink-500 flex items-center justify-center text-2xl">
+                      🐉
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-white">Lendário</h3>
+                      <p className="text-rose-400 text-sm font-medium">R$ 500/mês</p>
+                    </div>
+                  </div>
+                  
+                  <p className="relative text-white/50 text-sm mb-4">
+                    O tier definitivo para os verdadeiros heróis!
+                  </p>
+
+                  <ul className="relative space-y-2 mb-6">
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Sparkles className="h-4 w-4 text-rose-400 flex-shrink-0" />
+                      Tudo do Mestre Épico
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Call 1:1 para discutir ideias
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Item mágico personalizado
+                    </li>
+                    <li className="flex items-center gap-2 text-sm text-white/70">
+                      <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
+                      Destaque na página de apoiadores
+                    </li>
+                  </ul>
+
+                  <Button 
+                    className="relative w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:opacity-90 text-white"
+                    onClick={() => window.open('https://www.catarse.me/go20', '_blank')}
+                  >
+                    <Crown className="h-4 w-4 mr-2" />
+                    Tornar-se Lendário
+                  </Button>
+                </Card>
+              </motion.div>
+            </div>
+
             <p className="text-center text-white/40 text-sm mt-8 max-w-lg mx-auto">
-              Apoios recorrentes no Catarse garantem acesso enquanto estiver ativo. 
-              Níveis <strong className="text-white/60">Épico</strong> e <strong className="text-white/60">Lendário</strong> oferecem acesso vitalício.
+              Apoios recorrentes garantem acesso enquanto estiverem ativos. 
+              Níveis <strong className="text-amber-400">Épico</strong> e <strong className="text-rose-400">Lendário</strong> oferecem acesso <strong className="text-white/60">vitalício</strong>.
             </p>
           </div>
         </section>
