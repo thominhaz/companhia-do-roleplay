@@ -44,6 +44,7 @@ import { motion } from "framer-motion";
 import { CharacterSheetPreview } from "@/components/landing/CharacterSheetPreview";
 import { useStretchGoals, useCampaignFunding, StretchGoal } from "@/hooks/useStretchGoals";
 import { PricingControlPanel } from "@/components/landing/PricingControlPanel";
+import { FundingProgressBar } from "@/components/landing/FundingProgressBar";
 
 interface Phase {
   id: number;
@@ -493,54 +494,8 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* Funding Progress */}
-        <section className="py-12 bg-gradient-to-b from-[#0a0a0f] to-cosmic-purple/10 border-y border-white/10">
-          <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-6">
-                <div>
-                  <div className="text-4xl md:text-5xl font-bold text-solar-orange">
-                    R$ {currentFunding.toLocaleString('pt-BR')}
-                  </div>
-                  <div className="text-white/50">arrecadados até agora</div>
-                </div>
-                
-                <div className="text-center">
-                  <Badge className="bg-cosmic-purple/20 text-cosmic-purple border-cosmic-purple/30 text-lg px-4 py-2">
-                    META {phases.findIndex(p => p.goals.some(g => g.status === 'current')) + 2} | {currentGoal?.title}
-                  </Badge>
-                </div>
-
-                <div className="text-right">
-                  <div className="text-2xl font-bold text-white">
-                    {Math.round(progressPercent)}%
-                  </div>
-                  <div className="text-white/50">da meta final</div>
-                </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="relative">
-                <div className="h-4 bg-white/10 rounded-full overflow-hidden">
-                  <motion.div 
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progressPercent}%` }}
-                    transition={{ duration: 1.5, ease: "easeOut" }}
-                    className="h-full bg-gradient-to-r from-cosmic-purple via-solar-orange to-magenta-red rounded-full"
-                  />
-                </div>
-                <div className="flex justify-between mt-2 text-sm text-white/40">
-                  <span>R$ 0</span>
-                  <span>R$ {fundingGoal.toLocaleString('pt-BR')}</span>
-                </div>
-              </div>
-
-              <div className="text-center mt-4 text-white/60">
-                <strong className="text-white">{completedGoals}</strong> de {allGoals.length} metas desbloqueadas
-              </div>
-            </div>
-          </div>
-        </section>
+        {/* Funding Progress Bar */}
+        <FundingProgressBar />
 
         {/* Pricing Control Panel Section */}
         <PricingControlPanel />
