@@ -3,7 +3,9 @@ import {
   Swords, 
   Dice5, 
   Skull,
-  Coins
+  Coins,
+  ChevronRight,
+  Heart
 } from 'lucide-react';
 
 // 1. Preview da Ficha de Personagem (Cálculo automático)
@@ -56,59 +58,150 @@ export const CharacterSheetPreviewInteractive = () => {
   );
 };
 
-// 2. Preview do Combat Tracker (Iniciativa e Dano)
+// 2. Preview do Combat Tracker (Iniciativa, HP Bar, Logs e Ações)
 export const CombatTrackerPreview = () => {
   const [turn, setTurn] = useState(0);
+  const [logs, setLogs] = useState<string[]>(["Combate iniciado!"]);
   const [entities, setEntities] = useState([
-    { id: 1, name: "Valeros", type: "player", hp: 28, maxHp: 28, init: 18 },
-    { id: 2, name: "Goblin Chefe", type: "enemy", hp: 15, maxHp: 20, init: 15 },
-    { id: 3, name: "Goblin Arqueiro", type: "enemy", hp: 7, maxHp: 7, init: 12 },
+    { id: 1, name: "Valeros", type: "player", hp: 28, maxHp: 28, init: 18, ac: 16 },
+    { id: 2, name: "Goblin Chefe", type: "enemy", hp: 20, maxHp: 20, init: 15, ac: 14 },
+    { id: 3, name: "Goblin Arqueiro", type: "enemy", hp: 12, maxHp: 12, init: 12, ac: 12 },
   ]);
 
-  const nextTurn = () => setTurn((prev) => (prev + 1) % entities.length);
+  const activeEntity = entities[turn % entities.length];
+
+  const addLog = (msg: string) => {
+    setLogs(prev => [msg, ...prev].slice(0, 4));
+  };
+
+  const nextTurn = () => {
+    setTurn((prev) => (prev + 1));
+    const nextIndex = (turn + 1) % entities.length;
+    addLog(`▶️ Turno de ${entities[nextIndex].name}`);
+  };
   
-  const dealDamage = (id: number) => {
-    setEntities(prev => prev.map(e => e.id === id ? { ...e, hp: Math.max(0, e.hp - 4) } : e));
+  const handleAttack = (targetId: number) => {
+    const target = entities.find(e => e.id === targetId);
+    if (!target) return;
+
+    // Simulação simples de ataque
+    const d20 = Math.floor(Math.random() * 20) + 1;
+    const hitBonus = 5;
+    const isHit = (d20 + hitBonus) >= target.ac;
+    const isCrit = d20 === 20;
+
+    if (isHit || isCrit) {
+        const damage = isCrit ? Math.floor(Math.random() * 12) + 8 : Math.floor(Math.random() * 6) + 3;
+        
+        setEntities(prev => prev.map(e => 
+            e.id === targetId ? { ...e, hp: Math.max(0, e.hp - damage) } : e
+        ));
+        
+        addLog(`⚔️ ${activeEntity.name} atacou ${target.name} (${d20}+${hitBonus}): ${isCrit ? 'CRÍTICO!' : 'Acertou!'} (${damage} dano)`);
+    } else {
+        addLog(`🛡️ ${activeEntity.name} atacou ${target.name} (${d20}+${hitBonus}): Errou!`);
+    }
+  };
+
+  const handleHeal = () => {
+      const amount = Math.floor(Math.random() * 8) + 2;
+      setEntities(prev => prev.map(e => 
+        e.id === activeEntity.id ? { ...e, hp: Math.min(e.maxHp, e.hp + amount) } : e
+      ));
+      addLog(`✨ ${activeEntity.name} se curou em ${amount} HP.`);
   };
 
   return (
-    <div className="bg-[#1a1a2e] p-4 rounded-xl border border-white/10 h-full flex flex-col">
-      <div className="flex justify-between items-center mb-4">
-        <h4 className="text-white font-bold">Turno {Math.floor(turn / entities.length) + 1}</h4>
-        <button onClick={nextTurn} className="bg-orange-500 hover:bg-orange-600 text-white text-xs px-3 py-1 rounded-full transition-colors">
-          Próximo Turno
+    <div className="bg-[#1a1a2e] p-4 rounded-xl border border-white/10 h-full flex flex-col font-sans">
+      {/* Header com Turno e Botão de Avançar */}
+      <div className="flex justify-between items-center mb-4 pb-4 border-b border-white/5">
+        <div>
+            <h4 className="text-white font-bold text-sm">Rodada {Math.floor(turn / entities.length) + 1}</h4>
+            <div className="text-xs text-white/40">Turno atual: <span className="text-purple-400 font-bold">{activeEntity.name}</span></div>
+        </div>
+        <button onClick={nextTurn} className="bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded-md transition-colors flex items-center gap-2">
+          Próximo <ChevronRight size={14} />
         </button>
       </div>
-      <div className="space-y-2 flex-1 overflow-y-auto">
-        {entities.map((entity, index) => (
-          <div 
-            key={entity.id} 
-            className={`p-3 rounded-lg border flex items-center justify-between transition-all ${
-              index === turn 
-                ? 'bg-purple-500/20 border-purple-500 ring-1 ring-purple-500/50 scale-[1.02]' 
-                : 'bg-white/5 border-transparent opacity-70'
-            }`}
-          >
-            <div className="flex items-center gap-3">
-              <div className="font-mono text-white/50 text-sm w-6 text-center">{entity.init}</div>
-              <div>
-                <div className={`font-bold text-sm ${entity.type === 'player' ? 'text-blue-300' : 'text-red-300'}`}>
-                  {entity.name}
+
+      {/* Lista de Entidades */}
+      <div className="space-y-2 flex-1 overflow-y-auto pr-1">
+        {entities.map((entity, index) => {
+            const isActive = index === (turn % entities.length);
+            const isDead = entity.hp === 0;
+            const hpPercent = (entity.hp / entity.maxHp) * 100;
+            
+            return (
+                <div 
+                    key={entity.id} 
+                    className={`relative p-3 rounded-lg border transition-all duration-300 ${
+                    isActive 
+                        ? 'bg-purple-500/10 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.15)]' 
+                        : 'bg-white/5 border-transparent opacity-80 hover:opacity-100'
+                    } ${isDead ? 'grayscale opacity-50' : ''}`}
+                >
+                    {/* Infos Principais */}
+                    <div className="flex items-center justify-between mb-2 relative z-10">
+                        <div className="flex items-center gap-3">
+                            <div className={`font-mono text-xs font-bold w-6 h-6 flex items-center justify-center rounded bg-black/40 ${isActive ? 'text-purple-400' : 'text-white/30'}`}>
+                                {entity.init}
+                            </div>
+                            <div>
+                                <div className={`font-bold text-sm leading-none mb-1 flex items-center gap-2 ${entity.type === 'player' ? 'text-blue-300' : 'text-red-300'}`}>
+                                    {entity.name}
+                                    {isDead && <Skull size={12} />}
+                                </div>
+                                <div className="text-[10px] text-white/40">AC {entity.ac}</div>
+                            </div>
+                        </div>
+                        
+                        {/* Ações contextuais (se for o turno de alguém e este for o alvo válido) */}
+                        {isActive && !isDead && (
+                            <div className="flex gap-1">
+                                {entity.type === 'player' ? (
+                                    <button onClick={handleHeal} className="p-1.5 rounded bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors" title="Curar">
+                                        <Heart size={14} />
+                                    </button>
+                                ) : (
+                                    // Se for inimigo ativo, botão para ele atacar o player
+                                    <button onClick={() => handleAttack(1)} className="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs hover:bg-red-500/30 transition-colors border border-red-500/30">
+                                        Atacar Jogador
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                        
+                        {/* Se for turno do Player (ID 1) e este for um inimigo vivo */}
+                        {activeEntity.id === 1 && entity.type === 'enemy' && !isDead && (
+                             <button onClick={() => handleAttack(entity.id)} className="p-1.5 rounded bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 transition-colors" title="Atacar">
+                                <Swords size={14} />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Barra de Vida */}
+                    <div className="h-1.5 w-full bg-black/50 rounded-full overflow-hidden relative z-10">
+                        <div 
+                            className={`h-full transition-all duration-500 ${
+                                hpPercent > 50 ? 'bg-green-500' : hpPercent > 25 ? 'bg-yellow-500' : 'bg-red-500'
+                            }`}
+                            style={{ width: `${hpPercent}%` }}
+                        />
+                    </div>
+                    <div className="text-[10px] text-right mt-1 text-white/30 font-mono">
+                        {entity.hp}/{entity.maxHp} HP
+                    </div>
                 </div>
-                <div className="text-xs text-white/40">HP: {entity.hp}/{entity.maxHp}</div>
-              </div>
+            );
+        })}
+      </div>
+
+      {/* Log de Batalha Compacto */}
+      <div className="mt-4 pt-3 border-t border-white/10 h-24 overflow-hidden flex flex-col justify-end">
+        {logs.map((log, i) => (
+            <div key={i} className="text-[10px] md:text-xs text-white/60 py-0.5 border-l-2 border-white/10 pl-2 mb-1 animate-in slide-in-from-left-2 fade-in duration-300">
+                {log}
             </div>
-            {entity.type === 'enemy' && entity.hp > 0 && (
-              <button 
-                onClick={() => dealDamage(entity.id)}
-                className="text-red-400 hover:text-red-300 p-1 hover:bg-red-500/10 rounded"
-                title="Causar 4 de dano"
-              >
-                <Swords size={16} />
-              </button>
-            )}
-            {entity.hp === 0 && <Skull size={16} className="text-gray-500" />}
-          </div>
         ))}
       </div>
     </div>
