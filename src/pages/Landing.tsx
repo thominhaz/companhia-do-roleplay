@@ -256,75 +256,182 @@ export default function Landing() {
           </div>
         </nav>
 
-        {/* Hero Section with Banner */}
-        <section className="relative min-h-[90vh] flex items-center overflow-hidden pt-16">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-cosmic-purple/40 via-[#0a0a0f] to-[#0a0a0f]" />
-          <div className="absolute inset-0 opacity-30" style={{ 
-            backgroundImage: 'radial-gradient(circle at 25% 25%, rgba(139, 92, 246, 0.1) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(255, 159, 85, 0.1) 0%, transparent 50%)'
-          }} />
-          
-          <div className="relative container mx-auto px-4 py-12">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              {/* Text Content */}
+        {/* Hero Section - Mesa Virtual Style */}
+        <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
+          {/* Background with Radial Effect */}
+          <div className="absolute inset-0 bg-[#0a0a0f]">
+            <motion.div 
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] md:w-[800px] h-[600px] md:h-[800px] bg-cosmic-purple/20 rounded-full blur-[120px]"
+              animate={{ opacity: [0.3, 0.6, 0.3] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            />
+            <div className="absolute top-0 right-0 w-[400px] md:w-[500px] h-[400px] md:h-[500px] bg-solar-orange/10 rounded-full blur-[100px]" />
+          </div>
+
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+              
+              {/* Text Column */}
               <motion.div 
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -30 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6 }}
-                className="text-center lg:text-left space-y-6"
+                transition={{ duration: 0.7 }}
+                className="w-full lg:w-1/2 text-center lg:text-left space-y-8"
               >
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-cosmic-purple/20 border border-cosmic-purple/30 text-cosmic-purple text-sm">
-                  <Sparkles className="h-4 w-4" />
-                  Beta Aberta
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cosmic-purple/10 border border-cosmic-purple/30 text-cosmic-purple text-sm font-medium backdrop-blur-sm">
+                  <Sparkles className="w-4 h-4" />
+                  <span>Beta Aberta Disponível</span>
                 </div>
                 
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-                  <span className="text-white">Jogue </span>
-                  <span className="text-solar-orange">RPG</span>
+                <h1 className="text-5xl lg:text-7xl font-black leading-tight tracking-tight">
+                  <span className="text-white">Seu RPG, </span>
                   <br />
-                  <span className="text-white/90 italic">em qualquer </span>
-                  <span className="text-cyan-blue">aparelho.</span>
+                  <span className="bg-gradient-to-r from-solar-orange via-magenta-red to-cosmic-purple bg-clip-text text-transparent">
+                    Sem Limites.
+                  </span>
                 </h1>
                 
-                <p className="text-lg text-white/60 max-w-md mx-auto lg:mx-0">
-                  O melhor companheiro de RPG do Brasil está com acesso liberado. 
-                  Para ter acesso completo, basta apoiar o projeto. 
-                  <strong className="text-white"> O acesso é imediato!</strong>
+                <p className="text-lg text-white/60 max-w-xl mx-auto lg:mx-0 leading-relaxed">
+                  Esqueça os PDFs e planilhas. O <strong className="text-white">Go20</strong> transforma seu celular ou PC no melhor companheiro de mesa do Brasil. Fichas, dados e regras em um só lugar.
                 </p>
-
+                
                 <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                   <Button 
-                    size="lg" 
-                    className="bg-gradient-to-r from-solar-orange to-magenta-red hover:opacity-90 text-white shadow-lg shadow-solar-orange/25 gap-2"
+                    size="lg"
+                    className="h-12 px-8 bg-gradient-to-r from-solar-orange to-magenta-red hover:opacity-90 text-white font-bold shadow-lg shadow-orange-500/20 hover:scale-105 transition-transform gap-2"
                     onClick={() => window.open('https://www.catarse.me/go20', '_blank')}
                   >
-                    <Rocket className="h-5 w-5" />
-                    APOIE E JOGUE!
+                    <Rocket className="w-5 h-5" />
+                    Apoiar e Jogar Agora
                   </Button>
-                  
                   <Button 
-                    size="lg" 
+                    size="lg"
                     variant="outline"
-                    className="border-white/20 text-white hover:bg-white/10 gap-2"
+                    className="h-12 px-8 border-white/10 bg-white/5 hover:bg-white/10 text-white font-medium gap-2"
                     onClick={() => window.location.href = '/'}
                   >
-                    Experimentar Grátis
-                    <ArrowRight className="h-4 w-4" />
+                    Ver Funcionalidades
                   </Button>
+                </div>
+
+                <div className="flex items-center justify-center lg:justify-start gap-4 text-xs text-white/40 font-mono pt-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                    Acesso Imediato
+                  </div>
+                  <div>•</div>
+                  <div>100% Brasileiro 🇧🇷</div>
                 </div>
               </motion.div>
 
-              {/* Character Sheet Preview */}
-              <motion.div 
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="hidden lg:block max-w-sm mx-auto"
-              >
-                <CharacterSheetPreview />
-              </motion.div>
+              {/* Visual Column (Floating Elements) */}
+              <div className="w-full lg:w-1/2 relative h-[400px] sm:h-[500px] lg:h-[600px]">
+                
+                {/* Main Card (Character Sheet) */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.7, delay: 0.2 }}
+                  className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[280px] sm:w-[320px] z-20"
+                >
+                  <motion.div
+                    animate={{ y: [0, -15, 0] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                    className="bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-2xl p-5 shadow-2xl"
+                  >
+                    <div className="flex items-center gap-4 mb-4 border-b border-white/10 pb-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cosmic-purple to-solar-orange p-0.5">
+                        <div className="w-full h-full rounded-full bg-[#1a1a2e] flex items-center justify-center">
+                          <Users className="w-6 h-6 text-white/80" />
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="font-bold text-white">Thorin</h3>
+                        <div className="text-xs text-white/50">Nível 5 • Clérigo</div>
+                      </div>
+                      <div className="ml-auto text-green-400 text-xs font-bold border border-green-500/30 bg-green-500/10 px-2 py-1 rounded">
+                        HP 45/45
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex justify-between text-sm text-white/70">
+                        <span>Força</span>
+                        <span className="text-white font-bold">+3</span>
+                      </div>
+                      <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-solar-orange w-3/4 h-full" />
+                      </div>
+                      <div className="flex justify-between text-sm text-white/70">
+                        <span>Sabedoria</span>
+                        <span className="text-white font-bold">+4</span>
+                      </div>
+                      <div className="w-full bg-white/10 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-cosmic-purple w-full h-full" />
+                      </div>
+                    </div>
+                  </motion.div>
+                </motion.div>
+
+                {/* Secondary Card (Dice) - Floating behind */}
+                <motion.div 
+                  initial={{ opacity: 0, x: 30 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.7, delay: 0.4 }}
+                  className="absolute top-[15%] right-[5%] sm:right-[0%] lg:right-[-5%] w-[160px] sm:w-[200px] z-10"
+                >
+                  <motion.div
+                    animate={{ y: [0, -12, 0] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 1.5 }}
+                    className="bg-[#0a0a0f]/90 backdrop-blur-xl border border-white/10 rounded-xl p-4 shadow-xl lg:rotate-12"
+                  >
+                    <div className="text-xs text-white/50 uppercase font-bold mb-2 text-center">Última Rolagem</div>
+                    <div className="flex justify-center items-center h-20 relative">
+                      <svg viewBox="0 0 100 100" className="w-16 h-16 drop-shadow-[0_0_15px_rgba(138,43,226,0.5)]">
+                        <path d="M50 5 L85 25 L85 75 L50 95 L15 75 L15 25 Z" fill="rgba(138,43,226,0.2)" stroke="#8A2BE2" strokeWidth="2" />
+                        <text x="50" y="62" fontSize="30" textAnchor="middle" fill="#fff" fontWeight="bold">20</text>
+                      </svg>
+                    </div>
+                    <div className="text-center text-green-400 font-bold text-sm">CRÍTICO!</div>
+                  </motion.div>
+                </motion.div>
+
+                {/* Decorative Element (Swords) */}
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.6 }}
+                  className="absolute bottom-[10%] left-[5%] sm:left-[10%]"
+                >
+                  <motion.div
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    className="w-16 h-16 rounded-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 flex items-center justify-center"
+                  >
+                    <Swords className="text-solar-orange w-8 h-8" />
+                  </motion.div>
+                </motion.div>
+
+                {/* Additional Decorative Element */}
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.5 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.8 }}
+                  className="absolute top-[60%] left-[0%] hidden sm:block"
+                >
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+                    className="w-12 h-12 rounded-xl bg-white/[0.03] backdrop-blur-xl border border-white/10 flex items-center justify-center"
+                  >
+                    <BookOpen className="text-cyan-blue w-5 h-5" />
+                  </motion.div>
+                </motion.div>
+              </div>
             </div>
           </div>
+          
+          {/* Section Divider */}
+          <div className="absolute bottom-0 w-full h-24 bg-gradient-to-t from-[#0a0a0f] to-transparent" />
         </section>
 
         {/* How It Works Section */}
