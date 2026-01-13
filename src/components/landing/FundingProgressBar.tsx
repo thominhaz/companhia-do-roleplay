@@ -223,111 +223,13 @@ export const FundingProgressBar = () => {
                   )}
                 </div>
 
-                {/* MARCADORES (Milestones) - distribuídos uniformemente */}
-                {goals.map((goal, index) => {
-                  const position = getUniformPosition(index, goals.length);
-                  const isReached = currentFunding >= goal.amountVal || goal.status === 'completed' || goal.status === 'released';
-                  const isNext = nextGoal?.id === goal.id && !isReached;
-                  const IconComponent = goal.icon;
-                  const isHovered = hoveredGoal === goal.id;
-
-                  return (
-                    <div 
-                      key={goal.id} 
-                      className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 group"
-                      style={{ left: `${position}%`, zIndex: isHovered ? 100 : isNext ? 40 : 20 }}
-                      onMouseEnter={() => setHoveredGoal(goal.id)}
-                      onMouseLeave={() => setHoveredGoal(null)}
-                    >
-                      {/* Ícone Minimalista */}
-                      <div 
-                        className={`
-                          relative w-5 h-5 md:w-6 md:h-6 flex items-center justify-center transition-all duration-300 cursor-pointer
-                          ${isReached ? 'scale-100' : 'scale-90 grayscale opacity-60'}
-                          ${isNext ? 'scale-110 opacity-100 grayscale-0 animate-pulse' : ''}
-                        `}
-                      >
-                        {/* Shape do Marcador */}
-                        <div 
-                          className="absolute inset-0 bg-[#13131a] rounded-sm border transform rotate-45 transition-colors duration-300"
-                          style={{ 
-                            borderColor: isReached ? goal.color : 'rgba(255,255,255,0.15)',
-                            boxShadow: isReached || isNext ? `0 0 10px ${goal.color}40` : 'none',
-                            borderWidth: '1.5px'
-                          }}
-                        />
-
-                        {/* Ícone Interno */}
-                        <IconComponent 
-                          size={8} 
-                          className="relative z-10 transition-colors"
-                          style={{ color: isReached || isNext ? goal.color : '#fff' }}
-                        />
-                      </div>
-
-                      {/* TOOLTIP - posicionado com fixed-like behavior */}
-                      <div 
-                        className={`
-                          absolute w-64 md:w-72
-                          bg-[#0f0f13] backdrop-blur-md border border-white/10 
-                          rounded-lg shadow-2xl transition-all duration-300 pointer-events-none
-                          ${isHovered ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'}
-                        `}
-                        style={{
-                          bottom: '100%',
-                          left: '50%',
-                          transform: `translateX(-50%) translateY(${isHovered ? '-12px' : '-8px'})`,
-                          zIndex: 1000,
-                        }}
-                      >
-                        {/* Borda superior colorida */}
-                        <div className="h-1 w-full rounded-t-lg" style={{ backgroundColor: goal.color }} />
-                        
-                        <div className="p-4">
-                          <div className="flex justify-between items-start mb-2">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-white/5 border border-white/5 text-gray-400">
-                                {goal.phase} {goal.phaseEmoji}
-                              </span>
-                              <span className={`text-[10px] font-bold px-2 py-0.5 rounded ${isReached ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
-                                {isReached ? '✓ ALCANÇADO' : 'BLOQUEADO'}
-                              </span>
-                            </div>
-                            <IconComponent size={16} style={{ color: goal.color }} />
-                          </div>
-                          
-                          <h4 className="font-bold text-sm text-white mb-1">
-                            Meta {goal.goalNumber}: {goal.title}
-                          </h4>
-                          <p className="text-[11px] text-gray-400 mb-3 leading-relaxed">{goal.desc}</p>
-                          
-                          <div className="pt-2 border-t border-white/5 flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Trophy size={12} className="text-yellow-500" />
-                              <span className="text-[11px] font-bold text-gray-200">
-                                {goal.loot}
-                              </span>
-                            </div>
-                            <span className="text-sm font-bold" style={{ color: goal.color }}>
-                              {goal.amount}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        {/* Seta do tooltip */}
-                        <div 
-                          className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0"
-                          style={{
-                            borderLeft: '8px solid transparent',
-                            borderRight: '8px solid transparent',
-                            borderTop: '8px solid #0f0f13',
-                          }}
-                        />
-                      </div>
-
-                    </div>
-                  );
-                })}
+                {/* Partícula brilhante indicando posição atual */}
+                {progressPercentage > 0 && (
+                  <div 
+                    className="absolute top-1/2 -translate-y-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_15px_white] z-30"
+                    style={{ left: `${progressPercentage}%`, transform: 'translate(-50%, -50%)' }}
+                  />
+                )}
               </div>
 
               {/* Footer Stats - Simplificado */}
