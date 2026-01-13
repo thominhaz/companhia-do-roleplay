@@ -894,7 +894,7 @@ export default function Landing() {
               
               <div className="flex gap-6 text-sm text-white/50">
                 <a 
-                  href="https://discord.gg/go20" 
+                  href="https://discord.com/invite/AP9UeE5paj" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors"
