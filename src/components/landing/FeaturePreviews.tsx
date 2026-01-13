@@ -290,12 +290,13 @@ export const HomebrewPreview = () => {
                     <label className="text-xs text-white/40 block mb-1">Raridade</label>
                     <select 
                         value={item.rarity}
-                        className="w-full bg-white/5 border border-white/10 rounded p-2 text-sm text-white focus:border-purple-500 outline-none"
+                        className="w-full bg-[#1a1a2e] border border-white/10 rounded p-2 text-sm text-white focus:border-purple-500 outline-none appearance-none cursor-pointer"
+                        style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', backgroundSize: '16px' }}
                         onChange={(e) => setItem({...item, rarity: e.target.value})}
                     >
-                        <option value="comum">Comum</option>
-                        <option value="raro">Raro</option>
-                        <option value="lendar">Lendário</option>
+                        <option value="comum" className="bg-[#1a1a2e] text-white">Comum</option>
+                        <option value="raro" className="bg-[#1a1a2e] text-white">Raro</option>
+                        <option value="lendar" className="bg-[#1a1a2e] text-white">Lendário</option>
                     </select>
                 </div>
                 <div>
