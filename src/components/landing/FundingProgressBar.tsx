@@ -3,30 +3,50 @@ import {
   Crown, 
   Gift, 
   Rocket, 
-  Shield, 
-  Scroll, 
-  Map, 
-  Users, 
   Trophy,
   Sparkles,
   Swords,
+  Dice5,
+  FileText,
+  Calendar,
+  MessageSquare,
+  Store,
+  Scale,
+  Hammer,
+  Image,
+  Palette,
+  Bot,
+  Heart,
+  Users,
   BookOpen,
-  Wand2,
+  Scroll,
+  MapPin,
   LucideIcon
 } from 'lucide-react';
 import { useStretchGoals, useCampaignFunding } from '@/hooks/useStretchGoals';
 
-const iconMap: Record<string, LucideIcon> = {
-  rocket: Rocket,
-  shield: Shield,
-  crown: Crown,
-  users: Users,
-  scroll: Scroll,
-  map: Map,
-  swords: Swords,
-  'book-open': BookOpen,
-  wand2: Wand2,
-  gift: Gift
+// Mapa de feature_key para ícone
+const featureIconMap: Record<string, LucideIcon> = {
+  dice_roller: Dice5,
+  character_sheet: FileText,
+  campaigns: Users,
+  combat_tracker: Calendar,
+  forge: Hammer,
+  supporter_gallery: Image,
+  advanced_combat: Scale,
+  stress_sanity: Heart,
+  discord_bot: Bot,
+  custom_themes: Palette,
+  compendium: BookOpen,
+  documents: Scroll,
+  factions: MapPin,
+};
+
+// Cores por fase
+const phaseColors: Record<string, string> = {
+  'FUNDAÇÃO': '#FF9F55',
+  'EXPANSÃO': '#8A2BE2',
+  'ALÉM': '#00ced1',
 };
 
 export const FundingProgressBar = () => {
@@ -48,10 +68,13 @@ export const FundingProgressBar = () => {
     gold: '#FFD700',
   };
 
-  // Converter stretch goals para formato da barra
-  const goals = stretchGoals.slice(0, 8).map((goal, index) => {
-    const colors = [theme.orange, theme.cyan, theme.purple, theme.red, theme.gold, '#48bb78', theme.purple, theme.orange];
-    const IconComponent = iconMap[goal.phase_emoji || 'rocket'] || Rocket;
+  // Paleta de cores para rotação
+  const colorPalette = [theme.orange, theme.cyan, theme.purple, theme.red, theme.gold, '#48bb78', '#f687b3', '#4fd1c5'];
+
+  // Converter TODAS stretch goals para formato da barra
+  const goals = stretchGoals.map((goal, index) => {
+    const IconComponent = featureIconMap[goal.feature_key || ''] || Rocket;
+    const phaseColor = phaseColors[goal.phase] || colorPalette[index % colorPalette.length];
     
     return {
       id: goal.id,
@@ -60,22 +83,26 @@ export const FundingProgressBar = () => {
       amountVal: goal.value,
       amount: `R$ ${goal.value.toLocaleString('pt-BR')}`,
       desc: goal.description || goal.subtitle || '',
-      color: colors[index % colors.length],
+      color: phaseColor,
       loot: goal.subtitle || 'Feature Desbloqueada',
-      status: goal.status
+      status: goal.status,
+      phase: goal.phase,
+      phaseEmoji: goal.phase_emoji,
+      goalNumber: goal.goal_number
     };
   });
 
   // Cálculos da Barra
-  const maxGoal = Math.max(fundingGoal, ...goals.map(g => g.amountVal));
+  const maxGoal = goals.length > 0 ? Math.max(...goals.map(g => g.amountVal)) : fundingGoal;
   const progressPercentage = Math.min(100, Math.max(0, (currentFunding / maxGoal) * 100));
-  const nextGoal = goals.find(g => g.amountVal > currentFunding) || goals[goals.length - 1];
-  const currentLevel = goals.filter(g => g.amountVal <= currentFunding).length;
+  const nextGoal = goals.find(g => g.amountVal > currentFunding && g.status !== 'completed' && g.status !== 'released') || goals[goals.length - 1];
+  const currentLevel = goals.filter(g => g.amountVal <= currentFunding || g.status === 'completed' || g.status === 'released').length;
   
   const getLevelTitle = () => {
     if (currentLevel === 0) return "Iniciado";
-    if (currentLevel < 3) return "Aventureiro";
-    if (currentLevel < 5) return "Veterano";
+    if (currentLevel < 4) return "Aventureiro";
+    if (currentLevel < 8) return "Veterano";
+    if (currentLevel < 12) return "Campeão";
     return "Lendário";
   };
 
@@ -92,7 +119,7 @@ export const FundingProgressBar = () => {
           <h2 className="text-2xl font-bold text-white">Progresso da Campanha</h2>
         </div>
 
-        <div className="w-full max-w-5xl mx-auto">
+        <div className="w-full max-w-6xl mx-auto">
           {/* CONTAINER PRINCIPAL (Tech Panel) */}
           <div 
             className="relative rounded-2xl border border-white/10 overflow-hidden shadow-2xl"
@@ -161,7 +188,7 @@ export const FundingProgressBar = () => {
               </div>
 
               {/* BARRA DE PROGRESSO */}
-              <div className="relative h-2 mb-16 select-none">
+              <div className="relative h-3 mb-20 select-none">
                 {/* Background da Barra */}
                 <div className="absolute inset-0 bg-black/60 rounded-full border border-white/5 overflow-hidden">
                   <div 
@@ -181,14 +208,14 @@ export const FundingProgressBar = () => {
                 >
                   {/* Partícula Brilhante na ponta */}
                   {progressPercentage > 0 && (
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-3 h-3 bg-white rounded-full shadow-[0_0_15px_white] z-30" />
+                    <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-4 h-4 bg-white rounded-full shadow-[0_0_15px_white] z-30" />
                   )}
                 </div>
 
                 {/* MARCADORES (Milestones) */}
                 {goals.map((goal) => {
                   const position = (goal.amountVal / maxGoal) * 100;
-                  const isReached = currentFunding >= goal.amountVal || goal.status === 'completed';
+                  const isReached = currentFunding >= goal.amountVal || goal.status === 'completed' || goal.status === 'released';
                   const isNext = nextGoal?.id === goal.id && !isReached;
                   const IconComponent = goal.icon;
 
@@ -203,7 +230,7 @@ export const FundingProgressBar = () => {
                       {/* Ícone Minimalista */}
                       <div 
                         className={`
-                          relative w-7 h-7 md:w-8 md:h-8 flex items-center justify-center transition-all duration-300 cursor-pointer
+                          relative w-6 h-6 md:w-7 md:h-7 flex items-center justify-center transition-all duration-300 cursor-pointer
                           ${isReached ? 'scale-100' : 'scale-90 grayscale opacity-60'}
                           ${isNext ? 'scale-110 opacity-100 grayscale-0 animate-pulse' : ''}
                         `}
@@ -220,23 +247,25 @@ export const FundingProgressBar = () => {
 
                         {/* Ícone Interno */}
                         <IconComponent 
-                          size={12} 
+                          size={10} 
                           className="relative z-10 transition-colors"
                           style={{ color: isReached || isNext ? goal.color : '#fff' }}
                         />
                       </div>
 
                       {/* Linha vertical indicadora */}
-                      <div className={`absolute top-6 left-1/2 w-px h-3 bg-white/10 -translate-x-1/2 transition-colors ${isReached ? 'bg-white/30' : ''}`} />
+                      <div className={`absolute top-5 left-1/2 w-px h-2 bg-white/10 -translate-x-1/2 transition-colors ${isReached ? 'bg-white/30' : ''}`} />
                       
-                      {/* Valor Monetário */}
-                      <div className={`absolute top-9 left-1/2 -translate-x-1/2 text-[9px] md:text-[10px] font-bold tracking-wider whitespace-nowrap transition-colors ${isReached ? 'text-white' : 'text-gray-600'}`}>
-                        {goal.amount}
-                      </div>
+                      {/* Valor Monetário - exibido apenas em alguns marcadores para evitar sobreposição */}
+                      {(goal.goalNumber === 1 || goal.goalNumber % 3 === 0 || goals.length <= 6) && (
+                        <div className={`absolute top-8 left-1/2 -translate-x-1/2 text-[8px] md:text-[9px] font-bold tracking-wider whitespace-nowrap transition-colors ${isReached ? 'text-white' : 'text-gray-600'}`}>
+                          {goal.amount}
+                        </div>
+                      )}
 
                       {/* TOOLTIP */}
                       <div className={`
-                        absolute bottom-[160%] left-1/2 -translate-x-1/2 w-56 md:w-64 
+                        absolute bottom-[180%] left-1/2 -translate-x-1/2 w-56 md:w-64 
                         bg-[#0f0f13]/95 backdrop-blur-md border border-white/10 
                         rounded-lg shadow-2xl transition-all duration-300 pointer-events-none
                         ${hoveredGoal === goal.id ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}
@@ -246,19 +275,31 @@ export const FundingProgressBar = () => {
                         
                         <div className="p-3 md:p-4">
                           <div className="flex justify-between items-start mb-2">
-                            <span className="text-[9px] md:text-[10px] font-bold px-2 py-0.5 rounded bg-white/5 border border-white/5 text-gray-400">
-                              {isReached ? 'DESBLOQUEADO' : 'BLOQUEADO'}
-                            </span>
+                            <div className="flex items-center gap-2">
+                              <span className="text-[9px] md:text-[10px] font-bold px-2 py-0.5 rounded bg-white/5 border border-white/5 text-gray-400">
+                                {goal.phase} {goal.phaseEmoji}
+                              </span>
+                              <span className={`text-[9px] md:text-[10px] font-bold px-2 py-0.5 rounded ${isReached ? 'bg-green-500/20 text-green-400' : 'bg-gray-500/20 text-gray-400'}`}>
+                                {isReached ? '✓ ALCANÇADO' : 'BLOQUEADO'}
+                              </span>
+                            </div>
                             <IconComponent size={14} style={{ color: goal.color }} />
                           </div>
                           
-                          <h4 className="font-bold text-base md:text-lg text-white mb-1">{goal.title}</h4>
-                          <p className="text-xs text-gray-400 mb-3 leading-relaxed">{goal.desc}</p>
+                          <h4 className="font-bold text-sm md:text-base text-white mb-1">
+                            Meta {goal.goalNumber}: {goal.title}
+                          </h4>
+                          <p className="text-[10px] md:text-xs text-gray-400 mb-3 leading-relaxed line-clamp-3">{goal.desc}</p>
                           
-                          <div className="pt-3 border-t border-white/5 flex items-center gap-2">
-                            <Trophy size={14} className="text-yellow-500" />
-                            <span className="text-xs font-bold text-gray-200 uppercase tracking-wide">
-                              Loot: <span style={{ color: goal.color }}>{goal.loot}</span>
+                          <div className="pt-2 border-t border-white/5 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Trophy size={12} className="text-yellow-500" />
+                              <span className="text-[10px] md:text-xs font-bold text-gray-200">
+                                {goal.loot}
+                              </span>
+                            </div>
+                            <span className="text-xs font-bold" style={{ color: goal.color }}>
+                              {goal.amount}
                             </span>
                           </div>
                         </div>
@@ -279,6 +320,7 @@ export const FundingProgressBar = () => {
                   Campanha Ativa
                 </div>
                 <div>{currentLevel} de {goals.length} Metas</div>
+                <div className="hidden md:block">{goals.filter(g => g.phase === 'FUNDAÇÃO').length} Fundação • {goals.filter(g => g.phase === 'EXPANSÃO').length} Expansão • {goals.filter(g => g.phase === 'ALÉM').length} Além</div>
               </div>
 
             </div>
