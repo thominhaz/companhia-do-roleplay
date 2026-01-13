@@ -112,10 +112,28 @@ const tiers: Record<string, Tier> = {
       { text: 'Todas as features futuras', sub: 'Garantido para sempre' }
     ],
     cta: 'Eternizar-se'
+  },
+  lendario: {
+    id: 'lendario',
+    name: 'Lendário',
+    price: 'R$ 500',
+    period: 'pagamento único',
+    color: '#F43F5E',
+    icon: '🐉',
+    badge: 'DEFINITIVO',
+    desc: 'O tier definitivo para os verdadeiros heróis. Acesso eterno e reconhecimento máximo.',
+    features: [
+      { text: 'Acesso VITALÍCIO', sub: 'Tudo do Mestre Épico para sempre' },
+      { text: 'Call 1:1 Comigo', sub: 'Discuta o app e suas ideias' },
+      { text: 'Item Mágico Personalizado', sub: 'Criado por você no Compêndio' },
+      { text: 'Destaque Especial', sub: 'Na página de apoiadores' },
+      { text: 'Todas as features futuras', sub: 'Garantido para sempre' }
+    ],
+    cta: 'Tornar-se Lendário'
   }
 };
 
-const tierOrder = ['apoiador', 'aldeao', 'heroi', 'mestre', 'epico'];
+const tierOrder = ['apoiador', 'aldeao', 'heroi', 'mestre', 'epico', 'lendario'];
 
 export const PricingControlPanel = () => {
   const [currentTier, setCurrentTier] = useState('heroi');
