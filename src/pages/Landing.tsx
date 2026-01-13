@@ -42,6 +42,14 @@ import {
 import logoFull from "@/assets/logo-full.png";
 import { motion } from "framer-motion";
 import { CharacterSheetPreview } from "@/components/landing/CharacterSheetPreview";
+import { 
+  CharacterSheetPreviewInteractive, 
+  CombatTrackerPreview, 
+  ChatPreview, 
+  HomebrewPreview, 
+  ShopPreview, 
+  DocumentPreview 
+} from "@/components/landing/FeaturePreviews";
 import { useStretchGoals, useCampaignFunding, StretchGoal } from "@/hooks/useStretchGoals";
 import { PricingControlPanel } from "@/components/landing/PricingControlPanel";
 import { FundingProgressBar } from "@/components/landing/FundingProgressBar";
@@ -97,37 +105,43 @@ const features = [
     icon: Shield, 
     title: "Fichas de Personagem", 
     description: "Criação guiada passo a passo com cálculos automáticos de modificadores, HP, AC e proficiências.",
-    highlights: ["Wizard de criação", "Cálculos automáticos", "PDF exportável"]
+    highlights: ["Wizard de criação", "Cálculos automáticos", "PDF exportável"],
+    component: CharacterSheetPreviewInteractive
   },
   { 
     icon: Swords, 
     title: "Combat Tracker Pro", 
     description: "Rastreie iniciativas, HP, condições e turnos em tempo real. Todos os jogadores veem as atualizações instantaneamente.",
-    highlights: ["Tempo real", "Condições D&D 5e", "Log de combate"]
+    highlights: ["Tempo real", "Condições D&D 5e", "Log de combate"],
+    component: CombatTrackerPreview
   },
   { 
     icon: MessageSquare, 
-    title: "Chat & Comunicação", 
-    description: "Chat de campanha integrado com suporte a mensagens privadas entre mestre e jogadores.",
-    highlights: ["Chat em tempo real", "Mensagens privadas", "Notificações"]
+    title: "Chat & Dados", 
+    description: "Role dados 3D compartilhados e converse com seus jogadores em tempo real.",
+    highlights: ["Chat em tempo real", "Dados integrados", "Notificações"],
+    component: ChatPreview
   },
   { 
     icon: Wand2, 
     title: "Forja de Homebrew", 
-    description: "Crie suas próprias raças, classes, magias e monstros que funcionam perfeitamente no sistema.",
-    highlights: ["Raças e classes", "Magias customizadas", "Bestiário próprio"]
+    description: "Crie itens mágicos, monstros e magias customizadas com cards gerados na hora.",
+    highlights: ["Raças e classes", "Magias customizadas", "Bestiário próprio"],
+    component: HomebrewPreview
   },
   { 
     icon: Store, 
     title: "Lojas & Comércio", 
-    description: "Sistema de lojas da campanha com inventário, preços e transações entre jogadores.",
-    highlights: ["Lojas dinâmicas", "Trocas P2P", "Histórico"]
+    description: "Permita que seus jogadores comprem itens diretamente de lojas criadas por você.",
+    highlights: ["Lojas dinâmicas", "Trocas P2P", "Histórico"],
+    component: ShopPreview
   },
   { 
     icon: Scroll, 
     title: "Documentos & Notas", 
-    description: "Crie cartas, pergaminhos e decretos estilizados para entregar aos jogadores.",
-    highlights: ["Estilos temáticos", "Exportar PNG", "Entrega seletiva"]
+    description: "Entregue cartas, enigmas e mapas diretamente para o inventário dos jogadores.",
+    highlights: ["Estilos temáticos", "Exportar PNG", "Entrega seletiva"],
+    component: DocumentPreview
   },
 ];
 
@@ -393,103 +407,107 @@ export default function Landing() {
         {/* Feature Tabs Section */}
         <section className="py-16 md:py-24 bg-[#0a0a0f]">
           <div className="container mx-auto px-4">
+            {/* Header da Seção */}
             <div className="text-center mb-12">
               <div className="flex items-center justify-center gap-2 text-white/60 mb-2">
-                <Sparkles className="h-5 w-5" />
-                <span>Funcionalidades</span>
+                <Wand2 className="w-5 h-5 text-cosmic-purple" />
+                <span className="uppercase tracking-wide text-sm font-semibold">Funcionalidades</span>
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
                 Tudo que Você Precisa
               </h2>
-              <p className="text-white/50 max-w-xl mx-auto">
-                Ferramentas poderosas para jogadores e mestres
+              <p className="text-white/50 max-w-xl mx-auto text-lg">
+                Ferramentas poderosas para jogadores e mestres, integradas em um só lugar.
               </p>
             </div>
 
-            <div className="max-w-5xl mx-auto">
-              {/* Tabs */}
-              <div className="flex flex-wrap justify-center gap-2 mb-8">
-                {features.map((feature, index) => {
-                  const Icon = feature.icon;
-                  return (
-                    <button
-                      key={index}
-                      onClick={() => setActiveFeature(index)}
-                      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-all ${
-                        activeFeature === index
-                          ? 'bg-cosmic-purple text-white shadow-lg shadow-cosmic-purple/25'
-                          : 'bg-white/5 text-white/60 hover:bg-white/10 hover:text-white'
-                      }`}
-                    >
-                      <Icon className="h-4 w-4" />
-                      <span className="hidden sm:inline">{feature.title}</span>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Feature Content */}
-              <motion.div
-                key={activeFeature}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-                className="grid md:grid-cols-2 gap-8 items-center"
-              >
-                {/* Description Side */}
-                <div className="order-2 md:order-1">
-                  <div className="flex items-center gap-3 mb-4">
-                    {(() => {
-                      const Icon = features[activeFeature].icon;
-                      return <Icon className="h-8 w-8 text-cosmic-purple" />;
-                    })()}
-                    <h3 className="text-2xl font-bold text-white">
-                      {features[activeFeature].title}
-                    </h3>
-                  </div>
-                  <p className="text-white/60 text-lg mb-6">
-                    {features[activeFeature].description}
-                  </p>
-                  <div className="flex flex-wrap gap-2">
-                    {features[activeFeature].highlights.map((highlight, idx) => (
-                      <Badge 
-                        key={idx}
-                        className="bg-solar-orange/10 text-solar-orange border-solar-orange/20"
+            <div className="max-w-6xl mx-auto">
+              {/* Grid Layout */}
+              <div className="grid lg:grid-cols-12 gap-8">
+                
+                {/* Menu Lateral (Esquerda) */}
+                <div className="lg:col-span-4 flex flex-col gap-2">
+                  {features.map((feature, index) => {
+                    const Icon = feature.icon;
+                    return (
+                      <button
+                        key={index}
+                        onClick={() => setActiveFeature(index)}
+                        className={`flex items-center gap-4 px-4 py-4 rounded-xl text-left transition-all duration-300 group border ${
+                          activeFeature === index
+                            ? 'bg-cosmic-purple/20 border-cosmic-purple/50 text-white shadow-lg shadow-cosmic-purple/20'
+                            : 'bg-white/5 border-transparent text-white/60 hover:bg-white/10 hover:text-white'
+                        }`}
                       >
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        {highlight}
-                      </Badge>
-                    ))}
-                  </div>
+                        <Icon 
+                          className={`w-5 h-5 transition-colors ${
+                            activeFeature === index ? 'text-cosmic-purple' : 'text-gray-500 group-hover:text-white'
+                          }`} 
+                        />
+                        <span className="font-medium text-sm md:text-base flex-1">{feature.title}</span>
+                        {activeFeature === index && (
+                          <ChevronRight className="w-4 h-4 text-cosmic-purple animate-in fade-in slide-in-from-left-2" />
+                        )}
+                      </button>
+                    );
+                  })}
                 </div>
 
-                {/* Visual Side - Mockup/Preview */}
-                <div className="order-1 md:order-2">
-                  <div className="relative">
-                    <div className="aspect-[4/3] rounded-2xl bg-gradient-to-br from-cosmic-purple/20 to-solar-orange/10 border border-white/10 flex items-center justify-center overflow-hidden">
-                      <div className="text-center p-8">
+                {/* Área de Preview (Direita) */}
+                <div className="lg:col-span-8 bg-gradient-to-br from-cosmic-purple/10 to-black rounded-2xl border border-white/10 p-1 md:p-2 relative overflow-hidden min-h-[500px] flex flex-col">
+                  
+                  {/* Glow de fundo */}
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-cosmic-purple/20 blur-[100px] rounded-full pointer-events-none" />
+                  
+                  {/* Conteúdo Dinâmico */}
+                  <div className="flex-1 flex flex-col p-4 md:p-8 relative z-10">
+                    <motion.div 
+                      key={activeFeature}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                      className="mb-6"
+                    >
+                      <div className="flex items-center gap-3 mb-2">
                         {(() => {
                           const Icon = features[activeFeature].icon;
-                          return (
-                            <motion.div
-                              initial={{ scale: 0.8, opacity: 0 }}
-                              animate={{ scale: 1, opacity: 1 }}
-                              transition={{ duration: 0.4 }}
-                            >
-                              <Icon className="h-24 w-24 text-cosmic-purple/50 mx-auto mb-4" />
-                              <p className="text-white/40 text-sm">
-                                Preview interativo em breve
-                              </p>
-                            </motion.div>
-                          );
+                          return <Icon className="w-8 h-8 text-cosmic-purple" />;
                         })()}
+                        <h3 className="text-2xl font-bold text-white">{features[activeFeature].title}</h3>
                       </div>
-                    </div>
-                    {/* Decorative elements */}
-                    <div className="absolute -z-10 top-4 left-4 w-full h-full rounded-2xl bg-cosmic-purple/10 blur-xl" />
+                      <p className="text-white/60 text-lg leading-relaxed">
+                        {features[activeFeature].description}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-4">
+                        {features[activeFeature].highlights.map((highlight, idx) => (
+                          <Badge 
+                            key={idx}
+                            className="bg-solar-orange/10 text-solar-orange border-solar-orange/20"
+                          >
+                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                            {highlight}
+                          </Badge>
+                        ))}
+                      </div>
+                    </motion.div>
+
+                    {/* Container do "App" Interativo */}
+                    <motion.div 
+                      key={`preview-${activeFeature}`}
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.3 }}
+                      className="flex-1 bg-black/40 backdrop-blur-sm rounded-xl border border-white/5 p-2 shadow-2xl"
+                    >
+                      {(() => {
+                        const PreviewComponent = features[activeFeature].component;
+                        return <PreviewComponent />;
+                      })()}
+                    </motion.div>
                   </div>
+
                 </div>
-              </motion.div>
+              </div>
             </div>
           </div>
         </section>
