@@ -234,7 +234,7 @@ export default function Landing() {
         {/* Navbar */}
         <nav className="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0f]/80 backdrop-blur-lg border-b border-white/10">
           <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-            <img src={logoFull} alt="Go20" className="h-10" />
+            <img src={logoFull} alt="Go20" className="h-12 w-auto" />
             <div className="flex gap-3">
               <Button 
                 size="sm" 
