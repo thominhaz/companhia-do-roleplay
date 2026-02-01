@@ -449,9 +449,10 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
           </div>
         ) : (
           <>
+          <div className="flex flex-col h-[calc(90vh-90px)] overflow-hidden">
             {/* Action Bar - Only show for masters - Add combatant button only */}
             {isMaster && (
-              <div className="p-3 border-b border-border flex gap-2">
+              <div className="p-3 border-b border-border flex gap-2 flex-shrink-0">
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -464,8 +465,8 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
             )}
 
             {/* Tabs for Combatants, Log and Dice */}
-            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'combatants' | 'log' | 'dice')} className="flex-1 flex flex-col">
-              <div className="px-4 pt-2 flex items-center gap-2">
+            <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'combatants' | 'log' | 'dice')} className="flex-1 flex flex-col min-h-0 overflow-hidden">
+              <div className="px-4 pt-2 flex items-center gap-2 flex-shrink-0">
                 <TabsList className="flex-1">
                   <TabsTrigger value="combatants" className="flex-1">
                     <Swords className="w-4 h-4 mr-1" />
@@ -488,11 +489,11 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                 )}
               </div>
 
-              <TabsContent value="combatants" className="flex-1 mt-0 flex flex-col">
+              <TabsContent value="combatants" className="flex-1 mt-0 flex flex-col min-h-0 overflow-hidden">
                 {/* Side-by-side layout: Initiative List + Stat Block */}
-                <div className="flex flex-1 h-[calc(90vh-340px)]">
+                <div className="flex flex-1 min-h-0 overflow-hidden">
                   {/* Left: Initiative List */}
-                  <div className="flex-1 border-r border-border">
+                  <div className="flex-1 border-r border-border min-h-0 overflow-hidden">
                     <ScrollArea className="h-full">
                       <div className="p-4 space-y-2">
                         {sortedCombatants.length === 0 ? (
@@ -534,8 +535,8 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
 
                 {/* D&D Beyond Style Control Bar - Fixed at bottom */}
                 {isMaster && (
-                  <div className="border-t border-border bg-card/95 backdrop-blur-sm">
-                    <div className="flex items-center justify-center gap-1 p-3">
+                  <div className="border-t border-border bg-card/95 backdrop-blur-sm flex-shrink-0">
+                    <div className="flex items-center justify-center gap-1 p-3 flex-wrap">
                       {/* Undo Button */}
                       <Button
                         variant="ghost"
@@ -548,7 +549,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                         Desfazer
                       </Button>
 
-                      <div className="w-px h-6 bg-border mx-1" />
+                      <div className="w-px h-6 bg-border mx-1 hidden sm:block" />
 
                       {/* Round Indicator */}
                       <div className="h-10 px-4 flex items-center gap-2 bg-muted/50 rounded-md">
@@ -556,7 +557,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                         <span className="text-lg font-bold text-primary">{encounter.round}</span>
                       </div>
 
-                      <div className="w-px h-6 bg-border mx-1" />
+                      <div className="w-px h-6 bg-border mx-1 hidden sm:block" />
 
                       {/* Turn Indicator */}
                       <div className="h-10 px-4 flex items-center gap-2 bg-muted/50 rounded-md">
@@ -565,7 +566,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                         <span className="text-xs text-muted-foreground">/ {sortedCombatants.length}</span>
                       </div>
 
-                      <div className="w-px h-6 bg-border mx-1" />
+                      <div className="w-px h-6 bg-border mx-1 hidden sm:block" />
 
                       {/* Next Turn Button */}
                       <Button
@@ -582,17 +583,18 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                 )}
               </TabsContent>
 
-              <TabsContent value="dice" className="flex-1 mt-0 p-4">
+              <TabsContent value="dice" className="flex-1 mt-0 p-4 overflow-auto">
                 <CombatDiceRoller />
               </TabsContent>
 
-              <TabsContent value="log" className="flex-1 mt-0 p-4">
+              <TabsContent value="log" className="flex-1 mt-0 p-4 overflow-auto">
                 <CombatLogPanel encounterId={encounter.id} />
               </TabsContent>
             </Tabs>
+          </div>
 
-            {/* Add Combatant Sheet */}
-            <Sheet open={showAddCombatant} onOpenChange={(open) => {
+          {/* Add Combatant Sheet */}
+          <Sheet open={showAddCombatant} onOpenChange={(open) => {
               setShowAddCombatant(open);
               if (!open) {
                 setCombatantType('monster');
