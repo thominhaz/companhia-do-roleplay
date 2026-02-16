@@ -61,7 +61,12 @@ export function SkillsStep({ data, updateData }: SkillsStepProps) {
     // Official class
     const skillOptions = selectedClass.proficiencies?.skills;
     if (skillOptions) {
-      availableSkillIds = Array.isArray(skillOptions.from) ? skillOptions.from : [];
+      if (skillOptions.from === 'any') {
+        // Classes like Bard can choose from any skill
+        availableSkillIds = Object.keys(SKILL_MAP);
+      } else if (Array.isArray(skillOptions.from)) {
+        availableSkillIds = skillOptions.from;
+      }
       maxChoices = skillOptions.choose || 2;
     }
   } else if (selectedHomebrewClass) {
