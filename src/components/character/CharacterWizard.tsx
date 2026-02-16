@@ -7,6 +7,7 @@ import { useCreateCharacter, CharacterInsert } from '@/hooks/useCharacters';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useAuth } from '@/hooks/useAuth';
 import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, getModifier, calculateHP, Attribute } from '@/data/srd';
+import armaduras from '@/data/equipment/armaduras.json';
 import { RaceStep } from './steps/RaceStep';
 import { ClassStep } from './steps/ClassStep';
 import { AttributesStep } from './steps/AttributesStep';
@@ -302,11 +303,32 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
         mechanical: f.mechanical || {},
       }));
 
-    // Calculate AC - Monk gets Unarmored Defense (10 + DEX + WIS)
-    let armorClass = 10 + dexModifier;
-    if (selectedClass.id === 'monk') {
+    // Calculate AC based on selected armor, class, and attributes
+    let armorClass = 10 + dexModifier; // Default: no armor
+
+    // Check if armor was selected in equipment step
+    if (data.armor) {
+      const selectedArmor = armaduras.items.find(a => a.name === data.armor);
+      if (selectedArmor) {
+        if (selectedArmor.category === 'shield') {
+          armorClass += (selectedArmor.armor_class as any).bonus || 2;
+        } else if (selectedArmor.category === 'heavy') {
+          armorClass = selectedArmor.armor_class.base;
+        } else if (selectedArmor.category === 'medium') {
+          const maxDex = selectedArmor.armor_class.max_dex_bonus ?? 2;
+          armorClass = selectedArmor.armor_class.base + Math.min(dexModifier, maxDex);
+        } else {
+          // Light armor: base + full DEX
+          armorClass = selectedArmor.armor_class.base + dexModifier;
+        }
+      }
+    } else if (selectedClass.id === 'monk') {
+      // Monk Unarmored Defense: 10 + DEX + WIS
       const wisModifier = getModifier(finalAttributes.wisdom);
       armorClass = 10 + dexModifier + wisModifier;
+    } else if (selectedClass.id === 'barbarian' || selectedClass.id === 'barbaro') {
+      // Barbarian Unarmored Defense: 10 + DEX + CON
+      armorClass = 10 + dexModifier + conModifier;
     }
 
     // Build spellcasting object with sorcery points if applicable
@@ -351,7 +373,21 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       equipment: [
         ...(data.primaryWeapon ? [{ id: 'primary', name: data.primaryWeapon, type: 'weapon' as const, equipped: true }] : []),
         ...(data.secondaryWeapon ? [{ id: 'secondary', name: data.secondaryWeapon, type: 'weapon' as const, equipped: true }] : []),
-        ...(data.armor ? [{ id: 'armor', name: data.armor, type: 'armor' as const, equipped: true }] : []),
+        ...(data.armor ? (() => {
+          const armorInfo = armaduras.items.find(a => a.name === data.armor);
+          const isShield = armorInfo?.category === 'shield';
+          return [{
+            id: 'armor',
+            name: data.armor,
+            type: (isShield ? 'shield' : 'armor') as 'armor' | 'shield',
+            equipped: true,
+            ...(armorInfo ? {
+              armorClass: isShield ? (armorInfo.armor_class as any).bonus : armorInfo.armor_class.base,
+              armorCategory: armorInfo.category as 'light' | 'medium' | 'heavy' | 'shield',
+              maxDexBonus: armorInfo.armor_class.max_dex_bonus,
+            } : {}),
+          }];
+        })() : []),
       ],
       inventory: [],
       currency: { copper: 0, silver: 0, electrum: 0, gold: 10, platinum: 0 },
