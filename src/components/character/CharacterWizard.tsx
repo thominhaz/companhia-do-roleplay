@@ -291,6 +291,41 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       tools: allToolProficiencies
     } as unknown as any[];
 
+    // Collect level 1 class features from JSON data
+    const level1Features = (selectedClass.features || [])
+      .filter(f => f.level === 1)
+      .map(f => ({
+        id: f.id,
+        name: f.name,
+        level: f.level,
+        description: f.description_markdown || '',
+        mechanical: f.mechanical || {},
+      }));
+
+    // Calculate AC - Monk gets Unarmored Defense (10 + DEX + WIS)
+    let armorClass = 10 + dexModifier;
+    if (selectedClass.id === 'monk') {
+      const wisModifier = getModifier(finalAttributes.wisdom);
+      armorClass = 10 + dexModifier + wisModifier;
+    }
+
+    // Build spellcasting object with sorcery points if applicable
+    const level1Data = selectedClass.levels?.[0];
+    let spellcastingObj: any = null;
+    if (data.selectedCantrips.length > 0 || data.selectedSpells.length > 0) {
+      spellcastingObj = {
+        cantrips: data.selectedCantrips,
+        knownSpells: data.selectedSpells,
+      };
+      // Add sorcery points for sorcerer
+      if (selectedClass.id === 'sorcerer' && level1Data) {
+        spellcastingObj.sorceryPoints = {
+          max: (level1Data as any).sorcery_points || 0,
+          current: (level1Data as any).sorcery_points || 0,
+        };
+      }
+    }
+
     const character: CharacterInsert = {
       name: data.name,
       race: selectedRace.name,
@@ -301,7 +336,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       max_hp: maxHp,
       current_hp: maxHp,
       temporary_hp: 0,
-      armor_class: 10 + dexModifier,
+      armor_class: armorClass,
       initiative: dexModifier,
       speed: Math.floor(selectedRace.speed),
       proficiency_bonus: 2,
@@ -320,10 +355,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       ],
       inventory: [],
       currency: { copper: 0, silver: 0, electrum: 0, gold: 10, platinum: 0 },
-      spellcasting: data.selectedCantrips.length > 0 || data.selectedSpells.length > 0 ? {
-        cantrips: data.selectedCantrips,
-        knownSpells: data.selectedSpells,
-      } : null,
+      spellcasting: spellcastingObj,
       spells: [...data.selectedCantrips, ...data.selectedSpells],
       background: BACKGROUNDS.find(b => b.id === data.background)?.name || data.background,
       alignment: ALIGNMENTS.find(a => a.id === data.alignment)?.name || data.alignment,
@@ -332,7 +364,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       bonds: data.bonds,
       flaws: data.flaws,
       backstory: data.backstory || null,
-      features: [],
+      features: level1Features,
       proficiencies: proficienciesObject,
       languages: [...selectedRace.languages, ...data.extraLanguages],
       image_url: null,
