@@ -1,6 +1,6 @@
 import { CampaignDB } from "@/hooks/useCampaigns";
-import { Gem, Loader2, Coins, Diamond, Palette, Wand2, RefreshCw, Copy, Check } from "lucide-react";
-import { useState } from "react";
+import { Gem, Loader2, Coins, Diamond, Palette, Wand2, RefreshCw, Copy, Check, ChevronDown, ChevronUp } from "lucide-react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -42,6 +42,16 @@ const RARITY_LABELS: Record<string, string> = {
   legendary: "Lendário",
 };
 
+function coinValueInGold(coins: TreasureResult["coins"]): number {
+  return (
+    (coins.cp || 0) / 100 +
+    (coins.sp || 0) / 10 +
+    (coins.ep || 0) / 2 +
+    (coins.gp || 0) +
+    (coins.pp || 0) * 10
+  );
+}
+
 export function GeneratorTreasure({ campaign }: GeneratorTreasureProps) {
   const [cr, setCr] = useState("1");
   const [treasureType, setTreasureType] = useState("hoard");
@@ -50,60 +60,72 @@ export function GeneratorTreasure({ campaign }: GeneratorTreasureProps) {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<TreasureResult | null>(null);
   const [copied, setCopied] = useState(false);
+  const [showForm, setShowForm] = useState(true);
+
+  // Auto-calculated values
+  const calculatedValues = useMemo(() => {
+    if (!result) return null;
+    const coinsGp = coinValueInGold(result.coins);
+    const gemsGp = result.gems.reduce((sum, g) => sum + (g.value_gp || 0), 0);
+    const artGp = result.art_objects.reduce((sum, a) => sum + (a.value_gp || 0), 0);
+    const totalGp = Math.round(coinsGp + gemsGp + artGp);
+    const perPlayer = partySize[0] > 0 ? Math.round(totalGp / partySize[0]) : totalGp;
+    return { coinsGp: Math.round(coinsGp), gemsGp, artGp, totalGp, perPlayer };
+  }, [result, partySize]);
 
   const handleGenerate = async () => {
     setLoading(true);
     setResult(null);
     try {
       const { data, error } = await supabase.functions.invoke("generate-treasure", {
-        body: {
-          cr,
-          treasure_type: treasureType,
-          party_level: partyLevel[0],
-          party_size: partySize[0],
-        },
+        body: { cr, treasure_type: treasureType, party_level: partyLevel[0], party_size: partySize[0] },
       });
 
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
 
       setResult(data as TreasureResult);
+      setShowForm(false);
     } catch (err) {
       console.error("Treasure generation error:", err);
-      toast.error("Erro ao gerar tesouro. Tente novamente.");
+      toast.error("Erro ao gerar tesouro. Verifique o endpoint da Digital Ocean.");
     } finally {
       setLoading(false);
     }
   };
 
-  const formatCoins = (coins: TreasureResult["coins"]) => {
-    const parts: string[] = [];
-    if (coins.pp > 0) parts.push(`${coins.pp} pl`);
-    if (coins.gp > 0) parts.push(`${coins.gp} po`);
-    if (coins.ep > 0) parts.push(`${coins.ep} pe`);
-    if (coins.sp > 0) parts.push(`${coins.sp} pp`);
-    if (coins.cp > 0) parts.push(`${coins.cp} pc`);
-    return parts.length > 0 ? parts.join(", ") : "Nenhuma moeda";
+  const formatCoinLine = (label: string, abbr: string, amount: number) => {
+    if (amount <= 0) return null;
+    return { label, abbr, amount };
   };
 
+  const coinLines = result ? [
+    formatCoinLine("Platina", "pl", result.coins.pp),
+    formatCoinLine("Ouro", "po", result.coins.gp),
+    formatCoinLine("Electrum", "pe", result.coins.ep),
+    formatCoinLine("Prata", "pp", result.coins.sp),
+    formatCoinLine("Cobre", "pc", result.coins.cp),
+  ].filter(Boolean) as { label: string; abbr: string; amount: number }[] : [];
+
   const copyToClipboard = () => {
-    if (!result) return;
-    let text = `🪙 Moedas: ${formatCoins(result.coins)}\n`;
+    if (!result || !calculatedValues) return;
+    let text = `🪙 Moedas (${calculatedValues.coinsGp} po equiv.):\n`;
+    coinLines.forEach(c => { text += `  ${c.amount} ${c.abbr}\n`; });
     if (result.gems.length > 0) {
-      text += `\n💎 Gemas:\n`;
-      result.gems.forEach(g => { text += `- ${g.name} (${g.value_gp} po) — ${g.description}\n`; });
+      text += `\n💎 Gemas (${calculatedValues.gemsGp} po):\n`;
+      result.gems.forEach(g => { text += `- ${g.name} — ${g.value_gp} po — ${g.description}\n`; });
     }
     if (result.art_objects.length > 0) {
-      text += `\n🎨 Objetos de Arte:\n`;
-      result.art_objects.forEach(a => { text += `- ${a.name} (${a.value_gp} po) — ${a.description}\n`; });
+      text += `\n🎨 Objetos de Arte (${calculatedValues.artGp} po):\n`;
+      result.art_objects.forEach(a => { text += `- ${a.name} — ${a.value_gp} po — ${a.description}\n`; });
     }
     if (result.magic_items.length > 0) {
       text += `\n✨ Itens Mágicos:\n`;
       result.magic_items.forEach(m => {
-        text += `- ${m.name} [${RARITY_LABELS[m.rarity] || m.rarity}] — ${m.description}${m.requires_attunement ? ' (requer sintonização)' : ''}\n`;
+        text += `- ${m.name} [${RARITY_LABELS[m.rarity] || m.rarity}] — ${m.description}${m.requires_attunement ? ' (sintonização)' : ''}\n`;
       });
     }
-    text += `\n💰 Valor Total Estimado: ${result.total_value_gp} po`;
+    text += `\n💰 Total: ${calculatedValues.totalGp} po (~${calculatedValues.perPlayer} po/jogador)`;
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -111,105 +133,126 @@ export function GeneratorTreasure({ campaign }: GeneratorTreasureProps) {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div>
         <h2 className="text-xl font-bold flex items-center gap-2">
           <Gem className="w-5 h-5" />
           Gerador de Tesouros
         </h2>
-        <p className="text-sm text-muted-foreground">Gere loot aleatório baseado no nível de dificuldade</p>
+        <p className="text-sm text-muted-foreground">Gere loot baseado no CR e tipo de encontro</p>
       </div>
 
-      {/* Form */}
-      <div className="bg-card rounded-2xl p-4 border border-border space-y-4">
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <Label>Nível de Desafio (CR)</Label>
-            <Select value={cr} onValueChange={setCr}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {CR_OPTIONS.map(c => (
-                  <SelectItem key={c} value={c}>CR {c}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      {/* Collapsible Form */}
+      {result && (
+        <button
+          onClick={() => setShowForm(!showForm)}
+          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          {showForm ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+          {showForm ? "Ocultar parâmetros" : "Alterar parâmetros"}
+        </button>
+      )}
+
+      {showForm && (
+        <div className="bg-card rounded-2xl p-4 border border-border space-y-4">
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">CR</Label>
+              <Select value={cr} onValueChange={setCr}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {CR_OPTIONS.map(c => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Tipo</Label>
+              <Select value={treasureType} onValueChange={setTreasureType}>
+                <SelectTrigger className="h-9"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="hoard">Tesouro</SelectItem>
+                  <SelectItem value="individual">Individual</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label>Tipo de Tesouro</Label>
-            <Select value={treasureType} onValueChange={setTreasureType}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                <SelectItem value="hoard">Tesouro (Hoard)</SelectItem>
-                <SelectItem value="individual">Individual</SelectItem>
-              </SelectContent>
-            </Select>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label className="text-xs">Nível: {partyLevel[0]}</Label>
+              <Slider value={partyLevel} onValueChange={setPartyLevel} min={1} max={20} step={1} />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs">Jogadores: {partySize[0]}</Label>
+              <Slider value={partySize} onValueChange={setPartySize} min={1} max={8} step={1} />
+            </div>
           </div>
+          <Button onClick={handleGenerate} disabled={loading} className="w-full" size="sm">
+            {loading ? (
+              <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Gerando...</>
+            ) : (
+              <><Gem className="w-4 h-4 mr-2" />Gerar Tesouro</>
+            )}
+          </Button>
         </div>
-
-        <div className="space-y-2">
-          <Label>Nível do Grupo: {partyLevel[0]}</Label>
-          <Slider value={partyLevel} onValueChange={setPartyLevel} min={1} max={20} step={1} />
-        </div>
-
-        <div className="space-y-2">
-          <Label>Tamanho do Grupo: {partySize[0]}</Label>
-          <Slider value={partySize} onValueChange={setPartySize} min={1} max={8} step={1} />
-        </div>
-
-        <Button onClick={handleGenerate} disabled={loading} className="w-full">
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              Gerando tesouro...
-            </>
-          ) : (
-            <>
-              <Gem className="w-4 h-4 mr-2" />
-              Gerar Tesouro
-            </>
-          )}
-        </Button>
-      </div>
+      )}
 
       {/* Results */}
-      {result && (
-        <div className="space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500">
-          {/* Actions */}
-          <div className="flex gap-2 justify-end">
-            <Button variant="outline" size="sm" onClick={handleGenerate} disabled={loading}>
-              <RefreshCw className="w-3.5 h-3.5 mr-1" />
-              Regerar
-            </Button>
-            <Button variant="outline" size="sm" onClick={copyToClipboard}>
-              {copied ? <Check className="w-3.5 h-3.5 mr-1" /> : <Copy className="w-3.5 h-3.5 mr-1" />}
-              {copied ? "Copiado!" : "Copiar"}
-            </Button>
+      {result && calculatedValues && (
+        <div className="space-y-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
+
+          {/* Summary Bar */}
+          <div className="bg-primary/10 rounded-2xl p-4 border border-primary/20">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-sm font-medium">Valor Total</span>
+              <div className="flex gap-2">
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={handleGenerate} disabled={loading}>
+                  <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
+                </Button>
+                <Button variant="ghost" size="icon" className="h-7 w-7" onClick={copyToClipboard}>
+                  {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+                </Button>
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-primary">{calculatedValues.totalGp} po</p>
+            <p className="text-xs text-muted-foreground">
+              ~{calculatedValues.perPlayer} po por jogador · Moedas {calculatedValues.coinsGp} po
+              {calculatedValues.gemsGp > 0 && ` · Gemas ${calculatedValues.gemsGp} po`}
+              {calculatedValues.artGp > 0 && ` · Arte ${calculatedValues.artGp} po`}
+            </p>
           </div>
 
           {/* Coins */}
-          <div className="bg-card rounded-2xl p-4 border border-border">
-            <h3 className="font-semibold flex items-center gap-2 mb-2">
-              <Coins className="w-4 h-4 text-yellow-500" />
-              Moedas
-            </h3>
-            <p className="text-sm">{formatCoins(result.coins)}</p>
-          </div>
+          {coinLines.length > 0 && (
+            <div className="bg-card rounded-2xl p-3 border border-border">
+              <h3 className="text-sm font-semibold flex items-center gap-1.5 mb-2">
+                <Coins className="w-4 h-4 text-yellow-500" />
+                Moedas
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {coinLines.map((c, i) => (
+                  <Badge key={i} variant="secondary" className="text-xs">
+                    {c.amount.toLocaleString("pt-BR")} {c.abbr}
+                  </Badge>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* Gems */}
           {result.gems.length > 0 && (
-            <div className="bg-card rounded-2xl p-4 border border-border">
-              <h3 className="font-semibold flex items-center gap-2 mb-3">
+            <div className="bg-card rounded-2xl p-3 border border-border">
+              <h3 className="text-sm font-semibold flex items-center gap-1.5 mb-2">
                 <Diamond className="w-4 h-4 text-cyan-400" />
-                Gemas ({result.gems.length})
+                Gemas · {calculatedValues.gemsGp} po
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {result.gems.map((gem, i) => (
-                  <div key={i} className="flex justify-between items-start gap-2 text-sm">
-                    <div>
+                  <div key={i} className="flex justify-between items-start gap-2 text-xs">
+                    <div className="min-w-0">
                       <span className="font-medium">{gem.name}</span>
-                      <p className="text-muted-foreground text-xs">{gem.description}</p>
+                      <span className="text-muted-foreground ml-1">— {gem.description}</span>
                     </div>
-                    <Badge variant="secondary" className="shrink-0">{gem.value_gp} po</Badge>
+                    <span className="shrink-0 text-muted-foreground">{gem.value_gp} po</span>
                   </div>
                 ))}
               </div>
@@ -218,19 +261,19 @@ export function GeneratorTreasure({ campaign }: GeneratorTreasureProps) {
 
           {/* Art Objects */}
           {result.art_objects.length > 0 && (
-            <div className="bg-card rounded-2xl p-4 border border-border">
-              <h3 className="font-semibold flex items-center gap-2 mb-3">
+            <div className="bg-card rounded-2xl p-3 border border-border">
+              <h3 className="text-sm font-semibold flex items-center gap-1.5 mb-2">
                 <Palette className="w-4 h-4 text-pink-400" />
-                Objetos de Arte ({result.art_objects.length})
+                Objetos de Arte · {calculatedValues.artGp} po
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 {result.art_objects.map((art, i) => (
-                  <div key={i} className="flex justify-between items-start gap-2 text-sm">
-                    <div>
+                  <div key={i} className="flex justify-between items-start gap-2 text-xs">
+                    <div className="min-w-0">
                       <span className="font-medium">{art.name}</span>
-                      <p className="text-muted-foreground text-xs">{art.description}</p>
+                      <span className="text-muted-foreground ml-1">— {art.description}</span>
                     </div>
-                    <Badge variant="secondary" className="shrink-0">{art.value_gp} po</Badge>
+                    <span className="shrink-0 text-muted-foreground">{art.value_gp} po</span>
                   </div>
                 ))}
               </div>
@@ -239,35 +282,29 @@ export function GeneratorTreasure({ campaign }: GeneratorTreasureProps) {
 
           {/* Magic Items */}
           {result.magic_items.length > 0 && (
-            <div className="bg-card rounded-2xl p-4 border border-border">
-              <h3 className="font-semibold flex items-center gap-2 mb-3">
+            <div className="bg-card rounded-2xl p-3 border border-border">
+              <h3 className="text-sm font-semibold flex items-center gap-1.5 mb-2">
                 <Wand2 className="w-4 h-4 text-purple-400" />
-                Itens Mágicos ({result.magic_items.length})
+                Itens Mágicos
               </h3>
-              <div className="space-y-3">
+              <div className="space-y-2">
                 {result.magic_items.map((item, i) => (
-                  <div key={i} className="text-sm">
-                    <div className="flex items-center gap-2 flex-wrap">
+                  <div key={i} className="text-xs">
+                    <div className="flex items-center gap-1.5 flex-wrap">
                       <span className="font-medium">{item.name}</span>
-                      <Badge variant="outline" className={RARITY_COLORS[item.rarity] || ""}>
+                      <Badge variant="outline" className={`text-[10px] px-1.5 py-0 ${RARITY_COLORS[item.rarity] || ""}`}>
                         {RARITY_LABELS[item.rarity] || item.rarity}
                       </Badge>
                       {item.requires_attunement && (
-                        <Badge variant="outline" className="text-xs">Sintonização</Badge>
+                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">Sint.</Badge>
                       )}
                     </div>
-                    <p className="text-muted-foreground text-xs mt-0.5">{item.type} — {item.description}</p>
+                    <p className="text-muted-foreground mt-0.5">{item.type} — {item.description}</p>
                   </div>
                 ))}
               </div>
             </div>
           )}
-
-          {/* Total */}
-          <div className="bg-primary/10 rounded-2xl p-4 border border-primary/20 text-center">
-            <p className="text-sm text-muted-foreground">Valor Total Estimado</p>
-            <p className="text-2xl font-bold text-primary">{result.total_value_gp} po</p>
-          </div>
         </div>
       )}
     </div>
