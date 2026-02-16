@@ -3,10 +3,13 @@ import StarterKit from '@tiptap/starter-kit';
 import Image from '@tiptap/extension-image';
 import Placeholder from '@tiptap/extension-placeholder';
 import Underline from '@tiptap/extension-underline';
-import { useRef } from 'react';
+import Mention from '@tiptap/extension-mention';
+import { useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { useCampaignImageUpload } from '@/hooks/useCampaignImageUpload';
+import { createNoteMentionSuggestion } from './noteMentionSuggestion';
+import type { NoteMentionItem } from './NoteMentionList';
 import {
   Bold,
   Italic,
@@ -33,11 +36,20 @@ interface TipTapEditorProps {
   campaignId: string;
   placeholder?: string;
   editable?: boolean;
+  availableNotes?: NoteMentionItem[];
+  onNavigateToNote?: (noteId: string) => void;
 }
 
-export function TipTapEditor({ content, onChange, campaignId, placeholder = 'Escreva aqui...', editable = true }: TipTapEditorProps) {
+export function TipTapEditor({ content, onChange, campaignId, placeholder = 'Escreva aqui...', editable = true, availableNotes = [], onNavigateToNote }: TipTapEditorProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { uploadImage, isUploading } = useCampaignImageUpload();
+  const notesRef = useRef<NoteMentionItem[]>(availableNotes);
+  notesRef.current = availableNotes;
+
+  const suggestion = useMemo(
+    () => createNoteMentionSuggestion(() => notesRef.current),
+    []
+  );
 
   const editor = useEditor({
     extensions: [
@@ -49,6 +61,23 @@ export function TipTapEditor({ content, onChange, campaignId, placeholder = 'Esc
         HTMLAttributes: {
           class: 'rounded-lg max-w-full my-2',
         },
+      }),
+      Mention.configure({
+        HTMLAttributes: {
+          class: 'mention-note',
+        },
+        renderHTML({ options, node }) {
+          return [
+            'span',
+            {
+              ...options.HTMLAttributes,
+              'data-note-id': node.attrs.id,
+              'data-type': 'mention',
+            },
+            `${options.suggestion.char}${node.attrs.label ?? node.attrs.id}`,
+          ];
+        },
+        suggestion,
       }),
       Placeholder.configure({ placeholder }),
     ],
@@ -75,7 +104,17 @@ export function TipTapEditor({ content, onChange, campaignId, placeholder = 'Esc
 
   if (!editable) {
     return (
-      <div className="prose prose-invert max-w-none prose-img:rounded-lg prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground/80">
+      <div
+        className="prose prose-invert max-w-none prose-img:rounded-lg prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground/80"
+        onClick={(e) => {
+          const target = e.target as HTMLElement;
+          const mention = target.closest('[data-note-id]');
+          if (mention && onNavigateToNote) {
+            e.preventDefault();
+            onNavigateToNote(mention.getAttribute('data-note-id')!);
+          }
+        }}
+      >
         <EditorContent editor={editor} />
       </div>
     );
@@ -162,7 +201,17 @@ export function TipTapEditor({ content, onChange, campaignId, placeholder = 'Esc
       </div>
 
       {/* Editor */}
-      <div className="p-3 min-h-[200px] [&_.tiptap]:outline-none [&_.tiptap]:min-h-[180px] [&_.tiptap_p.is-editor-empty:first-child::before]:text-muted-foreground [&_.tiptap_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.tiptap_p.is-editor-empty:first-child::before]:float-left [&_.tiptap_p.is-editor-empty:first-child::before]:h-0 [&_.tiptap_p.is-editor-empty:first-child::before]:pointer-events-none [&_.tiptap_h1]:text-2xl [&_.tiptap_h1]:font-bold [&_.tiptap_h1]:mb-2 [&_.tiptap_h2]:text-xl [&_.tiptap_h2]:font-bold [&_.tiptap_h2]:mb-2 [&_.tiptap_h3]:text-lg [&_.tiptap_h3]:font-semibold [&_.tiptap_h3]:mb-1 [&_.tiptap_ul]:list-disc [&_.tiptap_ul]:pl-6 [&_.tiptap_ol]:list-decimal [&_.tiptap_ol]:pl-6 [&_.tiptap_blockquote]:border-l-4 [&_.tiptap_blockquote]:border-primary/50 [&_.tiptap_blockquote]:pl-4 [&_.tiptap_blockquote]:italic [&_.tiptap_blockquote]:text-muted-foreground [&_.tiptap_pre]:bg-muted [&_.tiptap_pre]:rounded-lg [&_.tiptap_pre]:p-3 [&_.tiptap_pre]:font-mono [&_.tiptap_pre]:text-sm [&_.tiptap_hr]:border-border [&_.tiptap_hr]:my-4 [&_.tiptap_img]:rounded-lg [&_.tiptap_img]:max-w-full [&_.tiptap_p]:mb-1">
+      <div
+        className="p-3 min-h-[200px] [&_.tiptap]:outline-none [&_.tiptap]:min-h-[180px] [&_.tiptap_p.is-editor-empty:first-child::before]:text-muted-foreground [&_.tiptap_p.is-editor-empty:first-child::before]:content-[attr(data-placeholder)] [&_.tiptap_p.is-editor-empty:first-child::before]:float-left [&_.tiptap_p.is-editor-empty:first-child::before]:h-0 [&_.tiptap_p.is-editor-empty:first-child::before]:pointer-events-none [&_.tiptap_h1]:text-2xl [&_.tiptap_h1]:font-bold [&_.tiptap_h1]:mb-2 [&_.tiptap_h2]:text-xl [&_.tiptap_h2]:font-bold [&_.tiptap_h2]:mb-2 [&_.tiptap_h3]:text-lg [&_.tiptap_h3]:font-semibold [&_.tiptap_h3]:mb-1 [&_.tiptap_ul]:list-disc [&_.tiptap_ul]:pl-6 [&_.tiptap_ol]:list-decimal [&_.tiptap_ol]:pl-6 [&_.tiptap_blockquote]:border-l-4 [&_.tiptap_blockquote]:border-primary/50 [&_.tiptap_blockquote]:pl-4 [&_.tiptap_blockquote]:italic [&_.tiptap_blockquote]:text-muted-foreground [&_.tiptap_pre]:bg-muted [&_.tiptap_pre]:rounded-lg [&_.tiptap_pre]:p-3 [&_.tiptap_pre]:font-mono [&_.tiptap_pre]:text-sm [&_.tiptap_hr]:border-border [&_.tiptap_hr]:my-4 [&_.tiptap_img]:rounded-lg [&_.tiptap_img]:max-w-full [&_.tiptap_p]:mb-1 [&_.mention-note]:text-primary [&_.mention-note]:font-medium [&_.mention-note]:bg-primary/10 [&_.mention-note]:rounded [&_.mention-note]:px-1 [&_.mention-note]:py-0.5 [&_.mention-note]:cursor-pointer [&_.mention-note:hover]:bg-primary/20"
+        onClick={(e) => {
+          const target = e.target as HTMLElement;
+          const mention = target.closest('[data-note-id]');
+          if (mention && onNavigateToNote) {
+            e.preventDefault();
+            onNavigateToNote(mention.getAttribute('data-note-id')!);
+          }
+        }}
+      >
         <EditorContent editor={editor} />
       </div>
     </div>
