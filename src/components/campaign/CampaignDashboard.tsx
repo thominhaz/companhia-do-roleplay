@@ -77,7 +77,7 @@ const navItems: NavItem[] = [
   { id: 'timeline', label: 'Timeline', icon: Clock, masterOnly: true, category: 'workshops' },
   
   // Generators
-  { id: 'encounters', label: 'Encontros', icon: Sparkles, masterOnly: true, comingSoon: true, category: 'generators' },
+  { id: 'encounters', label: 'Encontros', icon: Sparkles, masterOnly: true, category: 'generators' },
   { id: 'treasure', label: 'Tesouros', icon: Gem, masterOnly: true, category: 'generators' },
   
   // Config
