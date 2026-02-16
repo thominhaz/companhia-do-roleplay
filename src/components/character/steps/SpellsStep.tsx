@@ -188,13 +188,35 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
   }, [firstLevelSpells, selectedSpells]);
 
   if (!spellcastingInfo) {
+    // Show level 1 class features for non-spellcasters
+    const level1Features = (selectedClass?.features || []).filter(f => f.level === 1);
+    
     return (
-      <div className="p-4 text-center">
-        <Wand2 className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
-        <h2 className="text-xl font-bold text-foreground">Sem Magias</h2>
-        <p className="text-sm text-muted-foreground mt-2">
-          A classe {selectedClass?.name} não possui habilidades de conjuração no 1º nível.
-        </p>
+      <div className="p-4 space-y-4">
+        <div className="text-center">
+          <Sword className="w-12 h-12 mx-auto text-muted-foreground/50 mb-3" />
+          <h2 className="text-xl font-bold text-foreground">Sem Magias</h2>
+          <p className="text-sm text-muted-foreground mt-2">
+            A classe {selectedClass?.name} não possui habilidades de conjuração no 1º nível.
+          </p>
+        </div>
+        
+        {level1Features.length > 0 && (
+          <div className="space-y-3 mt-6">
+            <h3 className="text-sm font-semibold uppercase tracking-wider text-primary">
+              Habilidades de Classe (Nível 1)
+            </h3>
+            {level1Features.map(feature => (
+              <div key={feature.id} className="glass rounded-xl p-4 border border-border">
+                <h4 className="text-sm font-bold text-foreground">{feature.name}</h4>
+                <p className="text-xs text-muted-foreground mt-1 whitespace-pre-line">
+                  {feature.description_markdown.slice(0, 300)}
+                  {feature.description_markdown.length > 300 ? '...' : ''}
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
