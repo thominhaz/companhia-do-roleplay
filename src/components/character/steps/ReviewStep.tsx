@@ -1,6 +1,7 @@
 import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, getModifier, getModifierString, calculateHP, Attribute, getAttributeName } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
 import { Heart, Shield, Zap } from 'lucide-react';
+import armaduras from '@/data/equipment/armaduras.json';
 
 interface ReviewStepProps {
   data: WizardData;
@@ -25,15 +26,12 @@ export function ReviewStep({ data }: ReviewStepProps) {
   // Calculate final attributes with racial bonuses
   const getFinalScore = (attr: Attribute): number => {
     let score = data.attributes[attr];
-    // Fixed racial bonuses
     if (selectedRace?.ability_bonuses[attr]) {
       score += (selectedRace.ability_bonuses[attr] as number) || 0;
     }
-    // Chosen racial bonuses (for races like Half-Elf)
     if (data.abilityBonusChoices?.includes(attr)) {
       score += 1;
     }
-    // Subrace bonuses
     if (selectedSubrace?.ability_bonuses[attr]) {
       score += (selectedSubrace.ability_bonuses[attr] as number) || 0;
     }
@@ -47,7 +45,29 @@ export function ReviewStep({ data }: ReviewStepProps) {
   const conMod = getModifier(finalAttributes.constitution);
   const dexMod = getModifier(finalAttributes.dexterity);
   const hp = selectedClass ? calculateHP(selectedClass.hit_die, conMod, 1) : 10;
-  const ac = 10 + dexMod;
+  
+  // Calculate AC properly based on selected armor
+  let ac = 10 + dexMod; // Default: no armor
+  if (data.armor) {
+    const selectedArmor = armaduras.items.find(a => a.name === data.armor);
+    if (selectedArmor) {
+      if (selectedArmor.category === 'shield') {
+        ac += (selectedArmor.armor_class as any).bonus || 2;
+      } else if (selectedArmor.category === 'heavy') {
+        ac = selectedArmor.armor_class.base;
+      } else if (selectedArmor.category === 'medium') {
+        const maxDex = selectedArmor.armor_class.max_dex_bonus ?? 2;
+        ac = selectedArmor.armor_class.base + Math.min(dexMod, maxDex);
+      } else {
+        ac = selectedArmor.armor_class.base + dexMod;
+      }
+    }
+  } else if (selectedClass?.id === 'monk') {
+    const wisMod = getModifier(finalAttributes.wisdom);
+    ac = 10 + dexMod + wisMod;
+  } else if (selectedClass?.id === 'barbarian' || selectedClass?.id === 'barbaro') {
+    ac = 10 + dexMod + conMod;
+  }
 
   return (
     <div className="px-4 py-6 space-y-6">
