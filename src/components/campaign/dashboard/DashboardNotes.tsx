@@ -87,6 +87,13 @@ export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
     setIsEditing(false);
   };
 
+  const navigateToNote = (noteId: string) => {
+    const target = notes?.find(n => n.id === noteId);
+    if (target) openNote(target);
+  };
+
+  const availableNotes = (notes || []).map(n => ({ id: n.id, label: n.title }));
+
   const startEditing = () => {
     if (selectedNote) {
       setEditForm({ title: selectedNote.title, content: selectedNote.content || "", is_public: selectedNote.is_public });
@@ -197,7 +204,9 @@ export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
                   content={editForm.content}
                   onChange={(html) => setEditForm(prev => ({ ...prev, content: html }))}
                   campaignId={campaign.id}
-                  placeholder="Escreva sua nota aqui..."
+                  placeholder="Escreva sua nota aqui... Use @ para mencionar outras notas"
+                  availableNotes={availableNotes}
+                  onNavigateToNote={navigateToNote}
                 />
               ) : (
                 <TipTapEditor
@@ -205,6 +214,7 @@ export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
                   onChange={() => {}}
                   campaignId={campaign.id}
                   editable={false}
+                  onNavigateToNote={navigateToNote}
                 />
               )
             ) : (
