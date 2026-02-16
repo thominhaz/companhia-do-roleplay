@@ -621,6 +621,8 @@ export type Database = {
           created_at: string
           id: string
           is_public: boolean
+          parent_id: string | null
+          sort_order: number | null
           title: string
           updated_at: string
           user_id: string
@@ -631,6 +633,8 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean
+          parent_id?: string | null
+          sort_order?: number | null
           title: string
           updated_at?: string
           user_id: string
@@ -641,6 +645,8 @@ export type Database = {
           created_at?: string
           id?: string
           is_public?: boolean
+          parent_id?: string | null
+          sort_order?: number | null
           title?: string
           updated_at?: string
           user_id?: string
@@ -651,6 +657,13 @@ export type Database = {
             columns: ["campaign_id"]
             isOneToOne: false
             referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_notes_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_notes"
             referencedColumns: ["id"]
           },
         ]

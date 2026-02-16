@@ -1,28 +1,21 @@
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCampaignNotes, useCreateNote, useUpdateNote, useDeleteNote, CampaignNote } from "@/hooks/useNotes";
-import { useCampaignImageUpload } from "@/hooks/useCampaignImageUpload";
 import { useAuth } from "@/hooks/useAuth";
 import { 
-  StickyNote, 
-  Plus, 
-  Trash2, 
   Loader2, 
   Eye, 
   EyeOff,
   Save,
-  ArrowLeft,
   Edit,
-  User,
-  ImagePlus,
-  X
+  FileText,
+  PanelLeftClose,
+  PanelLeft,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
@@ -32,6 +25,8 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { NotesTreeSidebar } from "./notes/NotesTreeSidebar";
+import { TipTapEditor } from "./notes/TipTapEditor";
 
 interface CampaignNotesSheetProps {
   campaignId: string;
@@ -43,53 +38,36 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
   const { user } = useAuth();
   const [selectedNote, setSelectedNote] = useState<CampaignNote | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
   const [editForm, setEditForm] = useState({ title: "", content: "", is_public: false });
-  const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const { data: notes, isLoading } = useCampaignNotes(campaignId);
   const createNote = useCreateNote();
   const updateNote = useUpdateNote();
   const deleteNote = useDeleteNote();
-  const { uploadImage, isUploading, progress } = useCampaignImageUpload();
 
-  const myNotes = notes?.filter(n => n.user_id === user?.id) || [];
-  const publicNotes = notes?.filter(n => n.is_public && n.user_id !== user?.id) || [];
-
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const url = await uploadImage(file, { folder: `notes/${campaignId}`, maxSizeKB: 500 });
-    if (url) {
-      // Insert image markdown into content
-      const imageMarkdown = `\n![Imagem](${url})\n`;
-      setEditForm(prev => ({
-        ...prev,
-        content: prev.content + imageMarkdown,
-      }));
-      setUploadedImages(prev => [...prev, url]);
+  // Sync selected note with latest data
+  useEffect(() => {
+    if (selectedNote && notes) {
+      const updated = notes.find(n => n.id === selectedNote.id);
+      if (updated) setSelectedNote(updated);
     }
+  }, [notes]);
 
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
-  };
-
-  const handleCreateNote = async () => {
-    if (!editForm.title.trim()) return;
-
-    await createNote.mutateAsync({
+  const handleCreateNote = async (parentId?: string) => {
+    const newNote = await createNote.mutateAsync({
       campaign_id: campaignId,
-      title: editForm.title,
-      content: editForm.content,
-      is_public: editForm.is_public,
+      title: "Nova Nota",
+      content: "",
+      is_public: false,
+      parent_id: parentId || null,
     });
 
-    setEditForm({ title: "", content: "", is_public: false });
-    setUploadedImages([]);
-    setIsCreating(false);
+    if (newNote) {
+      setSelectedNote(newNote);
+      setEditForm({ title: newNote.title, content: "", is_public: false });
+      setIsEditing(true);
+    }
   };
 
   const handleUpdateNote = async () => {
@@ -104,8 +82,6 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
     });
 
     setIsEditing(false);
-    setSelectedNote(null);
-    setUploadedImages([]);
   };
 
   const handleDeleteNote = async (note: CampaignNote) => {
@@ -124,7 +100,6 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
       is_public: note.is_public,
     });
     setIsEditing(false);
-    setUploadedImages([]);
   };
 
   const startEditing = () => {
@@ -138,340 +113,142 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
     }
   };
 
-  const startCreating = () => {
-    setEditForm({ title: "", content: "", is_public: false });
-    setIsCreating(true);
-    setSelectedNote(null);
-    setIsEditing(false);
-    setUploadedImages([]);
-  };
+  const isOwner = selectedNote?.user_id === user?.id;
 
-  const goBack = () => {
-    setSelectedNote(null);
-    setIsEditing(false);
-    setIsCreating(false);
-    setUploadedImages([]);
-  };
-
-  // Render note content with images
-  const renderNoteContent = (content: string) => {
-    // Parse markdown-style images: ![alt](url)
-    const parts = content.split(/!\[([^\]]*)\]\(([^)]+)\)/g);
-    const elements: React.ReactNode[] = [];
-    
-    for (let i = 0; i < parts.length; i++) {
-      if (i % 3 === 0) {
-        // Text part
-        if (parts[i]) {
-          elements.push(
-            <p key={i} className="whitespace-pre-wrap text-foreground">
-              {parts[i]}
-            </p>
-          );
-        }
-      } else if (i % 3 === 2) {
-        // Image URL
-        elements.push(
-          <img 
-            key={i} 
-            src={parts[i]} 
-            alt={parts[i-1] || 'Imagem'}
-            className="rounded-lg max-w-full my-2 cursor-pointer"
-            onClick={() => window.open(parts[i], '_blank')}
-          />
-        );
-      }
-    }
-
-    return elements.length > 0 ? elements : <p className="whitespace-pre-wrap text-foreground">{content}</p>;
-  };
-
-  // Note detail/edit view
-  if (selectedNote || isCreating) {
-    const isOwner = selectedNote?.user_id === user?.id;
-    const canEdit = isOwner || isCreating;
-
-    return (
-      <Sheet open={open} onOpenChange={onOpenChange}>
-        <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl p-0">
-          <SheetHeader className="p-6 pb-4 border-b border-border">
-            <div className="flex items-center gap-3">
-              <Button variant="ghost" size="icon" onClick={goBack}>
-                <ArrowLeft className="w-5 h-5" />
-              </Button>
-              <div className="flex-1">
-                <SheetTitle className="text-xl">
-                  {isCreating ? "Nova Nota" : (isEditing ? "Editar Nota" : selectedNote?.title)}
-                </SheetTitle>
-              </div>
-              {canEdit && !isEditing && !isCreating && (
-                <Button variant="ghost" size="icon" onClick={startEditing}>
-                  <Edit className="w-5 h-5" />
-                </Button>
-              )}
-            </div>
-          </SheetHeader>
-
-          <ScrollArea className="h-[calc(90vh-100px)]">
-            <div className="p-6 space-y-4">
-              {isEditing || isCreating ? (
-                <>
-                  <div className="space-y-2">
-                    <Label>Título</Label>
-                    <Input
-                      value={editForm.title}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="Título da nota..."
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label>Conteúdo</Label>
-                      <input
-                        ref={fileInputRef}
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageUpload}
-                        className="hidden"
-                      />
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isUploading}
-                      >
-                        {isUploading ? (
-                          <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                        ) : (
-                          <ImagePlus className="w-4 h-4 mr-1" />
-                        )}
-                        Adicionar Imagem
-                      </Button>
-                    </div>
-                    <Textarea
-                      value={editForm.content}
-                      onChange={(e) => setEditForm(prev => ({ ...prev, content: e.target.value }))}
-                      placeholder="Escreva sua nota aqui..."
-                      className="min-h-[200px]"
-                    />
-                  </div>
-
-                  {/* Show uploaded images preview */}
-                  {uploadedImages.length > 0 && (
-                    <div className="flex flex-wrap gap-2">
-                      {uploadedImages.map((url, idx) => (
-                        <img 
-                          key={idx} 
-                          src={url} 
-                          alt={`Uploaded ${idx + 1}`}
-                          className="w-20 h-20 object-cover rounded-lg"
-                        />
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
-                    <div className="flex items-center gap-2">
-                      {editForm.is_public ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      <div>
-                        <p className="text-sm font-medium">Nota pública</p>
-                        <p className="text-xs text-muted-foreground">
-                          {editForm.is_public ? "Visível para todos da campanha" : "Apenas você pode ver"}
-                        </p>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={editForm.is_public}
-                      onCheckedChange={(checked) => setEditForm(prev => ({ ...prev, is_public: checked }))}
-                    />
-                  </div>
-
-                  <Button
-                    onClick={isCreating ? handleCreateNote : handleUpdateNote}
-                    disabled={!editForm.title.trim() || createNote.isPending || updateNote.isPending || isUploading}
-                    className="w-full"
-                  >
-                    {(createNote.isPending || updateNote.isPending) ? (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    ) : (
-                      <Save className="w-4 h-4 mr-2" />
-                    )}
-                    {isCreating ? "Criar Nota" : "Salvar"}
-                  </Button>
-                </>
-              ) : (
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
-                    {selectedNote?.profile && (
-                      <>
-                        <div className="flex items-center gap-1.5">
-                          <Avatar className="w-5 h-5">
-                            <AvatarImage src={selectedNote.profile.avatar_url || undefined} />
-                            <AvatarFallback className="text-[10px]">
-                              {selectedNote.profile.display_name?.charAt(0).toUpperCase() || 'U'}
-                            </AvatarFallback>
-                          </Avatar>
-                          <span className="font-medium text-foreground">
-                            {selectedNote.profile.display_name || 'Jogador'}
-                          </span>
-                        </div>
-                        <span>•</span>
-                      </>
-                    )}
-                    {selectedNote?.is_public ? (
-                      <Eye className="w-4 h-4" />
-                    ) : (
-                      <EyeOff className="w-4 h-4" />
-                    )}
-                    <span>{selectedNote?.is_public ? "Pública" : "Privada"}</span>
-                    <span>•</span>
-                    <span>
-                      {formatDistanceToNow(new Date(selectedNote?.updated_at || ""), { locale: ptBR, addSuffix: true })}
-                    </span>
-                  </div>
-                  <div className="prose prose-invert max-w-none">
-                    {renderNoteContent(selectedNote?.content || "Sem conteúdo")}
-                  </div>
-                </div>
-              )}
-            </div>
-          </ScrollArea>
-        </SheetContent>
-      </Sheet>
-    );
-  }
-
-  // Notes list view
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl p-0">
-        <SheetHeader className="p-6 pb-4 border-b border-border">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                <StickyNote className="w-6 h-6 text-amber-500" />
-              </div>
-              <div>
-                <SheetTitle className="text-xl">Notas</SheetTitle>
-                <p className="text-sm text-muted-foreground">
-                  {notes?.length || 0} notas
-                </p>
-              </div>
-            </div>
-            <Button onClick={startCreating} className="gap-2">
-              <Plus className="w-4 h-4" />
-              Nova Nota
-            </Button>
-          </div>
+        <SheetHeader className="sr-only">
+          <SheetTitle>Notas da Campanha</SheetTitle>
         </SheetHeader>
 
         {isLoading ? (
-          <div className="flex items-center justify-center h-64">
+          <div className="flex items-center justify-center h-full">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
           </div>
         ) : (
-          <ScrollArea className="h-[calc(90vh-120px)]">
-            <div className="p-4 space-y-6">
-              {/* My Notes */}
-              {myNotes.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">Minhas Notas</h3>
-                  <div className="space-y-2">
-                    {myNotes.map(note => (
-                      <div
-                        key={note.id}
-                        onClick={() => openNote(note)}
-                        className="bg-card rounded-xl p-4 border border-border cursor-pointer hover:border-primary/50 transition-colors"
-                      >
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <h4 className="font-semibold truncate">{note.title}</h4>
-                              {note.is_public ? (
-                                <Eye className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                              ) : (
-                                <EyeOff className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                              )}
-                            </div>
-                            <p className="text-sm text-muted-foreground truncate mt-1">
-                              {note.content?.replace(/!\[[^\]]*\]\([^)]+\)/g, '[imagem]') || "Sem conteúdo"}
-                            </p>
-                            <p className="text-xs text-muted-foreground/70 mt-2">
-                              {formatDistanceToNow(new Date(note.updated_at), { locale: ptBR, addSuffix: true })}
-                            </p>
-                          </div>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteNote(note);
-                            }}
-                          >
-                            <Trash2 className="w-4 h-4 text-muted-foreground" />
-                          </Button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+          <div className="flex h-full">
+            {/* Sidebar */}
+            {sidebarOpen && (
+              <div className="w-64 flex-shrink-0">
+                <NotesTreeSidebar
+                  notes={notes || []}
+                  selectedNoteId={selectedNote?.id || null}
+                  onSelectNote={openNote}
+                  onCreateNote={handleCreateNote}
+                  onDeleteNote={handleDeleteNote}
+                />
+              </div>
+            )}
 
-              {/* Public Notes from others */}
-              {publicNotes.length > 0 && (
-                <div>
-                  <h3 className="text-sm font-semibold text-muted-foreground mb-3">Notas Compartilhadas</h3>
-                  <div className="space-y-2">
-                    {publicNotes.map(note => (
-                      <div
-                        key={note.id}
-                        onClick={() => openNote(note)}
-                        className="bg-card rounded-xl p-4 border border-border cursor-pointer hover:border-primary/50 transition-colors"
-                      >
-                        <div className="flex items-center gap-2 mb-1">
-                          <h4 className="font-semibold truncate">{note.title}</h4>
-                          <Eye className="w-3 h-3 text-muted-foreground flex-shrink-0" />
-                        </div>
-                        <p className="text-sm text-muted-foreground truncate">
-                          {note.content?.replace(/!\[[^\]]*\]\([^)]+\)/g, '[imagem]') || "Sem conteúdo"}
-                        </p>
-                        <div className="flex items-center gap-2 mt-2 text-xs text-muted-foreground/70">
-                          <div className="flex items-center gap-1.5">
+            {/* Main Content */}
+            <div className="flex-1 flex flex-col min-w-0">
+              {/* Header */}
+              <div className="flex items-center gap-2 p-3 border-b border-border">
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSidebarOpen(!sidebarOpen)}>
+                  {sidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeft className="w-4 h-4" />}
+                </Button>
+
+                {selectedNote && !isEditing && (
+                  <>
+                    <div className="flex-1 min-w-0">
+                      <h2 className="font-semibold truncate">{selectedNote.title}</h2>
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        {selectedNote.profile && (
+                          <>
                             <Avatar className="w-4 h-4">
-                              <AvatarImage src={note.profile?.avatar_url || undefined} />
+                              <AvatarImage src={selectedNote.profile.avatar_url || undefined} />
                               <AvatarFallback className="text-[8px]">
-                                {note.profile?.display_name?.charAt(0).toUpperCase() || 'U'}
+                                {selectedNote.profile.display_name?.charAt(0).toUpperCase() || 'U'}
                               </AvatarFallback>
                             </Avatar>
-                            <span>{note.profile?.display_name || 'Jogador'}</span>
-                          </div>
-                          <span>•</span>
-                          <span>
-                            {formatDistanceToNow(new Date(note.updated_at), { locale: ptBR, addSuffix: true })}
-                          </span>
-                        </div>
+                            <span>{selectedNote.profile.display_name || 'Jogador'}</span>
+                            <span>•</span>
+                          </>
+                        )}
+                        {selectedNote.is_public ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                        <span>{selectedNote.is_public ? "Pública" : "Privada"}</span>
+                        <span>•</span>
+                        <span>{formatDistanceToNow(new Date(selectedNote.updated_at), { locale: ptBR, addSuffix: true })}</span>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    </div>
+                    {isOwner && (
+                      <Button variant="ghost" size="icon" className="h-8 w-8" onClick={startEditing}>
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </>
+                )}
 
-              {notes?.length === 0 && (
-                <div className="text-center py-12">
-                  <StickyNote className="w-16 h-16 mx-auto text-muted-foreground/30 mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">Nenhuma nota</h3>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Crie notas para registrar informações importantes da campanha
-                  </p>
-                  <Button onClick={startCreating}>
-                    <Plus className="w-4 h-4 mr-2" />
-                    Criar Nota
-                  </Button>
+                {isEditing && selectedNote && (
+                  <div className="flex-1 flex items-center gap-2">
+                    <Input
+                      value={editForm.title}
+                      onChange={(e) => setEditForm(prev => ({ ...prev, title: e.target.value }))}
+                      className="h-8 font-semibold"
+                      placeholder="Título da nota..."
+                    />
+                    <div className="flex items-center gap-2 flex-shrink-0">
+                      <div className="flex items-center gap-1.5">
+                        {editForm.is_public ? <Eye className="w-3.5 h-3.5 text-muted-foreground" /> : <EyeOff className="w-3.5 h-3.5 text-muted-foreground" />}
+                        <Switch
+                          checked={editForm.is_public}
+                          onCheckedChange={(checked) => setEditForm(prev => ({ ...prev, is_public: checked }))}
+                          className="scale-75"
+                        />
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={handleUpdateNote}
+                        disabled={!editForm.title.trim() || updateNote.isPending}
+                      >
+                        {updateNote.isPending ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Save className="w-4 h-4 mr-1" />
+                        )}
+                        Salvar
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {!selectedNote && (
+                  <span className="text-sm text-muted-foreground">Selecione ou crie uma nota</span>
+                )}
+              </div>
+
+              {/* Content */}
+              <ScrollArea className="flex-1">
+                <div className="p-4">
+                  {selectedNote ? (
+                    isEditing ? (
+                      <TipTapEditor
+                        content={editForm.content}
+                        onChange={(html) => setEditForm(prev => ({ ...prev, content: html }))}
+                        campaignId={campaignId}
+                        placeholder="Escreva sua nota aqui..."
+                      />
+                    ) : (
+                      <TipTapEditor
+                        content={selectedNote.content || "<p></p>"}
+                        onChange={() => {}}
+                        campaignId={campaignId}
+                        editable={false}
+                      />
+                    )
+                  ) : (
+                    <div className="flex items-center justify-center h-64">
+                      <div className="text-center">
+                        <FileText className="w-12 h-12 mx-auto text-muted-foreground/30 mb-3" />
+                        <p className="text-muted-foreground">Selecione uma nota para visualizar</p>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
+              </ScrollArea>
             </div>
-          </ScrollArea>
+          </div>
         )}
       </SheetContent>
     </Sheet>
