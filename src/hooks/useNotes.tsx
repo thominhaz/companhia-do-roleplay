@@ -10,6 +10,8 @@ export interface CampaignNote {
   title: string;
   content: string | null;
   is_public: boolean;
+  parent_id: string | null;
+  sort_order: number;
   created_at: string;
   updated_at: string;
   profile?: {
@@ -65,7 +67,7 @@ export function useCreateNote() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (note: { campaign_id: string; title: string; content?: string; is_public?: boolean }) => {
+    mutationFn: async (note: { campaign_id: string; title: string; content?: string; is_public?: boolean; parent_id?: string | null }) => {
       if (!user) throw new Error('Usuário não autenticado');
 
       const { data, error } = await supabase
