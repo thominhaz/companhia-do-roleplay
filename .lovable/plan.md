@@ -106,15 +106,15 @@ Na funcao `handleCastSpell` (linha 324), cantrips sao corretamente identificados
 
 ## Resumo de Bugs para Corrigir
 
-| # | Bug | Severidade | Arquivo |
-|---|-----|-----------|---------|
-| 1 | "Pontos de Vida" titulo duplicado | Baixa | CharacterSheet.tsx L1275-1278 |
-| 2 | Spell slots incorretos para meio-conjuradores e Bruxo | Alta | SpellCastDialog.tsx, SpellsManagementSheet.tsx |
-| 3 | Spellcasting ability fallback pode estar errado | Media | CharacterSheet.tsx L2053-2058 |
-| 4 | Descanso Longo nao recupera spell slots automaticamente | Media | CharacterSheet.tsx L737-761 |
-| 5 | Death saves nao resetam ao curar de 0 HP | Media | CharacterSheet.tsx L599-648 |
-| 6 | Magias limitadas a 10 sem indicacao de mais | Baixa | CharacterSheet.tsx L2086 |
-| 7 | Milestone toggle nao persiste entre sessoes | Baixa | CharacterSheet.tsx L297 |
+| # | Bug | Severidade | Status |
+|---|-----|-----------|--------|
+| 1 | "Pontos de Vida" titulo duplicado | Baixa | ✅ CORRIGIDO |
+| 2 | Spell slots incorretos para meio-conjuradores e Bruxo | Alta | ✅ CORRIGIDO - Criado spellSlotUtils.ts com tabelas separadas |
+| 3 | Spellcasting ability fallback pode estar errado | Media | ✅ CORRIGIDO - Usando getSpellcastingAbility() |
+| 4 | Descanso Longo nao recupera spell slots automaticamente | Media | ✅ CORRIGIDO - handleLongRest agora reseta slots e concentracao |
+| 5 | Death saves nao resetam ao curar de 0 HP | Media | ✅ CORRIGIDO - handleHpChange reseta death_saves |
+| 6 | Magias limitadas a 10 sem indicacao de mais | Baixa | ✅ CORRIGIDO - Removido .slice(0, 10) |
+| 7 | Milestone toggle nao persiste entre sessoes | Baixa | ✅ CORRIGIDO - Usando localStorage |
 
 ## Abordagem de Execucao
 

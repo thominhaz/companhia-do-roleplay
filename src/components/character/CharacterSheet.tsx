@@ -54,7 +54,8 @@ import { NotesSheet } from "./NotesSheet";
 import { CharacterHistorySheet } from "./CharacterHistorySheet";
 import { CombatStatusCard } from "./CombatStatusCard";
 import { InventoryManagementSheet } from "./InventoryManagementSheet";
-import { SpellCastDialog, SPELL_SLOTS_BY_LEVEL, type ActiveConcentration } from "./SpellCastDialog";
+import { SpellCastDialog, type ActiveConcentration } from "./SpellCastDialog";
+import { getSpellSlotsForClass, getSpellcastingAbility } from "@/lib/spellSlotUtils";
 import { useAddCombatLog } from "@/hooks/useCombatLogs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -294,7 +295,9 @@ export function CharacterSheet() {
   const [selectedSpellDetail, setSelectedSpellDetail] = useState<SpellData | null>(null);
   const [spellsLoading, setSpellsLoading] = useState(true);
   const [xpInput, setXpInput] = useState('');
-  const [useMilestone, setUseMilestone] = useState(false);
+  const [useMilestone, setUseMilestone] = useState(() => {
+    try { return localStorage.getItem('go20_use_milestone') === 'true'; } catch { return false; }
+  });
   const [showInventory, setShowInventory] = useState(false);
   const [spellToCast, setSpellToCast] = useState<SpellData | null>(null);
   const [showSpellCastDialog, setShowSpellCastDialog] = useState(false);
@@ -302,11 +305,11 @@ export function CharacterSheet() {
   // Combat log integration
   const addCombatLog = useAddCombatLog();
 
-  // Get spell slots for character
+  // Get spell slots for character based on class type
   const spellSlots = useMemo(() => {
     if (!character) return [0, 0, 0, 0, 0, 0, 0, 0, 0];
-    return SPELL_SLOTS_BY_LEVEL[character.level.toString()] || [0, 0, 0, 0, 0, 0, 0, 0, 0];
-  }, [character?.level]);
+    return getSpellSlotsForClass(character.class, character.level);
+  }, [character?.level, character?.class]);
 
   // Get used slots from character spellcasting
   const usedSlots = useMemo(() => {
@@ -622,13 +625,21 @@ export function CharacterSheet() {
       // Healing - only affects current HP, not temp
       newCurrentHp = Math.min(character.max_hp, newCurrentHp + delta);
     }
+
+    // Reset death saves when healed from 0 HP
+    const wasAtZero = character.current_hp === 0;
+    const healedFromZero = wasAtZero && newCurrentHp > 0;
     
     try {
-      await updateCharacter.mutateAsync({
+      const updateData: any = {
         id: character.id,
         current_hp: newCurrentHp,
-        temporary_hp: newTempHp
-      });
+        temporary_hp: newTempHp,
+      };
+      if (healedFromZero) {
+        updateData.death_saves = { successes: 0, failures: 0 };
+      }
+      await updateCharacter.mutateAsync(updateData);
       // Sync with combat
       await syncHpWithCombat(newCurrentHp);
       
@@ -743,17 +754,23 @@ export function CharacterSheet() {
     const newHitDiceCurrent = Math.min(hitDice.total, hitDice.current + hitDiceRecovered);
     const newHitDice = { ...hitDice, current: newHitDiceCurrent };
 
-    // Reset temporary HP
+    // Reset temporary HP, recover spell slots, reset death saves
     try {
       await updateCharacter.mutateAsync({
         id: character.id,
         current_hp: newHp,
         temporary_hp: 0,
-        hit_dice: newHitDice
+        hit_dice: newHitDice,
+        death_saves: { successes: 0, failures: 0 },
+        spellcasting: {
+          ...(character.spellcasting as any),
+          usedSlots: [0, 0, 0, 0, 0, 0, 0, 0, 0],
+          activeConcentration: null,
+        },
       });
       // Sync with combat
       await syncHpWithCombat(newHp, newHp);
-      toast.success(`Descanso Longo: HP recuperado (${newHp}), +${hitDiceRecovered} dados de vida`);
+      toast.success(`Descanso Longo: HP recuperado (${newHp}), +${hitDiceRecovered} dados de vida, slots restaurados`);
       setShowRestDialog(null);
     } catch (error) {
       toast.error('Erro ao realizar descanso');
@@ -1146,7 +1163,7 @@ export function CharacterSheet() {
                     <Switch
                       id="milestone-toggle"
                       checked={useMilestone}
-                      onCheckedChange={setUseMilestone}
+                      onCheckedChange={(v) => { setUseMilestone(v); try { localStorage.setItem('go20_use_milestone', String(v)); } catch {} }}
                       className="data-[state=checked]:bg-primary scale-90 sm:scale-100"
                     />
                   </div>
@@ -1275,7 +1292,6 @@ export function CharacterSheet() {
                   <Heart className="w-4 h-4 text-primary" />
                   Pontos de Vida
                 </h3>
-                <h3 className="text-sm font-semibold text-foreground">Pontos de Vida</h3>
                 
                 {/* HP Progress Bar */}
                 <div className="relative">
@@ -2049,13 +2065,8 @@ export function CharacterSheet() {
                 )}
 
                 {(() => {
-                  // Get spellcasting ability from class features
-                  const classData = CLASSES.find(c => c.name === character.class);
-                  const spellcastingFeature = (classData as any)?.features?.find((f: any) => f.id === 'spellcasting');
-                  const spellcastingAbility = spellcastingFeature?.mechanical?.spellcasting_ability || 
-                    (classData?.primary_abilities?.[0] === 'wisdom' ? 'wisdom' : 
-                     classData?.primary_abilities?.[0] === 'charisma' ? 'charisma' : 
-                     classData?.primary_abilities?.[0] === 'intelligence' ? 'intelligence' : 'intelligence');
+                  // Get spellcasting ability from shared utility
+                  const spellcastingAbility = getSpellcastingAbility(character.class);
                   const abilityMod = getModifier((attributes as any)?.[spellcastingAbility] || 10);
                   const spellSaveDC = 8 + character.proficiency_bonus + abilityMod;
                   const spellAttackBonus = character.proficiency_bonus + abilityMod;
@@ -2083,7 +2094,7 @@ export function CharacterSheet() {
                 <ScrollArea className="h-[180px]">
                   <div className="space-y-1">
                     {characterSpellsWithData.length > 0 ? (
-                      characterSpellsWithData.slice(0, 10).map((spell, i) => {
+                      characterSpellsWithData.map((spell, i) => {
                         const levelLabel = spell.fullData?.level === 0 ? "Truque" : `${spell.fullData?.level || '?'}º`;
                         const school = spell.fullData?.school;
                         const schoolInfo = school ? SPELL_SCHOOLS[school] : null;
