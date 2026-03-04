@@ -1,5 +1,5 @@
 import { WizardData } from '../CharacterWizard';
-import { CLASSES } from '@/data/srd';
+import { CLASSES, RACES } from '@/data/srd';
 import { cn } from '@/lib/utils';
 import { Check, Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from '@/components/ui/tooltip';
@@ -53,9 +53,10 @@ export function SkillsStep({ data, updateData }: SkillsStepProps) {
   // Check for official class first
   const selectedClass = CLASSES.find(c => c.id === data.class);
   const selectedHomebrewClass = homebrewClasses.find(c => c.id === data.class);
+  const selectedRace = RACES.find(r => r.id === data.race);
   
   let availableSkillIds: string[] = [];
-  let maxChoices = 2;
+  let classMaxChoices = 2;
   
   if (selectedClass) {
     // Official class
@@ -67,7 +68,7 @@ export function SkillsStep({ data, updateData }: SkillsStepProps) {
       } else if (Array.isArray(skillOptions.from)) {
         availableSkillIds = skillOptions.from;
       }
-      maxChoices = skillOptions.choose || 2;
+      classMaxChoices = skillOptions.choose || 2;
     }
   } else if (selectedHomebrewClass) {
     // Homebrew class
@@ -77,9 +78,29 @@ export function SkillsStep({ data, updateData }: SkillsStepProps) {
       availableSkillIds = classData.available_skills.map((skillName: string) => {
         return SKILL_NAME_TO_ID[skillName] || skillName.toLowerCase().replace(/ /g, '_');
       });
-      maxChoices = classData.skill_choices || 2;
+      classMaxChoices = classData.skill_choices || 2;
     }
   }
+
+  // Check for racial skill proficiency choices (e.g., Half-Elf "Skill Versatility")
+  let racialSkillChoices = 0;
+  if (selectedRace?.traits) {
+    selectedRace.traits.forEach(trait => {
+      const mechanical = trait.mechanical as any;
+      if (mechanical?.skill_proficiencies_choice?.count) {
+        racialSkillChoices += mechanical.skill_proficiencies_choice.count;
+      }
+    });
+  }
+
+  // If race grants extra skill choices, expand available skills to all
+  if (racialSkillChoices > 0) {
+    // Racial skill choices can be from any skill
+    const allSkillIds = Object.keys(SKILL_MAP);
+    availableSkillIds = [...new Set([...availableSkillIds, ...allSkillIds])];
+  }
+
+  const maxChoices = classMaxChoices + racialSkillChoices;
   
   if (availableSkillIds.length === 0) {
     return (
@@ -132,6 +153,11 @@ export function SkillsStep({ data, updateData }: SkillsStepProps) {
         </h2>
         <p className="text-sm text-muted-foreground mt-1">
           Escolha <span className="text-primary font-semibold">{maxChoices}</span> perícias
+          {racialSkillChoices > 0 && (
+            <span className="block text-xs text-secondary mt-0.5">
+              ({classMaxChoices} da classe + {racialSkillChoices} racial)
+            </span>
+          )}
         </p>
         <div className="mt-2 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted">
           <span className="text-sm">

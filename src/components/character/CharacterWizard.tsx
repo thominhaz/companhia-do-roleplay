@@ -354,6 +354,14 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       armorClass = 10 + dexModifier + conModifier;
     }
 
+    // Add shield bonus if shield selected as secondary weapon
+    if (data.secondaryWeapon) {
+      const shieldItem = armaduras.items.find(a => a.name === data.secondaryWeapon && a.category === 'shield');
+      if (shieldItem) {
+        armorClass += (shieldItem.armor_class as any).bonus || 2;
+      }
+    }
+
     // Build spellcasting object with sorcery points if applicable
     const level1Data = selectedClass.levels?.[0];
     let spellcastingObj: any = null;

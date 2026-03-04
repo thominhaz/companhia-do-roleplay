@@ -69,6 +69,14 @@ export function ReviewStep({ data }: ReviewStepProps) {
     ac = 10 + dexMod + conMod;
   }
 
+  // Add shield bonus if shield selected as secondary weapon
+  if (data.secondaryWeapon) {
+    const shieldItem = armaduras.items.find(a => a.name === data.secondaryWeapon && a.category === 'shield');
+    if (shieldItem) {
+      ac += (shieldItem.armor_class as any).bonus || 2;
+    }
+  }
+
   return (
     <div className="px-4 py-6 space-y-6">
       <div>
