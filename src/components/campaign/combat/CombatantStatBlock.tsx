@@ -346,9 +346,9 @@ export function CombatantStatBlock({
     return (
       <div className="h-full flex flex-col bg-card border-l border-border">
         {/* Header with close button */}
-        <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-red-900/20 to-orange-900/20">
+        <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-destructive/20 to-destructive/10">
           <div>
-            <h2 className="text-xl font-bold font-serif tracking-wide uppercase text-red-400">
+            <h2 className="text-xl font-bold font-serif tracking-wide uppercase text-destructive">
               {homebrewMonster.name}
             </h2>
             <p className="text-xs text-muted-foreground italic">
@@ -363,13 +363,13 @@ export function CombatantStatBlock({
         <ScrollArea className="flex-1">
           <div className="p-4 space-y-4">
             {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-red-500 via-red-300 to-red-500" />
+            <div className="h-px bg-gradient-to-r from-destructive via-destructive/50 to-destructive" />
 
             {/* Basic Stats */}
             <div className="space-y-1 text-sm">
-              <p><span className="font-bold text-red-400">Classe de Armadura</span> {combatant.armor_class}</p>
+              <p><span className="font-bold text-destructive">Classe de Armadura</span> {combatant.armor_class}</p>
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-bold text-red-400">Pontos de Vida</span> 
+                <span className="font-bold text-destructive">Pontos de Vida</span> 
                 <span>{combatant.current_hp} / {combatant.max_hp}</span>
                 {data.hit_points && (
                   <Button
@@ -383,11 +383,11 @@ export function CombatantStatBlock({
                 )}
                 <HpQuickEdit />
               </div>
-              <p><span className="font-bold text-red-400">Deslocamento</span> {data.speed}</p>
+              <p><span className="font-bold text-destructive">Deslocamento</span> {data.speed}</p>
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-red-500 via-red-300 to-red-500" />
+            <div className="h-px bg-gradient-to-r from-destructive via-destructive/50 to-destructive" />
 
             {/* Attributes - D&D Beyond style */}
             <div className="grid grid-cols-6 gap-1 text-center">
@@ -400,9 +400,9 @@ export function CombatantStatBlock({
                     className="cursor-pointer hover:bg-muted/50 rounded p-1 transition-colors"
                     onClick={() => onRollDice?.(`1d20${modifier >= 0 ? '+' : ''}${modifier}`, `Teste de ${abbr}`)}
                   >
-                    <div className="text-xs font-bold text-red-400">{abbr}</div>
+                    <div className="text-xs font-bold text-destructive">{abbr}</div>
                     <div className="text-sm">{value}</div>
-                    <div className={cn("text-xs", modifier >= 0 ? "text-muted-foreground" : "text-red-400")}>
+                    <div className={cn("text-xs", modifier >= 0 ? "text-muted-foreground" : "text-destructive")}>
                       ({modifier >= 0 ? '+' : ''}{modifier})
                     </div>
                   </div>
@@ -411,13 +411,13 @@ export function CombatantStatBlock({
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-red-500 via-red-300 to-red-500" />
+            <div className="h-px bg-gradient-to-r from-destructive via-destructive/50 to-destructive" />
 
             {/* Saving Throws, Skills, etc. */}
             <div className="space-y-1 text-sm">
               {data.saving_throws && Object.keys(data.saving_throws).length > 0 && (
                 <p>
-                  <span className="font-bold text-red-400">Salvaguardas</span>{' '}
+                  <span className="font-bold text-destructive">Salvaguardas</span>{' '}
                   {Object.entries(data.saving_throws).map(([ability, value], i) => {
                     const abbr = ATTR_NAMES[ability] || ability.toUpperCase().substring(0, 3);
                     const bonus = typeof value === 'number' ? value : 0;
@@ -438,7 +438,7 @@ export function CombatantStatBlock({
               )}
               {data.skills && typeof data.skills === 'object' && Object.keys(data.skills).length > 0 && (
                 <p>
-                  <span className="font-bold text-red-400">Perícias</span>{' '}
+                  <span className="font-bold text-destructive">Perícias</span>{' '}
                   {Object.entries(data.skills as Record<string, number>).map(([skill, bonus], i) => (
                     <span key={skill}>
                       {i > 0 && ', '}
@@ -454,25 +454,25 @@ export function CombatantStatBlock({
                 </p>
               )}
               {data.damage_resistances && data.damage_resistances.length > 0 && (
-                <p><span className="font-bold text-red-400">Resistências</span> {data.damage_resistances.join(', ')}</p>
+                <p><span className="font-bold text-destructive">Resistências</span> {data.damage_resistances.join(', ')}</p>
               )}
               {data.damage_immunities && data.damage_immunities.length > 0 && (
-                <p><span className="font-bold text-red-400">Imunidades</span> {data.damage_immunities.join(', ')}</p>
+                <p><span className="font-bold text-destructive">Imunidades</span> {data.damage_immunities.join(', ')}</p>
               )}
               {data.senses && (
-                <p><span className="font-bold text-red-400">Sentidos</span> {data.senses}</p>
+                <p><span className="font-bold text-destructive">Sentidos</span> {data.senses}</p>
               )}
               {data.languages && (
-                <p><span className="font-bold text-red-400">Idiomas</span> {data.languages}</p>
+                <p><span className="font-bold text-destructive">Idiomas</span> {data.languages}</p>
               )}
               <p>
-                <span className="font-bold text-red-400">Nível de Desafio</span> {data.challenge_rating}
+                <span className="font-bold text-destructive">Nível de Desafio</span> {data.challenge_rating}
                 {data.xp && ` (${data.xp} XP)`}
               </p>
             </div>
 
             {/* Divider */}
-            <div className="h-px bg-gradient-to-r from-red-500 via-red-300 to-red-500" />
+            <div className="h-px bg-gradient-to-r from-destructive via-destructive/50 to-destructive" />
 
             {/* Traits */}
             {data.traits && Array.isArray(data.traits) && data.traits.length > 0 && (
@@ -491,7 +491,7 @@ export function CombatantStatBlock({
             {/* Actions */}
             {data.actions && data.actions.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-lg font-bold text-red-400 border-b border-red-500/30 pb-1">Ações</h3>
+                <h3 className="text-lg font-bold text-destructive border-b border-destructive/30 pb-1">Ações</h3>
                 {data.actions.map((action, i) => renderMonsterAction(action, i))}
               </div>
             )}
@@ -499,7 +499,7 @@ export function CombatantStatBlock({
             {/* Reactions */}
             {data.reactions && data.reactions.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-lg font-bold text-orange-400 border-b border-orange-500/30 pb-1">Reações</h3>
+                <h3 className="text-lg font-bold text-gold border-b border-gold/30 pb-1">Reações</h3>
                 {data.reactions.map((action, i) => renderMonsterAction(action, i))}
               </div>
             )}
@@ -507,7 +507,7 @@ export function CombatantStatBlock({
             {/* Legendary Actions */}
             {data.legendary_actions && data.legendary_actions.length > 0 && (
               <div className="space-y-3">
-                <h3 className="text-lg font-bold text-yellow-400 border-b border-yellow-500/30 pb-1">Ações Lendárias</h3>
+                <h3 className="text-lg font-bold text-gold border-b border-gold/30 pb-1">Ações Lendárias</h3>
                 {data.legendary_actions.map((action, i) => renderMonsterAction(action, i))}
               </div>
             )}
@@ -542,9 +542,9 @@ export function CombatantStatBlock({
       <>
         <div className="h-full flex flex-col bg-card border-l border-border">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-blue-900/20 to-cyan-900/20">
+          <div className="flex items-center justify-between p-4 border-b border-border bg-gradient-to-r from-primary/20 to-primary/10">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden border-2 border-blue-500/50 bg-blue-500/20">
+              <div className="w-12 h-12 rounded-lg flex items-center justify-center overflow-hidden border-2 border-primary/50 bg-primary/20">
                 {characterData.image_url ? (
                   <img src={characterData.image_url} alt={characterData.name} className="w-full h-full object-cover" />
                 ) : (

@@ -24,12 +24,12 @@ interface FactionReputation {
 }
 
 const REPUTATION_LEVELS = [
-  { min: -100, max: -51, title: "Odiado", color: "bg-red-600", textColor: "text-red-400" },
-  { min: -50, max: -26, title: "Hostil", color: "bg-red-500", textColor: "text-red-400" },
-  { min: -25, max: -1, title: "Desconfiado", color: "bg-orange-500", textColor: "text-orange-400" },
+  { min: -100, max: -51, title: "Odiado", color: "bg-destructive", textColor: "text-destructive" },
+  { min: -50, max: -26, title: "Hostil", color: "bg-destructive/80", textColor: "text-destructive" },
+  { min: -25, max: -1, title: "Desconfiado", color: "bg-gold", textColor: "text-gold" },
   { min: 0, max: 0, title: "Neutro", color: "bg-muted", textColor: "text-muted-foreground" },
-  { min: 1, max: 25, title: "Amigável", color: "bg-emerald-500", textColor: "text-emerald-400" },
-  { min: 26, max: 50, title: "Respeitado", color: "bg-green-500", textColor: "text-green-400" },
+  { min: 1, max: 25, title: "Amigável", color: "bg-secondary/80", textColor: "text-secondary" },
+  { min: 26, max: 50, title: "Respeitado", color: "bg-secondary", textColor: "text-secondary" },
   { min: 51, max: 100, title: "Venerado", color: "bg-primary", textColor: "text-primary" },
 ];
 

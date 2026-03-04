@@ -62,9 +62,9 @@ export function SessionAttendanceCard({ session, isUpcoming = true }: SessionAtt
   const tentativeCount = attendance?.filter(a => a.status === 'tentative').length || 0;
 
   const statusConfig = {
-    confirmed: { icon: Check, label: 'Confirmado', color: 'bg-green-500/20 text-green-500 border-green-500/30' },
-    declined: { icon: X, label: 'Ausente', color: 'bg-red-500/20 text-red-500 border-red-500/30' },
-    tentative: { icon: HelpCircle, label: 'Talvez', color: 'bg-amber-500/20 text-amber-500 border-amber-500/30' },
+    confirmed: { icon: Check, label: 'Confirmado', color: 'bg-secondary/20 text-secondary border-secondary/30' },
+    declined: { icon: X, label: 'Ausente', color: 'bg-destructive/20 text-destructive border-destructive/30' },
+    tentative: { icon: HelpCircle, label: 'Talvez', color: 'bg-gold/20 text-gold border-gold/30' },
     pending: { icon: Clock, label: 'Pendente', color: 'bg-muted text-muted-foreground border-muted' },
   };
 

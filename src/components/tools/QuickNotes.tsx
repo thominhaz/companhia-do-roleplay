@@ -59,8 +59,8 @@ const TAG_COLORS = [
   "bg-cosmic-purple/20 text-cosmic-purple border-cosmic-purple/30",
   "bg-cyan-blue/20 text-cyan-blue border-cyan-blue/30",
   "bg-magenta-red/20 text-magenta-red border-magenta-red/30",
-  "bg-emerald-500/20 text-emerald-400 border-emerald-500/30",
-  "bg-amber-500/20 text-amber-400 border-amber-500/30",
+  "bg-secondary/20 text-secondary border-secondary/30",
+  "bg-gold/20 text-gold border-gold/30",
 ];
 
 function getTagColor(tag: string): string {

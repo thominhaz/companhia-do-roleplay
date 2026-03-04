@@ -1070,7 +1070,7 @@ export function CharacterSheet() {
           <div className="px-3 sm:px-4 mb-4">
             <div className={`rounded-xl p-3 sm:p-4 border ${
               canLevelUp 
-                ? 'bg-yellow-500/10 border-yellow-500/50' 
+                ? 'bg-gold/10 border-gold/50' 
                 : 'bg-primary/10 border-primary/30'
             }`}>
               <div className="flex flex-col gap-3 sm:gap-4">
@@ -1126,7 +1126,7 @@ export function CharacterSheet() {
                   <div className="w-full">
                     <div className="h-2 sm:h-3 bg-muted/50 rounded-full overflow-hidden">
                       <div
-                        className={`h-full transition-all ${canLevelUp ? 'bg-yellow-500' : 'bg-primary'}`}
+                        className={`h-full transition-all ${canLevelUp ? 'bg-gold' : 'bg-primary'}`}
                         style={{ width: `${xpProgress}%` }}
                       />
                     </div>
@@ -1282,7 +1282,7 @@ export function CharacterSheet() {
                   <div className="h-10 bg-muted/50 rounded-full overflow-hidden">
                     <div 
                       className={`h-full transition-all duration-500 rounded-full ${
-                        hpPercent > 50 ? 'bg-green-500' : hpPercent > 25 ? 'bg-yellow-500' : 'bg-red-500'
+                        hpPercent > 50 ? 'bg-secondary' : hpPercent > 25 ? 'bg-gold' : 'bg-destructive'
                       }`}
                       style={{ width: `${hpPercent}%` }}
                     />
@@ -1465,7 +1465,7 @@ export function CharacterSheet() {
                                 key={cond.name}
                                 className={`w-full flex items-center gap-2 px-2 py-1.5 rounded-lg text-left text-sm transition-colors ${
                                   isActive 
-                                    ? 'bg-orange-500/20 text-orange-400' 
+                                    ? 'bg-gold/20 text-gold' 
                                     : 'hover:bg-muted text-foreground'
                                 }`}
                                 onClick={async () => {
@@ -1482,7 +1482,7 @@ export function CharacterSheet() {
                               >
                                 <span className="text-base">{cond.icon}</span>
                                 <span className="flex-1">{cond.name}</span>
-                                {isActive && <X className="w-3 h-3 text-orange-400" />}
+                                {isActive && <X className="w-3 h-3 text-gold" />}
                               </button>
                             );
                           })}
@@ -1497,7 +1497,7 @@ export function CharacterSheet() {
                     {character.conditions.map((condition, idx) => (
                       <span 
                         key={idx}
-                        className="text-xs bg-orange-500/20 text-orange-300 px-2 py-1 rounded-full flex items-center gap-1"
+                        className="text-xs bg-gold/20 text-gold px-2 py-1 rounded-full flex items-center gap-1"
                       >
                         {CONDITIONS.find(c => c.name === condition)?.icon} {condition}
                         <button
@@ -1506,7 +1506,7 @@ export function CharacterSheet() {
                             await updateConditions(newConditions);
                             toast.success(`Condição "${condition}" removida`);
                           }}
-                          className="ml-1 hover:bg-orange-500/30 rounded-full p-0.5 transition-colors"
+                          className="ml-1 hover:bg-gold/30 rounded-full p-0.5 transition-colors"
                         >
                           <X className="w-3 h-3" />
                         </button>
@@ -1648,22 +1648,22 @@ export function CharacterSheet() {
                         <>
                           {feats.length > 0 && (
                             <div className="mb-4">
-                              <h4 className="text-xs font-semibold text-yellow-400 uppercase tracking-wider mb-2 flex items-center gap-2">
+                              <h4 className="text-xs font-semibold text-gold uppercase tracking-wider mb-2 flex items-center gap-2">
                                 <Star className="w-3 h-3" />
                                 Talentos ({feats.length})
                               </h4>
                               {feats.map((feat: any, i: number) => (
-                                <div key={`feat-${i}`} className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl mb-2">
+                                <div key={`feat-${i}`} className="p-3 bg-gold/10 border border-gold/30 rounded-xl mb-2">
                                   <div className="flex items-center justify-between mb-1">
-                                    <p className="text-sm font-semibold text-yellow-400">{feat.name}</p>
-                                    <Badge variant="outline" className="text-[10px] bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                                    <p className="text-sm font-semibold text-gold">{feat.name}</p>
+                                    <Badge variant="outline" className="text-[10px] bg-gold/20 text-gold border-gold/30">
                                       Talento
                                     </Badge>
                                   </div>
                                   <p className="text-xs text-muted-foreground">{feat.description}</p>
                                   {feat.effects && (
-                                    <div className="mt-2 pt-2 border-t border-yellow-500/20">
-                                      <p className="text-[10px] text-yellow-400/70">Efeitos aplicados:</p>
+                                    <div className="mt-2 pt-2 border-t border-gold/20">
+                                      <p className="text-[10px] text-gold/70">Efeitos aplicados:</p>
                                       <ul className="text-[10px] text-muted-foreground mt-1 space-y-0.5">
                                         {Object.entries(feat.effects || {}).map(([key, value]) => (
                                           <li key={key}>• {key}: {String(value)}</li>
@@ -1939,13 +1939,13 @@ export function CharacterSheet() {
                           });
                         }}
                         className={`w-5 h-5 rounded-full border-2 transition-colors hover:scale-110 ${
-                          i < ((character.death_saves as any)?.successes || 0) ? 'bg-green-500 border-green-500' : 'border-muted-foreground/50 hover:border-green-400'
+                          i < ((character.death_saves as any)?.successes || 0) ? 'bg-secondary border-secondary' : 'border-muted-foreground/50 hover:border-secondary'
                         }`}
                       />
                     ))}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-red-500 w-14">Falhas</span>
+                    <span className="text-xs text-destructive w-14">Falhas</span>
                     {[0, 1, 2].map(i => (
                       <button 
                         key={i}
@@ -1958,7 +1958,7 @@ export function CharacterSheet() {
                           });
                         }}
                         className={`w-5 h-5 rounded-full border-2 transition-colors hover:scale-110 ${
-                          i < ((character.death_saves as any)?.failures || 0) ? 'bg-red-500 border-red-500' : 'border-muted-foreground/50 hover:border-red-400'
+                          i < ((character.death_saves as any)?.failures || 0) ? 'bg-destructive border-destructive' : 'border-muted-foreground/50 hover:border-destructive'
                         }`}
                       />
                     ))}

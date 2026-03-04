@@ -171,8 +171,8 @@ export function BasicRules({ onBack }: BasicRulesProps) {
                     onClick={() => toggleSection(section.id)}
                     className="w-full p-4 flex items-center gap-3 text-left"
                   >
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-orange-500/20 to-orange-500/10 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-orange-400" />
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Icon className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex-1">
                       <h3 className="text-sm font-semibold text-foreground">{section.title}</h3>
