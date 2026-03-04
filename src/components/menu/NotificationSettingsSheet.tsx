@@ -34,21 +34,21 @@ const notificationSettings = [
     label: "Lembretes de sessões",
     description: "Receba lembretes sobre sessões agendadas",
     icon: Calendar,
-    color: "text-amber-400",
+    color: "text-gold",
   },
   {
     key: "campaign_update" as const,
     label: "Atualizações de campanhas",
     description: "Notificações sobre novas notas e combates",
     icon: Megaphone,
-    color: "text-blue-400",
+    color: "text-primary",
   },
   {
     key: "chat_message" as const,
     label: "Mensagens no chat",
     description: "Notificações de novas mensagens no chat da campanha",
     icon: MessageSquare,
-    color: "text-green-400",
+    color: "text-secondary",
   },
 ];
 

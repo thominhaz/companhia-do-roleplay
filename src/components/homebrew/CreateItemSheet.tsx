@@ -737,7 +737,7 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
       <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            <Gem className="w-5 h-5 text-amber-500" />
+            <Gem className="w-5 h-5 text-gold" />
             {isEditing ? "Editar Item" : "Criar Item"}
             {isConsumable && <Badge variant="secondary" className="text-xs">Consumível</Badge>}
           </SheetTitle>
@@ -834,11 +834,11 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
                               )}
                               <Badge 
                                 className={`text-[10px] ${
-                                  variant.rarity === 'common' ? 'bg-gray-500' :
-                                  variant.rarity === 'uncommon' ? 'bg-green-600' :
-                                  variant.rarity === 'rare' ? 'bg-blue-600' :
-                                  variant.rarity === 'very_rare' ? 'bg-purple-600' :
-                                  'bg-amber-600'
+                                  variant.rarity === 'common' ? 'bg-muted-foreground' :
+                                  variant.rarity === 'uncommon' ? 'bg-secondary' :
+                                  variant.rarity === 'rare' ? 'bg-primary' :
+                                  variant.rarity === 'very_rare' ? 'bg-accent-foreground' :
+                                  'bg-gold'
                                 }`}
                               >
                                 {variant.rarity === 'common' ? 'Comum' :
@@ -1537,7 +1537,7 @@ export function CreateItemSheet({ open, onOpenChange, editingItem }: CreateItemS
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-amber-500 to-amber-700"
+              className="w-full bg-gradient-to-r from-primary to-primary/70"
               disabled={isLoading || !form.name || !form.description}
             >
               {isLoading ? (

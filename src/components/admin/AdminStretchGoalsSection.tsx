@@ -109,7 +109,7 @@ export default function AdminStretchGoalsSection() {
       case "released":
         return <Rocket className="h-4 w-4 text-cosmic-purple" />;
       case "completed":
-        return <CheckCircle2 className="h-4 w-4 text-emerald-500" />;
+        return <CheckCircle2 className="h-4 w-4 text-secondary" />;
       case "current":
         return <Clock className="h-4 w-4 text-solar-orange" />;
       default:
@@ -122,7 +122,7 @@ export default function AdminStretchGoalsSection() {
       case "released":
         return <Badge className="bg-cosmic-purple/20 text-cosmic-purple border-cosmic-purple/30">Liberada 🚀</Badge>;
       case "completed":
-        return <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">Concluída</Badge>;
+        return <Badge className="bg-secondary/20 text-secondary border-secondary/30">Concluída</Badge>;
       case "current":
         return <Badge className="bg-solar-orange/20 text-solar-orange border-solar-orange/30">Em Andamento</Badge>;
       default:
@@ -248,7 +248,7 @@ export default function AdminStretchGoalsSection() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="text-red-500 hover:text-red-400"
+                        className="text-destructive hover:text-destructive/80"
                         onClick={() => setDeleteConfirm(goal.id)}
                       >
                         <Trash2 className="h-4 w-4" />
@@ -286,7 +286,7 @@ export default function AdminStretchGoalsSection() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction
-              className="bg-red-500 hover:bg-red-600"
+              className="bg-destructive hover:bg-destructive/80"
               onClick={() => {
                 if (deleteConfirm) {
                   deleteGoal.mutate(deleteConfirm);
@@ -441,7 +441,7 @@ function GoalEditSheet({ goal, isOpen, onClose, onSave, isLoading }: GoalEditShe
                 </SelectItem>
                 <SelectItem value="completed">
                   <div className="flex items-center gap-2">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                    <CheckCircle2 className="h-4 w-4 text-secondary" />
                     Concluída
                   </div>
                 </SelectItem>
