@@ -25,33 +25,33 @@ export const CharacterSheetPreviewInteractive = () => {
   };
 
   return (
-    <div className="bg-[#1a1a2e] p-6 rounded-xl border border-white/10 h-full flex flex-col gap-4">
+    <div className="bg-surface-0 p-6 rounded-xl border border-border h-full flex flex-col gap-4">
       <div className="flex items-center gap-4 mb-2">
-        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-600 to-orange-500 p-1">
-          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" className="w-full h-full rounded-full bg-black/50" />
+        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary to-solar-orange p-1">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" className="w-full h-full rounded-full bg-background/50" />
         </div>
         <div>
-          <h4 className="text-white font-bold text-lg">Valeros, o Bravo</h4>
-          <p className="text-white/50 text-xs uppercase tracking-wider">Guerreiro • Humano • Nível 3</p>
+          <h4 className="text-foreground font-bold text-lg">Valeros, o Bravo</h4>
+          <p className="text-muted-foreground text-xs uppercase tracking-wider">Guerreiro • Humano • Nível 3</p>
         </div>
       </div>
       
       <div className="grid grid-cols-3 gap-3">
         {Object.entries(stats).map(([key, { value, mod }]) => (
-          <div key={key} className="bg-white/5 p-2 rounded-lg text-center border border-white/5 hover:border-purple-500/50 transition-colors group">
-            <div className="text-xs text-white/40 uppercase mb-1">{key}</div>
-            <div className="text-xl font-bold text-white">{value}</div>
-            <div className={`text-xs font-bold ${mod >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+          <div key={key} className="bg-surface-1 p-2 rounded-lg text-center border border-border hover:border-primary/50 transition-colors group">
+            <div className="text-xs text-muted-foreground uppercase mb-1">{key}</div>
+            <div className="text-xl font-bold text-foreground">{value}</div>
+            <div className={`text-xs font-bold ${mod >= 0 ? 'text-secondary' : 'text-destructive'}`}>
               {mod >= 0 ? '+' : ''}{mod}
             </div>
             <div className="flex justify-center gap-1 mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button onClick={() => updateStat(key as keyof typeof stats, value - 1)} className="w-5 h-5 flex items-center justify-center bg-white/10 rounded hover:bg-white/20 text-white">-</button>
-              <button onClick={() => updateStat(key as keyof typeof stats, value + 1)} className="w-5 h-5 flex items-center justify-center bg-white/10 rounded hover:bg-white/20 text-white">+</button>
+              <button onClick={() => updateStat(key as keyof typeof stats, value - 1)} className="w-5 h-5 flex items-center justify-center bg-surface-2 rounded hover:bg-surface-3 text-foreground">-</button>
+              <button onClick={() => updateStat(key as keyof typeof stats, value + 1)} className="w-5 h-5 flex items-center justify-center bg-surface-2 rounded hover:bg-surface-3 text-foreground">+</button>
             </div>
           </div>
         ))}
       </div>
-      <div className="mt-auto bg-purple-500/10 p-3 rounded text-purple-300 text-xs text-center border border-purple-500/20">
+      <div className="mt-auto bg-primary/10 p-3 rounded text-primary text-xs text-center border border-primary/20">
         💡 Tente alterar os atributos para ver os modificadores mudarem automaticamente!
       </div>
     </div>
@@ -84,7 +84,6 @@ export const CombatTrackerPreview = () => {
     const target = entities.find(e => e.id === targetId);
     if (!target) return;
 
-    // Simulação simples de ataque
     const d20 = Math.floor(Math.random() * 20) + 1;
     const hitBonus = 5;
     const isHit = (d20 + hitBonus) >= target.ac;
@@ -112,14 +111,14 @@ export const CombatTrackerPreview = () => {
   };
 
   return (
-    <div className="bg-[#1a1a2e] p-4 rounded-xl border border-white/10 h-full flex flex-col font-sans">
+    <div className="bg-surface-0 p-4 rounded-xl border border-border h-full flex flex-col font-sans">
       {/* Header com Turno e Botão de Avançar */}
-      <div className="flex justify-between items-center mb-4 pb-4 border-b border-white/5">
+      <div className="flex justify-between items-center mb-4 pb-4 border-b border-border">
         <div>
-            <h4 className="text-white font-bold text-sm">Rodada {Math.floor(turn / entities.length) + 1}</h4>
-            <div className="text-xs text-white/40">Turno atual: <span className="text-purple-400 font-bold">{activeEntity.name}</span></div>
+            <h4 className="text-foreground font-bold text-sm">Rodada {Math.floor(turn / entities.length) + 1}</h4>
+            <div className="text-xs text-muted-foreground">Turno atual: <span className="text-primary font-bold">{activeEntity.name}</span></div>
         </div>
-        <button onClick={nextTurn} className="bg-white/10 hover:bg-white/20 text-white text-xs px-3 py-1.5 rounded-md transition-colors flex items-center gap-2">
+        <button onClick={nextTurn} className="bg-surface-1 hover:bg-surface-2 text-foreground text-xs px-3 py-1.5 rounded-md transition-colors flex items-center gap-2">
           Próximo <ChevronRight size={14} />
         </button>
       </div>
@@ -136,35 +135,34 @@ export const CombatTrackerPreview = () => {
                     key={entity.id} 
                     className={`relative p-3 rounded-lg border transition-all duration-300 ${
                     isActive 
-                        ? 'bg-purple-500/10 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.15)]' 
-                        : 'bg-white/5 border-transparent opacity-80 hover:opacity-100'
+                        ? 'bg-primary/10 border-primary/50 shadow-depth-glow' 
+                        : 'bg-surface-1 border-transparent opacity-80 hover:opacity-100'
                     } ${isDead ? 'grayscale opacity-50' : ''}`}
                 >
                     {/* Infos Principais */}
                     <div className="flex items-center justify-between mb-2 relative z-10">
                         <div className="flex items-center gap-3">
-                            <div className={`font-mono text-xs font-bold w-6 h-6 flex items-center justify-center rounded bg-black/40 ${isActive ? 'text-purple-400' : 'text-white/30'}`}>
+                            <div className={`font-mono text-xs font-bold w-6 h-6 flex items-center justify-center rounded bg-background/40 ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
                                 {entity.init}
                             </div>
                             <div>
-                                <div className={`font-bold text-sm leading-none mb-1 flex items-center gap-2 ${entity.type === 'player' ? 'text-blue-300' : 'text-red-300'}`}>
+                                <div className={`font-bold text-sm leading-none mb-1 flex items-center gap-2 ${entity.type === 'player' ? 'text-cyan-blue' : 'text-destructive'}`}>
                                     {entity.name}
                                     {isDead && <Skull size={12} />}
                                 </div>
-                                <div className="text-[10px] text-white/40">AC {entity.ac}</div>
+                                <div className="text-[10px] text-muted-foreground">AC {entity.ac}</div>
                             </div>
                         </div>
                         
-                        {/* Ações contextuais (se for o turno de alguém e este for o alvo válido) */}
+                        {/* Ações contextuais */}
                         {isActive && !isDead && (
                             <div className="flex gap-1">
                                 {entity.type === 'player' ? (
-                                    <button onClick={handleHeal} className="p-1.5 rounded bg-green-500/20 text-green-400 hover:bg-green-500/30 transition-colors" title="Curar">
+                                    <button onClick={handleHeal} className="p-1.5 rounded bg-secondary/20 text-secondary hover:bg-secondary/30 transition-colors" title="Curar">
                                         <Heart size={14} />
                                     </button>
                                 ) : (
-                                    // Se for inimigo ativo, botão para ele atacar o player
-                                    <button onClick={() => handleAttack(1)} className="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs hover:bg-red-500/30 transition-colors border border-red-500/30">
+                                    <button onClick={() => handleAttack(1)} className="px-2 py-1 rounded bg-destructive/20 text-destructive text-xs hover:bg-destructive/30 transition-colors border border-destructive/30">
                                         Atacar Jogador
                                     </button>
                                 )}
@@ -173,22 +171,22 @@ export const CombatTrackerPreview = () => {
                         
                         {/* Se for turno do Player (ID 1) e este for um inimigo vivo */}
                         {activeEntity.id === 1 && entity.type === 'enemy' && !isDead && (
-                             <button onClick={() => handleAttack(entity.id)} className="p-1.5 rounded bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 transition-colors" title="Atacar">
+                             <button onClick={() => handleAttack(entity.id)} className="p-1.5 rounded bg-solar-orange/20 text-solar-orange hover:bg-solar-orange/30 transition-colors" title="Atacar">
                                 <Swords size={14} />
                             </button>
                         )}
                     </div>
 
                     {/* Barra de Vida */}
-                    <div className="h-1.5 w-full bg-black/50 rounded-full overflow-hidden relative z-10">
+                    <div className="h-1.5 w-full bg-background/50 rounded-full overflow-hidden relative z-10">
                         <div 
                             className={`h-full transition-all duration-500 ${
-                                hpPercent > 50 ? 'bg-green-500' : hpPercent > 25 ? 'bg-yellow-500' : 'bg-red-500'
+                                hpPercent > 50 ? 'bg-secondary' : hpPercent > 25 ? 'bg-gold' : 'bg-destructive'
                             }`}
                             style={{ width: `${hpPercent}%` }}
                         />
                     </div>
-                    <div className="text-[10px] text-right mt-1 text-white/30 font-mono">
+                    <div className="text-[10px] text-right mt-1 text-muted-foreground font-mono">
                         {entity.hp}/{entity.maxHp} HP
                     </div>
                 </div>
@@ -197,9 +195,9 @@ export const CombatTrackerPreview = () => {
       </div>
 
       {/* Log de Batalha Compacto */}
-      <div className="mt-4 pt-3 border-t border-white/10 h-24 overflow-hidden flex flex-col justify-end">
+      <div className="mt-4 pt-3 border-t border-border h-24 overflow-hidden flex flex-col justify-end">
         {logs.map((log, i) => (
-            <div key={i} className="text-[10px] md:text-xs text-white/60 py-0.5 border-l-2 border-white/10 pl-2 mb-1 animate-in slide-in-from-left-2 fade-in duration-300">
+            <div key={i} className="text-[10px] md:text-xs text-muted-foreground py-0.5 border-l-2 border-border pl-2 mb-1 animate-in slide-in-from-left-2 fade-in duration-300">
                 {log}
             </div>
         ))}
@@ -226,7 +224,6 @@ export const ChatPreview = () => {
     };
     setMessages(prev => [...prev, newMsg]);
     
-    // Auto GM response
     setTimeout(() => {
         let response = "";
         if (result === 20) response = "CRÍTICO! Você ilumina tudo e acha ouro!";
@@ -239,15 +236,15 @@ export const ChatPreview = () => {
   };
 
   return (
-    <div className="bg-[#1a1a2e] rounded-xl border border-white/10 h-full flex flex-col overflow-hidden">
+    <div className="bg-surface-0 rounded-xl border border-border h-full flex flex-col overflow-hidden">
         <div className="flex-1 p-4 space-y-3 overflow-y-auto max-h-[250px] scrollbar-thin scrollbar-thumb-white/10">
             {messages.map(msg => (
                 <div key={msg.id} className={`flex flex-col ${msg.user === 'Valeros' ? 'items-end' : 'items-start'}`}>
-                    <span className="text-[10px] text-white/40 mb-0.5">{msg.user}</span>
+                    <span className="text-[10px] text-muted-foreground mb-0.5">{msg.user}</span>
                     <div className={`px-3 py-2 rounded-lg text-sm max-w-[80%] ${
                         msg.type === 'roll' 
-                            ? 'bg-purple-600/30 border border-purple-500/50 text-purple-200' 
-                            : msg.user === 'GM' ? 'bg-orange-600/20 text-orange-200' : 'bg-white/10 text-white'
+                            ? 'bg-cosmic-purple/30 border border-cosmic-purple/50 text-foreground' 
+                            : msg.user === 'GM' ? 'bg-solar-orange/20 text-foreground' : 'bg-surface-1 text-foreground'
                     }`}>
                         {msg.type === 'roll' && <Dice5 size={14} className="inline mr-1 mb-0.5" />}
                         {msg.text}
@@ -255,9 +252,9 @@ export const ChatPreview = () => {
                 </div>
             ))}
         </div>
-        <div className="p-3 bg-black/20 border-t border-white/5 flex gap-2">
-            <input disabled placeholder="Digite..." className="flex-1 bg-white/5 border border-white/10 rounded px-3 text-sm text-white focus:outline-none" />
-            <button onClick={rollDice} className="bg-purple-600 hover:bg-purple-500 text-white p-2 rounded transition-colors" title="Rolar d20">
+        <div className="p-3 bg-background/20 border-t border-border flex gap-2">
+            <input disabled placeholder="Digite..." className="flex-1 bg-surface-1 border border-border rounded px-3 text-sm text-foreground focus:outline-none" />
+            <button onClick={rollDice} className="bg-primary hover:bg-primary/80 text-primary-foreground p-2 rounded transition-colors" title="Rolar d20">
                 <Dice5 size={18} />
             </button>
         </div>
@@ -279,53 +276,53 @@ export const HomebrewPreview = () => {
             {/* Form */}
             <div className="md:w-1/2 space-y-3">
                 <div>
-                    <label className="text-xs text-white/40 block mb-1">Nome do Item</label>
+                    <label className="text-xs text-muted-foreground block mb-1">Nome do Item</label>
                     <input 
                         value={item.name} 
                         onChange={(e) => setItem({...item, name: e.target.value})}
-                        className="w-full bg-white/5 border border-white/10 rounded p-2 text-sm text-white focus:border-purple-500 outline-none"
+                        className="w-full bg-surface-1 border border-border rounded p-2 text-sm text-foreground focus:border-primary outline-none"
                     />
                 </div>
                 <div>
-                    <label className="text-xs text-white/40 block mb-1">Raridade</label>
+                    <label className="text-xs text-muted-foreground block mb-1">Raridade</label>
                     <select 
                         value={item.rarity}
-                        className="w-full bg-[#1a1a2e] border border-white/10 rounded p-2 text-sm text-white focus:border-purple-500 outline-none appearance-none cursor-pointer"
+                        className="w-full bg-surface-0 border border-border rounded p-2 text-sm text-foreground focus:border-primary outline-none appearance-none cursor-pointer"
                         style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center', backgroundSize: '16px' }}
                         onChange={(e) => setItem({...item, rarity: e.target.value})}
                     >
-                        <option value="comum" className="bg-[#1a1a2e] text-white">Comum</option>
-                        <option value="raro" className="bg-[#1a1a2e] text-white">Raro</option>
-                        <option value="lendar" className="bg-[#1a1a2e] text-white">Lendário</option>
+                        <option value="comum" className="bg-surface-0 text-foreground">Comum</option>
+                        <option value="raro" className="bg-surface-0 text-foreground">Raro</option>
+                        <option value="lendar" className="bg-surface-0 text-foreground">Lendário</option>
                     </select>
                 </div>
                 <div>
-                    <label className="text-xs text-white/40 block mb-1">Descrição</label>
+                    <label className="text-xs text-muted-foreground block mb-1">Descrição</label>
                     <textarea 
                         value={item.desc}
                         onChange={(e) => setItem({...item, desc: e.target.value})}
-                        className="w-full h-20 bg-white/5 border border-white/10 rounded p-2 text-sm text-white focus:border-purple-500 outline-none resize-none"
+                        className="w-full h-20 bg-surface-1 border border-border rounded p-2 text-sm text-foreground focus:border-primary outline-none resize-none"
                     />
                 </div>
             </div>
 
             {/* Preview Card */}
             <div className="md:w-1/2 flex items-center justify-center">
-                <div className={`w-full bg-[#151520] border rounded-lg p-4 shadow-2xl relative overflow-hidden group transition-all duration-300 ${
-                    item.rarity === 'lendar' ? 'border-orange-500/50 shadow-orange-900/20' : 
-                    item.rarity === 'raro' ? 'border-blue-500/50 shadow-blue-900/20' : 'border-gray-500/50'
+                <div className={`w-full bg-surface-0 border rounded-lg p-4 shadow-depth-lg relative overflow-hidden group transition-all duration-300 ${
+                    item.rarity === 'lendar' ? 'border-solar-orange/50' : 
+                    item.rarity === 'raro' ? 'border-cyan-blue/50' : 'border-border'
                 }`}>
                     <div className={`absolute top-0 left-0 w-full h-1 ${
-                        item.rarity === 'lendar' ? 'bg-gradient-to-r from-orange-500 to-red-600' : 
-                        item.rarity === 'raro' ? 'bg-blue-500' : 'bg-gray-500'
+                        item.rarity === 'lendar' ? 'bg-gradient-to-r from-solar-orange to-magenta-red' : 
+                        item.rarity === 'raro' ? 'bg-cyan-blue' : 'bg-muted'
                     }`}></div>
                     <h3 className={`font-serif font-bold text-lg ${
-                         item.rarity === 'lendar' ? 'text-orange-400' : 
-                         item.rarity === 'raro' ? 'text-blue-400' : 'text-gray-300'
+                         item.rarity === 'lendar' ? 'text-solar-orange' : 
+                         item.rarity === 'raro' ? 'text-cyan-blue' : 'text-muted-foreground'
                     }`}>{item.name || "Nome do Item"}</h3>
-                    <p className="text-xs italic text-white/40 mb-3">{item.type || "Tipo"}</p>
-                    <div className="h-px w-full bg-white/10 mb-3"></div>
-                    <p className="text-sm text-white/80 leading-relaxed font-serif">
+                    <p className="text-xs italic text-muted-foreground mb-3">{item.type || "Tipo"}</p>
+                    <div className="h-px w-full bg-border mb-3"></div>
+                    <p className="text-sm text-foreground/80 leading-relaxed font-serif">
                         {item.desc || "Descrição do item aparecerá aqui..."}
                     </p>
                 </div>
@@ -354,12 +351,12 @@ export const ShopPreview = () => {
     };
 
     return (
-        <div className="bg-[#1a1a2e] rounded-xl border border-white/10 h-full flex flex-col p-4">
-            <div className="flex justify-between items-center mb-4 bg-black/20 p-2 rounded-lg">
-                <div className="text-white text-sm font-bold flex items-center gap-2">
-                    <Coins className="text-yellow-500" size={16} /> {gold} PO
+        <div className="bg-surface-0 rounded-xl border border-border h-full flex flex-col p-4">
+            <div className="flex justify-between items-center mb-4 bg-background/20 p-2 rounded-lg">
+                <div className="text-foreground text-sm font-bold flex items-center gap-2">
+                    <Coins className="text-gold" size={16} /> {gold} PO
                 </div>
-                <div className="text-xs text-white/40">
+                <div className="text-xs text-muted-foreground">
                     Inventário: {inventory.length} itens
                 </div>
             </div>
@@ -370,17 +367,17 @@ export const ShopPreview = () => {
                         key={item.id}
                         onClick={() => buyItem(item)}
                         disabled={gold < item.price}
-                        className="flex flex-col items-center p-3 bg-white/5 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-white/5 rounded-lg border border-white/5 transition-all active:scale-95"
+                        className="flex flex-col items-center p-3 bg-surface-1 hover:bg-surface-2 disabled:opacity-30 disabled:hover:bg-surface-1 rounded-lg border border-border transition-all active:scale-95"
                     >
                         <span className="text-2xl mb-1">{item.icon}</span>
-                        <span className="text-sm text-white font-medium">{item.name}</span>
-                        <span className="text-xs text-yellow-500 font-bold">{item.price} PO</span>
+                        <span className="text-sm text-foreground font-medium">{item.name}</span>
+                        <span className="text-xs text-gold font-bold">{item.price} PO</span>
                     </button>
                 ))}
             </div>
             {inventory.length > 0 && (
-                <div className="mt-4 pt-3 border-t border-white/10">
-                    <p className="text-xs text-green-400 animate-pulse">
+                <div className="mt-4 pt-3 border-t border-border">
+                    <p className="text-xs text-secondary animate-pulse">
                         + {inventory[inventory.length-1]} adicionado!
                     </p>
                 </div>

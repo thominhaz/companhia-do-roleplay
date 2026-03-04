@@ -70,12 +70,12 @@ function AttributeBox({ value, label }: { value: number; label: string }) {
   const modifierColor = modifier >= 0 ? "text-solar-orange" : "text-magenta-red";
 
   return (
-    <div className="bg-white/5 rounded-xl p-3 text-center border border-white/10 hover:border-cosmic-purple/50 transition-all">
-      <div className="text-2xl font-bold text-white">{value}</div>
+    <div className="bg-surface-1 rounded-xl p-3 text-center border border-border hover:border-primary/50 transition-all">
+      <div className="text-2xl font-bold text-foreground">{value}</div>
       <div className={`text-sm font-semibold ${modifierColor}`}>
         {modifier >= 0 ? "+" : ""}{modifier}
       </div>
-      <div className="text-xs text-white/50 mt-1">{label}</div>
+      <div className="text-xs text-muted-foreground mt-1">{label}</div>
     </div>
   );
 }
@@ -131,10 +131,10 @@ export function CharacterSheetPreview() {
   return (
     <div className="relative">
       {/* Glow effect */}
-      <div className="absolute -inset-4 bg-gradient-to-r from-cosmic-purple/20 via-solar-orange/10 to-cosmic-purple/20 blur-3xl rounded-3xl" />
+      <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-solar-orange/10 to-primary/20 blur-3xl rounded-3xl" />
       
       <motion.div 
-        className="relative bg-[#1a1a2e] rounded-2xl border border-white/10 overflow-hidden shadow-2xl"
+        className="relative bg-surface-0 rounded-2xl border border-border overflow-hidden shadow-depth-lg"
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
@@ -147,8 +147,8 @@ export function CharacterSheetPreview() {
               onClick={() => setActiveTheme(index)}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
                 activeTheme === index
-                  ? "bg-cosmic-purple text-white"
-                  : "bg-white/10 text-white/60 hover:bg-white/20 hover:text-white"
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-surface-1 text-muted-foreground hover:bg-surface-2 hover:text-foreground"
               }`}
             >
               {item.theme}
@@ -169,8 +169,8 @@ export function CharacterSheetPreview() {
             {/* Avatar and Name */}
             <div className="flex flex-col items-center">
               <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-cosmic-purple to-solar-orange p-1">
-                  <div className="w-full h-full rounded-full bg-[#1a1a2e] p-1">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary to-solar-orange p-1">
+                  <div className="w-full h-full rounded-full bg-surface-0 p-1">
                     <img
                       src={currentChar.imageUrl}
                       alt={currentChar.name}
@@ -182,23 +182,23 @@ export function CharacterSheetPreview() {
                   </div>
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-white mt-3">{currentChar.name}</h3>
+              <h3 className="text-xl font-bold text-foreground mt-3">{currentChar.name}</h3>
             </div>
 
             {/* Info Section */}
             <div className="space-y-2">
-              <div className="text-xs text-white/40 font-medium uppercase tracking-wider">Informações</div>
-              <div className="bg-white/5 rounded-xl p-3 border border-white/10">
-                <div className="text-sm text-white/80">{currentChar.race} • {currentChar.class}</div>
+              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Informações</div>
+              <div className="bg-surface-1 rounded-xl p-3 border border-border">
+                <div className="text-sm text-foreground/80">{currentChar.race} • {currentChar.class}</div>
               </div>
-              <div className="bg-white/5 rounded-xl p-3 border border-white/10">
-                <div className="text-sm text-white/80">{currentChar.background}</div>
+              <div className="bg-surface-1 rounded-xl p-3 border border-border">
+                <div className="text-sm text-foreground/80">{currentChar.background}</div>
               </div>
             </div>
 
             {/* Attributes */}
             <div className="space-y-2">
-              <div className="text-xs text-white/40 font-medium uppercase tracking-wider">Atributos</div>
+              <div className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Atributos</div>
               <div className="grid grid-cols-3 gap-2">
                 <AttributeBox value={currentChar.attributes.forca} label="Força" />
                 <AttributeBox value={currentChar.attributes.destreza} label="Destreza" />
@@ -226,7 +226,7 @@ export function CharacterSheetPreview() {
             <Button 
               onClick={handleRoll}
               disabled={isRolling}
-              className="w-full bg-gradient-to-r from-cosmic-purple to-solar-orange hover:opacity-90 text-white font-semibold gap-2 disabled:opacity-70"
+              className="w-full bg-gradient-to-r from-primary to-solar-orange hover:opacity-90 text-primary-foreground font-semibold gap-2 disabled:opacity-70"
             >
               <Dices className="w-4 h-4" />
               {isRolling ? "ROLANDO..." : "ROLAR"}
