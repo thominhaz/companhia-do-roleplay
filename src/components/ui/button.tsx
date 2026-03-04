@@ -9,16 +9,16 @@ const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow-depth-sm hover:bg-primary/85 hover:shadow-depth-md",
-        destructive: "bg-destructive text-destructive-foreground shadow-depth-sm hover:bg-destructive/90 hover:shadow-depth-md",
-        outline: "border border-border bg-surface-1 shadow-depth-sm hover:bg-surface-2 hover:text-accent-foreground hover:shadow-depth-md",
-        secondary: "bg-surface-2 text-secondary-foreground shadow-depth-sm hover:bg-surface-3 hover:shadow-depth-md",
-        ghost: "hover:bg-surface-2 hover:text-accent-foreground",
+        default: "border border-primary/60 bg-transparent text-primary shadow-depth-sm hover:bg-primary hover:text-primary-foreground hover:shadow-depth-md",
+        destructive: "border border-destructive/60 bg-transparent text-destructive shadow-depth-sm hover:bg-destructive hover:text-destructive-foreground hover:shadow-depth-md",
+        outline: "border border-border bg-transparent shadow-depth-sm hover:bg-surface-2 hover:text-foreground hover:shadow-depth-md",
+        secondary: "border border-secondary/60 bg-transparent text-secondary shadow-depth-sm hover:bg-secondary hover:text-secondary-foreground hover:shadow-depth-md",
+        ghost: "hover:bg-surface-2 hover:text-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        gradient: "bg-gradient-to-r from-solar-orange to-magenta-red text-foreground shadow-depth-md hover:shadow-depth-lg hover:opacity-95",
-        glow: "bg-primary text-primary-foreground shadow-depth-glow hover:shadow-depth-lg",
-        cyan: "bg-cyan-blue text-background shadow-depth-sm hover:bg-cyan-blue/90 hover:shadow-depth-md",
-        purple: "bg-cosmic-purple text-white shadow-depth-sm hover:bg-cosmic-purple/90 hover:shadow-depth-md",
+        gradient: "border border-primary/40 bg-gradient-to-r from-primary/10 to-accent/10 text-primary shadow-depth-sm hover:from-primary hover:to-accent hover:text-primary-foreground hover:shadow-depth-md",
+        glow: "border border-primary/60 bg-primary/10 text-primary shadow-depth-glow hover:bg-primary hover:text-primary-foreground hover:shadow-depth-lg",
+        cyan: "border border-cyan-blue/60 bg-transparent text-cyan-blue shadow-depth-sm hover:bg-cyan-blue hover:text-background hover:shadow-depth-md",
+        purple: "border border-cosmic-purple/60 bg-transparent text-cosmic-purple shadow-depth-sm hover:bg-cosmic-purple hover:text-white hover:shadow-depth-md",
       },
       size: {
         default: "h-10 px-4 py-2",
