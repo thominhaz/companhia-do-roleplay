@@ -24,11 +24,11 @@ export function MonsterCard({ monster, onClick }: MonsterCardProps) {
   };
 
   const getCRColor = (cr: number): string => {
-    if (cr <= 1) return "bg-green-500/20 text-green-400 border-green-500/30";
-    if (cr <= 4) return "bg-blue-500/20 text-blue-400 border-blue-500/30";
-    if (cr <= 10) return "bg-amber-500/20 text-amber-400 border-amber-500/30";
-    if (cr <= 17) return "bg-orange-500/20 text-orange-400 border-orange-500/30";
-    return "bg-red-500/20 text-red-400 border-red-500/30";
+    if (cr <= 1) return "bg-secondary/20 text-secondary border-secondary/30";
+    if (cr <= 4) return "bg-primary/20 text-primary border-primary/30";
+    if (cr <= 10) return "bg-gold/20 text-gold border-gold/30";
+    if (cr <= 17) return "bg-accent/20 text-accent-foreground border-accent/30";
+    return "bg-destructive/20 text-destructive border-destructive/30";
   };
 
   const hasLegendary = monster.legendaryActions !== null;
@@ -44,7 +44,7 @@ export function MonsterCard({ monster, onClick }: MonsterCardProps) {
             <div className="flex items-center gap-2">
               <h3 className="font-semibold truncate">{monster.name}</h3>
               {hasLegendary && (
-                <Star className="h-4 w-4 text-amber-500 flex-shrink-0" />
+                <Star className="h-4 w-4 text-gold flex-shrink-0" />
               )}
             </div>
             <p className="text-xs text-muted-foreground truncate">

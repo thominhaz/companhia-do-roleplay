@@ -50,11 +50,11 @@ interface RollResult {
 }
 
 const DICE_CONFIG: { type: DiceType; max: number; color: string; gradient: string }[] = [
-  { type: "d4", max: 4, color: "text-emerald-400", gradient: "from-emerald-500 to-emerald-600" },
-  { type: "d6", max: 6, color: "text-blue-400", gradient: "from-blue-500 to-blue-600" },
-  { type: "d8", max: 8, color: "text-purple-400", gradient: "from-purple-500 to-purple-600" },
-  { type: "d10", max: 10, color: "text-orange-400", gradient: "from-orange-500 to-orange-600" },
-  { type: "d12", max: 12, color: "text-pink-400", gradient: "from-pink-500 to-pink-600" },
+  { type: "d4", max: 4, color: "text-secondary", gradient: "from-secondary to-secondary/80" },
+  { type: "d6", max: 6, color: "text-primary", gradient: "from-primary to-primary/80" },
+  { type: "d8", max: 8, color: "text-accent-foreground", gradient: "from-accent to-accent/80" },
+  { type: "d10", max: 10, color: "text-gold", gradient: "from-gold to-gold/80" },
+  { type: "d12", max: 12, color: "text-destructive", gradient: "from-destructive to-destructive/80" },
   { type: "d20", max: 20, color: "text-primary", gradient: "from-primary to-primary/80" },
   { type: "d100", max: 100, color: "text-gold", gradient: "from-gold to-gold/80" },
 ];
@@ -374,7 +374,7 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
       if (part.type === 'modifier') {
         const value = part.value || 0;
         return (
-          <span key={i} className={cn(value >= 0 ? "text-emerald-400" : "text-destructive")}>
+          <span key={i} className={cn(value >= 0 ? "text-secondary" : "text-destructive")}>
             {i > 0 && (value >= 0 ? ' + ' : ' - ')}
             {i === 0 ? value : Math.abs(value)}
           </span>
@@ -465,7 +465,7 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
                       {currentResult.advantageRolls.roll2}
                     </span>
                     {currentResult.rollMode === 'advantage' && (
-                      <TrendingUp className="w-5 h-5 text-emerald-400" />
+                      <TrendingUp className="w-5 h-5 text-secondary" />
                     )}
                     {currentResult.rollMode === 'disadvantage' && (
                       <TrendingDown className="w-5 h-5 text-destructive" />
@@ -529,17 +529,17 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
             disabled={isRolling}
             className={cn(
               "relative p-4 rounded-xl font-bold transition-all",
-              "bg-gradient-to-br from-emerald-500/20 to-emerald-600/10",
-              "border border-emerald-500/40 hover:border-emerald-400",
+            "bg-gradient-to-br from-secondary/20 to-secondary/10",
+            "border border-secondary/40 hover:border-secondary",
               "hover:scale-[1.02] active:scale-[0.98]",
               "disabled:opacity-50"
             )}
           >
-            <div className="flex items-center justify-center gap-2 text-emerald-400">
+            <div className="flex items-center justify-center gap-2 text-secondary">
               <TrendingUp className="w-5 h-5" />
               <span>Vantagem</span>
             </div>
-            <p className="text-xs text-emerald-400/70 mt-1">2d20, pega o maior</p>
+            <p className="text-xs text-secondary/70 mt-1">2d20, pega o maior</p>
           </button>
           
           <button
@@ -593,7 +593,7 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
               {/* Modifier buttons */}
               <button
                 onClick={() => addModifierToExpression(1)}
-                className="p-3 rounded-xl font-bold transition-all bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 hover:scale-105 active:scale-95"
+                className="p-3 rounded-xl font-bold transition-all bg-secondary/20 border border-secondary/30 text-secondary hover:bg-secondary/30 hover:scale-105 active:scale-95"
               >
                 +1
               </button>
@@ -609,7 +609,7 @@ export function DiceRoller({ onBack, campaignId: propCampaignId }: DiceRollerPro
                   onClick={() => addModifierToExpression(mod)}
                   className={cn(
                     "px-4 font-mono",
-                    mod > 0 ? "text-emerald-400 border-emerald-400/30" : "text-destructive border-destructive/30"
+                    mod > 0 ? "text-secondary border-secondary/30" : "text-destructive border-destructive/30"
                   )}
                 >
                   {mod > 0 ? `+${mod}` : mod}

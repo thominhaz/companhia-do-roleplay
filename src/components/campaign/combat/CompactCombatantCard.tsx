@@ -30,10 +30,10 @@ export function CompactCombatantCard({
   const isCritical = hpPercent <= 25 && !isDead;
 
   const getHpColor = () => {
-    if (isDead) return "bg-gray-500";
-    if (hpPercent <= 25) return "bg-red-500";
-    if (hpPercent <= 50) return "bg-yellow-500";
-    return "bg-green-500";
+    if (isDead) return "bg-muted-foreground";
+    if (hpPercent <= 25) return "bg-destructive";
+    if (hpPercent <= 50) return "bg-gold";
+    return "bg-secondary";
   };
 
   return (
@@ -50,7 +50,7 @@ export function CompactCombatantCard({
           ? "ring-2 ring-primary ring-offset-1 ring-offset-background border-primary bg-primary/10" 
           : "border-border bg-card hover:border-primary/30",
         isDead && "opacity-50",
-        isOwnCombatant && "ring-1 ring-blue-500/50"
+        isOwnCombatant && "ring-1 ring-primary/50"
       )}
     >
       {/* Current turn indicator */}
@@ -68,8 +68,8 @@ export function CompactCombatantCard({
       <div className={cn(
         "absolute -top-2 -left-2 w-7 h-7 rounded-lg flex items-center justify-center font-bold text-sm",
         combatant.is_player 
-          ? "bg-blue-500 text-white" 
-          : "bg-red-500 text-white"
+          ? "bg-primary text-primary-foreground" 
+          : "bg-destructive text-destructive-foreground"
       )}>
         {combatant.initiative}
       </div>
@@ -77,11 +77,11 @@ export function CompactCombatantCard({
       {/* Icon */}
       <div className="flex justify-center mb-2 mt-1">
         {isDead ? (
-          <Skull className="w-8 h-8 text-gray-400" />
+          <Skull className="w-8 h-8 text-muted-foreground" />
         ) : combatant.is_player ? (
-          <User className={cn("w-8 h-8", isCurrentTurn ? "text-primary" : "text-blue-400")} />
+          <User className={cn("w-8 h-8", isCurrentTurn ? "text-primary" : "text-primary/70")} />
         ) : (
-          <Skull className={cn("w-8 h-8", isCurrentTurn ? "text-primary" : "text-red-400")} />
+          <Skull className={cn("w-8 h-8", isCurrentTurn ? "text-primary" : "text-destructive/70")} />
         )}
       </div>
 
@@ -106,11 +106,11 @@ export function CompactCombatantCard({
       {/* HP and AC */}
       <div className="flex justify-between text-[10px] text-muted-foreground">
         <span className="flex items-center gap-0.5">
-          <Heart className="w-3 h-3 text-red-500" />
+          <Heart className="w-3 h-3 text-destructive" />
           {combatant.current_hp}
         </span>
         <span className="flex items-center gap-0.5">
-          <Shield className="w-3 h-3 text-blue-500" />
+          <Shield className="w-3 h-3 text-primary" />
           {combatant.armor_class}
         </span>
       </div>
@@ -130,7 +130,7 @@ export function CompactCombatantCard({
       {/* Critical HP pulse */}
       {isCritical && (
         <motion.div
-          className="absolute inset-0 rounded-xl border-2 border-red-500"
+          className="absolute inset-0 rounded-xl border-2 border-destructive"
           animate={{ opacity: [0.3, 0.7, 0.3] }}
           transition={{ duration: 1, repeat: Infinity }}
         />

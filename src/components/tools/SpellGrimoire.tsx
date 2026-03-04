@@ -31,14 +31,14 @@ interface Spell {
 }
 
 const SCHOOLS: Record<string, { name: string; color: string }> = {
-  "Abjuração": { name: "Abjuração", color: "bg-blue-500/20 text-blue-400" },
-  "Conjuração": { name: "Conjuração", color: "bg-yellow-500/20 text-yellow-400" },
-  "Adivinhação": { name: "Adivinhação", color: "bg-cyan-500/20 text-cyan-400" },
-  "Encantamento": { name: "Encantamento", color: "bg-pink-500/20 text-pink-400" },
-  "Evocação": { name: "Evocação", color: "bg-red-500/20 text-red-400" },
-  "Ilusão": { name: "Ilusão", color: "bg-purple-500/20 text-purple-400" },
-  "Necromancia": { name: "Necromancia", color: "bg-green-500/20 text-green-400" },
-  "Transmutação": { name: "Transmutação", color: "bg-orange-500/20 text-orange-400" },
+  "Abjuração": { name: "Abjuração", color: "bg-primary/20 text-primary" },
+  "Conjuração": { name: "Conjuração", color: "bg-gold/20 text-gold" },
+  "Adivinhação": { name: "Adivinhação", color: "bg-accent/20 text-accent-foreground" },
+  "Encantamento": { name: "Encantamento", color: "bg-secondary/20 text-secondary" },
+  "Evocação": { name: "Evocação", color: "bg-destructive/20 text-destructive" },
+  "Ilusão": { name: "Ilusão", color: "bg-muted text-muted-foreground" },
+  "Necromancia": { name: "Necromancia", color: "bg-secondary/20 text-secondary" },
+  "Transmutação": { name: "Transmutação", color: "bg-gold/20 text-gold" },
 };
 
 const LEVELS = [
@@ -273,12 +273,12 @@ export function SpellGrimoire() {
                       {spell.name}
                     </h3>
                     {spell.concentration && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-gold/20 text-gold">
                         C
                       </span>
                     )}
                     {spell.ritual && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary">
                         R
                       </span>
                     )}
@@ -326,12 +326,12 @@ export function SpellGrimoire() {
                         {selectedSpell.school}
                       </Badge>
                       {selectedSpell.concentration && (
-                        <Badge className="text-xs bg-yellow-500/20 text-yellow-400">
+                        <Badge className="text-xs bg-gold/20 text-gold">
                           Concentração
                         </Badge>
                       )}
                       {selectedSpell.ritual && (
-                        <Badge className="text-xs bg-blue-500/20 text-blue-400">
+                        <Badge className="text-xs bg-primary/20 text-primary">
                           Ritual
                         </Badge>
                       )}

@@ -38,7 +38,7 @@ export function MonsterStatBlock({ monster, compact = false }: MonsterStatBlockP
             <span>{monster.armorClass}</span>
           </div>
           <div className="flex items-center gap-1">
-            <Zap className="h-4 w-4 text-amber-500" />
+            <Zap className="h-4 w-4 text-gold" />
             <span>{monster.speed}</span>
           </div>
         </div>
@@ -113,7 +113,7 @@ export function MonsterStatBlock({ monster, compact = false }: MonsterStatBlockP
         )}
         {monster.damageResistances && (
           <div>
-            <span className="text-amber-500 font-medium">Resistências:</span>
+            <span className="text-gold font-medium">Resistências:</span>
             <span className="ml-2">{formatArray(monster.damageResistances)}</span>
           </div>
         )}
