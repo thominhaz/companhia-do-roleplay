@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -7,29 +8,23 @@ const corsHeaders = {
 
 function extractJSON(text: string): string {
   let s = text.trim();
-  // Strip markdown code fences
   if (s.startsWith("```")) {
     s = s.replace(/^```(?:json)?\s*\n?/, "").replace(/\n?\s*```$/, "");
   }
-  // Find first { and last }
   const start = s.indexOf("{");
   const end = s.lastIndexOf("}");
   if (start !== -1 && end !== -1 && end > start) {
     s = s.slice(start, end + 1);
   }
-  // Remove trailing commas before } or ]
   s = s.replace(/,\s*([\]}])/g, "$1");
-  // Remove control characters
   s = s.replace(/[\x00-\x1F\x7F]/g, (c) => c === "\n" || c === "\r" || c === "\t" ? c : "");
   return s;
 }
 
 function ensureEndpoint(url: string): string {
-  // If URL doesn't end with a known API path, append /chat/completions
   const u = url.replace(/\/+$/, "");
   if (u.endsWith("/chat/completions")) return u;
   if (u.endsWith("/v1")) return u + "/chat/completions";
-  // Try appending the standard OpenAI-compatible path
   return u + "/api/v1/chat/completions";
 }
 
@@ -39,6 +34,20 @@ serve(async (req) => {
   }
 
   try {
+    // Authenticate user
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+    const supabase = createClient(Deno.env.get('SUPABASE_URL')!, Deno.env.get('SUPABASE_ANON_KEY')!, {
+      global: { headers: { Authorization: authHeader } },
+    });
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    if (claimsError || !claimsData?.claims) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+    }
+
     const { cr, treasure_type, party_level, party_size } = await req.json();
 
     const ENDPOINT = Deno.env.get("DIGITALOCEAN_AI_ENDPOINT");

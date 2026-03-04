@@ -1517,6 +1517,30 @@ export type Database = {
           },
         ]
       }
+      discord_oauth_states: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          used: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          used?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          used?: boolean
+          user_id?: string
+        }
+        Relationships: []
+      }
       homebrew_content: {
         Row: {
           created_at: string
@@ -2387,8 +2411,13 @@ export type Database = {
         Args: { _campaign_id: string; _user_id: string }
         Returns: boolean
       }
+      consume_discord_oauth_state: {
+        Args: { _state_id: string }
+        Returns: string
+      }
       count_user_characters: { Args: { _user_id: string }; Returns: number }
       count_user_homebrew: { Args: { _user_id: string }; Returns: number }
+      create_discord_oauth_state: { Args: never; Returns: string }
       create_notification: {
         Args: {
           _data?: Json

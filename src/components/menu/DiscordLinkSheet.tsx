@@ -95,18 +95,22 @@ export function DiscordLinkSheet({ open, onOpenChange }: DiscordLinkSheetProps) 
     setLoading(true);
 
     try {
-      // Build OAuth URL
+      // Create an opaque state token instead of passing the JWT
+      const { data: stateId, error: stateError } = await supabase.rpc('create_discord_oauth_state');
+      if (stateError || !stateId) {
+        throw new Error("Não foi possível iniciar a vinculação");
+      }
+
       const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
       const redirectUri = encodeURIComponent(
         `https://${projectId}.supabase.co/functions/v1/discord-oauth-callback`
       );
       
       const scopes = encodeURIComponent("identify guilds.join");
-      const state = encodeURIComponent(session.access_token);
+      const state = encodeURIComponent(stateId);
       
       const oauthUrl = `https://discord.com/oauth2/authorize?client_id=${DISCORD_CLIENT_ID}&response_type=code&redirect_uri=${redirectUri}&scope=${scopes}&state=${state}`;
       
-      // Redirect to Discord OAuth
       window.location.href = oauthUrl;
     } catch (error) {
       console.error("Error linking Discord:", error);
