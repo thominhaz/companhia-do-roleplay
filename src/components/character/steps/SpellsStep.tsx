@@ -281,7 +281,7 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                 className="flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/20 hover:bg-primary/30 border border-primary/40 rounded-lg text-sm transition-colors group"
               >
                 <span className="text-foreground truncate max-w-[120px] sm:max-w-none">{spell.name}</span>
-                <Badge variant="outline" className="text-[8px] px-1 py-0 bg-purple-500/20 text-purple-400 border-purple-500/30">
+                <Badge variant="outline" className="text-[8px] px-1 py-0 bg-accent-foreground/20 text-accent-foreground border-accent-foreground/30">
                   Truque
                 </Badge>
                 <X className="w-3.5 h-3.5 text-muted-foreground group-hover:text-destructive transition-colors" />
@@ -294,7 +294,7 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                 className="flex items-center gap-1.5 px-2.5 py-1.5 bg-primary/20 hover:bg-primary/30 border border-primary/40 rounded-lg text-sm transition-colors group"
               >
                 <span className="text-foreground truncate max-w-[120px] sm:max-w-none">{spell.name}</span>
-                <Badge variant="outline" className="text-[8px] px-1 py-0 bg-amber-500/20 text-amber-400 border-amber-500/30">
+                <Badge variant="outline" className="text-[8px] px-1 py-0 bg-gold/20 text-gold border-gold/30">
                   1º
                 </Badge>
                 <X className="w-3.5 h-3.5 text-muted-foreground group-hover:text-destructive transition-colors" />
@@ -322,7 +322,7 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-foreground">Truques</h3>
             <Badge variant="outline" className={cn(
-              selectedCantrips.length >= spellcastingInfo.cantrips && "bg-green-500/20 text-green-400 border-green-500/30"
+              selectedCantrips.length >= spellcastingInfo.cantrips && "bg-secondary/20 text-secondary border-secondary/30"
             )}>
               {selectedCantrips.length} / {spellcastingInfo.cantrips}
             </Badge>
@@ -364,7 +364,7 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                             Homebrew
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-[9px] px-1 py-0 bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
+                          <Badge variant="outline" className="text-[9px] px-1 py-0 bg-muted text-muted-foreground border-border">
                             SRD
                           </Badge>
                         )}
@@ -395,7 +395,7 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-foreground">Magias de 1º Nível</h3>
             <Badge variant="outline" className={cn(
-              selectedSpells.length >= spellcastingInfo.spells && "bg-green-500/20 text-green-400 border-green-500/30"
+              selectedSpells.length >= spellcastingInfo.spells && "bg-secondary/20 text-secondary border-secondary/30"
             )}>
               {selectedSpells.length} / {spellcastingInfo.spells}
             </Badge>
@@ -437,15 +437,15 @@ export function SpellsStep({ data, updateData }: SpellsStepProps) {
                             Homebrew
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-[9px] px-1 py-0 bg-cyan-500/10 text-cyan-400 border-cyan-500/30">
+                          <Badge variant="outline" className="text-[9px] px-1 py-0 bg-muted text-muted-foreground border-border">
                             SRD
                           </Badge>
                         )}
                         {spell.concentration && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-yellow-500/20 text-yellow-400">C</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-gold/20 text-gold">C</span>
                         )}
                         {spell.ritual && (
-                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400">R</span>
+                          <span className="text-[10px] px-1.5 py-0.5 rounded bg-primary/20 text-primary">R</span>
                         )}
                         <Info 
                           className="w-3.5 h-3.5 text-muted-foreground cursor-help shrink-0" 

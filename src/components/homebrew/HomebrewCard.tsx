@@ -17,11 +17,11 @@ interface HomebrewCardProps {
 
 const rarityColors: Record<string, string> = {
   common: "text-muted-foreground border-muted-foreground/30",
-  uncommon: "text-green-500 border-green-500/30",
-  rare: "text-blue-500 border-blue-500/30",
-  very_rare: "text-purple-500 border-purple-500/30",
-  legendary: "text-orange-500 border-orange-500/30",
-  artifact: "text-red-500 border-red-500/30",
+  uncommon: "text-secondary border-secondary/30",
+  rare: "text-primary border-primary/30",
+  very_rare: "text-accent-foreground border-accent-foreground/30",
+  legendary: "text-gold border-gold/30",
+  artifact: "text-destructive border-destructive/30",
 };
 
 const rarityLabels: Record<string, string> = {
@@ -84,14 +84,14 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare, onDuplicate, onE
   };
 
   const getTypeColor = () => {
-    if (isSpell) return "from-purple-500/20 to-purple-700/20 border-purple-500/30";
-    if (isItem) return "from-amber-500/20 to-amber-700/20 border-amber-500/30";
-    if (isRace) return "from-blue-500/20 to-blue-700/20 border-blue-500/30";
-    if (isClass) return "from-red-500/20 to-red-700/20 border-red-500/30";
-    if (isSubclass) return "from-pink-500/20 to-pink-700/20 border-pink-500/30";
-    if (isMonster) return "from-gray-500/20 to-gray-700/20 border-gray-500/30";
-    if (isBackground) return "from-green-500/20 to-green-700/20 border-green-500/30";
-    if (isFeat) return "from-orange-500/20 to-orange-700/20 border-orange-500/30";
+    if (isSpell) return "from-accent-foreground/20 to-accent-foreground/10 border-accent-foreground/30";
+    if (isItem) return "from-gold/20 to-gold/10 border-gold/30";
+    if (isRace) return "from-primary/20 to-primary/10 border-primary/30";
+    if (isClass) return "from-destructive/20 to-destructive/10 border-destructive/30";
+    if (isSubclass) return "from-primary/20 to-accent-foreground/10 border-primary/30";
+    if (isMonster) return "from-muted-foreground/20 to-muted-foreground/10 border-muted-foreground/30";
+    if (isBackground) return "from-secondary/20 to-secondary/10 border-secondary/30";
+    if (isFeat) return "from-primary/20 to-primary/10 border-primary/30";
     return "from-muted to-muted border-border";
   };
 
@@ -155,7 +155,7 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare, onDuplicate, onE
             {shareCount > 0 && (
               <Badge 
                 variant="outline" 
-                className="text-[10px] bg-green-500/20 text-green-400 border-green-500/30"
+                className="text-[10px] bg-secondary/20 text-secondary border-secondary/30"
               >
                 <Users className="w-2.5 h-2.5 mr-0.5" />
                 {shareCount}
@@ -199,17 +199,17 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare, onDuplicate, onE
           {isItem && itemData && (
             <div className="flex flex-wrap gap-2 mt-2">
               {itemData.requires_attunement && (
-                <span className="text-xs text-purple-400 bg-purple-500/20 px-2 py-0.5 rounded">
+                <span className="text-xs text-accent-foreground bg-accent-foreground/20 px-2 py-0.5 rounded">
                   Sintonização
                 </span>
               )}
               {itemData.damage && (
-                <span className="text-xs text-red-400 bg-red-500/20 px-2 py-0.5 rounded">
+                <span className="text-xs text-destructive bg-destructive/20 px-2 py-0.5 rounded">
                   {itemData.damage} {itemData.damage_type}
                 </span>
               )}
               {itemData.ac_bonus && (
-                <span className="text-xs text-blue-400 bg-blue-500/20 px-2 py-0.5 rounded">
+                <span className="text-xs text-primary bg-primary/20 px-2 py-0.5 rounded">
                   +{itemData.ac_bonus} CA
                 </span>
               )}
@@ -256,7 +256,7 @@ export function HomebrewCard({ item, onEdit, onDelete, onShare, onDuplicate, onE
               size="icon"
               className={cn(
                 "w-8 h-8",
-                shareCount > 0 && "text-green-400"
+                shareCount > 0 && "text-secondary"
               )}
               onClick={onShare}
               title="Compartilhar"

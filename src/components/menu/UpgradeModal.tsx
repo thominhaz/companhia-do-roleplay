@@ -27,7 +27,7 @@ const TIER_INFO: Record<SubscriptionTier, {
   aldeao: {
     name: "Aldeão",
     icon: <Shield className="h-5 w-5" />,
-    color: "text-emerald-500",
+    color: "text-secondary",
     benefits: [
       "Criar até 3 personagens",
       "Participar de campanhas",
@@ -38,7 +38,7 @@ const TIER_INFO: Record<SubscriptionTier, {
   heroi: {
     name: "Herói",
     icon: <Sparkles className="h-5 w-5" />,
-    color: "text-amber-500",
+    color: "text-gold",
     benefits: [
       "Criar até 20 personagens",
       "A Forja (conteúdo homebrew)",
@@ -106,16 +106,16 @@ export function UpgradeModal({
             <ul className="space-y-2">
               {tierInfo.benefits.map((benefit, index) => (
                 <li key={index} className="flex items-center gap-2 text-sm">
-                  <Check className="h-4 w-4 text-green-500 shrink-0" />
+                  <Check className="h-4 w-4 text-secondary shrink-0" />
                   <span>{benefit}</span>
                 </li>
               ))}
             </ul>
           </div>
 
-          <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3">
+          <div className="bg-gold/10 border border-gold/30 rounded-lg p-3">
             <p className="text-sm text-center">
-              <span className="font-medium text-amber-600 dark:text-amber-400">
+              <span className="font-medium text-gold">
                 Apoie o Go20 no Catarse
               </span>
               <br />
