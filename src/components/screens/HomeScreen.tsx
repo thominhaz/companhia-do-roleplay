@@ -211,7 +211,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       <section className="px-4 sm:px-5 md:px-8 lg:px-12 mt-4 sm:mt-6 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
           {/* Active Character Card */}
-          <div className="sm:col-span-2 md:col-span-3 bg-surface-1/80 backdrop-blur-md border border-border/30 rounded-2xl p-4 md:p-6 relative overflow-hidden shadow-depth-md min-h-[140px] sm:min-h-[180px]">
+          <div className="sm:col-span-2 md:col-span-3 bg-white/[0.08] backdrop-blur-[20px] backdrop-saturate-150 border border-white/[0.15] rounded-2xl p-4 md:p-6 relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)] min-h-[140px] sm:min-h-[180px]">
             <div className="absolute top-0 right-0 w-32 h-32 bg-foreground opacity-5 rounded-full -mr-10 -mt-10 parallax-float" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-foreground opacity-5 rounded-full -ml-8 -mb-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col justify-between">
@@ -267,7 +267,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </div>
 
           {/* Next Session Card */}
-          <div className="sm:col-span-1 bg-surface-1/80 backdrop-blur-md border border-border/30 rounded-2xl p-3 md:p-4 relative overflow-hidden shadow-depth-md min-h-[120px] sm:min-h-[180px]">
+          <div className="sm:col-span-1 bg-white/[0.08] backdrop-blur-[20px] backdrop-saturate-150 border border-white/[0.15] rounded-2xl p-3 md:p-4 relative overflow-hidden shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)] min-h-[120px] sm:min-h-[180px]">
             <div className="absolute top-0 right-0 w-20 h-20 bg-foreground opacity-5 rounded-full -mr-8 -mt-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col">
               {loadingSessions ? (
@@ -384,7 +384,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 }
               }}
             >
-              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl border ${action.color === 'primary' ? 'border-primary/40 bg-primary/10' : 'border-secondary/40 bg-secondary/10'} flex items-center justify-center shadow-depth-sm transition-all duration-300 hover:shadow-depth-md hover:-translate-y-1`}>
+              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl border ${action.color === 'primary' ? 'border-primary/30 bg-primary/[0.08]' : 'border-secondary/30 bg-secondary/[0.08]'} backdrop-blur-[12px] flex items-center justify-center shadow-[0_4px_16px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.08)] transition-all duration-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.3)] hover:-translate-y-1`}>
                 <action.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${action.color === 'primary' ? 'text-primary' : 'text-secondary'}`} />
               </div>
               <span className="text-[10px] sm:text-xs text-muted-foreground text-center leading-tight">{action.label}</span>
@@ -418,7 +418,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               {recentItems.map((item) => (
                 <div 
                   key={`${item.type}-${item.id}`}
-                  className="flex-shrink-0 w-36 sm:w-40 md:w-full bg-surface-1/80 backdrop-blur-md border border-border/30 rounded-xl p-2.5 sm:p-3 shadow-depth-sm transition-all duration-300 hover:shadow-depth-md hover:-translate-y-1 hover:border-primary/20 cursor-pointer"
+                  className="flex-shrink-0 w-36 sm:w-40 md:w-full bg-white/[0.08] backdrop-blur-[20px] backdrop-saturate-150 border border-white/[0.15] rounded-xl p-2.5 sm:p-3 shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] hover:-translate-y-1 hover:border-white/[0.25] cursor-pointer"
                 >
                   <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg border ${item.gradient === 'primary' ? 'border-primary/40 bg-primary/10' : item.gradient === 'secondary' ? 'border-secondary/40 bg-secondary/10' : 'border-muted bg-muted/30'} flex items-center justify-center mb-2 sm:mb-3`}>
                     <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${item.gradient === 'primary' ? 'text-primary' : item.gradient === 'secondary' ? 'text-secondary' : 'text-muted-foreground'}`} />

@@ -57,7 +57,7 @@ export function CommunitySection() {
         <h2 className="text-sm font-semibold text-muted-foreground">COMUNIDADE</h2>
       </div>
       
-      <div className="glass-card rounded-2xl p-4 sm:p-5">
+      <div className="bg-white/[0.08] backdrop-blur-[20px] backdrop-saturate-150 border border-white/[0.15] shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)] rounded-2xl p-4 sm:p-5">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cosmic-purple to-magenta-red flex items-center justify-center">
             <Heart className="w-5 h-5 text-foreground" />
@@ -76,7 +76,7 @@ export function CommunitySection() {
               onClick={(e) => handleLinkClick(link, e)}
               target={link.external ? "_blank" : undefined}
               rel={link.external ? "noopener noreferrer" : undefined}
-              className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-background/50 hover:bg-background/80 transition-all duration-300 card-hover cursor-pointer"
+              className="group flex flex-col items-center gap-2 p-3 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/[0.08] hover:border-white/[0.15] transition-all duration-300 cursor-pointer"
             >
               <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-gradient-to-br ${link.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
                 <link.icon className="w-5 h-5 sm:w-6 sm:h-6 text-foreground" />
