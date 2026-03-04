@@ -28,6 +28,7 @@ import { HelpSheet } from "@/components/menu/HelpSheet";
 import { PrivacySheet } from "@/components/menu/PrivacySheet";
 import { DiscordLinkSheet } from "@/components/menu/DiscordLinkSheet";
 import { supabase } from "@/integrations/supabase/client";
+import { CommunitySection } from "@/components/home/CommunitySection";
 
 const menuSections = [
   {
@@ -328,6 +329,9 @@ export function MenuScreen() {
             </div>
           </section>
         ))}
+
+        {/* Community */}
+        <CommunitySection />
 
         {/* Logout */}
         {user && (
