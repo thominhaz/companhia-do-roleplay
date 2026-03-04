@@ -140,7 +140,7 @@ export function CombatDiceRoller({ onRollComplete }: CombatDiceRollerProps) {
             className={cn(
               "rounded-xl p-4 border-2 text-center relative overflow-hidden",
               isCritical(currentRoll) && "border-gold bg-gold/10",
-              isFumble(currentRoll) && "border-red-500 bg-red-500/10",
+              isFumble(currentRoll) && "border-destructive bg-destructive/10",
               !isCritical(currentRoll) && !isFumble(currentRoll) && "border-primary bg-primary/5"
             )}
           >
@@ -165,7 +165,7 @@ export function CombatDiceRoller({ onRollComplete }: CombatDiceRollerProps) {
                     className={cn(
                       "inline-flex items-center justify-center w-10 h-10 rounded-lg font-bold text-lg",
                       roll === 20 && "bg-gold text-black",
-                      roll === 1 && "bg-red-500 text-white",
+                      roll === 1 && "bg-destructive text-destructive-foreground",
                       roll !== 20 && roll !== 1 && "bg-muted"
                     )}
                   >
@@ -186,7 +186,7 @@ export function CombatDiceRoller({ onRollComplete }: CombatDiceRollerProps) {
                 className={cn(
                   "text-4xl font-black",
                   isCritical(currentRoll) && "text-gold",
-                  isFumble(currentRoll) && "text-red-500"
+                  isFumble(currentRoll) && "text-destructive"
                 )}
               >
                 {currentRoll.total}
@@ -231,7 +231,7 @@ export function CombatDiceRoller({ onRollComplete }: CombatDiceRollerProps) {
                   <span className={cn(
                     "font-bold",
                     isCritical(roll) && "text-gold",
-                    isFumble(roll) && "text-red-500"
+                    isFumble(roll) && "text-destructive"
                   )}>
                     = {roll.total}
                   </span>

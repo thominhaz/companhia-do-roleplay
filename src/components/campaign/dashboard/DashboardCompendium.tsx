@@ -41,7 +41,7 @@ export function DashboardCompendium({ campaign }: DashboardCompendiumProps) {
             </div>
 
             <div className="bg-card rounded-xl p-6 border border-border text-center">
-              <Library className="w-12 h-12 mx-auto mb-4 text-purple-500 opacity-50" />
+              <Library className="w-12 h-12 mx-auto mb-4 text-accent-foreground opacity-50" />
               <h3 className="font-semibold mb-2">Compêndio da Campanha</h3>
               <p className="text-sm text-muted-foreground mb-4">
                 Acesse magias, itens, raças e classes homebrew compartilhadas pelo mestre.

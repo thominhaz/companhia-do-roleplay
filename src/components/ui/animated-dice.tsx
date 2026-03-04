@@ -17,11 +17,11 @@ const sizeMap = {
 };
 
 const diceColors = {
-  d4: "from-emerald-500 to-emerald-600",
-  d6: "from-blue-500 to-blue-600",
-  d8: "from-purple-500 to-purple-600",
-  d10: "from-orange-500 to-orange-600",
-  d12: "from-pink-500 to-pink-600",
+  d4: "from-secondary to-secondary/80",
+  d6: "from-primary to-primary/80",
+  d8: "from-accent to-accent/80",
+  d10: "from-gold to-gold/80",
+  d12: "from-destructive to-destructive/80",
   d20: "from-primary to-primary/80",
   d100: "from-gold to-gold/80",
 };
@@ -233,15 +233,15 @@ export function AnimatedHPBar({
   const tempPercent = maxHp > 0 ? Math.max(0, Math.min(100 - percent, (tempHp / maxHp) * 100)) : 0;
 
   const getBarColor = () => {
-    if (percent <= 25) return "bg-gradient-to-r from-red-600 to-red-500";
-    if (percent <= 50) return "bg-gradient-to-r from-yellow-600 to-yellow-500";
-    return "bg-gradient-to-r from-green-600 to-green-500";
+    if (percent <= 25) return "bg-gradient-to-r from-destructive to-destructive/80";
+    if (percent <= 50) return "bg-gradient-to-r from-gold to-gold/80";
+    return "bg-gradient-to-r from-secondary to-secondary/80";
   };
 
   const getGlowColor = () => {
-    if (percent <= 25) return "shadow-red-500/50";
-    if (percent <= 50) return "shadow-yellow-500/50";
-    return "shadow-green-500/50";
+    if (percent <= 25) return "shadow-destructive/50";
+    if (percent <= 50) return "shadow-gold/50";
+    return "shadow-secondary/50";
   };
 
   return (
@@ -251,10 +251,10 @@ export function AnimatedHPBar({
           <motion.span
             className={`font-bold ${
               percent <= 25
-                ? "text-red-400"
+                ? "text-destructive"
                 : percent <= 50
-                ? "text-yellow-400"
-                : "text-green-400"
+                ? "text-gold"
+                : "text-secondary"
             }`}
             animate={
               onDamage
@@ -267,7 +267,7 @@ export function AnimatedHPBar({
           >
             {currentHp}
             {tempHp > 0 && (
-              <span className="text-cyan-400 ml-1">(+{tempHp})</span>
+              <span className="text-primary ml-1">(+{tempHp})</span>
             )}
           </motion.span>
           <span className="text-muted-foreground">/ {maxHp}</span>
@@ -280,7 +280,7 @@ export function AnimatedHPBar({
         {/* Damage flash overlay */}
         {onDamage && (
           <motion.div
-            className="absolute inset-0 bg-red-500 z-20"
+            className="absolute inset-0 bg-destructive z-20"
             initial={{ opacity: 0.8 }}
             animate={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
@@ -290,7 +290,7 @@ export function AnimatedHPBar({
         {/* Heal flash overlay */}
         {onHeal && (
           <motion.div
-            className="absolute inset-0 bg-green-500 z-20"
+            className="absolute inset-0 bg-secondary z-20"
             initial={{ opacity: 0.8 }}
             animate={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
@@ -300,7 +300,7 @@ export function AnimatedHPBar({
         {/* Background glow for low HP */}
         {percent <= 25 && (
           <motion.div
-            className="absolute inset-0 bg-red-500/20"
+            className="absolute inset-0 bg-destructive/20"
             animate={{ opacity: [0.2, 0.5, 0.2] }}
             transition={{ duration: 1, repeat: Infinity }}
           />
@@ -339,7 +339,7 @@ export function AnimatedHPBar({
         {/* Temp HP bar */}
         {tempHp > 0 && (
           <motion.div
-            className="absolute inset-y-0 bg-gradient-to-r from-cyan-500 to-cyan-400 rounded-full"
+            className="absolute inset-y-0 bg-gradient-to-r from-primary to-primary/80 rounded-full"
             style={{ left: `${percent}%` }}
             initial={{ width: 0 }}
             animate={{ width: `${tempPercent}%` }}

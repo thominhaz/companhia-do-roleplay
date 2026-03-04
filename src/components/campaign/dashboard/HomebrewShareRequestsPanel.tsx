@@ -48,9 +48,9 @@ export function HomebrewShareRequestsPanel({ campaignId }: HomebrewShareRequests
   };
 
   return (
-    <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-4">
+    <div className="bg-gold/10 border border-gold/20 rounded-xl p-4">
       <div className="flex items-center gap-2 mb-3">
-        <Hammer className="w-4 h-4 text-amber-500" />
+        <Hammer className="w-4 h-4 text-gold" />
         <h4 className="font-semibold text-sm">Solicitações de Compartilhamento</h4>
         <Badge variant="secondary" className="ml-auto">
           {requests.length}

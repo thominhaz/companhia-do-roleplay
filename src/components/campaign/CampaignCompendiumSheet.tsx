@@ -36,12 +36,12 @@ interface CampaignCompendiumSheetProps {
 }
 
 const contentTypes: { type: HomebrewContentType; label: string; singular: string; icon: React.ElementType; color: string }[] = [
-  { type: 'spell', label: 'Magias', singular: 'magia', icon: Sparkles, color: 'from-purple-500 to-purple-700' },
-  { type: 'item', label: 'Itens', singular: 'item', icon: Gem, color: 'from-amber-500 to-amber-700' },
-  { type: 'race', label: 'Raças', singular: 'raça', icon: Users, color: 'from-blue-500 to-blue-700' },
-  { type: 'monster', label: 'Monstros', singular: 'monstro', icon: Skull, color: 'from-red-500 to-red-700' },
-  { type: 'background', label: 'Antecedentes', singular: 'antecedente', icon: BookOpen, color: 'from-green-500 to-green-700' },
-  { type: 'feat', label: 'Talentos', singular: 'talento', icon: Star, color: 'from-orange-500 to-orange-700' },
+  { type: 'spell', label: 'Magias', singular: 'magia', icon: Sparkles, color: 'from-accent to-accent/70' },
+  { type: 'item', label: 'Itens', singular: 'item', icon: Gem, color: 'from-gold to-gold/70' },
+  { type: 'race', label: 'Raças', singular: 'raça', icon: Users, color: 'from-primary to-primary/70' },
+  { type: 'monster', label: 'Monstros', singular: 'monstro', icon: Skull, color: 'from-destructive to-destructive/70' },
+  { type: 'background', label: 'Antecedentes', singular: 'antecedente', icon: BookOpen, color: 'from-secondary to-secondary/70' },
+  { type: 'feat', label: 'Talentos', singular: 'talento', icon: Star, color: 'from-gold to-gold/70' },
 ];
 
 // Helper to format attribute bonuses

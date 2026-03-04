@@ -92,7 +92,7 @@ export function InitiativeListCard({
             ? "bg-muted border-primary/50" 
             : "bg-card border-transparent hover:border-muted-foreground/20",
         isDead && "opacity-50",
-        isOwnCombatant && !isMaster && "ring-1 ring-blue-500/50"
+        isOwnCombatant && !isMaster && "ring-1 ring-primary/50"
       )}
     >
       {/* Current turn indicator */}
@@ -108,8 +108,8 @@ export function InitiativeListCard({
         className={cn(
           "relative flex-shrink-0 w-14 h-14 rounded-lg flex flex-col items-center justify-center border-2 transition-all",
           combatant.is_player 
-            ? "bg-blue-500/10 border-blue-500/50" 
-            : "bg-red-500/10 border-red-500/50"
+            ? "bg-primary/10 border-primary/50" 
+            : "bg-destructive/10 border-destructive/50"
         )}
         onClick={(e) => {
           e.stopPropagation();
@@ -133,7 +133,7 @@ export function InitiativeListCard({
         ) : (
           <span className={cn(
             "text-xl font-bold",
-            combatant.is_player ? "text-blue-400" : "text-red-400"
+            combatant.is_player ? "text-primary" : "text-destructive"
           )}>
             {combatant.initiative}
           </span>
@@ -154,14 +154,14 @@ export function InitiativeListCard({
       <div className="flex items-center gap-3 flex-1 min-w-0">
         <div className={cn(
           "w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0",
-          combatant.is_player ? "bg-blue-500/20" : "bg-red-500/20"
+          combatant.is_player ? "bg-primary/20" : "bg-destructive/20"
         )}>
           {isDead ? (
-            <Skull className="w-5 h-5 text-gray-400" />
+            <Skull className="w-5 h-5 text-muted-foreground" />
           ) : combatant.is_player ? (
-            <User className="w-5 h-5 text-blue-400" />
+            <User className="w-5 h-5 text-primary" />
           ) : (
-            <Skull className="w-5 h-5 text-red-400" />
+            <Skull className="w-5 h-5 text-destructive" />
           )}
         </div>
 
@@ -207,9 +207,9 @@ export function InitiativeListCard({
               exit={{ opacity: 0, y: -30, scale: 0.5 }}
               className={cn(
                 "absolute -top-6 right-0 z-20 flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-bold",
-                hpChange.type === 'damage' 
-                  ? "bg-red-500 text-white" 
-                  : "bg-green-500 text-white"
+              hpChange.type === 'damage' 
+                  ? "bg-destructive text-destructive-foreground" 
+                  : "bg-secondary text-secondary-foreground"
               )}
             >
               {hpChange.type === 'damage' ? <TrendingDown className="w-3 h-3" /> : <TrendingUp className="w-3 h-3" />}
@@ -220,7 +220,7 @@ export function InitiativeListCard({
 
         <span className={cn(
           "text-lg font-bold tabular-nums",
-          isDead ? "text-gray-400" : hpPercent <= 25 ? "text-red-400" : hpPercent <= 50 ? "text-yellow-400" : "text-foreground"
+          isDead ? "text-muted-foreground" : hpPercent <= 25 ? "text-destructive" : hpPercent <= 50 ? "text-gold" : "text-foreground"
         )}>
           {combatant.current_hp}
         </span>
@@ -234,18 +234,18 @@ export function InitiativeListCard({
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 bg-red-500/10 hover:bg-red-500/20"
+            className="h-8 w-8 bg-destructive/10 hover:bg-destructive/20"
             onClick={() => onHpChange(combatant, 'damage')}
           >
-            <Minus className="w-3 h-3 text-red-400" />
+            <Minus className="w-3 h-3 text-destructive" />
           </Button>
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8 bg-green-500/10 hover:bg-green-500/20"
+            className="h-8 w-8 bg-secondary/10 hover:bg-secondary/20"
             onClick={() => onHpChange(combatant, 'heal')}
           >
-            <Plus className="w-3 h-3 text-green-400" />
+            <Plus className="w-3 h-3 text-secondary" />
           </Button>
           {isMaster && (
             <Button
