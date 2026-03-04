@@ -24,155 +24,145 @@ html.no-transitions *::after {
 }
 @layer base {
   :root {
-    /* Go20 Dark Theme - Nova Paleta do Logo */
-    --background: 0 0% 7%;
-    --foreground: 210 40% 98%;
+    /* Go20 Dark Theme - Paleta "Forja & Brasa" */
+    /* 60% Obsidiana — base escura com matiz roxa */
+    --background: 270 15% 4%;
+    /* 30% Pedra Clara — texto e títulos */
+    --foreground: 30 17% 66%;
 
     /* === DEPTH LAYERING SYSTEM === */
-    /* Surface 0: deepest background */
-    --surface-0: 0 0% 7%;
-    /* Surface 1: content panels, cards */
-    --surface-1: 0 0% 11%;
-    /* Surface 2: raised elements, interactive */
-    --surface-2: 0 0% 15%;
-    /* Surface 3: top-level, buttons, highlights */
-    --surface-3: 0 0% 19%;
+    --surface-0: 270 15% 4%;
+    --surface-1: 270 14% 8%;
+    --surface-2: 270 12% 12%;
+    --surface-3: 270 10% 16%;
 
-    --card: 0 0% 11%;
-    --card-foreground: 210 40% 98%;
+    --card: 270 14% 8%;
+    --card-foreground: 30 17% 66%;
 
-    --popover: 0 0% 13%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 270 13% 10%;
+    --popover-foreground: 30 17% 66%;
 
-    /* Primary: Laranja Solar - CTAs, títulos principais, ícones ativos */
-    --primary: 27 100% 67%;
-    --primary-foreground: 0 0% 10%;
+    /* Primary: Brasa Viva — CTAs, botões, destaques (10%) */
+    --primary: 19 76% 53%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary: Roxo Cósmico - Elementos secundários, fundos de seções escuras */
+    /* Secondary: Roxo Arcano — badges premium, magia */
     --secondary: 271 76% 53%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 0 0% 15%;
-    --muted-foreground: 0 0% 60%;
+    --muted: 270 10% 16%;
+    --muted-foreground: 27 8% 44%;
 
-    /* Accent: Azul Ciano - Fundos claros, detalhes sutis, estados de hover */
-    --accent: 195 93% 70%;
+    /* Accent: Brasa hover */
+    --accent: 20 100% 66%;
     --accent-foreground: 0 0% 10%;
 
-    /* Destructive: Vermelho Magenta - Alertas, notificações */
-    --destructive: 359 100% 65%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive: Vermelho funcional */
+    --destructive: 355 72% 56%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 0 0% 18%;
-    --input: 0 0% 18%;
-    --ring: 27 100% 67%;
+    --border: 270 8% 18%;
+    --input: 270 8% 18%;
+    --ring: 19 76% 53%;
 
     --radius: 0.75rem;
 
-    /* Custom Go20 tokens - Cores do Logo */
-    --darker: 0 0% 5%;
-    --dark: 0 0% 9%;
-    --dark-panel: 0 0% 13%;
+    /* Custom Go20 tokens */
+    --darker: 270 15% 3%;
+    --dark: 270 14% 6%;
+    --dark-panel: 270 13% 10%;
     
-    /* Laranja Solar - Bordas e texto principal */
+    /* Logo colors (preserved for gradients/branding) */
     --solar-orange: 27 100% 67%;
-    
-    /* Azul Ciano - Topo do gradiente */
     --cyan-blue: 195 93% 70%;
-    
-    /* Roxo Cósmico - Meio do gradiente */
     --cosmic-purple: 271 76% 53%;
-    
-    /* Vermelho Magenta - Base do gradiente */
     --magenta-red: 359 100% 65%;
     
-    /* Cores legadas mantidas para compatibilidade */
+    /* Legacy aliases */
     --neon-purple: 271 76% 53%;
     --neon-pink: 359 100% 65%;
     --neon-blue: 195 93% 70%;
     --gold: 27 100% 67%;
-    --crimson: 359 100% 65%;
-    --crimson-dark: 359 100% 45%;
+    --crimson: 355 72% 56%;
+    --crimson-dark: 355 72% 40%;
+
+    /* Functional: Success green */
+    --success: 153 46% 42%;
     
-    /* Gradients - Inspirados no dado do logo */
-    --gradient-primary: linear-gradient(135deg, hsl(195 93% 70%), hsl(271 76% 53%), hsl(359 100% 65%));
+    /* Gradients — simplified, accent-focused */
+    --gradient-primary: linear-gradient(135deg, hsl(19 76% 53%), hsl(271 76% 53%));
     --gradient-dice: linear-gradient(180deg, hsl(195 93% 70%), hsl(271 76% 53%), hsl(359 100% 65%), hsl(27 100% 67%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 13%), hsl(0 0% 8%));
-    --gradient-glow: radial-gradient(circle at center, hsl(27 100% 67% / 0.3), transparent 70%);
-    --gradient-accent: linear-gradient(135deg, hsl(27 100% 67%), hsl(359 100% 65%));
+    --gradient-card: linear-gradient(180deg, hsl(270 14% 10%), hsl(270 15% 5%));
+    --gradient-glow: radial-gradient(circle at center, hsl(19 76% 53% / 0.3), transparent 70%);
+    --gradient-accent: linear-gradient(135deg, hsl(19 76% 53%), hsl(20 100% 66%));
     
-    /* === COMBINED SHADOW SYSTEM (light top + dark bottom) === */
-    /* Small: subtle depth for cards */
+    /* === COMBINED SHADOW SYSTEM === */
     --shadow-sm: 
       inset 0 1px 0 0 hsl(0 0% 100% / 0.04),
       0 1px 3px 0 hsl(0 0% 0% / 0.3),
       0 2px 8px -2px hsl(0 0% 0% / 0.25);
-    /* Medium: standard elevation */
     --shadow-md: 
       inset 0 1px 0 0 hsl(0 0% 100% / 0.06),
       0 4px 12px -2px hsl(0 0% 0% / 0.4),
       0 8px 24px -4px hsl(0 0% 0% / 0.3);
-    /* Large: high emphasis, modals, hover */
     --shadow-lg: 
       inset 0 1px 0 0 hsl(0 0% 100% / 0.08),
       0 8px 24px -4px hsl(0 0% 0% / 0.5),
       0 16px 48px -8px hsl(0 0% 0% / 0.4);
-    /* Glow variants */
     --shadow-glow-primary: 
-      inset 0 1px 0 0 hsl(27 100% 67% / 0.15),
-      0 4px 16px -4px hsl(27 100% 67% / 0.3),
+      inset 0 1px 0 0 hsl(19 76% 53% / 0.15),
+      0 4px 16px -4px hsl(19 76% 53% / 0.3),
       0 8px 32px -8px hsl(0 0% 0% / 0.4);
     
-    /* Legacy shadows */
-    --shadow-neon: 0 0 20px hsl(27 100% 67% / 0.4);
+    --shadow-neon: 0 0 20px hsl(19 76% 53% / 0.4);
     --shadow-card: var(--shadow-sm);
     --shadow-elevated: var(--shadow-lg);
-    --shadow-solar: 0 0 30px hsl(27 100% 67% / 0.5);
+    --shadow-solar: 0 0 30px hsl(19 76% 53% / 0.5);
   }
 
   .dark {
-    --background: 0 0% 5%;
-    --foreground: 210 40% 98%;
-    --surface-0: 0 0% 5%;
-    --surface-1: 0 0% 9%;
-    --surface-2: 0 0% 13%;
-    --surface-3: 0 0% 17%;
-    --darker: 0 0% 4%;
-    --dark: 0 0% 8%;
-    --dark-panel: 0 0% 11%;
-    --card: 0 0% 9%;
+    --background: 270 15% 3%;
+    --foreground: 30 17% 66%;
+    --surface-0: 270 15% 3%;
+    --surface-1: 270 14% 7%;
+    --surface-2: 270 12% 11%;
+    --surface-3: 270 10% 15%;
+    --darker: 270 15% 2%;
+    --dark: 270 14% 5%;
+    --dark-panel: 270 13% 9%;
+    --card: 270 14% 7%;
+    --card-foreground: 30 17% 66%;
   }
 
   .light {
-    --background: 0 0% 96%;
-    --foreground: 0 0% 10%;
-    --surface-0: 0 0% 96%;
-    --surface-1: 0 0% 100%;
-    --surface-2: 0 0% 98%;
-    --surface-3: 0 0% 100%;
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 10%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 10%;
-    --muted: 0 0% 94%;
-    --muted-foreground: 0 0% 45%;
-    --border: 0 0% 88%;
-    --input: 0 0% 88%;
-    --ring: 27 100% 55%;
+    --background: 30 15% 95%;
+    --foreground: 270 10% 15%;
+    --surface-0: 30 15% 95%;
+    --surface-1: 30 10% 100%;
+    --surface-2: 30 8% 97%;
+    --surface-3: 30 6% 100%;
+    --card: 30 10% 100%;
+    --card-foreground: 270 10% 15%;
+    --popover: 30 10% 100%;
+    --popover-foreground: 270 10% 15%;
+    --muted: 30 10% 92%;
+    --muted-foreground: 27 8% 44%;
+    --border: 30 10% 85%;
+    --input: 30 10% 85%;
+    --ring: 19 76% 45%;
     
-    /* Light mode custom tokens */
-    --darker: 0 0% 94%;
-    --dark: 0 0% 96%;
-    --dark-panel: 0 0% 98%;
+    --darker: 30 12% 92%;
+    --dark: 30 12% 94%;
+    --dark-panel: 30 10% 97%;
     
-    /* Adjusted colors for light mode readability */
-    --primary: 27 100% 50%;
+    /* Adjusted for light mode readability */
+    --primary: 19 76% 45%;
     --primary-foreground: 0 0% 100%;
     --secondary: 271 76% 45%;
     --secondary-foreground: 0 0% 100%;
-    --accent: 195 80% 45%;
+    --accent: 20 90% 55%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 0 85% 50%;
+    --destructive: 355 72% 50%;
     --destructive-foreground: 0 0% 100%;
     
     /* Logo colors adjusted for light mode */
@@ -181,9 +171,9 @@ html.no-transitions *::after {
     --cosmic-purple: 271 76% 45%;
     --magenta-red: 359 85% 50%;
     --gold: 27 100% 50%;
-    --crimson: 359 85% 50%;
+    --crimson: 355 72% 50%;
     
-    /* Light mode combined shadows */
+    /* Light mode shadows */
     --shadow-sm: 
       inset 0 1px 0 0 hsl(0 0% 100% / 0.7),
       0 1px 3px 0 hsl(0 0% 0% / 0.06),
@@ -197,17 +187,17 @@ html.no-transitions *::after {
       0 8px 24px -4px hsl(0 0% 0% / 0.1),
       0 16px 48px -8px hsl(0 0% 0% / 0.08);
     --shadow-glow-primary: 
-      inset 0 1px 0 0 hsl(27 100% 50% / 0.1),
-      0 4px 16px -4px hsl(27 100% 50% / 0.15),
+      inset 0 1px 0 0 hsl(19 76% 45% / 0.1),
+      0 4px 16px -4px hsl(19 76% 45% / 0.15),
       0 8px 32px -8px hsl(0 0% 0% / 0.08);
     --shadow-neon: 0 4px 12px hsl(0 0% 0% / 0.1);
     --shadow-card: var(--shadow-sm);
     --shadow-elevated: var(--shadow-lg);
-    --shadow-solar: 0 4px 20px hsl(27 100% 50% / 0.2);
+    --shadow-solar: 0 4px 20px hsl(19 76% 45% / 0.2);
     
     /* Light gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(195 80% 45%), hsl(271 76% 45%), hsl(359 85% 50%));
-    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
+    --gradient-primary: linear-gradient(135deg, hsl(19 76% 45%), hsl(271 76% 45%));
+    --gradient-card: linear-gradient(180deg, hsl(30 10% 100%), hsl(30 15% 97%));
   }
 
   /* ========== LIGHT MODE FOR PREMIUM THEMES ========== */

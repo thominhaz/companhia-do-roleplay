@@ -166,9 +166,9 @@ export default {
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-primary": "linear-gradient(135deg, hsl(var(--cyan-blue)), hsl(var(--cosmic-purple)), hsl(var(--magenta-red)))",
+        "gradient-primary": "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)))",
         "gradient-dice": "linear-gradient(180deg, hsl(var(--cyan-blue)), hsl(var(--cosmic-purple)), hsl(var(--magenta-red)), hsl(var(--solar-orange)))",
-        "gradient-accent": "linear-gradient(135deg, hsl(var(--solar-orange)), hsl(var(--magenta-red)))",
+        "gradient-accent": "linear-gradient(135deg, hsl(var(--primary)), hsl(var(--accent)))",
       },
     },
   },
