@@ -6,31 +6,32 @@ const quickActions = [
     id: "roll-dice",
     label: "Rolar Dados",
     icon: Dice6,
-    color: "orange",
-    gradient: "from-solar-orange to-solar-orange/70",
+    color: "primary" as const,
   },
   {
     id: "new-character",
     label: "Novo Personagem",
     icon: Scroll,
-    color: "purple",
-    gradient: "from-cosmic-purple to-cosmic-purple/70",
+    color: "secondary" as const,
   },
   {
     id: "combat",
     label: "Combate",
     icon: Swords,
-    color: "red",
-    gradient: "from-magenta-red to-magenta-red/70",
+    color: "primary" as const,
   },
   {
     id: "compendium",
     label: "Compêndio",
     icon: BookOpen,
-    color: "cyan",
-    gradient: "from-cyan-blue to-cyan-blue/70",
+    color: "secondary" as const,
   },
 ];
+
+const colorStyles = {
+  primary: "border-primary/40 bg-primary/10 text-primary",
+  secondary: "border-secondary/40 bg-secondary/10 text-secondary",
+};
 
 interface QuickActionsProps {
   onAction?: (actionId: string) => void;
@@ -50,16 +51,15 @@ export function QuickActions({ onAction }: QuickActionsProps) {
               key={action.id}
               onClick={() => onAction?.(action.id)}
               className={cn(
-                "flex flex-col items-center justify-center p-3 rounded-2xl",
-                "bg-gradient-to-br",
-                action.gradient,
+                "flex flex-col items-center justify-center p-3 rounded-2xl border",
+                colorStyles[action.color],
                 "transition-all duration-300 hover:scale-105 active:scale-95",
-                "shadow-lg hover:shadow-xl"
+                "shadow-depth-sm hover:shadow-depth-md"
               )}
               style={{ animationDelay: `${0.1 + index * 0.05}s` }}
             >
-              <Icon className="w-6 h-6 text-foreground mb-1" />
-              <span className="text-[10px] font-medium text-foreground/90 text-center leading-tight">
+              <Icon className="w-6 h-6 mb-1" />
+              <span className="text-[10px] font-medium text-center leading-tight opacity-80">
                 {action.label}
               </span>
             </button>

@@ -31,10 +31,10 @@ interface HomeScreenProps {
 }
 
 const quickActions = [
-  { id: "create", label: "Criar Ficha", icon: Plus, gradient: "from-solar-orange to-solar-orange/70" },
-  { id: "join", label: "Entrar em Mesa", icon: Link, gradient: "from-cyan-blue to-cyan-blue/70" },
-  { id: "dice", label: "Rolar Dados", icon: Dices, gradient: "from-cosmic-purple to-cosmic-purple/70" },
-  { id: "note", label: "Nota Rápida", icon: StickyNote, gradient: "from-magenta-red to-magenta-red/70" },
+  { id: "create", label: "Criar Ficha", icon: Plus, color: "primary" },
+  { id: "join", label: "Entrar em Mesa", icon: Link, color: "secondary" },
+  { id: "dice", label: "Rolar Dados", icon: Dices, color: "primary" },
+  { id: "note", label: "Nota Rápida", icon: StickyNote, color: "secondary" },
 ];
 
 // Map class to icon
@@ -54,18 +54,18 @@ const classIcons: Record<string, typeof Shield> = {
 };
 
 const classGradients: Record<string, string> = {
-  Guerreiro: "from-magenta-red to-magenta-red/70",
-  Mago: "from-cyan-blue to-cyan-blue/70",
-  Paladino: "from-solar-orange to-solar-orange/70",
-  Ladino: "from-muted to-muted/70",
-  Clerigo: "from-foreground to-foreground/70",
-  Barbaro: "from-solar-orange to-magenta-red",
-  Bardo: "from-cosmic-purple to-cosmic-purple/70",
-  Druida: "from-cyan-blue to-cosmic-purple",
-  Feiticeiro: "from-magenta-red to-cosmic-purple",
-  Bruxo: "from-cosmic-purple to-magenta-red",
-  Monge: "from-cyan-blue to-cyan-blue/70",
-  Patrulheiro: "from-cyan-blue to-solar-orange",
+  Guerreiro: "primary",
+  Mago: "secondary",
+  Paladino: "primary",
+  Ladino: "muted",
+  Clerigo: "primary",
+  Barbaro: "primary",
+  Bardo: "secondary",
+  Druida: "secondary",
+  Feiticeiro: "secondary",
+  Bruxo: "secondary",
+  Monge: "primary",
+  Patrulheiro: "primary",
 };
 
 interface RecentItem {
@@ -88,7 +88,7 @@ function buildRecentItems(characters: CharacterDB[], campaigns: { master: Campai
       name: char.name,
       description: `${char.race} ${char.class} • Nv ${char.level}`,
       icon: classIcons[char.class] || Shield,
-      gradient: classGradients[char.class] || "from-purple-600 to-purple-800",
+      gradient: classGradients[char.class] || "primary",
       time: `Atualizado ${formatDistanceToNow(new Date(char.updated_at), { locale: ptBR, addSuffix: false })}`,
       type: 'character',
     });
@@ -101,7 +101,7 @@ function buildRecentItems(characters: CharacterDB[], campaigns: { master: Campai
       name: campaign.name,
       description: "Campanha • Mestre",
       icon: Castle,
-      gradient: "from-emerald-600 to-emerald-800",
+      gradient: "primary",
       time: `Atualizado ${formatDistanceToNow(new Date(campaign.updated_at), { locale: ptBR, addSuffix: false })}`,
       type: 'campaign',
     });
@@ -114,7 +114,7 @@ function buildRecentItems(characters: CharacterDB[], campaigns: { master: Campai
       name: campaign.name,
       description: "Campanha • Jogador",
       icon: Flame,
-      gradient: "from-red-600 to-red-800",
+      gradient: "secondary",
       time: `Atualizado ${formatDistanceToNow(new Date(campaign.updated_at), { locale: ptBR, addSuffix: false })}`,
       type: 'campaign',
     });
@@ -211,7 +211,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       <section className="px-4 sm:px-5 md:px-8 lg:px-12 mt-4 sm:mt-6 max-w-6xl mx-auto">
         <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
           {/* Active Character Card */}
-          <div className="sm:col-span-2 md:col-span-3 bg-gradient-to-br from-cosmic-purple to-cosmic-purple/70 rounded-2xl p-4 md:p-6 relative overflow-hidden shadow-depth-md min-h-[140px] sm:min-h-[180px]">
+          <div className="sm:col-span-2 md:col-span-3 bg-surface-1/80 backdrop-blur-md border border-border/30 rounded-2xl p-4 md:p-6 relative overflow-hidden shadow-depth-md min-h-[140px] sm:min-h-[180px]">
             <div className="absolute top-0 right-0 w-32 h-32 bg-foreground opacity-5 rounded-full -mr-10 -mt-10 parallax-float" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-foreground opacity-5 rounded-full -ml-8 -mb-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col justify-between">
@@ -223,8 +223,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 <>
                   <div>
                     <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-solar-orange/30 flex items-center justify-center">
-                        <Shield className="w-4 h-4 text-solar-orange" />
+                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                        <Shield className="w-4 h-4 text-primary" />
                       </div>
                       <span className="text-xs font-medium text-foreground/80">ATIVO</span>
                     </div>
@@ -257,7 +257,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                       }
                       navigate("/?tab=characters&create=true");
                     }}
-                    className="mt-2 px-3 py-1 bg-solar-orange rounded-lg text-xs font-medium text-background"
+                    className="mt-2 px-3 py-1 border border-primary/60 bg-transparent rounded-lg text-xs font-medium text-primary hover:bg-primary hover:text-primary-foreground transition-colors"
                   >
                     Criar
                   </button>
@@ -267,7 +267,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </div>
 
           {/* Next Session Card */}
-          <div className="sm:col-span-1 bg-gradient-to-br from-magenta-red to-magenta-red/70 rounded-2xl p-3 md:p-4 relative overflow-hidden shadow-depth-md min-h-[120px] sm:min-h-[180px]">
+          <div className="sm:col-span-1 bg-surface-1/80 backdrop-blur-md border border-border/30 rounded-2xl p-3 md:p-4 relative overflow-hidden shadow-depth-md min-h-[120px] sm:min-h-[180px]">
             <div className="absolute top-0 right-0 w-20 h-20 bg-foreground opacity-5 rounded-full -mr-8 -mt-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col">
               {loadingSessions ? (
@@ -277,8 +277,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               ) : nextSession ? (
                 <>
                   <div className="flex-1 flex flex-row sm:flex-col justify-center items-center text-center gap-3 sm:gap-0">
-                    <div className="w-10 h-10 rounded-full bg-solar-orange/30 flex items-center justify-center sm:mb-2">
-                      <Calendar className="w-5 h-5" />
+                    <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center sm:mb-2">
+                      <Calendar className="w-5 h-5 text-primary" />
                     </div>
                     <div className="flex flex-col sm:items-center">
                       <p className="text-[10px] text-foreground/80 font-medium uppercase">Próxima</p>
@@ -384,8 +384,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 }
               }}
             >
-              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-depth-md transition-all duration-300 hover:shadow-depth-lg hover:-translate-y-1`}>
-                <action.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl border ${action.color === 'primary' ? 'border-primary/40 bg-primary/10' : 'border-secondary/40 bg-secondary/10'} flex items-center justify-center shadow-depth-sm transition-all duration-300 hover:shadow-depth-md hover:-translate-y-1`}>
+                <action.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${action.color === 'primary' ? 'text-primary' : 'text-secondary'}`} />
               </div>
               <span className="text-[10px] sm:text-xs text-muted-foreground text-center leading-tight">{action.label}</span>
             </button>
@@ -418,10 +418,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               {recentItems.map((item) => (
                 <div 
                   key={`${item.type}-${item.id}`}
-                  className="flex-shrink-0 w-36 sm:w-40 md:w-full bg-surface-1 border border-border/30 rounded-xl p-2.5 sm:p-3 shadow-depth-sm transition-all duration-300 hover:shadow-depth-md hover:-translate-y-1 hover:border-primary/20 cursor-pointer"
+                  className="flex-shrink-0 w-36 sm:w-40 md:w-full bg-surface-1/80 backdrop-blur-md border border-border/30 rounded-xl p-2.5 sm:p-3 shadow-depth-sm transition-all duration-300 hover:shadow-depth-md hover:-translate-y-1 hover:border-primary/20 cursor-pointer"
                 >
-                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-2 sm:mb-3`}>
-                    <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg border ${item.gradient === 'primary' ? 'border-primary/40 bg-primary/10' : item.gradient === 'secondary' ? 'border-secondary/40 bg-secondary/10' : 'border-muted bg-muted/30'} flex items-center justify-center mb-2 sm:mb-3`}>
+                    <item.icon className={`w-4 h-4 sm:w-5 sm:h-5 ${item.gradient === 'primary' ? 'text-primary' : item.gradient === 'secondary' ? 'text-secondary' : 'text-muted-foreground'}`} />
                   </div>
                   <h3 className="font-semibold text-xs sm:text-sm mb-0.5 sm:mb-1 truncate">{item.name}</h3>
                   <p className="text-[10px] sm:text-xs text-muted-foreground truncate">{item.description}</p>
