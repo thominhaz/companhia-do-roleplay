@@ -24,6 +24,11 @@ export default {
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
+        // Depth surface layers
+        "surface-0": "hsl(var(--surface-0))",
+        "surface-1": "hsl(var(--surface-1))",
+        "surface-2": "hsl(var(--surface-2))",
+        "surface-3": "hsl(var(--surface-3))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
@@ -65,6 +70,12 @@ export default {
         "neon-blue": "hsl(var(--neon-blue))",
         gold: "hsl(var(--gold))",
         crimson: "hsl(var(--crimson))",
+      },
+      boxShadow: {
+        "depth-sm": "var(--shadow-sm)",
+        "depth-md": "var(--shadow-md)",
+        "depth-lg": "var(--shadow-lg)",
+        "depth-glow": "var(--shadow-glow-primary)",
       },
       borderRadius: {
         lg: "var(--radius)",

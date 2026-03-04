@@ -498,7 +498,7 @@ export function CampaignsScreen() {
   const filteredPlayerCampaigns = activeFilter === 'mastering' ? [] : playerCampaigns;
 
   return (
-    <div className="min-h-screen bg-darker pb-24">
+    <div className="min-h-screen bg-surface-0 pb-24">
       <AppHeader
         title="Campanhas"
         rightContent={
@@ -561,8 +561,8 @@ export function CampaignsScreen() {
           <button 
             onClick={() => setActiveFilter('all')}
             className={cn(
-              "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
-              activeFilter === 'all' ? "bg-primary text-foreground" : "bg-dark text-muted-foreground"
+              "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
+              activeFilter === 'all' ? "bg-surface-3 text-foreground shadow-depth-sm" : "bg-surface-1 text-muted-foreground hover:bg-surface-2"
             )}
           >
             Todas ({totalCampaigns})
@@ -570,8 +570,8 @@ export function CampaignsScreen() {
           <button 
             onClick={() => setActiveFilter('mastering')}
             className={cn(
-              "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
-              activeFilter === 'mastering' ? "bg-primary text-foreground" : "bg-dark text-muted-foreground"
+              "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
+              activeFilter === 'mastering' ? "bg-surface-3 text-foreground shadow-depth-sm" : "bg-surface-1 text-muted-foreground hover:bg-surface-2"
             )}
           >
             Mestrando ({masterCampaigns.length})
@@ -579,8 +579,8 @@ export function CampaignsScreen() {
             <button 
               onClick={() => setActiveFilter('playing')}
               className={cn(
-                "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors",
-                activeFilter === 'playing' ? "bg-primary text-foreground" : "bg-dark text-muted-foreground"
+                "px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all",
+                activeFilter === 'playing' ? "bg-surface-3 text-foreground shadow-depth-sm" : "bg-surface-1 text-muted-foreground hover:bg-surface-2"
               )}
             >
               Jogando ({playerCampaigns.length})

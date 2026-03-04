@@ -13,7 +13,7 @@ export function AppHeader({
   children,
   sticky = true
 }: AppHeaderProps) {
-  return <header className={`${sticky ? 'sticky top-0 z-40' : ''} bg-gradient-to-b from-dark to-darker border-b border-border/30`}>
+  return <header className={`${sticky ? 'sticky top-0 z-40' : ''} bg-surface-0/95 backdrop-blur-xl border-b border-border/20 shadow-depth-sm`}>
       <div className="px-5 pt-4 pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
