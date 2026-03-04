@@ -35,7 +35,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
       {/* Outer glass container — Concept 1: Base structure */}
       <div
         className={cn(
-          "relative flex items-center justify-around gap-2 px-5 py-3 rounded-[24px] max-w-[420px] w-full overflow-hidden",
+          "relative flex items-center justify-around gap-1 sm:gap-2 px-3 sm:px-5 py-2.5 sm:py-3 rounded-[24px] max-w-[420px] w-full overflow-hidden",
           // Concept 2: Translucent background (rgba white 0.08 mapped to semantic)
           "bg-white/[0.08]",
           // Concept 3: Blur effect
@@ -61,7 +61,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
               whileTap={{ scale: 0.88 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
               className={cn(
-                "relative flex flex-col items-center justify-center rounded-2xl transition-all duration-200 min-w-[56px] py-2 px-3"
+                "relative flex flex-col items-center justify-center rounded-2xl transition-all duration-200 min-w-0 flex-1 py-2 px-1 sm:px-3"
               )}
             >
               {/* Active pill — glass effect */}
@@ -103,7 +103,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
                   opacity: isActive ? 1 : 0.5,
                 }}
                 className={cn(
-                  "relative z-10 text-[11px] mt-1 transition-colors duration-200",
+                  "relative z-10 text-[9px] sm:text-[11px] mt-1 transition-colors duration-200 truncate max-w-full",
                   isActive
                     ? "text-primary font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)]"
                     : "text-muted-foreground/70 font-medium"
