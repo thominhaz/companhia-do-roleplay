@@ -11,11 +11,11 @@ interface TabBarProps {
 }
 
 const tabs = [
-  { id: "home" as TabRoute, label: "Início", icon: Home },
-  { id: "characters" as TabRoute, label: "Personagens", icon: Users },
-  { id: "campaigns" as TabRoute, label: "Campanhas", icon: Map },
-  { id: "tools" as TabRoute, label: "Ferramentas", icon: Wrench },
-  { id: "menu" as TabRoute, label: "Menu", icon: Menu },
+  { id: "home" as TabRoute, label: "Início", shortLabel: "Início", icon: Home },
+  { id: "characters" as TabRoute, label: "Personagens", shortLabel: "Perso.", icon: Users },
+  { id: "campaigns" as TabRoute, label: "Campanhas", shortLabel: "Camp.", icon: Map },
+  { id: "tools" as TabRoute, label: "Ferramentas", shortLabel: "Ferra.", icon: Wrench },
+  { id: "menu" as TabRoute, label: "Menu", shortLabel: "Menu", icon: Menu },
 ];
 
 export function TabBar({ activeTab, onTabChange }: TabBarProps) {
@@ -103,13 +103,14 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
                   opacity: isActive ? 1 : 0.5,
                 }}
                 className={cn(
-                  "relative z-10 text-[9px] sm:text-[11px] mt-1 transition-colors duration-200 truncate max-w-full",
+                  "relative z-10 text-[9px] sm:text-[11px] mt-1 transition-colors duration-200 whitespace-nowrap",
                   isActive
                     ? "text-primary font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)]"
                     : "text-muted-foreground/70 font-medium"
                 )}
               >
-                {tab.label}
+                <span className="sm:hidden">{tab.shortLabel}</span>
+                <span className="hidden sm:inline">{tab.label}</span>
               </motion.span>
             </motion.button>
           );
