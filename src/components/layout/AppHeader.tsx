@@ -14,7 +14,7 @@ export function AppHeader({
   children,
   sticky = true
 }: AppHeaderProps) {
-  return <header className={`${sticky ? 'sticky top-0 z-40' : ''} bg-surface-0/95 backdrop-blur-xl border-b border-border/20 shadow-depth-sm`}>
+  return <header className={`${sticky ? 'sticky top-0 z-40' : ''} bg-white/[0.06] backdrop-blur-[20px] backdrop-saturate-150 border-b border-white/[0.12] shadow-[0_4px_24px_rgba(0,0,0,0.25),inset_0_1px_0_rgba(255,255,255,0.08)]`}>
       <div className="px-5 md:px-8 lg:px-12 pt-4 pb-3 max-w-6xl mx-auto">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
