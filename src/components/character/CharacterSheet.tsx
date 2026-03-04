@@ -144,14 +144,14 @@ const CONDITIONS = [
 
 // Spell constants
 const SPELL_SCHOOLS: Record<string, { name: string; color: string }> = {
-  abjuration: { name: "Abjuração", color: "bg-blue-500/20 text-blue-400" },
-  conjuration: { name: "Conjuração", color: "bg-yellow-500/20 text-yellow-400" },
-  divination: { name: "Adivinhação", color: "bg-cyan-500/20 text-cyan-400" },
-  enchantment: { name: "Encantamento", color: "bg-pink-500/20 text-pink-400" },
-  evocation: { name: "Evocação", color: "bg-red-500/20 text-red-400" },
-  illusion: { name: "Ilusão", color: "bg-purple-500/20 text-purple-400" },
-  necromancy: { name: "Necromancia", color: "bg-green-500/20 text-green-400" },
-  transmutation: { name: "Transmutação", color: "bg-orange-500/20 text-orange-400" },
+  abjuration: { name: "Abjuração", color: "bg-primary/20 text-primary" },
+  conjuration: { name: "Conjuração", color: "bg-gold/20 text-gold" },
+  divination: { name: "Adivinhação", color: "bg-secondary/20 text-secondary" },
+  enchantment: { name: "Encantamento", color: "bg-accent/40 text-accent-foreground" },
+  evocation: { name: "Evocação", color: "bg-destructive/20 text-destructive" },
+  illusion: { name: "Ilusão", color: "bg-primary/20 text-primary" },
+  necromancy: { name: "Necromancia", color: "bg-muted text-muted-foreground" },
+  transmutation: { name: "Transmutação", color: "bg-gold/20 text-gold" },
 };
 
 // New unified spell interface based on magias.json
@@ -228,21 +228,21 @@ function SkillRow({
   return (
     <div className={`flex items-center gap-3 py-2 px-3 rounded-lg transition-colors ${
       hasExpertise 
-        ? 'bg-yellow-500/10 border border-yellow-500/30 hover:bg-yellow-500/20' 
+        ? 'bg-gold/10 border border-gold/30 hover:bg-gold/20' 
         : isProficient 
           ? 'bg-primary/10 border border-primary/30 hover:bg-primary/20' 
           : 'hover:bg-muted/30'
     }`}>
       <div className={`w-3 h-3 rounded-full border-2 flex-shrink-0 ${
-        hasExpertise ? 'bg-yellow-500 border-yellow-500' :
+        hasExpertise ? 'bg-gold border-gold' :
         isProficient ? 'bg-primary border-primary' : 'border-muted-foreground/50'
       }`} />
       <div className="flex-1 min-w-0">
         <span className={`text-sm ${isProficient || hasExpertise ? 'font-semibold' : 'font-medium'} ${
-          hasExpertise ? 'text-yellow-400' : isProficient ? 'text-primary' : ''
+          hasExpertise ? 'text-gold' : isProficient ? 'text-primary' : ''
         }`}>{skill.name}</span>
         <span className="text-xs text-muted-foreground ml-2">{attrAbbr}</span>
-        {hasExpertise && <span className="text-[10px] text-yellow-400 ml-2">(Expertise)</span>}
+        {hasExpertise && <span className="text-[10px] text-gold ml-2">(Expertise)</span>}
         {isProficient && !hasExpertise && <span className="text-[10px] text-primary ml-2">(Prof.)</span>}
       </div>
       <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -251,7 +251,7 @@ function SkillRow({
         <span>{bonus}</span>
         <span>=</span>
         <span className={`font-bold px-2 py-1 rounded-lg min-w-[32px] text-center ${
-          hasExpertise ? 'bg-yellow-500/20 text-yellow-400' : 'bg-primary/20 text-primary'
+          hasExpertise ? 'bg-gold/20 text-gold' : 'bg-primary/20 text-primary'
         }`}>
           {total >= 0 ? '+' : ''}{total}
         </span>
@@ -846,15 +846,15 @@ export function CharacterSheet() {
 
   const getColorClasses = (color: string) => {
     const colors: Record<string, { bg: string; text: string }> = {
-      blue: { bg: 'bg-blue-500/20', text: 'text-blue-400' },
-      green: { bg: 'bg-green-500/20', text: 'text-green-400' },
-      amber: { bg: 'bg-amber-500/20', text: 'text-amber-400' },
-      purple: { bg: 'bg-purple-500/20', text: 'text-purple-400' },
-      violet: { bg: 'bg-violet-500/20', text: 'text-violet-400' },
-      cyan: { bg: 'bg-cyan-500/20', text: 'text-cyan-400' },
-      orange: { bg: 'bg-orange-500/20', text: 'text-orange-400' },
-      emerald: { bg: 'bg-emerald-500/20', text: 'text-emerald-400' },
-      pink: { bg: 'bg-pink-500/20', text: 'text-pink-400' },
+      blue: { bg: 'bg-primary/20', text: 'text-primary' },
+      green: { bg: 'bg-secondary/20', text: 'text-secondary' },
+      amber: { bg: 'bg-gold/20', text: 'text-gold' },
+      purple: { bg: 'bg-primary/20', text: 'text-primary' },
+      violet: { bg: 'bg-primary/20', text: 'text-primary' },
+      cyan: { bg: 'bg-secondary/20', text: 'text-secondary' },
+      orange: { bg: 'bg-gold/20', text: 'text-gold' },
+      emerald: { bg: 'bg-secondary/20', text: 'text-secondary' },
+      pink: { bg: 'bg-accent/40', text: 'text-accent-foreground' },
     };
     return colors[color] || { bg: 'bg-muted', text: 'text-muted-foreground' };
   };
@@ -1078,16 +1078,16 @@ export function CharacterSheet() {
                 <div className="flex items-center justify-between gap-3">
                   {/* Left: XP Info */}
                   <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-                    <div className={`p-2 sm:p-3 rounded-full shrink-0 ${canLevelUp ? 'bg-yellow-500/20' : 'bg-primary/20'}`}>
-                      <Star className={`w-5 h-5 sm:w-6 sm:h-6 ${canLevelUp ? 'text-yellow-400' : 'text-primary'}`} />
+                    <div className={`p-2 sm:p-3 rounded-full shrink-0 ${canLevelUp ? 'bg-gold/20' : 'bg-primary/20'}`}>
+                      <Star className={`w-5 h-5 sm:w-6 sm:h-6 ${canLevelUp ? 'text-gold' : 'text-primary'}`} />
                     </div>
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <h3 className={`text-base sm:text-lg font-bold ${canLevelUp ? 'text-yellow-400' : 'text-primary'}`}>
+                        <h3 className={`text-base sm:text-lg font-bold ${canLevelUp ? 'text-gold' : 'text-primary'}`}>
                           Nível {currentLevel}
                         </h3>
                         {currentLevel >= 20 && (
-                          <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/50 text-[10px] sm:text-xs">
+                          <Badge variant="outline" className="bg-gold/20 text-gold border-gold/50 text-[10px] sm:text-xs">
                             Máximo
                           </Badge>
                         )}
@@ -1110,7 +1110,7 @@ export function CharacterSheet() {
                     <Button
                       className={`shrink-0 ${useMilestone 
                         ? "bg-primary hover:bg-primary/80 text-primary-foreground font-bold"
-                        : "bg-yellow-500 hover:bg-yellow-600 text-yellow-950 font-bold animate-pulse"
+                        : "bg-gold hover:bg-gold/80 text-foreground font-bold animate-pulse"
                       }`}
                       size="sm"
                       onClick={() => setShowLevelUp(true)}
@@ -1296,13 +1296,13 @@ export function CharacterSheet() {
                 
                 {/* Temporary HP Display */}
                 {character.temporary_hp > 0 && (
-                  <div className="flex items-center justify-center gap-2 bg-blue-500/20 border border-blue-500/30 rounded-lg p-2">
-                    <Shield className="w-4 h-4 text-blue-400" />
-                    <span className="text-sm font-medium text-blue-400">+{character.temporary_hp} HP Temporário</span>
+                  <div className="flex items-center justify-center gap-2 bg-primary/20 border border-primary/30 rounded-lg p-2">
+                    <Shield className="w-4 h-4 text-primary" />
+                    <span className="text-sm font-medium text-primary">+{character.temporary_hp} HP Temporário</span>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 text-blue-400 hover:text-blue-300"
+                      className="h-6 w-6 text-primary hover:text-primary/80"
                       onClick={async () => {
                         await updateCharacter.mutateAsync({ id: character.id, temporary_hp: 0 });
                         toast.success('HP temporário removido');
@@ -1341,7 +1341,7 @@ export function CharacterSheet() {
                   <Button 
                     variant="outline"
                     size="sm"
-                    className="h-10 px-4 bg-green-500/20 text-green-500 border-green-500/30 hover:bg-green-500/30"
+                    className="h-10 px-4 bg-secondary/20 text-secondary border-secondary/30 hover:bg-secondary/30"
                     onClick={() => handleHpModifierSubmit(false)}
                     disabled={!hpModifier || updateCharacter.isPending}
                   >
@@ -1368,7 +1368,7 @@ export function CharacterSheet() {
                   <Button 
                     variant="outline"
                     size="sm"
-                    className="h-9 px-3 bg-blue-500/20 text-blue-400 border-blue-500/30 hover:bg-blue-500/30"
+                    className="h-9 px-3 bg-primary/20 text-primary border-primary/30 hover:bg-primary/30"
                     onClick={handleAddTempHp}
                     disabled={!tempHpInput || updateCharacter.isPending}
                   >
@@ -1390,7 +1390,7 @@ export function CharacterSheet() {
                   <Button 
                     variant="outline"
                     size="sm"
-                    className="h-10 px-3 bg-amber-500/20 text-amber-400 border-amber-500/30 hover:bg-amber-500/30"
+                    className="h-10 px-3 bg-gold/20 text-gold border-gold/30 hover:bg-gold/30"
                     onClick={() => setShowRestDialog('short')}
                   >
                     <Moon className="w-4 h-4 mr-1" />
@@ -1399,7 +1399,7 @@ export function CharacterSheet() {
                   <Button 
                     variant="outline"
                     size="sm"
-                    className="h-10 px-3 bg-indigo-500/20 text-indigo-400 border-indigo-500/30 hover:bg-indigo-500/30"
+                    className="h-10 px-3 bg-primary/20 text-primary border-primary/30 hover:bg-primary/30"
                     onClick={() => setShowRestDialog('long')}
                   >
                     <Sunrise className="w-4 h-4 mr-1" />
@@ -1437,9 +1437,9 @@ export function CharacterSheet() {
 
             {/* Conditions Section */}
             <SheetCard>
-              <div className="bg-orange-500/10 border border-orange-500/30 rounded-xl p-3">
+              <div className="bg-gold/10 border border-gold/30 rounded-xl p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-sm font-semibold text-orange-400 flex items-center gap-2">
+                  <h3 className="text-sm font-semibold text-gold flex items-center gap-2">
                     <Swords className="w-4 h-4" />
                     Condições
                   </h3>
@@ -1448,7 +1448,7 @@ export function CharacterSheet() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 px-2 text-orange-400 hover:text-orange-300 hover:bg-orange-500/20"
+                        className="h-7 px-2 text-gold hover:text-gold/80 hover:bg-gold/20"
                       >
                         <Plus className="w-4 h-4 mr-1" />
                         Adicionar

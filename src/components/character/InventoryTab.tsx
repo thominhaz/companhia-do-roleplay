@@ -30,11 +30,11 @@ interface InventoryTabProps {
 
 const RARITY_COLORS: Record<string, string> = {
   comum: "text-muted-foreground",
-  incomum: "text-green-400",
-  raro: "text-blue-400",
-  "muito raro": "text-purple-400",
-  lendário: "text-orange-400",
-  artefato: "text-red-400",
+  incomum: "text-secondary",
+  raro: "text-primary",
+  "muito raro": "text-primary",
+  lendário: "text-gold",
+  artefato: "text-destructive",
 };
 
 function ItemCard({ item, onSelect }: { item: any; onSelect?: () => void }) {
@@ -83,10 +83,10 @@ function ItemCard({ item, onSelect }: { item: any; onSelect?: () => void }) {
             <span className={`text-[10px] ${rarityColor}`}>{item.rarity}</span>
           )}
           {item.damage && (
-            <span className="text-[10px] text-red-400">{item.damage}</span>
+            <span className="text-[10px] text-destructive">{item.damage}</span>
           )}
           {item.armorClass && (
-            <span className="text-[10px] text-blue-400">CA +{item.armorClass}</span>
+            <span className="text-[10px] text-primary">CA +{item.armorClass}</span>
           )}
         </div>
       </div>
@@ -122,11 +122,11 @@ export function InventoryTab({ character, characterCampaign, campaignPlayers }: 
   const unequippedItems = filteredItems.filter((item) => !item.isEquipped && !item.equipped);
   // Currency display
   const currencies = [
-    { key: 'platinum', label: 'Platina', abbr: 'PL', color: 'text-slate-300', value: currency.platinum || 0 },
-    { key: 'gold', label: 'Ouro', abbr: 'PO', color: 'text-yellow-400', value: currency.gold || 0 },
-    { key: 'electrum', label: 'Electrum', abbr: 'PE', color: 'text-cyan-400', value: currency.electrum || 0 },
-    { key: 'silver', label: 'Prata', abbr: 'PP', color: 'text-gray-400', value: currency.silver || 0 },
-    { key: 'copper', label: 'Cobre', abbr: 'PC', color: 'text-orange-500', value: currency.copper || 0 },
+    { key: 'platinum', label: 'Platina', abbr: 'PL', color: 'text-muted-foreground', value: currency.platinum || 0 },
+    { key: 'gold', label: 'Ouro', abbr: 'PO', color: 'text-gold', value: currency.gold || 0 },
+    { key: 'electrum', label: 'Electrum', abbr: 'PE', color: 'text-secondary', value: currency.electrum || 0 },
+    { key: 'silver', label: 'Prata', abbr: 'PP', color: 'text-muted-foreground', value: currency.silver || 0 },
+    { key: 'copper', label: 'Cobre', abbr: 'PC', color: 'text-gold', value: currency.copper || 0 },
   ];
 
   return (
@@ -135,7 +135,7 @@ export function InventoryTab({ character, characterCampaign, campaignPlayers }: 
       <div className="bg-card/80 backdrop-blur-sm border border-border/50 rounded-2xl p-4">
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-semibold flex items-center gap-2">
-            <Coins className="w-4 h-4 text-yellow-400" />
+            <Coins className="w-4 h-4 text-gold" />
             Moedas
           </h3>
           <Button 

@@ -86,20 +86,20 @@ interface CombatTrackerProps {
 }
 
 const CONDITIONS = [
-  { name: "Agarrado", icon: "🪢", color: "bg-orange-500/20 text-orange-400" },
-  { name: "Amedrontado", icon: "😨", color: "bg-purple-500/20 text-purple-400" },
-  { name: "Atordoado", icon: "💫", color: "bg-yellow-500/20 text-yellow-400" },
-  { name: "Caído", icon: "⬇️", color: "bg-gray-500/20 text-gray-400" },
-  { name: "Cego", icon: "👁️", color: "bg-slate-500/20 text-slate-400" },
-  { name: "Encantado", icon: "💕", color: "bg-pink-500/20 text-pink-400" },
-  { name: "Envenenado", icon: "☠️", color: "bg-green-500/20 text-green-400" },
-  { name: "Exausto", icon: "😫", color: "bg-amber-500/20 text-amber-400" },
-  { name: "Incapacitado", icon: "🚫", color: "bg-red-500/20 text-red-400" },
-  { name: "Inconsciente", icon: "💤", color: "bg-indigo-500/20 text-indigo-400" },
-  { name: "Invisível", icon: "👻", color: "bg-cyan-500/20 text-cyan-400" },
-  { name: "Paralisado", icon: "🧊", color: "bg-blue-500/20 text-blue-400" },
-  { name: "Petrificado", icon: "🗿", color: "bg-stone-500/20 text-stone-400" },
-  { name: "Surdo", icon: "🔇", color: "bg-rose-500/20 text-rose-400" },
+  { name: "Agarrado", icon: "🪢", color: "bg-gold/20 text-gold" },
+  { name: "Amedrontado", icon: "😨", color: "bg-primary/20 text-primary" },
+  { name: "Atordoado", icon: "💫", color: "bg-gold/20 text-gold" },
+  { name: "Caído", icon: "⬇️", color: "bg-muted text-muted-foreground" },
+  { name: "Cego", icon: "👁️", color: "bg-muted text-muted-foreground" },
+  { name: "Encantado", icon: "💕", color: "bg-accent/40 text-accent-foreground" },
+  { name: "Envenenado", icon: "☠️", color: "bg-secondary/20 text-secondary" },
+  { name: "Exausto", icon: "😫", color: "bg-gold/20 text-gold" },
+  { name: "Incapacitado", icon: "🚫", color: "bg-destructive/20 text-destructive" },
+  { name: "Inconsciente", icon: "💤", color: "bg-primary/20 text-primary" },
+  { name: "Invisível", icon: "👻", color: "bg-secondary/20 text-secondary" },
+  { name: "Paralisado", icon: "🧊", color: "bg-primary/20 text-primary" },
+  { name: "Petrificado", icon: "🗿", color: "bg-muted text-muted-foreground" },
+  { name: "Surdo", icon: "🔇", color: "bg-destructive/20 text-destructive" },
 ];
 
 interface HpDialogState {
@@ -380,10 +380,10 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
               <div className={cn(
                 "w-12 h-12 rounded-xl flex items-center justify-center",
                 hasProFeatures 
-                  ? "bg-gradient-to-br from-gold/30 to-red-500/20" 
-                  : "bg-red-500/20"
+                  ? "bg-gradient-to-br from-gold/30 to-destructive/20" 
+                  : "bg-destructive/20"
               )}>
-                <Swords className={cn("w-6 h-6", hasProFeatures ? "text-gold" : "text-red-500")} />
+                <Swords className={cn("w-6 h-6", hasProFeatures ? "text-gold" : "text-destructive")} />
               </div>
               <div>
                 <div className="flex items-center gap-2">
@@ -422,7 +422,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
               <Button 
                 onClick={handleStartCombat}
                 disabled={createEncounter.isPending}
-                className="bg-red-600 hover:bg-red-700"
+                className="bg-destructive hover:bg-destructive/90"
               >
                 {createEncounter.isPending ? (
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -792,15 +792,15 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                           <p className="font-medium mb-2">{newCombatant.name}</p>
                           <div className="grid grid-cols-3 gap-2 text-sm">
                             <div className="flex items-center gap-2">
-                              <Heart className="w-4 h-4 text-red-500" />
+                              <Heart className="w-4 h-4 text-destructive" />
                               <span>{newCombatant.max_hp} HP</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Shield className="w-4 h-4 text-blue-500" />
+                              <Shield className="w-4 h-4 text-primary" />
                               <span>CA {newCombatant.armor_class}</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Zap className="w-4 h-4 text-yellow-500" />
+                              <Zap className="w-4 h-4 text-gold" />
                               <span>Init {newCombatant.initiative}</span>
                             </div>
                           </div>
@@ -863,14 +863,14 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                       </Select>
                       
                       {selectedHomebrewMonster && (
-                        <div className="bg-amber-500/10 rounded-xl p-3 border border-amber-500/30">
+                        <div className="bg-gold/10 rounded-xl p-3 border border-gold/30">
                           <div className="grid grid-cols-2 gap-2 text-sm">
                             <div className="flex items-center gap-2">
-                              <Heart className="w-4 h-4 text-red-500" />
+                              <Heart className="w-4 h-4 text-destructive" />
                               <span>{newCombatant.max_hp} HP</span>
                             </div>
                             <div className="flex items-center gap-2">
-                              <Shield className="w-4 h-4 text-blue-500" />
+                              <Shield className="w-4 h-4 text-primary" />
                               <span>CA {newCombatant.armor_class}</span>
                             </div>
                           </div>
@@ -898,9 +898,9 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                           </p>
                         </div>
                       ) : availablePlayersToAdd.length === 0 ? (
-                        <div className="bg-amber-500/10 rounded-lg p-4 text-center border border-amber-500/30">
-                          <AlertTriangle className="w-5 h-5 text-amber-500 mx-auto mb-2" />
-                          <p className="text-sm text-amber-400">
+                        <div className="bg-gold/10 rounded-lg p-4 text-center border border-gold/30">
+                          <AlertTriangle className="w-5 h-5 text-gold mx-auto mb-2" />
+                          <p className="text-sm text-gold">
                             Todos os jogadores já estão no combate.
                           </p>
                         </div>
@@ -930,7 +930,7 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                             {availablePlayersToAdd.map(player => (
                               <SelectItem key={player.id} value={player.id}>
                                 <div className="flex items-center gap-2">
-                                  <User className="w-4 h-4 text-blue-500" />
+                                  <User className="w-4 h-4 text-primary" />
                                   <span className="font-medium">{player.character?.name}</span>
                                   <span className="text-muted-foreground text-sm">
                                     - {player.character?.class} Nv {player.character?.level}
@@ -1009,11 +1009,11 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                       <h4 className="font-semibold text-sm">Dados do Personagem</h4>
                       <div className="grid grid-cols-2 gap-3">
                         <div className="flex items-center gap-2">
-                          <Heart className="w-4 h-4 text-red-500" />
+                          <Heart className="w-4 h-4 text-destructive" />
                           <span className="text-sm">{newCombatant.current_hp}/{newCombatant.max_hp} HP</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Shield className="w-4 h-4 text-blue-500" />
+                          <Shield className="w-4 h-4 text-primary" />
                           <span className="text-sm">CA {newCombatant.armor_class}</span>
                         </div>
                       </div>
@@ -1061,12 +1061,12 @@ export function CombatTracker({ campaignId, open, onOpenChange }: CombatTrackerP
                   <DialogTitle className="flex items-center gap-2">
                     {hpDialog.mode === 'damage' ? (
                       <>
-                        <AlertTriangle className="w-5 h-5 text-red-500" />
+                        <AlertTriangle className="w-5 h-5 text-destructive" />
                         Aplicar Dano
                       </>
                     ) : (
                       <>
-                        <Heart className="w-5 h-5 text-green-500" />
+                        <Heart className="w-5 h-5 text-secondary" />
                         Curar
                       </>
                     )}
