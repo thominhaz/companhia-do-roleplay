@@ -71,18 +71,20 @@ serve(async (req) => {
     const discordUser = await userResponse.json();
     console.log('Got Discord user:', discordUser.id, discordUser.username);
 
-    // Create Supabase client and verify user token
+    // Create Supabase client with service role
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    // Verify the state token is valid
-    const { data: { user }, error: userError } = await supabase.auth.getUser(state);
+    // Consume the opaque state token to get the user_id
+    const { data: userId, error: stateError } = await supabase.rpc('consume_discord_oauth_state', { _state_id: state });
     
-    if (userError || !user) {
-      console.error('Invalid state token:', userError);
-      return new Response('Invalid session', { status: 401 });
+    if (stateError || !userId) {
+      console.error('Invalid state token:', stateError);
+      return new Response('Invalid or expired state', { status: 401 });
     }
+
+    const user = { id: userId };
 
     // Update profile with Discord user ID
     const { error: updateError } = await supabase
