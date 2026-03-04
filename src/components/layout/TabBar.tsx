@@ -83,7 +83,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
                 >
                   <Icon
                     className={cn(
-                      "w-[22px] h-[22px] transition-colors duration-200",
+                      "w-6 h-6 transition-colors duration-200",
                       isActive
                         ? "text-primary drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]"
                         : "text-muted-foreground/70"
@@ -92,19 +92,6 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
                 </motion.div>
               </div>
 
-              <motion.span
-                animate={{
-                  opacity: isActive ? 1 : 0.5,
-                }}
-                className={cn(
-                  "relative z-10 hidden sm:block text-[11px] mt-1 transition-colors duration-200 whitespace-nowrap",
-                  isActive
-                    ? "text-primary font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)]"
-                    : "text-muted-foreground/70 font-medium"
-                )}
-              >
-                {tab.label}
-              </motion.span>
             </motion.button>
           );
         })}
