@@ -25,21 +25,21 @@ html.no-transitions *::after {
 @layer base {
   :root {
     /* Go20 Dark Theme - Paleta "Forja & Brasa" */
-    /* 60% Obsidiana — base escura com matiz roxa */
-    --background: 270 15% 4%;
+    /* 60% Obsidiana — base neutra preta */
+    --background: 0 0% 5%;
     /* 30% Pedra Clara — texto e títulos */
     --foreground: 30 17% 66%;
 
     /* === DEPTH LAYERING SYSTEM === */
-    --surface-0: 270 15% 4%;
-    --surface-1: 270 14% 8%;
-    --surface-2: 270 12% 12%;
-    --surface-3: 270 10% 16%;
+    --surface-0: 0 0% 5%;
+    --surface-1: 0 0% 9%;
+    --surface-2: 0 0% 13%;
+    --surface-3: 0 0% 17%;
 
-    --card: 270 14% 8%;
+    --card: 0 0% 9%;
     --card-foreground: 30 17% 66%;
 
-    --popover: 270 13% 10%;
+    --popover: 0 0% 11%;
     --popover-foreground: 30 17% 66%;
 
     /* Primary: Brasa Viva — CTAs, botões, destaques (10%) */
@@ -50,7 +50,7 @@ html.no-transitions *::after {
     --secondary: 271 76% 53%;
     --secondary-foreground: 0 0% 100%;
 
-    --muted: 270 10% 16%;
+    --muted: 0 0% 17%;
     --muted-foreground: 27 8% 44%;
 
     /* Accent: Brasa hover */
@@ -61,16 +61,16 @@ html.no-transitions *::after {
     --destructive: 355 72% 56%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 270 8% 18%;
-    --input: 270 8% 18%;
+    --border: 0 0% 18%;
+    --input: 0 0% 18%;
     --ring: 19 76% 53%;
 
     --radius: 0.75rem;
 
     /* Custom Go20 tokens */
-    --darker: 270 15% 3%;
-    --dark: 270 14% 6%;
-    --dark-panel: 270 13% 10%;
+    --darker: 0 0% 3%;
+    --dark: 0 0% 7%;
+    --dark-panel: 0 0% 11%;
     
     /* Logo colors (preserved for gradients/branding) */
     --solar-orange: 27 100% 67%;
@@ -92,7 +92,7 @@ html.no-transitions *::after {
     /* Gradients — simplified, accent-focused */
     --gradient-primary: linear-gradient(135deg, hsl(19 76% 53%), hsl(271 76% 53%));
     --gradient-dice: linear-gradient(180deg, hsl(195 93% 70%), hsl(271 76% 53%), hsl(359 100% 65%), hsl(27 100% 67%));
-    --gradient-card: linear-gradient(180deg, hsl(270 14% 10%), hsl(270 15% 5%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 11%), hsl(0 0% 6%));
     --gradient-glow: radial-gradient(circle at center, hsl(19 76% 53% / 0.3), transparent 70%);
     --gradient-accent: linear-gradient(135deg, hsl(19 76% 53%), hsl(20 100% 66%));
     
@@ -121,16 +121,16 @@ html.no-transitions *::after {
   }
 
   .dark {
-    --background: 270 15% 3%;
+    --background: 0 0% 4%;
     --foreground: 30 17% 66%;
-    --surface-0: 270 15% 3%;
-    --surface-1: 270 14% 7%;
-    --surface-2: 270 12% 11%;
-    --surface-3: 270 10% 15%;
-    --darker: 270 15% 2%;
-    --dark: 270 14% 5%;
-    --dark-panel: 270 13% 9%;
-    --card: 270 14% 7%;
+    --surface-0: 0 0% 4%;
+    --surface-1: 0 0% 7%;
+    --surface-2: 0 0% 11%;
+    --surface-3: 0 0% 15%;
+    --darker: 0 0% 2%;
+    --dark: 0 0% 5%;
+    --dark-panel: 0 0% 9%;
+    --card: 0 0% 7%;
     --card-foreground: 30 17% 66%;
   }
 
