@@ -214,11 +214,11 @@ export function MenuScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-surface-0 pb-24">
+    <div className="min-h-screen bg-surface-0 pb-24 md:pb-8">
       <AppHeader title="Menu" />
 
       {/* Content */}
-      <main className="px-4 py-4 max-w-lg mx-auto space-y-6">
+      <main className="px-4 md:px-8 py-4 max-w-2xl mx-auto space-y-6">
         {/* User Card */}
         <section className="animate-fade-in">
           {user ? (

@@ -167,7 +167,7 @@ export function CharactersScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-0 pb-24">
+    <div className="min-h-screen bg-surface-0 pb-24 md:pb-8">
       <AppHeader
         title="Personagens"
         subtitle={user && subscription && !isVisitante ? `${subscription.characterCount}/${subscription.limits.maxCharacters === 'unlimited' ? '∞' : subscription.limits.maxCharacters} personagens` : undefined}
@@ -234,7 +234,7 @@ export function CharactersScreen() {
       </AppHeader>
 
       {/* Content */}
-      <main className="px-4 sm:px-5 mt-4 sm:mt-6">
+      <main className="px-4 sm:px-5 md:px-8 lg:px-12 mt-4 sm:mt-6 max-w-6xl mx-auto">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -296,7 +296,7 @@ export function CharactersScreen() {
             )}
           </div>
         ) : (
-          <div className="space-y-3 sm:space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {filteredCharacters.map((character) => {
               const Icon = classIcons[character.class] || Shield;
               const gradient = classGradients[character.class] || 'from-purple-900 to-purple-700';
@@ -305,7 +305,7 @@ export function CharactersScreen() {
               return (
                 <div
                   key={character.id}
-                  className={`bg-gradient-to-br ${gradient} rounded-xl sm:rounded-2xl p-4 sm:p-5 relative overflow-hidden ${isArchived ? 'opacity-70' : ''}`}
+                  className={`bg-gradient-to-br ${gradient} rounded-xl sm:rounded-2xl p-4 sm:p-5 relative overflow-hidden shadow-depth-md hover:shadow-depth-lg transition-all ${isArchived ? 'opacity-70' : ''}`}
                 >
                   <div className="absolute top-0 right-0 w-32 sm:w-40 h-32 sm:h-40 bg-foreground opacity-5 rounded-full -mr-12 sm:-mr-16 -mt-12 sm:-mt-16" />
                   

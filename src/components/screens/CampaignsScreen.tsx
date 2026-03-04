@@ -163,7 +163,7 @@ function MasterCampaignCard({
 
   return (
     <div 
-      className={cn("bg-gradient-to-br rounded-2xl p-5 relative overflow-hidden cursor-pointer hover:scale-[1.02] transition-transform", theme.gradient)}
+      className={cn("bg-gradient-to-br rounded-2xl p-5 relative overflow-hidden cursor-pointer shadow-depth-md hover:shadow-depth-lg hover:scale-[1.01] transition-all", theme.gradient)}
       onClick={onClick}
     >
       <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -mr-16 -mt-16" />
@@ -498,7 +498,7 @@ export function CampaignsScreen() {
   const filteredPlayerCampaigns = activeFilter === 'mastering' ? [] : playerCampaigns;
 
   return (
-    <div className="min-h-screen bg-surface-0 pb-24">
+    <div className="min-h-screen bg-surface-0 pb-24 md:pb-8">
       <AppHeader
         title="Campanhas"
         rightContent={
@@ -655,13 +655,13 @@ export function CampaignsScreen() {
         <>
           {/* Master Campaigns */}
           {filteredMasterCampaigns.length > 0 && (
-            <section className="px-5 mt-6">
+            <section className="px-5 md:px-8 lg:px-12 mt-6 max-w-6xl mx-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase">Mestrando</h2>
                 <span className="text-xs text-muted-foreground">{filteredMasterCampaigns.length} campanhas</span>
               </div>
               
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredMasterCampaigns.map((campaign: any) => (
                   <MasterCampaignCard 
                     key={campaign.id} 
@@ -681,13 +681,13 @@ export function CampaignsScreen() {
 
           {/* Player Campaigns */}
           {filteredPlayerCampaigns.length > 0 && (
-            <section className="px-5 mt-8">
+            <section className="px-5 md:px-8 lg:px-12 mt-8 max-w-6xl mx-auto">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-semibold text-muted-foreground uppercase">Jogando</h2>
                 <span className="text-xs text-muted-foreground">{filteredPlayerCampaigns.length} campanhas</span>
               </div>
               
-              <div className="space-y-3">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                 {filteredPlayerCampaigns.map((campaign) => (
                   <PlayerCampaignCard 
                     key={campaign.id} 
