@@ -1,6 +1,6 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Check, X, AlertTriangle, BookOpen, Info } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Check, X, AlertTriangle, BookOpen, Info, Users, Sword, BarChart3, Brain, Globe, Package, Wand2, ScrollText, Feather, ClipboardCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useCreateCharacter, CharacterInsert } from '@/hooks/useCharacters';
@@ -18,6 +18,8 @@ import { BackgroundStep } from './steps/BackgroundStep';
 import { BackstoryStep } from './steps/BackstoryStep';
 import { SpellsStep } from './steps/SpellsStep';
 import { ReviewStep } from './steps/ReviewStep';
+import { motion, AnimatePresence } from 'framer-motion';
+import { cn } from '@/lib/utils';
 import {
   Popover,
   PopoverContent,
@@ -120,16 +122,16 @@ const initialData: WizardData = {
 };
 
 const STEPS = [
-  { id: 'race', title: 'Raça', description: 'Escolha sua raça' },
-  { id: 'class', title: 'Classe', description: 'Escolha sua classe' },
-  { id: 'attributes', title: 'Atributos', description: 'Distribua seus pontos' },
-  { id: 'skills', title: 'Perícias', description: 'Escolha suas perícias' },
-  { id: 'languages', title: 'Idiomas', description: 'Escolha idiomas extras' },
-  { id: 'equipment', title: 'Equipamento', description: 'Escolha seu equipamento' },
-  { id: 'spells', title: 'Magias', description: 'Escolha suas magias' },
-  { id: 'background', title: 'História', description: 'Defina seu background' },
-  { id: 'backstory', title: 'Backstory', description: 'História do personagem' },
-  { id: 'review', title: 'Revisão', description: 'Confirme seu personagem' },
+  { id: 'race', title: 'Raça', icon: Users },
+  { id: 'class', title: 'Classe', icon: Sword },
+  { id: 'attributes', title: 'Atributos', icon: BarChart3 },
+  { id: 'skills', title: 'Perícias', icon: Brain },
+  { id: 'languages', title: 'Idiomas', icon: Globe },
+  { id: 'equipment', title: 'Equip.', icon: Package },
+  { id: 'spells', title: 'Magias', icon: Wand2 },
+  { id: 'background', title: 'História', icon: ScrollText },
+  { id: 'backstory', title: 'Backstory', icon: Feather },
+  { id: 'review', title: 'Revisão', icon: ClipboardCheck },
 ];
 
 interface CharacterWizardProps {
@@ -138,9 +140,11 @@ interface CharacterWizardProps {
 
 export function CharacterWizard({ onClose }: CharacterWizardProps) {
   const [step, setStep] = useState(0);
+  const [direction, setDirection] = useState(0); // -1 for back, 1 for forward
   const [data, setData] = useState<WizardData>(initialData);
   const [showSrdModal, setShowSrdModal] = useState(true);
   const [dontShowAgain, setDontShowAgain] = useState(false);
+  const stepperRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
@@ -184,15 +188,34 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
 
   const handleNext = () => {
     if (step < STEPS.length - 1) {
+      setDirection(1);
       setStep(step + 1);
     }
   };
 
   const handleBack = () => {
     if (step > 0) {
+      setDirection(-1);
       setStep(step - 1);
     }
   };
+
+  const handleStepClick = (targetStep: number) => {
+    if (targetStep !== step) {
+      setDirection(targetStep > step ? 1 : -1);
+      setStep(targetStep);
+    }
+  };
+
+  // Scroll active step into view in stepper
+  useEffect(() => {
+    if (stepperRef.current) {
+      const activeEl = stepperRef.current.querySelector(`[data-step="${step}"]`);
+      if (activeEl) {
+        activeEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+    }
+  }, [step]);
 
   const handleCreate = async () => {
     if (!user) return;
@@ -532,43 +555,44 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
 
       <div className="fixed inset-0 z-50 bg-background flex flex-col">
       {/* Header */}
-      <header className="sticky top-0 z-40 glass border-b border-border/50 px-4 py-3">
-        <div className="flex items-center justify-between">
+      <header className="sticky top-0 z-40 bg-background/80 backdrop-blur-xl border-b border-border/50">
+        {/* Top bar */}
+        <div className="flex items-center justify-between px-4 py-2.5">
           {step > 0 ? (
             <Button
               variant="ghost"
-              size="sm"
+              size="icon"
               onClick={handleBack}
-              className="p-2 -ml-2"
+              className="h-9 w-9 rounded-xl"
             >
               <ArrowLeft className="w-5 h-5" />
             </Button>
           ) : (
-            <button onClick={onClose} className="p-2 -ml-2">
+            <Button variant="ghost" size="icon" onClick={onClose} className="h-9 w-9 rounded-xl">
               <X className="w-5 h-5" />
-            </button>
+            </Button>
           )}
-          <h1 className="text-lg font-semibold">Novo Personagem</h1>
+          
           <div className="flex items-center gap-2">
             {/* Missing Items Indicator */}
             {missingItems.length > 0 && (
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="gap-1 text-yellow-500 border-yellow-500/30">
-                    <AlertTriangle className="w-3 h-3" />
-                    <span className="text-xs">{missingItems.length}</span>
+                  <Button variant="outline" size="sm" className="gap-1.5 h-8 text-destructive border-destructive/30 bg-destructive/10 hover:bg-destructive/20">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                    <span className="text-xs font-semibold">{missingItems.length}</span>
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-64 p-3" align="end">
-                  <p className="text-sm font-semibold mb-2 text-yellow-500">Itens Faltando</p>
-                  <ul className="space-y-1">
+                  <p className="text-sm font-semibold mb-2 text-destructive">Itens Faltando</p>
+                  <ul className="space-y-1.5">
                     {missingItems.map((item, i) => (
-                      <li key={i} className="flex items-center gap-2">
+                      <li key={i}>
                         <button
-                          onClick={() => setStep(item.step)}
-                          className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2"
+                          onClick={() => handleStepClick(item.step)}
+                          className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-2 w-full text-left"
                         >
-                          <X className="w-3 h-3 text-red-400" />
+                          <X className="w-3 h-3 text-destructive shrink-0" />
                           {item.label}
                         </button>
                       </li>
@@ -582,49 +606,82 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
               <Button
                 onClick={handleNext}
                 size="sm"
-                className="bg-gradient-primary px-4"
+                className="bg-gradient-primary h-8 px-4 rounded-xl gap-1"
               >
                 Próximo
-                <ArrowRight className="w-4 h-4 ml-1" />
+                <ArrowRight className="w-4 h-4" />
               </Button>
             ) : (
               <Button
                 onClick={handleCreate}
                 disabled={createCharacter.isPending || !canCreate}
                 size="sm"
-                className="bg-gradient-primary px-4"
+                className="bg-gradient-primary h-8 px-4 rounded-xl gap-1"
               >
-                <Check className="w-4 h-4 mr-1" />
+                <Check className="w-4 h-4" />
                 {createCharacter.isPending ? 'Criando...' : 'Criar'}
               </Button>
             )}
           </div>
         </div>
         
-        {/* Progress */}
-        <div className="flex gap-1 mt-3">
-          {STEPS.map((s, i) => (
-            <div
-              key={s.id}
-              className={`flex-1 h-1 rounded-full transition-colors ${
-                i <= step ? 'bg-primary' : 'bg-muted'
-              }`}
-            />
-          ))}
-        </div>
-        <div className="flex justify-between mt-2">
-          <span className="text-xs text-muted-foreground">
-            Passo {step + 1} de {STEPS.length}
-          </span>
-          <span className="text-xs font-medium text-primary">
-            {STEPS[step].title}
-          </span>
+        {/* Stepper with icons - horizontal scroll */}
+        <div 
+          ref={stepperRef}
+          className="flex gap-1 px-3 pb-3 overflow-x-auto scrollbar-hide"
+        >
+          {STEPS.map((s, i) => {
+            const StepIcon = s.icon;
+            const isActive = i === step;
+            const isCompleted = i < step;
+            const isClickable = true;
+
+            return (
+              <button
+                key={s.id}
+                data-step={i}
+                onClick={() => isClickable && handleStepClick(i)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all shrink-0",
+                  isActive && "bg-primary/15 text-primary border border-primary/30",
+                  isCompleted && !isActive && "bg-muted/50 text-foreground/70 border border-transparent",
+                  !isActive && !isCompleted && "text-muted-foreground border border-transparent hover:bg-muted/30"
+                )}
+              >
+                <div className={cn(
+                  "w-5 h-5 rounded-md flex items-center justify-center shrink-0",
+                  isActive && "bg-primary text-primary-foreground",
+                  isCompleted && !isActive && "bg-primary/20 text-primary",
+                  !isActive && !isCompleted && "bg-muted text-muted-foreground"
+                )}>
+                  {isCompleted && !isActive ? (
+                    <Check className="w-3 h-3" />
+                  ) : (
+                    <StepIcon className="w-3 h-3" />
+                  )}
+                </div>
+                <span className={cn(isActive && "font-semibold")}>
+                  {s.title}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </header>
 
-      {/* Content */}
+      {/* Content with slide transitions */}
       <main className="flex-1 overflow-y-auto pb-24 sm:pb-8">
-        {renderStep()}
+        <AnimatePresence mode="wait" initial={false}>
+          <motion.div
+            key={step}
+            initial={{ x: direction * 60, opacity: 0 }}
+            animate={{ x: 0, opacity: 1 }}
+            exit={{ x: direction * -60, opacity: 0 }}
+            transition={{ type: "tween", duration: 0.2, ease: "easeInOut" }}
+          >
+            {renderStep()}
+          </motion.div>
+        </AnimatePresence>
       </main>
     </div>
     </>

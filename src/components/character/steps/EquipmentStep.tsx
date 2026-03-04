@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Package, Sword, Shield, ChevronDown, ChevronUp, Check, Sparkles, Gem } from 'lucide-react';
+import { cn } from '@/lib/utils';
 import { WizardData } from '../CharacterWizard';
 import { CLASSES } from '@/data/srd';
 import { useHomebrew } from '@/hooks/useHomebrew';
@@ -146,25 +147,31 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
 
   return (
     <div className="p-4 space-y-6">
+      {/* Header */}
+      <div className="text-center">
+        <h2 className="text-xl font-bold text-foreground">Equipamento Inicial</h2>
+        <p className="text-sm text-muted-foreground mt-1">
+          Escolha o equipamento inicial para sua classe.
+        </p>
+      </div>
+
       {/* Pack Selection */}
       <section>
-        <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-          <Package className="w-5 h-5 text-primary" />
+        <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+          <Package className="w-4 h-4 text-primary" />
           Pacote de Equipamento
         </h3>
-        <p className="text-sm text-muted-foreground mb-4">
-          Escolha um pacote de equipamento inicial para sua classe.
-        </p>
         
-        <div className="space-y-3">
+        <div className="space-y-2">
           {filteredPacks.map((pack) => (
             <div 
               key={pack.id}
-              className={`bg-dark rounded-xl border transition-all ${
+              className={cn(
+                "glass rounded-xl border transition-all",
                 data.equipmentPack === pack.id 
                   ? 'border-primary bg-primary/10' 
                   : 'border-border/50'
-              }`}
+              )}
             >
               <button
                 onClick={() => handlePackSelect(pack.id)}
@@ -228,8 +235,8 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
       {/* Primary Weapon */}
       {(weapons.primary.length > 0 || homebrewWeapons.length > 0) && (
         <section>
-          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <Sword className="w-5 h-5 text-primary" />
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+            <Sword className="w-4 h-4 text-primary" />
             Arma Principal
           </h3>
           <div className="grid grid-cols-2 gap-2">
@@ -237,11 +244,12 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
               <button
                 key={weapon}
                 onClick={() => handleWeaponSelect(weapon, 'primary')}
-                className={`p-3 rounded-xl border text-left transition-all ${
+                className={cn(
+                  "p-3 rounded-xl border text-left transition-all glass",
                   data.primaryWeapon === weapon
                     ? 'border-primary bg-primary/10'
-                    : 'border-border/50 bg-dark'
-                }`}
+                    : 'border-border/50'
+                )}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{weapon}</span>
@@ -255,11 +263,12 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
               <button
                 key={weapon.id}
                 onClick={() => handleWeaponSelect(weapon.name, 'primary', true)}
-                className={`p-3 rounded-xl border text-left transition-all ${
+                className={cn(
+                  "p-3 rounded-xl border text-left transition-all glass",
                   data.primaryWeapon === weapon.name
                     ? 'border-amber-500 bg-amber-500/10'
-                    : 'border-amber-500/30 bg-dark'
-                }`}
+                    : 'border-amber-500/30'
+                )}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -282,8 +291,8 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
       {/* Secondary Weapon */}
       {(weapons.secondary.length > 0 || homebrewWeapons.length > 0) && (
         <section>
-          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <Sword className="w-5 h-5 text-muted-foreground" />
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+            <Sword className="w-4 h-4 text-muted-foreground" />
             Arma Secundária
           </h3>
           <div className="grid grid-cols-2 gap-2">
@@ -291,11 +300,12 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
               <button
                 key={weapon}
                 onClick={() => handleWeaponSelect(weapon, 'secondary')}
-                className={`p-3 rounded-xl border text-left transition-all ${
+                className={cn(
+                  "p-3 rounded-xl border text-left transition-all glass",
                   data.secondaryWeapon === weapon
                     ? 'border-primary bg-primary/10'
-                    : 'border-border/50 bg-dark'
-                }`}
+                    : 'border-border/50'
+                )}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{weapon}</span>
@@ -309,11 +319,12 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
               <button
                 key={`secondary-${weapon.id}`}
                 onClick={() => handleWeaponSelect(weapon.name, 'secondary', true)}
-                className={`p-3 rounded-xl border text-left transition-all ${
+                className={cn(
+                  "p-3 rounded-xl border text-left transition-all glass",
                   data.secondaryWeapon === weapon.name
                     ? 'border-amber-500 bg-amber-500/10'
-                    : 'border-amber-500/30 bg-dark'
-                }`}
+                    : 'border-amber-500/30'
+                )}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -336,8 +347,8 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
       {/* Armor */}
       {(armors.length > 0 || homebrewArmors.length > 0) && (
         <section>
-          <h3 className="text-lg font-semibold mb-3 flex items-center gap-2">
-            <Shield className="w-5 h-5 text-primary" />
+          <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-3 flex items-center gap-2">
+            <Shield className="w-4 h-4 text-primary" />
             Armadura
           </h3>
           <div className="grid grid-cols-2 gap-2">
@@ -345,11 +356,12 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
               <button
                 key={armor}
                 onClick={() => handleArmorSelect(armor)}
-                className={`p-3 rounded-xl border text-left transition-all ${
+                className={cn(
+                  "p-3 rounded-xl border text-left transition-all glass",
                   data.armor === armor
                     ? 'border-primary bg-primary/10'
-                    : 'border-border/50 bg-dark'
-                }`}
+                    : 'border-border/50'
+                )}
               >
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">{armor}</span>
@@ -363,11 +375,12 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
               <button
                 key={armor.id}
                 onClick={() => handleArmorSelect(armor.name)}
-                className={`p-3 rounded-xl border text-left transition-all ${
+                className={cn(
+                  "p-3 rounded-xl border text-left transition-all glass",
                   data.armor === armor.name
                     ? 'border-amber-500 bg-amber-500/10'
-                    : 'border-amber-500/30 bg-dark'
-                }`}
+                    : 'border-amber-500/30'
+                )}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
