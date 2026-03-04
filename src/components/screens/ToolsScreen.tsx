@@ -43,7 +43,7 @@ const tools = [
     name: "Rolador de Dados",
     description: "Role d4, d6, d8, d10, d12 e d20",
     icon: Dice6,
-    color: "from-primary to-primary/70",
+    color: "primary",
     featured: true,
     toolKey: "dice" as ActiveTool,
     requiresAccess: false,
@@ -53,7 +53,7 @@ const tools = [
     name: "Magias",
     description: "Compêndio completo de magias SRD",
     icon: Sparkles,
-    color: "from-secondary to-secondary/70",
+    color: "secondary",
     featured: true,
     path: "/grimoire",
     requiresAccess: false,
@@ -63,7 +63,7 @@ const tools = [
     name: "Itens Mágicos",
     description: "Compêndio de itens mágicos",
     icon: Gem,
-    color: "from-purple-500 to-purple-500/70",
+    color: "secondary",
     featured: true,
     toolKey: "magic-items" as ActiveTool,
     requiresAccess: false,
@@ -73,7 +73,7 @@ const tools = [
     name: "Bestiário",
     description: "Compêndio de monstros SRD",
     icon: Skull,
-    color: "from-red-600 to-red-600/70",
+    color: "destructive",
     featured: true,
     toolKey: "monsters" as ActiveTool,
     requiresAccess: false,
@@ -83,7 +83,7 @@ const tools = [
     name: "Condições",
     description: "Referência rápida de condições",
     icon: Zap,
-    color: "from-neon-blue to-neon-blue/70",
+    color: "primary",
     featured: false,
     toolKey: "conditions" as ActiveTool,
     requiresAccess: false,
@@ -93,7 +93,7 @@ const tools = [
     name: "Armas & Armaduras",
     description: "Lista de armas e armaduras",
     icon: Swords,
-    color: "from-gold to-gold/70",
+    color: "primary",
     featured: false,
     toolKey: "weapons-armor" as ActiveTool,
     requiresAccess: false,
@@ -103,7 +103,7 @@ const tools = [
     name: "Regras Básicas",
     description: "Mecânicas fundamentais do D&D 5e",
     icon: BookOpen,
-    color: "from-orange-500 to-orange-500/70",
+    color: "primary",
     featured: false,
     toolKey: "rules" as ActiveTool,
     requiresAccess: false,
@@ -113,7 +113,7 @@ const tools = [
     name: "Cura & Descanso",
     description: "Regras de recuperação de HP",
     icon: Heart,
-    color: "from-red-500 to-red-500/70",
+    color: "destructive",
     featured: false,
     toolKey: "healing" as ActiveTool,
     requiresAccess: false,
@@ -123,7 +123,7 @@ const tools = [
     name: "A Forja",
     description: "Crie magias e itens homebrew",
     icon: Sword,
-    color: "from-primary to-primary/70",
+    color: "primary",
     featured: true,
     toolKey: "homebrew" as ActiveTool,
     requiresAccess: true,
@@ -133,7 +133,7 @@ const tools = [
     name: "Notas Rápidas",
     description: "Anotações pessoais com Markdown",
     icon: StickyNote,
-    color: "from-amber-500 to-amber-500/70",
+    color: "primary",
     featured: true,
     toolKey: "notes" as ActiveTool,
     requiresAccess: true,
@@ -143,7 +143,7 @@ const tools = [
     name: "Galeria de Apoiadores",
     description: "NPCs e itens criados pela comunidade",
     icon: Crown,
-    color: "from-amber-400 to-purple-500",
+    color: "secondary",
     featured: true,
     toolKey: "supporter-gallery" as ActiveTool,
     requiresAccess: false,
@@ -332,22 +332,22 @@ export function ToolsScreen() {
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className={cn(
-                    "p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br text-left relative overflow-hidden shadow-depth-md",
-                    tool.color,
+                    "p-3 sm:p-4 rounded-xl sm:rounded-2xl text-left relative overflow-hidden shadow-depth-sm border",
+                    tool.color === 'primary' ? 'border-primary/30 bg-primary/5' : tool.color === 'secondary' ? 'border-secondary/30 bg-secondary/5' : 'border-destructive/30 bg-destructive/5',
                     isLocked && "opacity-60",
-                    "hover:scale-[1.02] hover:shadow-depth-lg active:scale-[0.98] transition-all duration-200"
+                    "hover:scale-[1.02] hover:shadow-depth-md active:scale-[0.98] transition-all duration-200"
                   )}
                 >
                   {isLocked && (
                     <div className="absolute top-2 right-2">
-                      <Lock className="w-4 h-4 text-foreground/80" />
+                      <Lock className="w-4 h-4 text-muted-foreground" />
                     </div>
                   )}
-                  <Icon className="w-6 h-6 sm:w-8 sm:h-8 text-foreground mb-2 sm:mb-3" />
+                  <Icon className={cn("w-6 h-6 sm:w-8 sm:h-8 mb-2 sm:mb-3", tool.color === 'primary' ? 'text-primary' : tool.color === 'secondary' ? 'text-secondary' : 'text-destructive')} />
                   <h3 className="text-xs sm:text-sm font-semibold text-foreground">
                     {tool.name}
                   </h3>
-                  <p className="text-[10px] sm:text-xs text-foreground/70 mt-0.5 line-clamp-2">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 line-clamp-2">
                     {isLockedVisitante ? "Requer código de acesso" : isLockedForge ? "Requer plano Herói" : tool.description}
                   </p>
                 </button>
@@ -379,11 +379,11 @@ export function ToolsScreen() {
                 >
                   <div
                     className={cn(
-                      "w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br flex items-center justify-center flex-shrink-0",
-                      tool.color
+                      "w-9 h-9 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl border flex items-center justify-center flex-shrink-0",
+                      tool.color === 'primary' ? 'border-primary/40 bg-primary/10' : tool.color === 'secondary' ? 'border-secondary/40 bg-secondary/10' : 'border-destructive/40 bg-destructive/10'
                     )}
                   >
-                    <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-foreground" />
+                    <Icon className={cn("w-4 h-4 sm:w-5 sm:h-5", tool.color === 'primary' ? 'text-primary' : tool.color === 'secondary' ? 'text-secondary' : 'text-destructive')} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h3 className="text-xs sm:text-sm font-semibold text-foreground">
