@@ -606,7 +606,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
               <Button
                 onClick={handleNext}
                 size="sm"
-                className="bg-gradient-primary h-8 px-4 rounded-xl gap-1"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground h-8 px-4 rounded-xl gap-1 shadow-depth-md"
               >
                 Próximo
                 <ArrowRight className="w-4 h-4" />
