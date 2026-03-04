@@ -25,10 +25,10 @@ html.no-transitions *::after {
 @layer base {
   :root {
     /* Go20 Dark Theme - Paleta "Forja & Brasa" */
-    /* 60% Obsidiana — base neutra preta */
+    /* 60% Base — preto neutro puro */
     --background: 0 0% 5%;
-    /* 30% Pedra Clara — texto e títulos */
-    --foreground: 30 17% 66%;
+    /* Texto principal — cinza claro neutro */
+    --foreground: 0 0% 90%;
 
     /* === DEPTH LAYERING SYSTEM === */
     --surface-0: 0 0% 5%;
@@ -37,10 +37,10 @@ html.no-transitions *::after {
     --surface-3: 0 0% 17%;
 
     --card: 0 0% 9%;
-    --card-foreground: 30 17% 66%;
+    --card-foreground: 0 0% 90%;
 
     --popover: 0 0% 11%;
-    --popover-foreground: 30 17% 66%;
+    --popover-foreground: 0 0% 90%;
 
     /* Primary: Brasa Viva — CTAs, botões, destaques (10%) */
     --primary: 19 76% 53%;
@@ -51,7 +51,7 @@ html.no-transitions *::after {
     --secondary-foreground: 0 0% 100%;
 
     --muted: 0 0% 17%;
-    --muted-foreground: 27 8% 44%;
+    --muted-foreground: 0 0% 55%;
 
     /* Accent: Brasa hover */
     --accent: 20 100% 66%;
@@ -122,7 +122,7 @@ html.no-transitions *::after {
 
   .dark {
     --background: 0 0% 4%;
-    --foreground: 30 17% 66%;
+    --foreground: 0 0% 90%;
     --surface-0: 0 0% 4%;
     --surface-1: 0 0% 7%;
     --surface-2: 0 0% 11%;
@@ -131,7 +131,7 @@ html.no-transitions *::after {
     --dark: 0 0% 5%;
     --dark-panel: 0 0% 9%;
     --card: 0 0% 7%;
-    --card-foreground: 30 17% 66%;
+    --card-foreground: 0 0% 90%;
   }
 
   .light {
