@@ -34,21 +34,17 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
     <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-[env(safe-area-inset-bottom)] px-4 pb-4">
       {/* Outer glass container — Concept 1: Base structure */}
       <div
-        className={cn(
-          "relative flex items-center justify-around gap-1 sm:gap-2 px-3 sm:px-5 py-2.5 sm:py-3 rounded-[24px] max-w-[420px] w-full overflow-hidden",
-          // Concept 2: Translucent background (rgba white 0.08 mapped to semantic)
-          "bg-white/[0.08]",
-          // Concept 3: Blur effect
-          "backdrop-blur-[20px] backdrop-saturate-150",
-          // Concept 4: Soft borders
-          "border border-white/[0.15]",
-          // Depth shadows + inner highlight
-          "shadow-[0_8px_32px_rgba(0,0,0,0.4),0_2px_8px_rgba(0,0,0,0.2),inset_0_1px_0_rgba(255,255,255,0.1),inset_0_-1px_0_rgba(255,255,255,0.05)]"
-        )}
+         className={cn(
+           "relative flex items-center justify-around gap-1 sm:gap-2 px-3 sm:px-5 py-2.5 sm:py-3 rounded-[24px] max-w-[420px] w-full overflow-hidden",
+           "bg-white/[0.08]",
+           "backdrop-blur-[12px] sm:backdrop-blur-[20px]",
+           "border border-white/[0.15]",
+           "shadow-[0_4px_16px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)]"
+         )}
       >
         {/* Decorative glass orbs for depth */}
-        <div className="absolute -top-8 -left-8 w-24 h-24 rounded-full bg-primary/[0.08] blur-2xl pointer-events-none" />
-        <div className="absolute -bottom-6 -right-6 w-20 h-20 rounded-full bg-accent/[0.06] blur-2xl pointer-events-none" />
+        <div className="absolute -top-8 -left-8 w-24 h-24 rounded-full bg-primary/[0.08] blur-xl pointer-events-none hidden sm:block" />
+        <div className="absolute -bottom-6 -right-6 w-20 h-20 rounded-full bg-accent/[0.06] blur-xl pointer-events-none hidden sm:block" />
 
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -58,8 +54,8 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
             <motion.button
               key={tab.id}
               onClick={() => handleTabChange(tab.id)}
-              whileTap={{ scale: 0.88 }}
-              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              whileTap={{ scale: 0.92 }}
+              transition={{ type: "tween", duration: 0.15 }}
               className={cn(
                 "relative flex flex-col items-center justify-center rounded-2xl transition-all duration-200 min-w-0 flex-1 py-2 px-1 sm:px-3"
               )}
@@ -69,12 +65,11 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
                 <motion.div
                   layoutId="activeTabPill"
                   className={cn(
-                    "absolute inset-0 rounded-2xl overflow-hidden",
-                    "bg-white/[0.12] backdrop-blur-sm",
-                    "border border-white/[0.2]",
-                    "shadow-[0_0_16px_hsl(var(--primary)/0.2),inset_0_1px_0_rgba(255,255,255,0.15)]"
+                    "absolute inset-0 rounded-2xl",
+                    "bg-white/[0.12]",
+                    "border border-white/[0.2]"
                   )}
-                  transition={{ type: "spring", stiffness: 500, damping: 32 }}
+                  transition={{ type: "tween", duration: 0.2, ease: "easeOut" }}
                 />
               )}
 
@@ -82,10 +77,9 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
               <div className="relative z-10">
                 <motion.div
                   animate={{
-                    scale: isActive ? 1.15 : 1,
-                    y: isActive ? -1 : 0,
+                    scale: isActive ? 1.1 : 1,
                   }}
-                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  transition={{ type: "tween", duration: 0.15 }}
                 >
                   <Icon
                     className={cn(
