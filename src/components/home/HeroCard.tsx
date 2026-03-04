@@ -25,9 +25,9 @@ export function HeroCard({ character, nextSession }: HeroCardProps) {
     : 0;
 
   const getHpColor = () => {
-    if (hpPercentage > 50) return "bg-green-500";
-    if (hpPercentage > 25) return "bg-yellow-500";
-    return "bg-red-500";
+    if (hpPercentage > 50) return "bg-primary";
+    if (hpPercentage > 25) return "bg-accent";
+    return "bg-destructive";
   };
 
   if (!character) {
@@ -45,7 +45,7 @@ export function HeroCard({ character, nextSession }: HeroCardProps) {
             <p className="text-sm text-muted-foreground mb-4">
               Crie seu primeiro herói para começar a aventura!
             </p>
-            <button className="px-6 py-2.5 bg-gradient-accent rounded-full text-sm font-semibold text-foreground shadow-solar hover:scale-105 transition-transform">
+            <button className="px-6 py-2.5 border border-primary/60 bg-transparent rounded-full text-sm font-semibold text-primary hover:bg-primary hover:text-primary-foreground transition-all">
               Criar Personagem
             </button>
           </div>
@@ -98,7 +98,7 @@ export function HeroCard({ character, nextSession }: HeroCardProps) {
             <div className="flex gap-4">
               {/* HP */}
               <div className="flex items-center gap-2">
-                <Heart className="w-4 h-4 text-red-400" />
+                <Heart className="w-4 h-4 text-destructive" />
                 <div className="flex-1">
                   <div className="flex items-baseline gap-1">
                     <span className="text-sm font-semibold text-foreground">
