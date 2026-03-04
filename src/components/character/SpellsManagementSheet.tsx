@@ -71,14 +71,14 @@ const getMaterialDescription = (components: FullSpellData['components']): string
 };
 
 const SPELL_SCHOOLS: Record<string, { name: string; color: string; icon: string }> = {
-  "abjuration": { name: "Abjuração", color: "bg-blue-500/20 text-blue-400 border-blue-500/30", icon: "🛡️" },
-  "conjuration": { name: "Conjuração", color: "bg-amber-500/20 text-amber-400 border-amber-500/30", icon: "✨" },
-  "divination": { name: "Adivinhação", color: "bg-purple-500/20 text-purple-400 border-purple-500/30", icon: "👁️" },
-  "enchantment": { name: "Encantamento", color: "bg-pink-500/20 text-pink-400 border-pink-500/30", icon: "💫" },
-  "evocation": { name: "Evocação", color: "bg-red-500/20 text-red-400 border-red-500/30", icon: "🔥" },
-  "illusion": { name: "Ilusão", color: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30", icon: "🌀" },
-  "necromancy": { name: "Necromancia", color: "bg-gray-500/20 text-gray-400 border-gray-500/30", icon: "💀" },
-  "transmutation": { name: "Transmutação", color: "bg-green-500/20 text-green-400 border-green-500/30", icon: "🔄" },
+  "abjuration": { name: "Abjuração", color: "bg-primary/20 text-primary border-primary/30", icon: "🛡️" },
+  "conjuration": { name: "Conjuração", color: "bg-gold/20 text-gold border-gold/30", icon: "✨" },
+  "divination": { name: "Adivinhação", color: "bg-accent-foreground/20 text-accent-foreground border-accent-foreground/30", icon: "👁️" },
+  "enchantment": { name: "Encantamento", color: "bg-primary/20 text-primary border-primary/30", icon: "💫" },
+  "evocation": { name: "Evocação", color: "bg-destructive/20 text-destructive border-destructive/30", icon: "🔥" },
+  "illusion": { name: "Ilusão", color: "bg-accent-foreground/20 text-accent-foreground border-accent-foreground/30", icon: "🌀" },
+  "necromancy": { name: "Necromancia", color: "bg-muted text-muted-foreground border-border", icon: "💀" },
+  "transmutation": { name: "Transmutação", color: "bg-secondary/20 text-secondary border-secondary/30", icon: "🔄" },
 };
 
 // Spellcaster classes for filtering
@@ -386,13 +386,13 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                 </Badge>
               )}
               {spell.fullData?.concentration && (
-                <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-orange-500/20 text-orange-400 border-orange-500/30">
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-gold/20 text-gold border-gold/30">
                   <Zap className="w-2.5 h-2.5 mr-0.5" />
                   Conc.
                 </Badge>
               )}
               {spell.fullData?.ritual && (
-                <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-cyan-500/20 text-cyan-400 border-cyan-500/30">
+                <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-primary/20 text-primary border-primary/30">
                   <Scroll className="w-2.5 h-2.5 mr-0.5" />
                   Ritual
                 </Badge>
@@ -642,8 +642,8 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                 </div>
 
                 {maxSpellLevel === 0 && (
-                  <Card className="p-3 bg-amber-500/10 border-amber-500/30">
-                    <p className="text-xs text-amber-200">
+                  <Card className="p-3 bg-gold/10 border-gold/30">
+                    <p className="text-xs text-gold">
                       Seu personagem ainda não possui espaços de magia. Apenas truques estão disponíveis.
                     </p>
                   </Card>
@@ -694,7 +694,7 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
                                   </Badge>
                                 )}
                                 {spell.concentration && (
-                                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-orange-500/20 text-orange-400 border-orange-500/30">
+                                  <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-gold/20 text-gold border-gold/30">
                                     Conc.
                                   </Badge>
                                 )}

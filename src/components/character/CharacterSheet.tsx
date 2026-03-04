@@ -1926,7 +1926,7 @@ export function CharacterSheet() {
                 <p className="text-xs text-muted-foreground mb-2">Testes contra Morte</p>
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-green-500 w-14">Sucessos</span>
+                    <span className="text-xs text-secondary w-14">Sucessos</span>
                     {[0, 1, 2].map(i => (
                       <button 
                         key={i}
@@ -2026,19 +2026,19 @@ export function CharacterSheet() {
 
                 {/* Active Concentration Display */}
                 {activeConcentration && (
-                  <div className="mb-3 p-2 bg-yellow-500/10 border border-yellow-500/30 rounded-xl">
+                  <div className="mb-3 p-2 bg-gold/10 border border-gold/30 rounded-xl">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <Zap className="w-4 h-4 text-yellow-500" />
+                        <Zap className="w-4 h-4 text-gold" />
                         <div>
-                          <p className="text-xs font-medium text-yellow-500">Concentração</p>
+                          <p className="text-xs font-medium text-gold">Concentração</p>
                           <p className="text-sm font-semibold">{activeConcentration.spellName}</p>
                         </div>
                       </div>
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="h-7 text-xs text-yellow-500 hover:text-yellow-400 hover:bg-yellow-500/10"
+                        className="h-7 text-xs text-gold hover:text-gold/80 hover:bg-gold/10"
                         onClick={handleDropConcentration}
                       >
                         <X className="w-3.5 h-3.5 mr-1" />
@@ -2105,7 +2105,7 @@ export function CharacterSheet() {
                               <div className="flex items-center gap-2">
                                 <span className="text-sm font-medium truncate">{spell.displayName}</span>
                                 {spell.fullData?.concentration && (
-                                  <span className="text-[9px] px-1 py-0.5 rounded bg-yellow-500/20 text-yellow-400">C</span>
+                                  <span className="text-[9px] px-1 py-0.5 rounded bg-gold/20 text-gold">C</span>
                                 )}
                               </div>
                               <div className="flex items-center gap-2 mt-0.5">

@@ -79,14 +79,14 @@ const SPELL_SLOTS_BY_LEVEL: Record<string, number[]> = {
 };
 
 const SPELL_SCHOOLS: Record<string, { name: string; color: string; icon: string }> = {
-  "abjuration": { name: "Abjuração", color: "bg-blue-500/20 text-blue-400 border-blue-500/30", icon: "🛡️" },
-  "conjuration": { name: "Conjuração", color: "bg-amber-500/20 text-amber-400 border-amber-500/30", icon: "✨" },
-  "divination": { name: "Adivinhação", color: "bg-purple-500/20 text-purple-400 border-purple-500/30", icon: "👁️" },
-  "enchantment": { name: "Encantamento", color: "bg-pink-500/20 text-pink-400 border-pink-500/30", icon: "💫" },
-  "evocation": { name: "Evocação", color: "bg-red-500/20 text-red-400 border-red-500/30", icon: "🔥" },
-  "illusion": { name: "Ilusão", color: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30", icon: "🌀" },
-  "necromancy": { name: "Necromancia", color: "bg-gray-500/20 text-gray-400 border-gray-500/30", icon: "💀" },
-  "transmutation": { name: "Transmutação", color: "bg-green-500/20 text-green-400 border-green-500/30", icon: "🔄" },
+  "abjuration": { name: "Abjuração", color: "bg-primary/20 text-primary border-primary/30", icon: "🛡️" },
+  "conjuration": { name: "Conjuração", color: "bg-gold/20 text-gold border-gold/30", icon: "✨" },
+  "divination": { name: "Adivinhação", color: "bg-accent-foreground/20 text-accent-foreground border-accent-foreground/30", icon: "👁️" },
+  "enchantment": { name: "Encantamento", color: "bg-primary/20 text-primary border-primary/30", icon: "💫" },
+  "evocation": { name: "Evocação", color: "bg-destructive/20 text-destructive border-destructive/30", icon: "🔥" },
+  "illusion": { name: "Ilusão", color: "bg-accent-foreground/20 text-accent-foreground border-accent-foreground/30", icon: "🌀" },
+  "necromancy": { name: "Necromancia", color: "bg-muted text-muted-foreground border-border", icon: "💀" },
+  "transmutation": { name: "Transmutação", color: "bg-secondary/20 text-secondary border-secondary/30", icon: "🔄" },
 };
 
 export function SpellCastDialog({
@@ -240,10 +240,10 @@ export function SpellCastDialog({
           <div className="space-y-4">
             {/* Active Concentration Warning */}
             {hasActiveConcentration && (
-              <div className="p-3 bg-yellow-500/10 border border-yellow-500/30 rounded-xl flex items-start gap-2">
-                <Focus className="w-4 h-4 text-yellow-500 mt-0.5 shrink-0" />
+              <div className="p-3 bg-gold/10 border border-gold/30 rounded-xl flex items-start gap-2">
+                <Focus className="w-4 h-4 text-gold mt-0.5 shrink-0" />
                 <div>
-                  <p className="text-sm font-medium text-yellow-500">Concentração Ativa</p>
+                  <p className="text-sm font-medium text-gold">Concentração Ativa</p>
                   <p className="text-xs text-muted-foreground">
                     Você está concentrado em <strong>{activeConcentration.spellName}</strong>
                   </p>
@@ -281,7 +281,7 @@ export function SpellCastDialog({
               </div>
 
               {isConcentration && (
-                <Badge variant="outline" className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                <Badge variant="outline" className="bg-gold/20 text-gold border-gold/30">
                   <Zap className="w-3 h-3 mr-1" />
                   Concentração
                 </Badge>
@@ -358,7 +358,7 @@ export function SpellCastDialog({
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-yellow-500" />
+              <AlertTriangle className="w-5 h-5 text-gold" />
               Quebrar Concentração?
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2">
@@ -373,7 +373,7 @@ export function SpellCastDialog({
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConcentrationConfirm} className="bg-yellow-600 hover:bg-yellow-700">
+            <AlertDialogAction onClick={handleConcentrationConfirm} className="bg-gold hover:bg-gold/80">
               Quebrar e Lançar
             </AlertDialogAction>
           </AlertDialogFooter>

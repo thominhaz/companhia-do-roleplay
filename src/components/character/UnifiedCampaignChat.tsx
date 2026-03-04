@@ -188,7 +188,7 @@ export function UnifiedCampaignChat({ campaignId, campaignName, masterId }: Unif
         <div className="flex flex-col items-center justify-center h-full text-center">
           {isPrivate ? (
             <>
-              <Lock className="w-10 h-10 text-amber-500/30 mb-2" />
+              <Lock className="w-10 h-10 text-gold/30 mb-2" />
               <p className="text-sm font-medium mb-1">Nenhuma mensagem privada</p>
               <p className="text-xs text-muted-foreground">
                 Envie uma mensagem para o mestre
@@ -228,17 +228,17 @@ export function UnifiedCampaignChat({ campaignId, campaignName, masterId }: Unif
                   "max-w-[85%] rounded-xl px-3 py-1.5",
                   isOwn
                     ? isPrivate 
-                      ? "bg-amber-500/20 text-foreground rounded-br-sm border border-amber-500/30"
+                      ? "bg-gold/20 text-foreground rounded-br-sm border border-gold/30"
                       : "bg-primary text-primary-foreground rounded-br-sm"
                     : "bg-muted text-foreground rounded-bl-sm"
                 )}
               >
                 {!isOwn && (
                   <div className="flex items-center gap-1 mb-0.5">
-                    {isMaster && isPrivate && <Crown className="w-3 h-3 text-amber-400" />}
+                    {isMaster && isPrivate && <Crown className="w-3 h-3 text-gold" />}
                     <p className={cn(
                       "text-[10px] font-semibold",
-                      isMaster && isPrivate ? "text-amber-400" : "text-primary"
+                      isMaster && isPrivate ? "text-gold" : "text-primary"
                     )}>
                       {msg.profile?.display_name || (isMaster ? 'Mestre' : 'Jogador')}
                     </p>
@@ -287,17 +287,17 @@ export function UnifiedCampaignChat({ campaignId, campaignName, masterId }: Unif
             className="mb-2 w-80 sm:w-96 bg-card/95 backdrop-blur-xl border border-border/50 rounded-2xl shadow-2xl overflow-hidden"
           >
             {/* Header */}
-            <div className="p-3 border-b border-border/50 bg-gradient-to-r from-blue-500/10 to-purple-500/10">
+            <div className="p-3 border-b border-border/50 bg-gradient-to-r from-primary/10 to-accent-foreground/10">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className={cn(
                     "w-8 h-8 rounded-lg flex items-center justify-center",
-                    activeTab === "private" ? "bg-amber-500/20" : "bg-blue-500/20"
+                    activeTab === "private" ? "bg-gold/20" : "bg-primary/20"
                   )}>
                     {activeTab === "private" ? (
-                      <Lock className="w-4 h-4 text-amber-400" />
+                      <Lock className="w-4 h-4 text-gold" />
                     ) : (
-                      <MessageCircle className="w-4 h-4 text-blue-400" />
+                      <MessageCircle className="w-4 h-4 text-primary" />
                     )}
                   </div>
                   <div>
@@ -327,7 +327,7 @@ export function UnifiedCampaignChat({ campaignId, campaignName, masterId }: Unif
               <TabsList className="w-full rounded-none border-b border-border/50 bg-transparent h-9">
                 <TabsTrigger 
                   value="general" 
-                  className="flex-1 h-8 text-xs data-[state=active]:bg-blue-500/10 data-[state=active]:text-blue-400 rounded-none border-b-2 border-transparent data-[state=active]:border-blue-400"
+                  className="flex-1 h-8 text-xs data-[state=active]:bg-primary/10 data-[state=active]:text-primary rounded-none border-b-2 border-transparent data-[state=active]:border-primary"
                 >
                   <Users className="w-3 h-3 mr-1.5" />
                   Grupo
@@ -339,12 +339,12 @@ export function UnifiedCampaignChat({ campaignId, campaignName, masterId }: Unif
                 </TabsTrigger>
                 <TabsTrigger 
                   value="private" 
-                  className="flex-1 h-8 text-xs data-[state=active]:bg-amber-500/10 data-[state=active]:text-amber-400 rounded-none border-b-2 border-transparent data-[state=active]:border-amber-400"
+                  className="flex-1 h-8 text-xs data-[state=active]:bg-gold/10 data-[state=active]:text-gold rounded-none border-b-2 border-transparent data-[state=active]:border-gold"
                 >
                   <Crown className="w-3 h-3 mr-1.5" />
                   Mestre
                   {unreadPrivateCount > 0 && (
-                    <Badge className="ml-1.5 h-4 px-1.5 text-[10px] bg-red-500">
+                    <Badge className="ml-1.5 h-4 px-1.5 text-[10px] bg-destructive">
                       {unreadPrivateCount > 99 ? '99+' : unreadPrivateCount}
                     </Badge>
                   )}
@@ -423,7 +423,7 @@ export function UnifiedCampaignChat({ campaignId, campaignName, masterId }: Unif
                   size="icon"
                   className={cn(
                     "w-8 h-8 flex-shrink-0",
-                    activeTab === "private" && "bg-amber-500 hover:bg-amber-600"
+                    activeTab === "private" && "bg-gold hover:bg-gold/80"
                   )}
                 >
                   {sendMessage.isPending || isUploading ? (
@@ -445,7 +445,7 @@ export function UnifiedCampaignChat({ campaignId, campaignName, masterId }: Unif
           "w-12 h-12 rounded-full shadow-lg flex items-center justify-center transition-all relative",
           isExpanded 
             ? "bg-muted hover:bg-muted/80" 
-            : "bg-gradient-to-br from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
+            : "bg-gradient-to-br from-primary to-accent-foreground hover:from-primary/80 hover:to-accent-foreground/80"
         )}
         whileTap={{ scale: 0.95 }}
       >
@@ -455,7 +455,7 @@ export function UnifiedCampaignChat({ campaignId, campaignName, masterId }: Unif
           <MessageCircle className="w-5 h-5 text-white" />
         )}
         {!isExpanded && totalUnread > 0 && (
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive rounded-full text-[10px] text-destructive-foreground flex items-center justify-center font-bold">
             {totalUnread > 99 ? '99+' : totalUnread}
           </span>
         )}

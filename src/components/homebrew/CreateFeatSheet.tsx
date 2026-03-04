@@ -227,7 +227,7 @@ export function CreateFeatSheet({ open, onOpenChange, editingFeat }: CreateFeatS
           {/* Submit */}
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-orange-500 to-orange-700"
+            className="w-full bg-gradient-to-r from-primary to-primary/70"
             disabled={isLoading || !form.name || !form.description || !form.benefits}
           >
             {isLoading ? (

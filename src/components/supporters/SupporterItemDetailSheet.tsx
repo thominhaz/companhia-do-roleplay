@@ -153,31 +153,31 @@ export function SupporterItemDetailSheet({ item, open, onOpenChange }: Supporter
             {/* Stats */}
             <div className="flex flex-wrap gap-4">
               {item.damage && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-red-500/10 border border-red-500/30">
-                  <Zap className="w-4 h-4 text-red-400" />
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-destructive/10 border border-destructive/30">
+                  <Zap className="w-4 h-4 text-destructive" />
                   <div>
                     <p className="text-xs text-muted-foreground">Dano</p>
-                    <p className="text-sm font-semibold text-red-400">
+                    <p className="text-sm font-semibold text-destructive">
                       {item.damage} {item.damage_type}
                     </p>
                   </div>
                 </div>
               )}
               {item.ac_bonus && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-blue-500/10 border border-blue-500/30">
-                  <Shield className="w-4 h-4 text-blue-400" />
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-primary/10 border border-primary/30">
+                  <Shield className="w-4 h-4 text-primary" />
                   <div>
                     <p className="text-xs text-muted-foreground">Bônus de CA</p>
-                    <p className="text-sm font-semibold text-blue-400">+{item.ac_bonus}</p>
+                    <p className="text-sm font-semibold text-primary">+{item.ac_bonus}</p>
                   </div>
                 </div>
               )}
               {item.requires_attunement && (
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-purple-500/10 border border-purple-500/30">
-                  <Link2 className="w-4 h-4 text-purple-400" />
+                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-accent-foreground/10 border border-accent-foreground/30">
+                  <Link2 className="w-4 h-4 text-accent-foreground" />
                   <div>
                     <p className="text-xs text-muted-foreground">Sintonia</p>
-                    <p className="text-sm font-semibold text-purple-400">
+                    <p className="text-sm font-semibold text-accent-foreground">
                       {item.attunement_requirements || "Requerida"}
                     </p>
                   </div>
