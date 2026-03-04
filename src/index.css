@@ -135,43 +135,43 @@ html.no-transitions *::after {
   }
 
   .light {
-    --background: 30 15% 95%;
-    --foreground: 270 10% 15%;
-    --surface-0: 30 15% 95%;
-    --surface-1: 30 10% 100%;
-    --surface-2: 30 8% 97%;
-    --surface-3: 30 6% 100%;
-    --card: 30 10% 100%;
-    --card-foreground: 270 10% 15%;
-    --popover: 30 10% 100%;
-    --popover-foreground: 270 10% 15%;
-    --muted: 30 10% 92%;
-    --muted-foreground: 27 8% 44%;
-    --border: 30 10% 85%;
-    --input: 30 10% 85%;
-    --ring: 19 76% 45%;
+    --background: 0 0% 97%;
+    --foreground: 0 0% 12%;
+    --surface-0: 0 0% 97%;
+    --surface-1: 0 0% 100%;
+    --surface-2: 0 0% 98%;
+    --surface-3: 0 0% 100%;
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 12%;
+    --muted: 0 0% 94%;
+    --muted-foreground: 0 0% 45%;
+    --border: 0 0% 88%;
+    --input: 0 0% 88%;
+    --ring: 19 76% 53%;
     
-    --darker: 30 12% 92%;
-    --dark: 30 12% 94%;
-    --dark-panel: 30 10% 97%;
+    --darker: 0 0% 93%;
+    --dark: 0 0% 95%;
+    --dark-panel: 0 0% 98%;
     
-    /* Adjusted for light mode readability */
-    --primary: 19 76% 45%;
+    /* Primary mantém vibração no light */
+    --primary: 19 76% 53%;
     --primary-foreground: 0 0% 100%;
-    --secondary: 271 76% 45%;
+    --secondary: 271 76% 53%;
     --secondary-foreground: 0 0% 100%;
-    --accent: 20 90% 55%;
+    --accent: 20 90% 58%;
     --accent-foreground: 0 0% 100%;
-    --destructive: 355 72% 50%;
+    --destructive: 355 72% 55%;
     --destructive-foreground: 0 0% 100%;
     
-    /* Logo colors adjusted for light mode */
-    --solar-orange: 27 100% 50%;
+    /* Logo colors for light mode */
+    --solar-orange: 27 100% 55%;
     --cyan-blue: 195 80% 45%;
-    --cosmic-purple: 271 76% 45%;
-    --magenta-red: 359 85% 50%;
-    --gold: 27 100% 50%;
-    --crimson: 355 72% 50%;
+    --cosmic-purple: 271 76% 50%;
+    --magenta-red: 359 85% 55%;
+    --gold: 27 100% 55%;
+    --crimson: 355 72% 55%;
     
     /* Light mode shadows */
     --shadow-sm: 
@@ -187,17 +187,17 @@ html.no-transitions *::after {
       0 8px 24px -4px hsl(0 0% 0% / 0.1),
       0 16px 48px -8px hsl(0 0% 0% / 0.08);
     --shadow-glow-primary: 
-      inset 0 1px 0 0 hsl(19 76% 45% / 0.1),
-      0 4px 16px -4px hsl(19 76% 45% / 0.15),
+      inset 0 1px 0 0 hsl(19 76% 53% / 0.1),
+      0 4px 16px -4px hsl(19 76% 53% / 0.15),
       0 8px 32px -8px hsl(0 0% 0% / 0.08);
     --shadow-neon: 0 4px 12px hsl(0 0% 0% / 0.1);
     --shadow-card: var(--shadow-sm);
     --shadow-elevated: var(--shadow-lg);
-    --shadow-solar: 0 4px 20px hsl(19 76% 45% / 0.2);
+    --shadow-solar: 0 4px 20px hsl(19 76% 53% / 0.2);
     
     /* Light gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(19 76% 45%), hsl(271 76% 45%));
-    --gradient-card: linear-gradient(180deg, hsl(30 10% 100%), hsl(30 15% 97%));
+    --gradient-primary: linear-gradient(135deg, hsl(19 76% 53%), hsl(271 76% 53%));
+    --gradient-card: linear-gradient(180deg, hsl(0 0% 100%), hsl(0 0% 98%));
   }
 
   /* ========== LIGHT MODE FOR PREMIUM THEMES ========== */
