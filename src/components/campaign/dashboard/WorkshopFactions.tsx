@@ -19,11 +19,11 @@ interface WorkshopFactionsProps {
 }
 
 const INFLUENCE_COLORS: Record<string, string> = {
-  local: "bg-blue-500/20 text-blue-400",
-  regional: "bg-purple-500/20 text-purple-400",
-  national: "bg-orange-500/20 text-orange-400",
-  continental: "bg-red-500/20 text-red-400",
-  global: "bg-yellow-500/20 text-yellow-400",
+  local: "bg-primary/20 text-primary",
+  regional: "bg-secondary/20 text-secondary",
+  national: "bg-gold/20 text-gold",
+  continental: "bg-destructive/20 text-destructive",
+  global: "bg-accent/40 text-accent-foreground",
 };
 
 export function WorkshopFactions({ campaign }: WorkshopFactionsProps) {
