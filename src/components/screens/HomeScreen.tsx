@@ -163,7 +163,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   );
 
   return (
-    <div className="min-h-screen bg-surface-0 pb-24">
+    <div className="min-h-screen bg-surface-0 pb-24 md:pb-8">
       <AppHeader
         rightContent={
           <div className="flex items-center gap-2">
@@ -208,10 +208,10 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       </AppHeader>
 
       {/* Hero Grid */}
-      <section className="px-4 sm:px-5 mt-4 sm:mt-6">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:h-48">
+      <section className="px-4 sm:px-5 md:px-8 lg:px-12 mt-4 sm:mt-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4">
           {/* Active Character Card */}
-          <div className="sm:col-span-2 bg-gradient-to-br from-cosmic-purple to-cosmic-purple/70 rounded-2xl p-4 relative overflow-hidden shadow-depth-md min-h-[140px] sm:min-h-0">
+          <div className="sm:col-span-2 md:col-span-3 bg-gradient-to-br from-cosmic-purple to-cosmic-purple/70 rounded-2xl p-4 md:p-6 relative overflow-hidden shadow-depth-md min-h-[140px] sm:min-h-[180px]">
             <div className="absolute top-0 right-0 w-32 h-32 bg-foreground opacity-5 rounded-full -mr-10 -mt-10 parallax-float" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-foreground opacity-5 rounded-full -ml-8 -mb-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col justify-between">
@@ -267,7 +267,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </div>
 
           {/* Next Session Card */}
-          <div className="sm:col-span-1 bg-gradient-to-br from-magenta-red to-magenta-red/70 rounded-2xl p-3 relative overflow-hidden shadow-depth-md min-h-[120px] sm:min-h-0">
+          <div className="sm:col-span-1 bg-gradient-to-br from-magenta-red to-magenta-red/70 rounded-2xl p-3 md:p-4 relative overflow-hidden shadow-depth-md min-h-[120px] sm:min-h-[180px]">
             <div className="absolute top-0 right-0 w-20 h-20 bg-foreground opacity-5 rounded-full -mr-8 -mt-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col">
               {loadingSessions ? (
@@ -321,9 +321,9 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       </section>
 
       {/* Quick Actions */}
-      <section className="px-4 sm:px-5 mt-6 sm:mt-8">
+      <section className="px-4 sm:px-5 md:px-8 lg:px-12 mt-6 sm:mt-8 max-w-6xl mx-auto">
         <h2 className="text-sm font-semibold text-muted-foreground mb-3 sm:mb-4">AÇÕES RÁPIDAS</h2>
-        <div className="grid grid-cols-4 gap-2 sm:gap-4 stagger-fast">
+        <div className="grid grid-cols-4 md:grid-cols-8 gap-2 sm:gap-4 stagger-fast">
           {quickActions.map((action) => (
             <button 
               key={action.id} 
@@ -394,8 +394,8 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       </section>
 
       {/* Recents */}
-      <section className="mt-6 sm:mt-8 mb-6">
-        <div className="px-4 sm:px-5 flex items-center justify-between mb-3 sm:mb-4">
+      <section className="mt-6 sm:mt-8 mb-6 max-w-6xl mx-auto">
+        <div className="px-4 sm:px-5 md:px-8 lg:px-12 flex items-center justify-between mb-3 sm:mb-4">
           <h2 className="text-sm font-semibold text-muted-foreground">RECENTES</h2>
           <button 
             onClick={() => onNavigate?.("characters")}
@@ -413,12 +413,12 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
             <p className="text-sm text-muted-foreground">Nenhum item recente</p>
           </div>
         ) : (
-          <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex gap-2.5 sm:gap-3 px-4 sm:px-5 pb-2 stagger-fast">
+          <div className="overflow-x-auto scrollbar-hide md:overflow-visible">
+            <div className="flex md:grid md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3 px-4 sm:px-5 md:px-8 lg:px-12 pb-2 stagger-fast">
               {recentItems.map((item) => (
                 <div 
                   key={`${item.type}-${item.id}`}
-                  className="flex-shrink-0 w-36 sm:w-40 bg-surface-1 border border-border/30 rounded-xl p-2.5 sm:p-3 shadow-depth-sm transition-all duration-300 hover:shadow-depth-md hover:-translate-y-1 hover:border-primary/20 cursor-pointer"
+                  className="flex-shrink-0 w-36 sm:w-40 md:w-full bg-surface-1 border border-border/30 rounded-xl p-2.5 sm:p-3 shadow-depth-sm transition-all duration-300 hover:shadow-depth-md hover:-translate-y-1 hover:border-primary/20 cursor-pointer"
                 >
                   <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-2 sm:mb-3`}>
                     <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />

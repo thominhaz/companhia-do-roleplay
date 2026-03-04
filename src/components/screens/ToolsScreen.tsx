@@ -227,7 +227,7 @@ export function ToolsScreen() {
   }
   if (activeTool === "monsters") {
     return (
-       <div className="min-h-screen bg-surface-0 pb-24">
+       <div className="min-h-screen bg-surface-0 pb-24 md:pb-8">
         <AppHeader
           title="Bestiário"
           subtitle="Compêndio de monstros SRD"
@@ -266,7 +266,7 @@ export function ToolsScreen() {
   }
   if (activeTool === "supporter-gallery") {
     return (
-      <div className="min-h-screen bg-surface-0 pb-24">
+      <div className="min-h-screen bg-surface-0 pb-24 md:pb-8">
         <AppHeader
           title="Galeria de Apoiadores"
           subtitle="Conteúdo da comunidade"
@@ -287,7 +287,7 @@ export function ToolsScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-surface-0 pb-24">
+    <div className="min-h-screen bg-surface-0 pb-24 md:pb-8">
       <AppHeader
         title="Ferramentas"
         subtitle="Compêndio e utilitários"
@@ -315,13 +315,13 @@ export function ToolsScreen() {
       </AppHeader>
 
       {/* Content */}
-      <main className="px-3 sm:px-4 py-3 sm:py-4 max-w-lg mx-auto space-y-5 sm:space-y-6">
+      <main className="px-3 sm:px-4 md:px-8 lg:px-12 py-3 sm:py-4 max-w-6xl mx-auto space-y-5 sm:space-y-6">
         {/* Featured Tools */}
         <section>
           <h2 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 sm:mb-3">
             Destaques
           </h2>
-          <div className="grid grid-cols-2 gap-2.5 sm:gap-3 stagger-fast">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-3 stagger-fast">
             {featuredTools.map((tool, index) => {
               const Icon = tool.icon;
               const isLockedVisitante = tool.requiresAccess && isVisitante;
@@ -361,7 +361,7 @@ export function ToolsScreen() {
           <h2 className="text-xs sm:text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-2.5 sm:mb-3">
             Compêndio
           </h2>
-          <div className="space-y-1.5 sm:space-y-2 stagger-container">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5 sm:gap-2 stagger-container">
             {otherTools.map((tool, index) => {
               const Icon = tool.icon;
               const isLockedVisitante = tool.requiresAccess && isVisitante;
