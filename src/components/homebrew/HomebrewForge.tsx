@@ -62,14 +62,14 @@ interface HomebrewForgeProps {
 }
 
 const contentTypes: { type: HomebrewContentType; label: string; icon: React.ElementType; color: string }[] = [
-  { type: 'spell', label: 'Magias', icon: Sparkles, color: 'from-purple-500 to-purple-700' },
-  { type: 'item', label: 'Itens', icon: Gem, color: 'from-amber-500 to-amber-700' },
-  { type: 'race', label: 'Raças', icon: Users, color: 'from-blue-500 to-blue-700' },
-  { type: 'class', label: 'Classes', icon: Sword, color: 'from-red-500 to-red-700' },
-  { type: 'subclass', label: 'Subclasses', icon: Star, color: 'from-pink-500 to-pink-700' },
-  { type: 'monster', label: 'Monstros', icon: Skull, color: 'from-gray-500 to-gray-700' },
-  { type: 'background', label: 'Antecedentes', icon: BookOpen, color: 'from-green-500 to-green-700' },
-  { type: 'feat', label: 'Talentos', icon: Crown, color: 'from-orange-500 to-orange-700' },
+  { type: 'spell', label: 'Magias', icon: Sparkles, color: 'from-primary to-primary/70' },
+  { type: 'item', label: 'Itens', icon: Gem, color: 'from-gold to-gold/70' },
+  { type: 'race', label: 'Raças', icon: Users, color: 'from-primary to-primary/70' },
+  { type: 'class', label: 'Classes', icon: Sword, color: 'from-destructive to-destructive/70' },
+  { type: 'subclass', label: 'Subclasses', icon: Star, color: 'from-accent to-accent/70' },
+  { type: 'monster', label: 'Monstros', icon: Skull, color: 'from-muted-foreground to-muted-foreground/70' },
+  { type: 'background', label: 'Antecedentes', icon: BookOpen, color: 'from-secondary to-secondary/70' },
+  { type: 'feat', label: 'Talentos', icon: Crown, color: 'from-gold to-gold/70' },
 ];
 
 const spellLevelOptions = [
