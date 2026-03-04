@@ -241,13 +241,13 @@ export function WeaponsArmorList({ onBack }: WeaponsArmorListProps) {
                       )}
                       style={{ animationDelay: `${index * 0.02}s` }}
                     >
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 flex items-center justify-center flex-shrink-0">
-                        <Shield className="w-5 h-5 text-emerald-400" />
+                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-secondary/20 to-secondary/10 flex items-center justify-center flex-shrink-0">
+                        <Shield className="w-5 h-5 text-secondary" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="text-sm font-semibold text-foreground">{armor.name}</h3>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                          <span className="text-emerald-400 font-medium">
+                          <span className="text-secondary font-medium">
                             CA {getArmorClassDisplay(armor.armor_class)}
                           </span>
                           <span>•</span>
@@ -369,7 +369,7 @@ export function WeaponsArmorList({ onBack }: WeaponsArmorListProps) {
                   <div className="grid grid-cols-3 gap-3">
                     <div className="glass rounded-xl p-3 text-center">
                       <p className="text-xs text-muted-foreground">Classe de Armadura</p>
-                      <p className="text-lg font-bold text-emerald-400">
+                      <p className="text-lg font-bold text-secondary">
                         {getArmorClassDisplay(selectedArmor.armor_class)}
                       </p>
                     </div>
@@ -393,7 +393,7 @@ export function WeaponsArmorList({ onBack }: WeaponsArmorListProps) {
                     )}
                     <div className="glass rounded-xl p-3">
                       <p className="text-xs text-muted-foreground">Furtividade</p>
-                      <p className={cn("text-lg font-bold", selectedArmor.stealth_disadvantage ? "text-destructive" : "text-emerald-400")}>
+                      <p className={cn("text-lg font-bold", selectedArmor.stealth_disadvantage ? "text-destructive" : "text-secondary")}>
                         {selectedArmor.stealth_disadvantage ? "Desvantagem" : "Normal"}
                       </p>
                     </div>

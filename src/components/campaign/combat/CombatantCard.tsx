@@ -71,17 +71,17 @@ export function CombatantCard({
   }
 
   const getHpColor = () => {
-    if (isDead) return "bg-gray-500";
-    if (isCritical) return "bg-red-500";
-    if (isLow) return "bg-yellow-500";
-    return "bg-green-500";
+    if (isDead) return "bg-muted-foreground";
+    if (isCritical) return "bg-destructive";
+    if (isLow) return "bg-gold";
+    return "bg-secondary";
   };
 
   const getHpGradient = () => {
-    if (isDead) return "from-gray-600 to-gray-700";
-    if (isCritical) return "from-red-500 to-red-600";
-    if (isLow) return "from-yellow-500 to-orange-500";
-    return "from-green-500 to-emerald-600";
+    if (isDead) return "from-muted-foreground to-muted-foreground/80";
+    if (isCritical) return "from-destructive to-destructive/80";
+    if (isLow) return "from-gold to-gold/80";
+    return "from-secondary to-secondary/80";
   };
 
   return (
@@ -98,15 +98,15 @@ export function CombatantCard({
           ? "ring-2 ring-primary ring-offset-2 ring-offset-background shadow-lg shadow-primary/20" 
           : "hover:ring-1 hover:ring-primary/30",
         isDead && "opacity-60",
-        isOwnCombatant && !isMaster && "ring-2 ring-blue-500/50"
+        isOwnCombatant && !isMaster && "ring-2 ring-primary/50"
       )}
     >
       {/* Background gradient based on type */}
       <div className={cn(
         "absolute inset-0 bg-gradient-to-br opacity-100 transition-opacity",
         combatant.is_player 
-          ? isCurrentTurn ? "from-blue-600/30 to-cyan-600/20" : "from-blue-900/40 to-cyan-900/20"
-          : isCurrentTurn ? "from-red-600/30 to-orange-600/20" : "from-red-900/40 to-orange-900/20"
+          ? isCurrentTurn ? "from-primary/30 to-primary/10" : "from-primary/20 to-primary/5"
+          : isCurrentTurn ? "from-destructive/30 to-destructive/10" : "from-destructive/20 to-destructive/5"
       )} />
 
       {/* Pulsing current turn effect */}
@@ -114,7 +114,7 @@ export function CombatantCard({
         <motion.div
           className={cn(
             "absolute inset-0 bg-gradient-to-r",
-            combatant.is_player ? "from-blue-500/20 to-transparent" : "from-red-500/20 to-transparent"
+            combatant.is_player ? "from-primary/20 to-transparent" : "from-destructive/20 to-transparent"
           )}
           animate={{ opacity: [0.3, 0.6, 0.3] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -131,8 +131,8 @@ export function CombatantCard({
             className={cn(
               "absolute top-2 right-2 z-20 flex items-center gap-1 px-3 py-1 rounded-full text-sm font-bold shadow-lg",
               hpChange.type === 'damage' 
-                ? "bg-red-500 text-white" 
-                : "bg-green-500 text-white"
+                ? "bg-destructive text-destructive-foreground" 
+                : "bg-secondary text-secondary-foreground"
             )}
           >
             {hpChange.type === 'damage' ? (
@@ -157,15 +157,15 @@ export function CombatantCard({
             className={cn(
               "relative flex-shrink-0 w-16 h-16 rounded-2xl flex flex-col items-center justify-center border-2 transition-all",
               combatant.is_player 
-                ? "bg-gradient-to-br from-blue-500/30 to-blue-600/20 border-blue-500/50" 
-                : "bg-gradient-to-br from-red-500/30 to-red-600/20 border-red-500/50"
+                ? "bg-gradient-to-br from-primary/30 to-primary/10 border-primary/50" 
+                : "bg-gradient-to-br from-destructive/30 to-destructive/10 border-destructive/50"
             )}
             animate={isCurrentTurn ? { scale: [1, 1.05, 1] } : {}}
             transition={{ duration: 1.5, repeat: isCurrentTurn ? Infinity : 0 }}
           >
             <span className={cn(
               "text-2xl font-bold",
-              combatant.is_player ? "text-blue-400" : "text-red-400"
+              combatant.is_player ? "text-primary" : "text-destructive"
             )}>
               {combatant.initiative}
             </span>
@@ -187,9 +187,9 @@ export function CombatantCard({
             <div className="flex items-center gap-2 mb-2">
               <h4 className="font-bold text-lg truncate">{combatant.name}</h4>
               {combatant.is_player ? (
-                <User className="w-4 h-4 text-blue-400 flex-shrink-0" />
+                <User className="w-4 h-4 text-primary flex-shrink-0" />
               ) : (
-                <Skull className="w-4 h-4 text-red-400 flex-shrink-0" />
+                <Skull className="w-4 h-4 text-destructive flex-shrink-0" />
               )}
               {isCurrentTurn && (
                 <motion.span
@@ -214,7 +214,7 @@ export function CombatantCard({
               {/* Critical pulse effect */}
               {isCritical && (
                 <motion.div
-                  className="absolute inset-0 bg-red-500/40"
+                  className="absolute inset-0 bg-destructive/40"
                   animate={{ opacity: [0.2, 0.5, 0.2] }}
                   transition={{ duration: 0.8, repeat: Infinity }}
                 />
@@ -237,8 +237,8 @@ export function CombatantCard({
               {/* Death overlay */}
               {isDead && (
                 <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                  <Skull className="w-5 h-5 text-gray-400" />
-                  <span className="ml-2 text-sm font-bold text-gray-400">Caído</span>
+                  <Skull className="w-5 h-5 text-muted-foreground" />
+                   <span className="ml-2 text-sm font-bold text-muted-foreground">Caído</span>
                 </div>
               )}
             </div>
@@ -307,7 +307,7 @@ export function CombatantCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 bg-green-500/20 hover:bg-green-500/40 text-green-400 rounded-xl"
+                  className="h-9 w-9 bg-secondary/20 hover:bg-secondary/40 text-secondary rounded-xl"
                   onClick={() => onHpChange(combatant, 'heal')}
                 >
                   <Plus className="w-4 h-4" />
@@ -315,7 +315,7 @@ export function CombatantCard({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 bg-red-500/20 hover:bg-red-500/40 text-red-400 rounded-xl"
+                  className="h-9 w-9 bg-destructive/20 hover:bg-destructive/40 text-destructive rounded-xl"
                   onClick={() => onHpChange(combatant, 'damage')}
                 >
                   <Minus className="w-4 h-4" />

@@ -24,7 +24,7 @@ const CONDITIONS: Condition[] = [
     name: "Cego",
     name_en: "Blinded",
     icon: "👁️",
-    color: "from-slate-600 to-slate-700",
+    color: "from-muted-foreground/60 to-muted-foreground/80",
     description: "Uma criatura cega não pode ver e falha automaticamente em qualquer teste de habilidade que exija visão.",
     effects: [
       "Falha automaticamente em testes que requerem visão",
@@ -37,7 +37,7 @@ const CONDITIONS: Condition[] = [
     name: "Enfeitiçado",
     name_en: "Charmed",
     icon: "💕",
-    color: "from-pink-500 to-pink-600",
+    color: "from-secondary to-secondary/80",
     description: "Uma criatura enfeitiçada não pode atacar quem a enfeitiçou ou alvejá-lo com habilidades ou efeitos mágicos nocivos.",
     effects: [
       "Não pode atacar ou prejudicar quem a enfeitiçou",
@@ -49,7 +49,7 @@ const CONDITIONS: Condition[] = [
     name: "Surdo",
     name_en: "Deafened",
     icon: "🔇",
-    color: "from-amber-600 to-amber-700",
+    color: "from-gold to-gold/80",
     description: "Uma criatura surda não pode ouvir e falha automaticamente em qualquer teste de habilidade que exija audição.",
     effects: ["Falha automaticamente em testes que requerem audição"],
   },
@@ -58,7 +58,7 @@ const CONDITIONS: Condition[] = [
     name: "Amedrontado",
     name_en: "Frightened",
     icon: "😨",
-    color: "from-purple-600 to-purple-700",
+    color: "from-accent to-accent/80",
     description: "Uma criatura amedrontada tem desvantagem em testes de habilidade e jogadas de ataque enquanto a fonte de seu medo estiver em sua linha de visão.",
     effects: [
       "Desvantagem em testes de habilidade e ataques enquanto vê a fonte do medo",
@@ -70,7 +70,7 @@ const CONDITIONS: Condition[] = [
     name: "Agarrado",
     name_en: "Grappled",
     icon: "🤝",
-    color: "from-orange-600 to-orange-700",
+    color: "from-gold/80 to-gold/60",
     description: "A velocidade de uma criatura agarrada se torna 0, e ela não pode se beneficiar de nenhum bônus de velocidade.",
     effects: [
       "Velocidade se torna 0",
@@ -84,7 +84,7 @@ const CONDITIONS: Condition[] = [
     name: "Incapacitado",
     name_en: "Incapacitated",
     icon: "💫",
-    color: "from-red-600 to-red-700",
+    color: "from-destructive to-destructive/80",
     description: "Uma criatura incapacitada não pode realizar ações ou reações.",
     effects: ["Não pode realizar ações", "Não pode realizar reações"],
   },
@@ -93,7 +93,7 @@ const CONDITIONS: Condition[] = [
     name: "Invisível",
     name_en: "Invisible",
     icon: "👻",
-    color: "from-cyan-500 to-cyan-600",
+    color: "from-primary to-primary/80",
     description: "Uma criatura invisível é impossível de ser vista sem o auxílio de magia ou um sentido especial.",
     effects: [
       "Considerada oculta para propósitos de se esconder",
@@ -107,7 +107,7 @@ const CONDITIONS: Condition[] = [
     name: "Paralisado",
     name_en: "Paralyzed",
     icon: "⚡",
-    color: "from-yellow-500 to-yellow-600",
+    color: "from-gold to-gold/80",
     description: "Uma criatura paralisada está incapacitada e não pode se mover ou falar.",
     effects: [
       "Incapacitada (não pode agir ou reagir)",
@@ -122,7 +122,7 @@ const CONDITIONS: Condition[] = [
     name: "Petrificado",
     name_en: "Petrified",
     icon: "🗿",
-    color: "from-stone-500 to-stone-600",
+    color: "from-muted-foreground to-muted-foreground/80",
     description: "Uma criatura petrificada é transformada, junto com objetos não mágicos que esteja vestindo ou carregando, em uma substância sólida inanimada.",
     effects: [
       "Peso aumenta 10 vezes",
@@ -140,7 +140,7 @@ const CONDITIONS: Condition[] = [
     name: "Envenenado",
     name_en: "Poisoned",
     icon: "☠️",
-    color: "from-green-600 to-green-700",
+    color: "from-secondary to-secondary/80",
     description: "Uma criatura envenenada tem desvantagem em jogadas de ataque e testes de habilidade.",
     effects: [
       "Desvantagem em jogadas de ataque",
@@ -152,7 +152,7 @@ const CONDITIONS: Condition[] = [
     name: "Caído",
     name_en: "Prone",
     icon: "🛌",
-    color: "from-amber-700 to-amber-800",
+    color: "from-gold/80 to-gold/60",
     description: "Uma criatura caída só pode se arrastar a menos que se levante, terminando a condição.",
     effects: [
       "Só pode se mover rastejando",
@@ -167,7 +167,7 @@ const CONDITIONS: Condition[] = [
     name: "Impedido",
     name_en: "Restrained",
     icon: "⛓️",
-    color: "from-gray-600 to-gray-700",
+    color: "from-muted-foreground/60 to-muted-foreground/80",
     description: "A velocidade de uma criatura impedida se torna 0, e ela não pode se beneficiar de nenhum bônus de velocidade.",
     effects: [
       "Velocidade se torna 0",
@@ -181,7 +181,7 @@ const CONDITIONS: Condition[] = [
     name: "Atordoado",
     name_en: "Stunned",
     icon: "💥",
-    color: "from-blue-600 to-blue-700",
+    color: "from-primary to-primary/80",
     description: "Uma criatura atordoada está incapacitada, não pode se mover e só pode falar balbuciando.",
     effects: [
       "Incapacitada (não pode agir ou reagir)",
@@ -196,7 +196,7 @@ const CONDITIONS: Condition[] = [
     name: "Inconsciente",
     name_en: "Unconscious",
     icon: "😴",
-    color: "from-indigo-600 to-indigo-700",
+    color: "from-accent to-accent/80",
     description: "Uma criatura inconsciente está incapacitada, não pode se mover ou falar, e está inconsciente do que acontece ao redor.",
     effects: [
       "Incapacitada (não pode agir ou reagir)",
@@ -213,7 +213,7 @@ const CONDITIONS: Condition[] = [
     name: "Exaustão",
     name_en: "Exhaustion",
     icon: "😩",
-    color: "from-red-700 to-red-800",
+    color: "from-destructive to-destructive/80",
     description: "Exaustão é medida em seis níveis. Um efeito pode dar a uma criatura um ou mais níveis de exaustão.",
     effects: [
       "Nível 1: Desvantagem em testes de habilidade",
