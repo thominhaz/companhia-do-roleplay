@@ -53,64 +53,13 @@ const CAMPAIGN_ICON_MAP: Record<string, React.ComponentType<{ className?: string
   sparkles: Sparkles,
 };
 
-const THEME_GRADIENTS: Record<string, { gradient: string; iconBg: string; textColor: string; buttonBg: string; border: string }> = {
-  emerald: {
-    gradient: "from-emerald-900 to-emerald-700",
-    iconBg: "bg-emerald-500",
-    textColor: "text-emerald-200",
-    buttonBg: "bg-emerald-600/40",
-    border: "border-emerald-600/40",
-  },
-  orange: {
-    gradient: "from-orange-900 to-red-700",
-    iconBg: "bg-orange-500",
-    textColor: "text-orange-200",
-    buttonBg: "bg-orange-600/40",
-    border: "border-orange-600/40",
-  },
-  blue: {
-    gradient: "from-blue-900 to-blue-700",
-    iconBg: "bg-blue-500",
-    textColor: "text-blue-200",
-    buttonBg: "bg-blue-600/40",
-    border: "border-blue-600/40",
-  },
-  purple: {
-    gradient: "from-purple-900 to-purple-700",
-    iconBg: "bg-purple-500",
-    textColor: "text-purple-200",
-    buttonBg: "bg-purple-600/40",
-    border: "border-purple-600/40",
-  },
-  red: {
-    gradient: "from-red-900 to-red-700",
-    iconBg: "bg-red-500",
-    textColor: "text-red-200",
-    buttonBg: "bg-red-600/40",
-    border: "border-red-600/40",
-  },
-  amber: {
-    gradient: "from-amber-800 to-yellow-700",
-    iconBg: "bg-amber-500",
-    textColor: "text-amber-200",
-    buttonBg: "bg-amber-600/40",
-    border: "border-amber-600/40",
-  },
-  teal: {
-    gradient: "from-teal-900 to-teal-700",
-    iconBg: "bg-teal-500",
-    textColor: "text-teal-200",
-    buttonBg: "bg-teal-600/40",
-    border: "border-teal-600/40",
-  },
-  rose: {
-    gradient: "from-rose-900 to-pink-700",
-    iconBg: "bg-rose-500",
-    textColor: "text-rose-200",
-    buttonBg: "bg-rose-600/40",
-    border: "border-rose-600/40",
-  },
+const THEME_STYLES = {
+  default: { border: "border-primary/30", bg: "bg-primary/5", iconBg: "bg-primary/20", iconText: "text-primary", textMuted: "text-muted-foreground", buttonBg: "bg-primary/10 text-primary" },
 };
+
+function getThemeStyle() {
+  return THEME_STYLES.default;
+}
 
 function MasterCampaignCard({ 
   campaign, 
@@ -133,12 +82,7 @@ function MasterCampaignCard({
 }) {
   const isActive = !!nextSession;
   
-  // Determine theme: use custom if set, otherwise auto-detect based on status
-  const themeColor = campaign.theme_color && campaign.theme_color !== 'auto' 
-    ? campaign.theme_color 
-    : (isActive ? "emerald" : "orange");
-  
-  const theme = THEME_GRADIENTS[themeColor] || THEME_GRADIENTS.emerald;
+  const theme = getThemeStyle();
   
   // Get icon component
   const iconId = campaign.icon || 'wand';
@@ -163,24 +107,24 @@ function MasterCampaignCard({
 
   return (
     <div 
-      className={cn("bg-gradient-to-br rounded-2xl p-5 relative overflow-hidden cursor-pointer shadow-depth-md hover:shadow-depth-lg hover:scale-[1.01] transition-all", theme.gradient)}
+      className={cn("bg-surface-1/80 backdrop-blur-md border border-border/30 rounded-2xl p-5 relative overflow-hidden cursor-pointer shadow-depth-sm hover:shadow-depth-md hover:scale-[1.01] transition-all")}
       onClick={onClick}
     >
-      <div className="absolute top-0 right-0 w-40 h-40 bg-white opacity-5 rounded-full -mr-16 -mt-16" />
-      <div className="absolute bottom-0 left-0 w-32 h-32 bg-white opacity-5 rounded-full -ml-12 -mb-12" />
+      <div className="absolute top-0 right-0 w-40 h-40 bg-primary opacity-[0.03] rounded-full -mr-16 -mt-16" />
+      <div className="absolute bottom-0 left-0 w-32 h-32 bg-primary opacity-[0.03] rounded-full -ml-12 -mb-12" />
       
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">
-            <div className={cn("w-14 h-14 rounded-xl flex items-center justify-center text-2xl", theme.iconBg)}>
-              <IconComponent className="w-7 h-7 text-white" />
+            <div className={cn("w-14 h-14 rounded-xl border flex items-center justify-center text-2xl", theme.border, theme.iconBg)}>
+              <IconComponent className={cn("w-7 h-7", theme.iconText)} />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <h3 className="text-lg font-bold text-foreground">{campaign.name}</h3>
-                <Crown className="w-4 h-4 text-amber-400" />
+                <Crown className="w-4 h-4 text-primary" />
               </div>
-              <p className={cn("text-sm", theme.textColor)}>
+              <p className="text-sm text-muted-foreground">
                 D&D 5e • {playerCount} jogadores
               </p>
             </div>
@@ -188,10 +132,10 @@ function MasterCampaignCard({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <button 
-                className="w-8 h-8 rounded-lg bg-black/20 flex items-center justify-center"
+                className="w-8 h-8 rounded-lg bg-muted flex items-center justify-center"
                 onClick={(e) => e.stopPropagation()}
               >
-                <MoreVertical className={cn("w-4 h-4", theme.textColor)} />
+                <MoreVertical className="w-4 h-4 text-muted-foreground" />
               </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
@@ -221,45 +165,45 @@ function MasterCampaignCard({
         </div>
         
         <div className="grid grid-cols-2 gap-2 mb-4">
-          <div className="bg-black/20 rounded-lg p-2.5">
-            <p className={cn("text-xs mb-0.5", theme.textColor)}>Jogadores</p>
+          <div className="bg-muted/50 rounded-lg p-2.5">
+            <p className="text-xs text-muted-foreground mb-0.5">Jogadores</p>
             <p className="text-xl font-bold text-foreground">{playerCount}</p>
           </div>
-          <div className="bg-black/20 rounded-lg p-2.5">
-            <p className={cn("text-xs mb-0.5", theme.textColor)}>Status</p>
+          <div className="bg-muted/50 rounded-lg p-2.5">
+            <p className="text-xs text-muted-foreground mb-0.5">Status</p>
             <p className="text-xs font-bold text-foreground">{isActive ? "Ativa" : "Pausa"}</p>
           </div>
         </div>
 
         <div className="flex gap-2 mb-4">
           <button 
-            className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", theme.buttonBg)}
+            className="flex-1 py-2 rounded-lg text-xs font-medium bg-primary/10 text-primary border border-primary/20"
             onClick={(e) => { e.stopPropagation(); onChatClick(); }}
           >
             <MessageCircle className="w-3 h-3 inline mr-2" />Chat
           </button>
           <button 
-            className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", theme.buttonBg)}
+            className="flex-1 py-2 rounded-lg text-xs font-medium bg-primary/10 text-primary border border-primary/20"
             onClick={(e) => { e.stopPropagation(); onNotesClick(); }}
           >
             <StickyNote className="w-3 h-3 inline mr-2" />Notas
           </button>
           <button 
-            className={cn("flex-1 py-2 rounded-lg text-xs font-medium text-foreground", theme.buttonBg)}
+            className="flex-1 py-2 rounded-lg text-xs font-medium bg-primary/10 text-primary border border-primary/20"
             onClick={(e) => { e.stopPropagation(); onAgendaClick(); }}
           >
             <Calendar className="w-3 h-3 inline mr-2" />Agenda
           </button>
         </div>
         
-        <div className={cn("flex items-center justify-between pt-3 border-t", theme.border)}>
+        <div className="flex items-center justify-between pt-3 border-t border-border/30">
           <div className="flex items-center gap-2">
-            <Calendar className={cn("w-4 h-4", theme.textColor)} />
-            <span className={cn("text-xs", theme.textColor)}>
+            <Calendar className="w-4 h-4 text-muted-foreground" />
+            <span className="text-xs text-muted-foreground">
               {nextSession ? `Próxima: ${formatNextSession(nextSession)}` : `Atualizado: ${formatLastUpdate(campaign.updated_at)}`}
             </span>
           </div>
-          <button className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-white text-gray-900">
+          <button className="px-3 py-1.5 rounded-lg text-xs font-semibold border border-primary/60 bg-transparent text-primary hover:bg-primary hover:text-primary-foreground transition-colors">
             Gerenciar
           </button>
         </div>
@@ -269,21 +213,14 @@ function MasterCampaignCard({
 }
 
 function PlayerCampaignCard({ campaign, masterName, onClick, onChatClick, onNotesClick, onCombatClick, onLeaveClick }: { campaign: CampaignDB; masterName?: string; onClick: () => void; onChatClick: () => void; onNotesClick: () => void; onCombatClick: () => void; onLeaveClick: () => void }) {
-  const colors = {
-    iconBg: "from-blue-600 to-blue-800",
-    buttonBg: "bg-blue-600/20",
-    buttonText: "text-blue-400",
-    nextSession: "text-blue-400",
-  };
-
   return (
     <div 
-      className="bg-dark rounded-xl p-4 border border-border cursor-pointer hover:border-primary/50 transition-colors"
+      className="bg-surface-1/80 backdrop-blur-md rounded-xl p-4 border border-border/30 cursor-pointer hover:border-primary/30 transition-colors shadow-depth-sm"
       onClick={onClick}
     >
       <div className="flex items-center gap-3 mb-3">
-        <div className={cn("w-12 h-12 rounded-lg bg-gradient-to-br flex items-center justify-center", colors.iconBg)}>
-          <Wand2 className="w-5 h-5 text-white" />
+        <div className="w-12 h-12 rounded-lg border border-secondary/40 bg-secondary/10 flex items-center justify-center">
+          <Wand2 className="w-5 h-5 text-secondary" />
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
@@ -329,26 +266,26 @@ function PlayerCampaignCard({ campaign, masterName, onClick, onChatClick, onNote
       
       <div className="flex gap-2 mb-3">
         <button 
-          className={cn("flex-1 py-2 rounded-lg text-xs font-medium", colors.buttonBg, colors.buttonText)}
+          className="flex-1 py-2 rounded-lg text-xs font-medium bg-secondary/10 text-secondary border border-secondary/20"
           onClick={(e) => { e.stopPropagation(); onChatClick(); }}
         >
           <MessageCircle className="w-3 h-3 inline mr-2" />Chat
         </button>
         <button 
-          className={cn("flex-1 py-2 rounded-lg text-xs font-medium", colors.buttonBg, colors.buttonText)}
+          className="flex-1 py-2 rounded-lg text-xs font-medium bg-secondary/10 text-secondary border border-secondary/20"
           onClick={(e) => { e.stopPropagation(); onNotesClick(); }}
         >
           <StickyNote className="w-3 h-3 inline mr-2" />Notas
         </button>
         <button 
-          className={cn("flex-1 py-2 rounded-lg text-xs font-medium", colors.buttonBg, colors.buttonText)}
+          className="flex-1 py-2 rounded-lg text-xs font-medium bg-secondary/10 text-secondary border border-secondary/20"
           onClick={(e) => { e.stopPropagation(); onCombatClick(); }}
         >
           <Swords className="w-3 h-3 inline mr-2" />Combate
         </button>
       </div>
 
-      <div className="flex items-center gap-4 pt-3 border-t border-border">
+      <div className="flex items-center gap-4 pt-3 border-t border-border/30">
         <div className="flex items-center gap-1.5">
           <Calendar className="w-3 h-3 text-muted-foreground" />
           <span className="text-xs text-muted-foreground">

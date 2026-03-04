@@ -63,18 +63,18 @@ const classIcons: Record<string, typeof Shield> = {
 };
 
 const classGradients: Record<string, string> = {
-  'Guerreiro': 'from-purple-900 to-purple-700',
-  'Mago': 'from-blue-900 to-blue-700',
-  'Ladino': 'from-gray-800 to-gray-600',
-  'Feiticeiro': 'from-red-900 to-red-700',
-  'Bardo': 'from-pink-900 to-pink-700',
-  'Clérigo': 'from-yellow-900 to-yellow-700',
-  'Druida': 'from-green-900 to-green-700',
-  'Monge': 'from-amber-900 to-amber-700',
-  'Paladino': 'from-cyan-900 to-cyan-700',
-  'Patrulheiro': 'from-emerald-900 to-emerald-700',
-  'Bruxo': 'from-violet-900 to-violet-700',
-  'Bárbaro': 'from-orange-900 to-orange-700',
+  'Guerreiro': 'primary',
+  'Mago': 'secondary',
+  'Ladino': 'muted',
+  'Feiticeiro': 'destructive',
+  'Bardo': 'secondary',
+  'Clérigo': 'primary',
+  'Druida': 'secondary',
+  'Monge': 'primary',
+  'Paladino': 'primary',
+  'Patrulheiro': 'primary',
+  'Bruxo': 'secondary',
+  'Bárbaro': 'primary',
 };
 
 export function CharactersScreen() {
@@ -187,11 +187,11 @@ export function CharactersScreen() {
                 disabled={!user}
                 className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg ${
                   canCreateCharacter 
-                    ? "bg-gradient-to-br from-primary to-purple-700" 
+                    ? "border border-primary/60 bg-primary/10" 
                     : "bg-muted"
                 }`}
               >
-                {canCreateCharacter ? <Plus className="w-5 h-5" /> : <Lock className="w-5 h-5 text-muted-foreground" />}
+                {canCreateCharacter ? <Plus className="w-5 h-5 text-primary" /> : <Lock className="w-5 h-5 text-muted-foreground" />}
               </button>
               {/* Tooltip for limit reached */}
               {user && !canCreateCharacter && !isVisitante && (
@@ -289,7 +289,7 @@ export function CharactersScreen() {
             {activeTab !== "archived" && canCreateCharacter && (
               <button
                 onClick={handleCreateCharacter}
-                className="px-5 sm:px-6 py-2.5 sm:py-3 bg-gradient-primary rounded-xl font-medium text-sm sm:text-base"
+                className="px-5 sm:px-6 py-2.5 sm:py-3 border border-primary/60 bg-transparent text-primary hover:bg-primary hover:text-primary-foreground rounded-xl font-medium text-sm sm:text-base transition-colors"
               >
                 Criar Personagem
               </button>
@@ -299,13 +299,13 @@ export function CharactersScreen() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
             {filteredCharacters.map((character) => {
               const Icon = classIcons[character.class] || Shield;
-              const gradient = classGradients[character.class] || 'from-purple-900 to-purple-700';
+              const gradient = classGradients[character.class] || 'primary';
               const isArchived = character.is_archived;
 
               return (
                 <div
                   key={character.id}
-                  className={`bg-gradient-to-br ${gradient} rounded-xl sm:rounded-2xl p-4 sm:p-5 relative overflow-hidden shadow-depth-md hover:shadow-depth-lg transition-all ${isArchived ? 'opacity-70' : ''}`}
+                  className={`bg-surface-1/80 backdrop-blur-md border border-border/30 rounded-xl sm:rounded-2xl p-4 sm:p-5 relative overflow-hidden shadow-depth-sm hover:shadow-depth-md transition-all ${isArchived ? 'opacity-70' : ''}`}
                 >
                   <div className="absolute top-0 right-0 w-32 sm:w-40 h-32 sm:h-40 bg-foreground opacity-5 rounded-full -mr-12 sm:-mr-16 -mt-12 sm:-mt-16" />
                   
@@ -315,14 +315,14 @@ export function CharactersScreen() {
                         className="flex items-center gap-2.5 sm:gap-3 flex-1 cursor-pointer min-w-0"
                         onClick={() => navigate(`/character/${character.id}`)}
                       >
-                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl bg-foreground/20 flex items-center justify-center shrink-0">
-                          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                        <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-lg sm:rounded-xl border ${gradient === 'primary' ? 'border-primary/40 bg-primary/10' : gradient === 'secondary' ? 'border-secondary/40 bg-secondary/10' : gradient === 'destructive' ? 'border-destructive/40 bg-destructive/10' : 'border-border bg-muted/30'} flex items-center justify-center shrink-0`}>
+                          <Icon className={`w-5 h-5 sm:w-6 sm:h-6 ${gradient === 'primary' ? 'text-primary' : gradient === 'secondary' ? 'text-secondary' : gradient === 'destructive' ? 'text-destructive' : 'text-muted-foreground'}`} />
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center gap-2 flex-wrap">
                             <h3 className="text-base sm:text-lg font-bold truncate">{character.name}</h3>
                             {isArchived && (
-                              <span className="px-1.5 sm:px-2 py-0.5 bg-background/30 rounded-full text-[9px] sm:text-[10px] font-medium shrink-0">
+                              <span className="px-1.5 sm:px-2 py-0.5 bg-muted rounded-full text-[9px] sm:text-[10px] font-medium shrink-0 text-muted-foreground">
                                 Arquivado
                               </span>
                             )}
@@ -336,7 +336,7 @@ export function CharactersScreen() {
                         <DropdownMenuTrigger asChild>
                           <button 
                             onClick={(e) => e.stopPropagation()}
-                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-background/20 flex items-center justify-center hover:bg-background/30 transition-colors shrink-0"
+                            className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-muted flex items-center justify-center hover:bg-muted/80 transition-colors shrink-0"
                           >
                             <MoreVertical className="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-80" />
                           </button>
@@ -380,24 +380,24 @@ export function CharactersScreen() {
                       onClick={() => navigate(`/character/${character.id}`)}
                     >
                       <div className="grid grid-cols-3 gap-1.5 sm:gap-2 mb-3 sm:mb-4">
-                        <div className="bg-background/20 rounded-lg p-2 sm:p-2.5">
-                          <p className="text-[10px] sm:text-xs opacity-80 mb-0.5">Nível</p>
+                        <div className="bg-muted/50 rounded-lg p-2 sm:p-2.5">
+                          <p className="text-[10px] sm:text-xs text-muted-foreground mb-0.5">Nível</p>
                           <p className="text-lg sm:text-xl font-bold">{character.level}</p>
                         </div>
-                        <div className="bg-background/20 rounded-lg p-2 sm:p-2.5">
-                          <p className="text-[10px] sm:text-xs opacity-80 mb-0.5">HP</p>
+                        <div className="bg-muted/50 rounded-lg p-2 sm:p-2.5">
+                          <p className="text-[10px] sm:text-xs text-muted-foreground mb-0.5">HP</p>
                           <p className="text-base sm:text-xl font-bold">{character.current_hp}/{character.max_hp}</p>
                         </div>
-                        <div className="bg-background/20 rounded-lg p-2 sm:p-2.5">
-                          <p className="text-[10px] sm:text-xs opacity-80 mb-0.5">CA</p>
+                        <div className="bg-muted/50 rounded-lg p-2 sm:p-2.5">
+                          <p className="text-[10px] sm:text-xs text-muted-foreground mb-0.5">CA</p>
                           <p className="text-lg sm:text-xl font-bold">{character.armor_class}</p>
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-2.5 sm:pt-3 border-t border-foreground/20 gap-2">
+                      <div className="flex items-center justify-between pt-2.5 sm:pt-3 border-t border-border/30 gap-2">
                         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 flex-1">
-                          <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 opacity-80 shrink-0" />
-                          <span className="text-[10px] sm:text-xs opacity-80 truncate">
+                          <Calendar className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground shrink-0" />
+                          <span className="text-[10px] sm:text-xs text-muted-foreground truncate">
                             {formatDistanceToNow(new Date(character.updated_at), { locale: ptBR, addSuffix: true })}
                           </span>
                         </div>
@@ -406,7 +406,7 @@ export function CharactersScreen() {
                             e.stopPropagation();
                             navigate(`/character/${character.id}`);
                           }}
-                          className="px-2.5 sm:px-3 py-1 sm:py-1.5 bg-foreground text-background rounded-lg text-[10px] sm:text-xs font-semibold shrink-0"
+                          className="px-2.5 sm:px-3 py-1 sm:py-1.5 border border-primary/60 bg-transparent text-primary hover:bg-primary hover:text-primary-foreground rounded-lg text-[10px] sm:text-xs font-semibold shrink-0 transition-colors"
                         >
                           Jogar
                         </button>
