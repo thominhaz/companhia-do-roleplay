@@ -33,10 +33,10 @@ interface WorkshopNPCsProps {
 }
 
 const statusConfig = {
-  alive: { label: 'Vivo', icon: UserSquare2, color: 'text-green-500', bg: 'bg-green-500/10' },
-  dead: { label: 'Morto', icon: Skull, color: 'text-red-500', bg: 'bg-red-500/10' },
+  alive: { label: 'Vivo', icon: UserSquare2, color: 'text-secondary', bg: 'bg-secondary/10' },
+  dead: { label: 'Morto', icon: Skull, color: 'text-destructive', bg: 'bg-destructive/10' },
   unknown: { label: 'Desconhecido', icon: HelpCircle, color: 'text-muted-foreground', bg: 'bg-muted' },
-  missing: { label: 'Desaparecido', icon: HelpCircle, color: 'text-amber-500', bg: 'bg-amber-500/10' },
+  missing: { label: 'Desaparecido', icon: HelpCircle, color: 'text-gold', bg: 'bg-gold/10' },
 };
 
 export function WorkshopNPCs({ campaign }: WorkshopNPCsProps) {

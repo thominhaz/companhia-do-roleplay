@@ -79,7 +79,7 @@ export function DashboardPlayers({ campaign, isMaster }: DashboardPlayersProps) 
             >
               <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
                 {player.role === 'master' ? (
-                  <Crown className="w-6 h-6 text-amber-500" />
+                  <Crown className="w-6 h-6 text-gold" />
                 ) : (
                   <User className="w-6 h-6 text-primary" />
                 )}
@@ -108,7 +108,7 @@ export function DashboardPlayers({ campaign, isMaster }: DashboardPlayersProps) 
                 </Button>
               )}
               <span className={`text-xs px-3 py-1 rounded-full flex-shrink-0 ${
-                player.role === 'master' ? 'bg-amber-500/20 text-amber-500' : 'bg-primary/20 text-primary'
+                player.role === 'master' ? 'bg-gold/20 text-gold' : 'bg-primary/20 text-primary'
               }`}>
                 {player.role === 'master' ? 'Mestre' : 'Jogador'}
               </span>

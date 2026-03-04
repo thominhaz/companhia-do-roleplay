@@ -86,7 +86,7 @@ export function DashboardSessions({ campaign, isMaster }: DashboardSessionsProps
                         <div className="flex items-center gap-2 flex-wrap">
                           <h4 className="font-semibold truncate">{session.title}</h4>
                           {session.status === 'completed' && (
-                            <Badge variant="outline" className="text-[10px] bg-green-500/10 text-green-500 border-green-500/30">
+                            <Badge variant="outline" className="text-[10px] bg-secondary/10 text-secondary border-secondary/30">
                               Concluída
                             </Badge>
                           )}
@@ -109,13 +109,13 @@ export function DashboardSessions({ campaign, isMaster }: DashboardSessionsProps
                       <div className="flex flex-col items-end gap-1 flex-shrink-0">
                         {(session.xp_awarded && session.xp_awarded > 0) && (
                           <Badge variant="secondary" className="text-xs gap-1">
-                            <Sparkles className="w-3 h-3 text-purple-400" />
+                            <Sparkles className="w-3 h-3 text-primary" />
                             {session.xp_awarded} XP
                           </Badge>
                         )}
                         {(session.gold_awarded && session.gold_awarded > 0) && (
                           <Badge variant="secondary" className="text-xs gap-1">
-                            <Coins className="w-3 h-3 text-amber-400" />
+                            <Coins className="w-3 h-3 text-gold" />
                             {session.gold_awarded} PO
                           </Badge>
                         )}

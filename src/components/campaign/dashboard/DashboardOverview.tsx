@@ -29,12 +29,12 @@ export function DashboardOverview({ campaign, isMaster, sessions, players, onNav
   };
 
   const quickActions = [
-    { id: 'sessions', label: 'Sessões', icon: Calendar, color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
-    { id: 'combat', label: 'Combate', icon: Swords, color: 'text-red-500', bgColor: 'bg-red-500/10', masterOnly: true },
-    { id: 'notes', label: 'Notas', icon: StickyNote, color: 'text-amber-500', bgColor: 'bg-amber-500/10' },
-    { id: 'chat', label: 'Chat', icon: MessageCircle, color: 'text-green-500', bgColor: 'bg-green-500/10' },
-    { id: 'players', label: 'Jogadores', icon: Users, color: 'text-purple-500', bgColor: 'bg-purple-500/10' },
-    { id: 'compendium', label: 'Compêndio', icon: Library, color: 'text-pink-500', bgColor: 'bg-pink-500/10' },
+    { id: 'sessions', label: 'Sessões', icon: Calendar, color: 'text-primary', bgColor: 'bg-primary/10' },
+    { id: 'combat', label: 'Combate', icon: Swords, color: 'text-destructive', bgColor: 'bg-destructive/10', masterOnly: true },
+    { id: 'notes', label: 'Notas', icon: StickyNote, color: 'text-accent-foreground', bgColor: 'bg-accent/50' },
+    { id: 'chat', label: 'Chat', icon: MessageCircle, color: 'text-secondary', bgColor: 'bg-secondary/10' },
+    { id: 'players', label: 'Jogadores', icon: Users, color: 'text-primary', bgColor: 'bg-primary/10' },
+    { id: 'compendium', label: 'Compêndio', icon: Library, color: 'text-muted-foreground', bgColor: 'bg-muted/50' },
   ].filter(action => !action.masterOnly || isMaster);
 
   return (
