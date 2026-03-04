@@ -167,7 +167,7 @@ export function CharactersScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-darker pb-24">
+    <div className="min-h-screen bg-surface-0 pb-24">
       <AppHeader
         title="Personagens"
         subtitle={user && subscription && !isVisitante ? `${subscription.characterCount}/${subscription.limits.maxCharacters === 'unlimited' ? '∞' : subscription.limits.maxCharacters} personagens` : undefined}
@@ -220,10 +220,10 @@ export function CharactersScreen() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors ${
+                className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-all ${
                   activeTab === tab.id
-                    ? "bg-primary text-foreground"
-                    : "bg-dark text-muted-foreground"
+                    ? "bg-surface-3 text-foreground shadow-depth-sm"
+                    : "bg-surface-1 text-muted-foreground hover:bg-surface-2"
                 }`}
               >
                 {tab.label}

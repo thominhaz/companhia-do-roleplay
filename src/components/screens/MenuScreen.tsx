@@ -214,7 +214,7 @@ export function MenuScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-darker pb-24">
+    <div className="min-h-screen bg-surface-0 pb-24">
       <AppHeader title="Menu" />
 
       {/* Content */}
@@ -224,7 +224,7 @@ export function MenuScreen() {
           {user ? (
             <button 
               onClick={() => setProfileOpen(true)}
-              className="w-full glass-card-solar rounded-2xl p-4 flex items-center gap-4 card-hover-subtle"
+              className="w-full bg-surface-1 border border-border/30 rounded-2xl p-4 flex items-center gap-4 shadow-depth-sm transition-all hover:shadow-depth-md hover:-translate-y-0.5"
             >
               {avatarUrl ? (
                 <img 
@@ -255,7 +255,7 @@ export function MenuScreen() {
           ) : (
             <button 
               onClick={handleLogin}
-              className="w-full glass-card rounded-2xl p-4 flex items-center gap-4 card-hover-subtle"
+              className="w-full bg-surface-1 border border-border/30 rounded-2xl p-4 flex items-center gap-4 shadow-depth-sm transition-all hover:shadow-depth-md hover:-translate-y-0.5"
             >
               <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
                 <LogIn className="w-6 h-6 text-muted-foreground" />
@@ -283,7 +283,7 @@ export function MenuScreen() {
             <h2 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">
               {section.title}
             </h2>
-            <div className="glass-card rounded-2xl overflow-hidden divide-y divide-border/30 stagger-fast">
+            <div className="bg-surface-1 border border-border/30 rounded-2xl overflow-hidden divide-y divide-border/20 shadow-depth-sm stagger-fast">
               {section.items.map((item) => {
                 const Icon = item.icon;
                 const description = item.id === "subscription" 
@@ -297,9 +297,9 @@ export function MenuScreen() {
                   <button
                     key={item.id}
                     onClick={() => handleMenuAction(item.id)}
-                    className="w-full px-4 py-3 flex items-center gap-3 hover:bg-muted/30 transition-colors text-left"
+                    className="w-full px-4 py-3 flex items-center gap-3 hover:bg-surface-2 transition-colors text-left"
                   >
-                    <div className="w-9 h-9 rounded-xl bg-muted flex items-center justify-center flex-shrink-0">
+                    <div className="w-9 h-9 rounded-xl bg-surface-2 flex items-center justify-center flex-shrink-0">
                       <Icon className="w-4 h-4 text-muted-foreground" />
                     </div>
                     <div className="flex-1 min-w-0">

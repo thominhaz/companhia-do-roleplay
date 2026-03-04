@@ -31,7 +31,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 glass border-t border-border/50">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 bg-surface-1/95 backdrop-blur-xl border-t border-border/30 shadow-depth-lg">
       <div className="flex items-center justify-around px-2 py-2 max-w-lg mx-auto">
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -55,7 +55,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
               {isActive && (
                 <motion.div
                   layoutId="activeTab"
-                  className="absolute inset-0 bg-primary/15 rounded-xl"
+                  className="absolute inset-0 bg-surface-3 rounded-xl shadow-depth-sm"
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               )}

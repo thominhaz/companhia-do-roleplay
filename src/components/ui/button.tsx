@@ -5,20 +5,20 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 relative overflow-hidden",
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 relative overflow-hidden active:scale-[0.97]",
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/80",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border border-input bg-background hover:bg-accent/10 hover:text-accent-foreground",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        ghost: "hover:bg-accent/10 hover:text-accent-foreground",
+        default: "bg-primary text-primary-foreground shadow-depth-sm hover:bg-primary/85 hover:shadow-depth-md",
+        destructive: "bg-destructive text-destructive-foreground shadow-depth-sm hover:bg-destructive/90 hover:shadow-depth-md",
+        outline: "border border-border bg-surface-1 shadow-depth-sm hover:bg-surface-2 hover:text-accent-foreground hover:shadow-depth-md",
+        secondary: "bg-surface-2 text-secondary-foreground shadow-depth-sm hover:bg-surface-3 hover:shadow-depth-md",
+        ghost: "hover:bg-surface-2 hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        gradient: "bg-gradient-to-r from-solar-orange to-magenta-red text-foreground hover:opacity-90",
-        glow: "bg-primary text-primary-foreground hover:bg-primary/80",
-        cyan: "bg-cyan-blue text-background hover:bg-cyan-blue/90",
-        purple: "bg-cosmic-purple text-white hover:bg-cosmic-purple/90",
+        gradient: "bg-gradient-to-r from-solar-orange to-magenta-red text-foreground shadow-depth-md hover:shadow-depth-lg hover:opacity-95",
+        glow: "bg-primary text-primary-foreground shadow-depth-glow hover:shadow-depth-lg",
+        cyan: "bg-cyan-blue text-background shadow-depth-sm hover:bg-cyan-blue/90 hover:shadow-depth-md",
+        purple: "bg-cosmic-purple text-white shadow-depth-sm hover:bg-cosmic-purple/90 hover:shadow-depth-md",
       },
       size: {
         default: "h-10 px-4 py-2",

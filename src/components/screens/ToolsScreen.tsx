@@ -227,7 +227,7 @@ export function ToolsScreen() {
   }
   if (activeTool === "monsters") {
     return (
-      <div className="min-h-screen bg-darker pb-24">
+       <div className="min-h-screen bg-surface-0 pb-24">
         <AppHeader
           title="Bestiário"
           subtitle="Compêndio de monstros SRD"
@@ -266,7 +266,7 @@ export function ToolsScreen() {
   }
   if (activeTool === "supporter-gallery") {
     return (
-      <div className="min-h-screen bg-darker pb-24">
+      <div className="min-h-screen bg-surface-0 pb-24">
         <AppHeader
           title="Galeria de Apoiadores"
           subtitle="Conteúdo da comunidade"
@@ -287,7 +287,7 @@ export function ToolsScreen() {
   }
 
   return (
-    <div className="min-h-screen bg-darker pb-24">
+    <div className="min-h-screen bg-surface-0 pb-24">
       <AppHeader
         title="Ferramentas"
         subtitle="Compêndio e utilitários"
@@ -309,7 +309,7 @@ export function ToolsScreen() {
             placeholder="Buscar magias, condições, regras..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full h-10 pl-9 pr-4 bg-muted rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50"
+            className="w-full h-10 pl-9 pr-4 bg-surface-1 border border-border/30 rounded-xl text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 shadow-inset"
           />
         </div>
       </AppHeader>
@@ -332,10 +332,10 @@ export function ToolsScreen() {
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className={cn(
-                    "p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br text-left card-shine relative overflow-hidden",
+                    "p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-gradient-to-br text-left relative overflow-hidden shadow-depth-md",
                     tool.color,
                     isLocked && "opacity-60",
-                    "hover:scale-[1.02] hover:shadow-[0_12px_24px_-8px_rgba(0,0,0,0.4),0_0_20px_rgba(255,159,85,0.15)] active:scale-[0.98] transition-all duration-300"
+                    "hover:scale-[1.02] hover:shadow-depth-lg active:scale-[0.98] transition-all duration-200"
                   )}
                 >
                   {isLocked && (
@@ -372,7 +372,7 @@ export function ToolsScreen() {
                   key={tool.id}
                   onClick={() => handleToolClick(tool)}
                   className={cn(
-                    "w-full glass-card rounded-lg sm:rounded-xl p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3 card-hover-subtle",
+                    "w-full bg-surface-1 border border-border/30 rounded-lg sm:rounded-xl p-2.5 sm:p-3 flex items-center gap-2.5 sm:gap-3 shadow-depth-sm transition-all hover:shadow-depth-md hover:-translate-y-0.5",
                     "text-left",
                     isLocked && "opacity-60"
                   )}

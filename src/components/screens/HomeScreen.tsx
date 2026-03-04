@@ -163,7 +163,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
   );
 
   return (
-    <div className="min-h-screen bg-darker pb-24">
+    <div className="min-h-screen bg-surface-0 pb-24">
       <AppHeader
         rightContent={
           <div className="flex items-center gap-2">
@@ -211,7 +211,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
       <section className="px-4 sm:px-5 mt-4 sm:mt-6">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:h-48">
           {/* Active Character Card */}
-          <div className="sm:col-span-2 bg-gradient-to-br from-cosmic-purple to-cosmic-purple/70 rounded-2xl p-4 relative overflow-hidden parallax-scale min-h-[140px] sm:min-h-0">
+          <div className="sm:col-span-2 bg-gradient-to-br from-cosmic-purple to-cosmic-purple/70 rounded-2xl p-4 relative overflow-hidden shadow-depth-md min-h-[140px] sm:min-h-0">
             <div className="absolute top-0 right-0 w-32 h-32 bg-foreground opacity-5 rounded-full -mr-10 -mt-10 parallax-float" />
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-foreground opacity-5 rounded-full -ml-8 -mb-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col justify-between">
@@ -234,7 +234,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                     </p>
                   </div>
                   <div className="flex gap-2 mt-3 sm:mt-0">
-                    <div className="flex-1 bg-background/20 rounded-lg px-2 py-1.5">
+                    <div className="flex-1 bg-surface-0/30 rounded-lg px-2 py-1.5 shadow-inset">
                       <p className="text-xs text-foreground/70">HP</p>
                       <p className="text-sm font-bold">{activeCharacter.current_hp}/{activeCharacter.max_hp}</p>
                     </div>
@@ -267,7 +267,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
           </div>
 
           {/* Next Session Card */}
-          <div className="sm:col-span-1 bg-gradient-to-br from-magenta-red to-magenta-red/70 rounded-2xl p-3 relative overflow-hidden parallax-scale min-h-[120px] sm:min-h-0">
+          <div className="sm:col-span-1 bg-gradient-to-br from-magenta-red to-magenta-red/70 rounded-2xl p-3 relative overflow-hidden shadow-depth-md min-h-[120px] sm:min-h-0">
             <div className="absolute top-0 right-0 w-20 h-20 bg-foreground opacity-5 rounded-full -mr-8 -mt-8 parallax-float-delayed" />
             <div className="relative z-10 h-full flex flex-col">
               {loadingSessions ? (
@@ -384,7 +384,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
                 }
               }}
             >
-              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-lg card-hover transition-all duration-300`}>
+              <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${action.gradient} flex items-center justify-center shadow-depth-md transition-all duration-300 hover:shadow-depth-lg hover:-translate-y-1`}>
                 <action.icon className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <span className="text-[10px] sm:text-xs text-muted-foreground text-center leading-tight">{action.label}</span>
@@ -418,7 +418,7 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               {recentItems.map((item) => (
                 <div 
                   key={`${item.type}-${item.id}`}
-                  className="flex-shrink-0 w-36 sm:w-40 glass-card rounded-xl p-2.5 sm:p-3 card-interactive"
+                  className="flex-shrink-0 w-36 sm:w-40 bg-surface-1 border border-border/30 rounded-xl p-2.5 sm:p-3 shadow-depth-sm transition-all duration-300 hover:shadow-depth-md hover:-translate-y-1 hover:border-primary/20 cursor-pointer"
                 >
                   <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg bg-gradient-to-br ${item.gradient} flex items-center justify-center mb-2 sm:mb-3`}>
                     <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
