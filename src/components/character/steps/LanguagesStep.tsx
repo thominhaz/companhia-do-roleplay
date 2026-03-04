@@ -39,14 +39,20 @@ export function LanguagesStep({ data, updateData }: LanguagesStepProps) {
     lang => !baseLanguages.some(bl => bl.toLowerCase() === lang.name.toLowerCase())
   );
 
+  // Build a map from language ID to Portuguese name for consistent storage
+  const langIdToName: Record<string, string> = {};
+  allLanguages.forEach(l => { langIdToName[l.id] = l.name; });
+
   const handleToggleLanguage = (langId: string) => {
     const current = [...selectedExtraLanguages];
-    const index = current.indexOf(langId);
+    // Store the Portuguese name instead of the ID for consistency with racial languages
+    const langName = langIdToName[langId] || langId;
+    const index = current.indexOf(langName);
     
     if (index > -1) {
       current.splice(index, 1);
     } else if (current.length < extraLanguagesCount) {
-      current.push(langId);
+      current.push(langName);
     }
     
     updateData({ extraLanguages: current });
@@ -123,7 +129,7 @@ export function LanguagesStep({ data, updateData }: LanguagesStepProps) {
           {availableLanguages
             .filter(l => standardLanguages.some(sl => sl.id === l.id))
             .map((lang) => {
-              const isSelected = selectedExtraLanguages.includes(lang.id);
+              const isSelected = selectedExtraLanguages.includes(lang.name);
               const isDisabled = !isSelected && selectedExtraLanguages.length >= extraLanguagesCount;
 
               return (
@@ -176,7 +182,7 @@ export function LanguagesStep({ data, updateData }: LanguagesStepProps) {
           {availableLanguages
             .filter(l => exoticLanguages.some(el => el.id === l.id))
             .map((lang) => {
-              const isSelected = selectedExtraLanguages.includes(lang.id);
+              const isSelected = selectedExtraLanguages.includes(lang.name);
               const isDisabled = !isSelected && selectedExtraLanguages.length >= extraLanguagesCount;
 
               return (

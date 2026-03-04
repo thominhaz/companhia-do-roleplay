@@ -103,23 +103,14 @@ No `CharacterWizard.tsx` linha 366: `selectedClass.id === 'sorcerer'`, mas o JSO
 
 ---
 
-## Resumo de Bugs Confirmados para Corrigir
+## Resumo de Bugs - Status
 
-| # | Bug | Severidade | Arquivo |
-|---|-----|-----------|---------|
-| 1 | Meio-Elfo: "Versatilidade em Pericias" (2 pericias extras) nao implementada | Alta | SkillsStep.tsx |
-| 2 | Idiomas extra salvos como ID ingles, raciais como nome PT (inconsistencia) | Media | LanguagesStep.tsx / CharacterWizard.tsx |
-| 3 | Escudo como arma secundaria nao adiciona +2 CA | Media | CharacterWizard.tsx / ReviewStep.tsx |
-| 4 | Anao: escolha de ferramenta racial ignorada | Baixa | Nao implementado |
-| 5 | Patrulheiro/Paladino: features de nv1 podem nao aparecer se JSON nao tem array `features` | Baixa | SpellsStep.tsx |
-| 6 | Feiticeiro: ID no JSON pode ser diferente de 'sorcerer' (verificar) | Media | SpellsStep.tsx |
-
-## Abordagem de Execucao
-
-1. Primeiro, rodar o wizard no browser com cada cenario acima para confirmar visualmente os bugs
-2. Corrigir bugs por prioridade (Alta > Media > Baixa)
-3. Para cada fix, re-testar o cenario afetado
-4. Validar a tela de Revisao (ReviewStep) com cada combinacao
-
-O plano envolve ~10 cenarios de teste cobrindo todas as 9 racas SRD e as 12 classes, focando nas combinacoes que exercitam mecanicas unicas (bonus de atributo a escolha, defesa sem armadura, conjuracao, pericias livres, etc).
+| # | Bug | Severidade | Status |
+|---|-----|-----------|--------|
+| 1 | Meio-Elfo: "Versatilidade em Pericias" (2 pericias extras) nao implementada | Alta | ✅ CORRIGIDO |
+| 2 | Idiomas extra salvos como ID ingles, raciais como nome PT (inconsistencia) | Media | ✅ CORRIGIDO |
+| 3 | Escudo como arma secundaria nao adiciona +2 CA | Media | ✅ CORRIGIDO (CharacterWizard + ReviewStep) |
+| 4 | Anao: escolha de ferramenta racial ignorada | Baixa | ⏳ Pendente (menor prioridade) |
+| 5 | Patrulheiro/Paladino: features de nv1 podem nao aparecer | Baixa | ✅ NAO ERA BUG (JSONs tem features array completo) |
+| 6 | Feiticeiro: ID no JSON pode ser diferente de 'sorcerer' | Media | ✅ NAO ERA BUG (ID = "sorcerer" confirmado) |
 
