@@ -31,7 +31,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
   };
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-[env(safe-area-inset-bottom)] px-4 pb-4">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 flex justify-center pb-[calc(env(safe-area-inset-bottom)+2px)] px-4">
       {/* Outer glass container — Concept 1: Base structure */}
       <div
          className={cn(
@@ -83,7 +83,7 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
                 >
                   <Icon
                     className={cn(
-                      "w-6 h-6 transition-colors duration-200",
+                      "w-7 h-7 transition-colors duration-200",
                       isActive
                         ? "text-primary drop-shadow-[0_1px_2px_rgba(0,0,0,0.3)]"
                         : "text-muted-foreground/70"
