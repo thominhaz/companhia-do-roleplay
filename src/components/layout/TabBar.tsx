@@ -103,14 +103,13 @@ export function TabBar({ activeTab, onTabChange }: TabBarProps) {
                   opacity: isActive ? 1 : 0.5,
                 }}
                 className={cn(
-                  "relative z-10 text-[9px] sm:text-[11px] mt-1 transition-colors duration-200 whitespace-nowrap",
+                  "relative z-10 hidden sm:block text-[11px] mt-1 transition-colors duration-200 whitespace-nowrap",
                   isActive
                     ? "text-primary font-bold drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)]"
                     : "text-muted-foreground/70 font-medium"
                 )}
               >
-                <span className="sm:hidden">{tab.shortLabel}</span>
-                <span className="hidden sm:inline">{tab.label}</span>
+                {tab.label}
               </motion.span>
             </motion.button>
           );
