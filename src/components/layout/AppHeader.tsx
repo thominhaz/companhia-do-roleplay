@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import logoFull from "@/assets/logo-full.png";
 interface AppHeaderProps {
   title?: string;
   subtitle?: string;
@@ -17,7 +18,7 @@ export function AppHeader({
       <div className="px-5 md:px-8 lg:px-12 pt-4 pb-3 max-w-6xl mx-auto">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
-            <img alt="Go20" className="h-16 w-auto" src="/src/assets/logo-full.png" />
+            <img alt="Go20" className="h-16 w-auto" src={logoFull} />
           </div>
           {rightContent && <div className="flex items-center gap-2">
               {rightContent}
