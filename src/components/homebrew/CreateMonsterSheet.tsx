@@ -209,7 +209,7 @@ export function CreateMonsterSheet({ open, onOpenChange, editingMonster }: Creat
       <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            <Skull className="w-5 h-5 text-red-500" />
+            <Skull className="w-5 h-5 text-destructive" />
             {isEditing ? "Editar Monstro" : "Criar Monstro"}
           </SheetTitle>
           <SheetDescription>
@@ -456,7 +456,7 @@ export function CreateMonsterSheet({ open, onOpenChange, editingMonster }: Creat
           {/* Submit */}
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-red-500 to-red-700"
+            className="w-full bg-gradient-to-r from-primary to-primary/70"
             disabled={isLoading || !form.name}
           >
             {isLoading ? (

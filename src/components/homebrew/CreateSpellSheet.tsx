@@ -176,7 +176,7 @@ export function CreateSpellSheet({ open, onOpenChange, editingSpell }: CreateSpe
       <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-purple-500" />
+            <Sparkles className="w-5 h-5 text-accent-foreground" />
             {isEditing ? "Editar Magia" : "Criar Magia"}
           </SheetTitle>
           <SheetDescription>
@@ -353,7 +353,7 @@ export function CreateSpellSheet({ open, onOpenChange, editingSpell }: CreateSpe
           {/* Submit */}
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-purple-500 to-purple-700"
+            className="w-full bg-gradient-to-r from-primary to-primary/70"
             disabled={isLoading || !form.name || !form.description}
           >
             {isLoading ? (

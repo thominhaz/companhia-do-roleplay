@@ -68,7 +68,7 @@ export function PlayerChatSelector({ campaign }: PlayerChatSelectorProps) {
           <MessageCircle className="w-4 h-4" />
           Chat Geral
           {publicUnreadCount > 0 && (
-            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold animate-pulse">
+            <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-destructive rounded-full text-[10px] text-destructive-foreground flex items-center justify-center font-bold animate-pulse">
               {publicUnreadCount > 99 ? '99+' : publicUnreadCount}
             </span>
           )}
@@ -82,10 +82,10 @@ export function PlayerChatSelector({ campaign }: PlayerChatSelectorProps) {
         className="bg-card rounded-xl p-6 border border-border"
       >
         <div className="flex items-center gap-4 mb-4">
-          <div className="w-14 h-14 rounded-xl bg-blue-500/20 flex items-center justify-center relative">
-            <Users className="w-7 h-7 text-blue-500" />
+          <div className="w-14 h-14 rounded-xl bg-primary/20 flex items-center justify-center relative">
+            <Users className="w-7 h-7 text-primary" />
             {publicUnreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-[10px] text-white flex items-center justify-center font-bold">
+              <span className="absolute -top-1 -right-1 w-5 h-5 bg-destructive rounded-full text-[10px] text-destructive-foreground flex items-center justify-center font-bold">
                 {publicUnreadCount > 99 ? '99+' : publicUnreadCount}
               </span>
             )}
@@ -107,7 +107,7 @@ export function PlayerChatSelector({ campaign }: PlayerChatSelectorProps) {
       {isMaster && (
         <div className="space-y-4">
           <div className="flex items-center gap-2">
-            <Lock className="w-4 h-4 text-amber-500" />
+            <Lock className="w-4 h-4 text-gold" />
             <h3 className="font-semibold">Mensagens Privadas</h3>
             <span className="text-xs text-muted-foreground">
               (apenas você e o jogador verão)
@@ -150,7 +150,7 @@ export function PlayerChatSelector({ campaign }: PlayerChatSelectorProps) {
                         "relative flex flex-col items-center p-4 rounded-xl border transition-all",
                         "bg-gradient-to-b from-card to-card/80",
                         playerUnreadCount > 0 
-                          ? "border-amber-500/50 ring-1 ring-amber-500/30" 
+                          ? "border-gold/50 ring-1 ring-gold/30" 
                           : "border-border/50 hover:border-primary/50",
                         "hover:shadow-lg hover:shadow-primary/5",
                         "group cursor-pointer"
@@ -161,7 +161,7 @@ export function PlayerChatSelector({ campaign }: PlayerChatSelectorProps) {
                         <motion.span 
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
-                          className="absolute -top-2 -right-2 w-6 h-6 bg-amber-500 rounded-full text-xs text-white flex items-center justify-center font-bold shadow-lg z-10"
+                          className="absolute -top-2 -right-2 w-6 h-6 bg-gold rounded-full text-xs text-black flex items-center justify-center font-bold shadow-lg z-10"
                         >
                           {playerUnreadCount > 99 ? '99+' : playerUnreadCount}
                         </motion.span>
@@ -171,7 +171,7 @@ export function PlayerChatSelector({ campaign }: PlayerChatSelectorProps) {
                       <Avatar className={cn(
                         "w-14 h-14 mb-2 ring-2 transition-all",
                         playerUnreadCount > 0 
-                          ? "ring-amber-500" 
+                          ? "ring-gold" 
                           : "ring-border group-hover:ring-primary/50"
                       )}>
                         <AvatarImage src={player.profile?.avatar_url || undefined} />

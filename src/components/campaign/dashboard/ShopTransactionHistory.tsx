@@ -21,17 +21,17 @@ interface ShopTransactionHistoryProps {
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   pending: { 
     label: "Pendente", 
-    color: "bg-yellow-500/20 text-yellow-500 border-yellow-500/30",
+    color: "bg-gold/20 text-gold border-gold/30",
     icon: <Clock className="w-3 h-3" />,
   },
   accepted: { 
     label: "Aceito", 
-    color: "bg-green-500/20 text-green-500 border-green-500/30",
+    color: "bg-secondary/20 text-secondary border-secondary/30",
     icon: <Check className="w-3 h-3" />,
   },
   rejected: { 
     label: "Recusado", 
-    color: "bg-red-500/20 text-red-500 border-red-500/30",
+    color: "bg-destructive/20 text-destructive border-destructive/30",
     icon: <X className="w-3 h-3" />,
   },
   cancelled: { 
@@ -43,11 +43,11 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
 
 const RARITIES: Record<string, { label: string; color: string }> = {
   comum: { label: "Comum", color: "bg-muted text-muted-foreground" },
-  incomum: { label: "Incomum", color: "bg-green-500/20 text-green-500" },
-  raro: { label: "Raro", color: "bg-blue-500/20 text-blue-500" },
-  "muito-raro": { label: "Muito Raro", color: "bg-purple-500/20 text-purple-500" },
+  incomum: { label: "Incomum", color: "bg-secondary/20 text-secondary" },
+  raro: { label: "Raro", color: "bg-primary/20 text-primary" },
+  "muito-raro": { label: "Muito Raro", color: "bg-accent-foreground/20 text-accent-foreground" },
   lendario: { label: "Lendário", color: "bg-gold/20 text-gold" },
-  artefato: { label: "Artefato", color: "bg-red-500/20 text-red-500" },
+  artefato: { label: "Artefato", color: "bg-destructive/20 text-destructive" },
 };
 
 export function ShopTransactionHistory({

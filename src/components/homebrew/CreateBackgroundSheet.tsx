@@ -128,7 +128,7 @@ export function CreateBackgroundSheet({ open, onOpenChange, editingBackground }:
       <SheetContent side="bottom" className="h-[90vh] overflow-y-auto">
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-green-500" />
+            <BookOpen className="w-5 h-5 text-secondary" />
             {isEditing ? "Editar Antecedente" : "Criar Antecedente"}
           </SheetTitle>
           <SheetDescription>
@@ -289,7 +289,7 @@ export function CreateBackgroundSheet({ open, onOpenChange, editingBackground }:
           {/* Submit */}
           <Button
             type="submit"
-            className="w-full bg-gradient-to-r from-green-500 to-green-700"
+            className="w-full bg-gradient-to-r from-primary to-primary/70"
             disabled={isLoading || !form.name || !form.description || !form.feature_name || !form.feature_description}
           >
             {isLoading ? (

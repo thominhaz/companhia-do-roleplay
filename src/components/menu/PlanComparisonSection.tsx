@@ -72,7 +72,7 @@ export function PlanComparisonSection({ currentTier }: PlanComparisonSectionProp
       return <span className={cn("text-xs font-medium", tier === currentTier && TIER_COLORS[tier])}>{value}</span>;
     }
     return value ? (
-      <Check className={cn("w-4 h-4", tier === currentTier ? TIER_COLORS[tier] : "text-green-500")} />
+      <Check className={cn("w-4 h-4", tier === currentTier ? TIER_COLORS[tier] : "text-secondary")} />
     ) : (
       <X className="w-4 h-4 text-muted-foreground/40" />
     );
@@ -176,7 +176,7 @@ export function PlanComparisonSection({ currentTier }: PlanComparisonSectionProp
           <div className="p-3 border-t border-border bg-muted/30">
             <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground">
               <div className="flex items-center gap-1">
-                <Check className="w-3.5 h-3.5 text-green-500" />
+                <Check className="w-3.5 h-3.5 text-secondary" />
                 <span>Incluído</span>
               </div>
               <div className="flex items-center gap-1">

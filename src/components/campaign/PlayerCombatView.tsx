@@ -88,9 +88,9 @@ export function PlayerCombatView({ campaignId, open, onOpenChange }: PlayerComba
   };
 
   const getHpColor = (percent: number) => {
-    if (percent <= 25) return "bg-red-500";
-    if (percent <= 50) return "bg-yellow-500";
-    return "bg-green-500";
+    if (percent <= 25) return "bg-destructive";
+    if (percent <= 50) return "bg-gold";
+    return "bg-secondary";
   };
 
   return (
@@ -141,11 +141,11 @@ export function PlayerCombatView({ campaignId, open, onOpenChange }: PlayerComba
                 <div className="flex items-center gap-3">
                   <div className={cn(
                     "w-10 h-10 rounded-lg flex items-center justify-center",
-                    currentCombatant.is_player ? "bg-blue-500/20" : "bg-red-500/20"
+                    currentCombatant.is_player ? "bg-primary/20" : "bg-destructive/20"
                   )}>
                     <Sparkles className={cn(
                       "w-5 h-5",
-                      currentCombatant.is_player ? "text-blue-400" : "text-red-400"
+                      currentCombatant.is_player ? "text-primary" : "text-destructive"
                     )} />
                   </div>
                   <div className="flex-1">
@@ -167,7 +167,7 @@ export function PlayerCombatView({ campaignId, open, onOpenChange }: PlayerComba
                 <Users className="w-5 h-5 text-muted-foreground" />
                 <h4 className="font-semibold">HP do Grupo</h4>
                 {deadCount > 0 && (
-                  <span className="ml-auto text-xs text-red-400 flex items-center gap-1">
+                  <span className="ml-auto text-xs text-destructive flex items-center gap-1">
                     <Skull className="w-3 h-3" />
                     {deadCount} caído{deadCount > 1 ? 's' : ''}
                   </span>
@@ -183,7 +183,7 @@ export function PlayerCombatView({ campaignId, open, onOpenChange }: PlayerComba
                   transition={{ type: "spring", stiffness: 100, damping: 15 }}
                 />
                 <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-sm font-bold text-white drop-shadow-lg">
+                  <span className="text-sm font-bold text-foreground drop-shadow-lg">
                     {totalPartyHp} / {totalPartyMaxHp}
                   </span>
                 </div>
@@ -213,7 +213,7 @@ export function PlayerCombatView({ campaignId, open, onOpenChange }: PlayerComba
                           {combatant.name}
                           {isMe && " (Você)"}
                         </span>
-                        {isDead && <Skull className="w-3 h-3 text-red-400" />}
+                        {isDead && <Skull className="w-3 h-3 text-destructive" />}
                       </div>
                       <div className="h-2 rounded-full overflow-hidden bg-muted">
                         <div 
@@ -252,7 +252,7 @@ export function PlayerCombatView({ campaignId, open, onOpenChange }: PlayerComba
                     transition={{ type: "spring", stiffness: 100, damping: 15 }}
                   />
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-base font-bold text-white drop-shadow-lg flex items-center gap-1">
+                    <span className="text-base font-bold text-foreground drop-shadow-lg flex items-center gap-1">
                       <Heart className="w-4 h-4" />
                       {userCombatant.current_hp} / {userCombatant.max_hp}
                     </span>
@@ -286,7 +286,7 @@ export function PlayerCombatView({ campaignId, open, onOpenChange }: PlayerComba
                   <Button
                     variant="default"
                     size="sm"
-                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    className="flex-1 bg-secondary hover:bg-secondary/80"
                     onClick={() => setHpDialog({ open: true, combatant: userCombatant, mode: 'heal' })}
                   >
                     Curar
@@ -316,13 +316,13 @@ export function PlayerCombatView({ campaignId, open, onOpenChange }: PlayerComba
                           isCurrentTurn 
                             ? "border-primary bg-primary/20 ring-2 ring-primary ring-offset-2 ring-offset-background" 
                             : "border-border bg-muted/30",
-                          isMe && "ring-2 ring-blue-500 ring-offset-1 ring-offset-background",
+                          isMe && "ring-2 ring-primary ring-offset-1 ring-offset-background",
                           isDead && "opacity-40"
                         )}
                       >
                         <span className={cn(
                           "text-lg font-bold",
-                          combatant.is_player ? "text-blue-400" : "text-red-400"
+                          combatant.is_player ? "text-primary" : "text-destructive"
                         )}>
                           {combatant.initiative}
                         </span>
@@ -364,7 +364,7 @@ export function PlayerCombatView({ campaignId, open, onOpenChange }: PlayerComba
               </Button>
               <Button 
                 onClick={handleApplyHpChange}
-                className={hpDialog.mode === 'damage' ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}
+                className={hpDialog.mode === 'damage' ? 'bg-destructive hover:bg-destructive/80' : 'bg-secondary hover:bg-secondary/80'}
               >
                 {hpDialog.mode === 'damage' ? 'Aplicar Dano' : 'Aplicar Cura'}
               </Button>

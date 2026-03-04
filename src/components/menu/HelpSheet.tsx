@@ -13,8 +13,8 @@ const faqCategories = [
   {
     title: "Personagens",
     icon: User,
-    color: "text-blue-500",
-    bgColor: "bg-blue-500/10",
+    color: "text-primary",
+    bgColor: "bg-primary/10",
     faqs: [
       {
         question: "Como criar um personagem?",
@@ -41,8 +41,8 @@ const faqCategories = [
   {
     title: "Campanhas",
     icon: Users,
-    color: "text-green-500",
-    bgColor: "bg-green-500/10",
+    color: "text-secondary",
+    bgColor: "bg-secondary/10",
     faqs: [
       {
         question: "Como criar uma campanha?",
@@ -69,8 +69,8 @@ const faqCategories = [
   {
     title: "Combate",
     icon: Swords,
-    color: "text-red-500",
-    bgColor: "bg-red-500/10",
+    color: "text-destructive",
+    bgColor: "bg-destructive/10",
     faqs: [
       {
         question: "Como funciona o Combat Tracker?",
@@ -93,8 +93,8 @@ const faqCategories = [
   {
     title: "Ferramentas & Compêndio",
     icon: BookOpen,
-    color: "text-purple-500",
-    bgColor: "bg-purple-500/10",
+    color: "text-accent-foreground",
+    bgColor: "bg-accent-foreground/10",
     faqs: [
       {
         question: "Onde encontro as regras do jogo?",
@@ -117,8 +117,8 @@ const faqCategories = [
   {
     title: "Assinatura & Conta",
     icon: CreditCard,
-    color: "text-amber-500",
-    bgColor: "bg-amber-500/10",
+    color: "text-gold",
+    bgColor: "bg-gold/10",
     faqs: [
       {
         question: "Quais são os planos disponíveis?",
@@ -145,8 +145,8 @@ const faqCategories = [
   {
     title: "Configurações",
     icon: Settings,
-    color: "text-slate-500",
-    bgColor: "bg-slate-500/10",
+    color: "text-muted-foreground",
+    bgColor: "bg-muted",
     faqs: [
       {
         question: "Posso usar o app offline?",
@@ -191,12 +191,12 @@ export function HelpSheet({ open, onOpenChange }: HelpSheetProps) {
                 <p className="text-2xl font-bold text-primary">{faqCategories.reduce((acc, cat) => acc + cat.faqs.length, 0)}</p>
                 <p className="text-xs text-muted-foreground">Perguntas</p>
               </div>
-              <div className="p-3 rounded-xl bg-green-500/10 border border-green-500/20 text-center">
-                <p className="text-2xl font-bold text-green-500">{faqCategories.length}</p>
+              <div className="p-3 rounded-xl bg-secondary/10 border border-secondary/20 text-center">
+                <p className="text-2xl font-bold text-secondary">{faqCategories.length}</p>
                 <p className="text-xs text-muted-foreground">Categorias</p>
               </div>
-              <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-center">
-                <p className="text-2xl font-bold text-amber-500">24h</p>
+              <div className="p-3 rounded-xl bg-gold/10 border border-gold/20 text-center">
+                <p className="text-2xl font-bold text-gold">24h</p>
                 <p className="text-xs text-muted-foreground">Suporte</p>
               </div>
             </div>
