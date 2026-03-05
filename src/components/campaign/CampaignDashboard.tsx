@@ -10,7 +10,7 @@ import {
   Crown, Users, Calendar, Settings, ChevronLeft,
   Swords, StickyNote, MessageCircle, Library,
   UserSquare2, Store, FileText, Flag, Clock, Sparkles, Gem,
-  Lock
+  Lock, Map
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +23,7 @@ import { DashboardNotes } from "./dashboard/DashboardNotes";
 import { DashboardChat } from "./dashboard/DashboardChat";
 import { DashboardCompendium } from "./dashboard/DashboardCompendium";
 import { DashboardSettings } from "./dashboard/DashboardSettings";
+import { DashboardBattleMap } from "./dashboard/DashboardBattleMap";
 
 // Future Workshops (placeholders)
 import { WorkshopNPCs } from "./dashboard/WorkshopNPCs";
@@ -38,6 +39,7 @@ type DashboardSection =
   | 'sessions' 
   | 'players' 
   | 'combat' 
+  | 'battlemap'
   | 'notes' 
   | 'chat' 
   | 'compendium'
@@ -65,6 +67,7 @@ const navItems: NavItem[] = [
   { id: 'sessions', label: 'Sessões', icon: Calendar, category: 'main' },
   { id: 'players', label: 'Jogadores', icon: Users, category: 'main' },
   { id: 'combat', label: 'Combate', icon: Swords, category: 'main' },
+  { id: 'battlemap', label: 'Mapa Tático', icon: Map, category: 'main' },
   { id: 'notes', label: 'Notas', icon: StickyNote, category: 'main' },
   { id: 'chat', label: 'Chat', icon: MessageCircle, category: 'main' },
   { id: 'compendium', label: 'Compêndio', icon: Library, category: 'main' },
@@ -182,6 +185,8 @@ export function CampaignDashboard({ campaign, open, onOpenChange, isMaster }: Ca
         return <DashboardPlayers campaign={campaign} isMaster={isMaster} />;
       case 'combat':
         return <DashboardCombat campaign={campaign} isMaster={isMaster} />;
+      case 'battlemap':
+        return <DashboardBattleMap campaign={campaign} isMaster={isMaster} />;
       case 'notes':
         return <DashboardNotes campaign={campaign} isMaster={isMaster} />;
       case 'chat':

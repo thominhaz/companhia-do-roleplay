@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      battle_maps: {
+        Row: {
+          campaign_id: string
+          cell_size: number
+          created_at: string
+          grid_height: number
+          grid_width: number
+          id: string
+          image_url: string | null
+          is_active: boolean
+          name: string
+          token_positions: Json
+          updated_at: string
+        }
+        Insert: {
+          campaign_id: string
+          cell_size?: number
+          created_at?: string
+          grid_height?: number
+          grid_width?: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          token_positions?: Json
+          updated_at?: string
+        }
+        Update: {
+          campaign_id?: string
+          cell_size?: number
+          created_at?: string
+          grid_height?: number
+          grid_width?: number
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          name?: string
+          token_positions?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "battle_maps_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bug_comments: {
         Row: {
           bug_id: string
