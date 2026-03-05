@@ -8,8 +8,10 @@ import { BattleMapCanvas } from "@/components/campaign/battlemap/BattleMapCanvas
 import { MapEditorToolbar } from "@/components/campaign/battlemap/MapEditorToolbar";
 import { MapEditorTopBar } from "@/components/campaign/battlemap/MapEditorTopBar";
 import { MapGridSettings } from "@/components/campaign/battlemap/MapGridSettings";
-import { Loader2, Map } from "lucide-react";
+import { Loader2, Map, Swords } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 const TOKEN_COLORS = [
   "#3b82f6", "#ef4444", "#22c55e", "#f59e0b", "#a855f7",
@@ -19,19 +21,7 @@ const TOKEN_COLORS = [
 export default function MapEditor() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const { data: masterCampaigns } = useMasterCampaigns();
 
-  // We need to find which campaign this map belongs to
-  // Fetch all campaign maps to find the right one
-  const [activeMap, setActiveMap] = useState<BattleMap | null>(null);
-  const [campaignId, setCampaignId] = useState<string | null>(null);
-  const [showGridSettings, setShowGridSettings] = useState(false);
-
-  // Try to find the map across campaigns
-  const allCampaignIds = masterCampaigns?.map(c => c.id) || [];
-
-  // We'll use a search approach - fetch maps for each campaign
   return (
     <MapEditorInner
       mapId={id || ""}
@@ -44,32 +34,31 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
   const { user } = useAuth();
   const { data: masterCampaigns } = useMasterCampaigns();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
-  // We need to find the map - search through master campaigns
   const [foundMap, setFoundMap] = useState<BattleMap | null>(null);
   const [foundCampaignId, setFoundCampaignId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [showGridSettings, setShowGridSettings] = useState(false);
+  const [showMobileToolbar, setShowMobileToolbar] = useState(false);
 
   const updateMap = useUpdateBattleMap();
   const deleteMap = useDeleteBattleMap();
   const activateMap = useActivateBattleMap();
 
-  // Search for the map in all master campaigns
+  // Search for the map
   useEffect(() => {
     if (!masterCampaigns || masterCampaigns.length === 0) {
       setLoading(false);
       return;
     }
-
-    // Import supabase to do a direct query
     import("@/integrations/supabase/client").then(({ supabase }) => {
       supabase
         .from("battle_maps")
         .select("*")
         .eq("id", mapId)
         .maybeSingle()
-        .then(({ data, error }) => {
+        .then(({ data }) => {
           if (data) {
             setFoundMap({
               ...data,
@@ -82,7 +71,6 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
     });
   }, [mapId, masterCampaigns]);
 
-  // Refetch map data when it changes
   const { data: maps } = useBattleMaps(foundCampaignId || "");
   const { data: players } = useCampaignPlayers(foundCampaignId || "");
 
@@ -97,11 +85,7 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
     const newTokens = currentMap.token_positions.map(t =>
       t.id === tokenId ? { ...t, x, y } : t
     );
-    updateMap.mutate({
-      id: currentMap.id,
-      campaignId: foundCampaignId,
-      token_positions: newTokens,
-    });
+    updateMap.mutate({ id: currentMap.id, campaignId: foundCampaignId, token_positions: newTokens });
   }, [currentMap, foundCampaignId, updateMap]);
 
   const addPlayerTokens = useCallback(() => {
@@ -109,7 +93,6 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
     const existing = currentMap.token_positions;
     const newTokens: TokenPosition[] = [...existing];
     let col = 0;
-
     players.forEach((player, i) => {
       if (!player.character) return;
       if (existing.some(t => t.characterId === player.character!.id)) return;
@@ -124,12 +107,7 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
       });
       col++;
     });
-
-    updateMap.mutate({
-      id: currentMap.id,
-      campaignId: foundCampaignId,
-      token_positions: newTokens,
-    });
+    updateMap.mutate({ id: currentMap.id, campaignId: foundCampaignId, token_positions: newTokens });
   }, [currentMap, players, foundCampaignId, updateMap]);
 
   const addMonsterToken = useCallback((name?: string, color?: string, size?: TokenSize, icon?: string) => {
@@ -146,11 +124,7 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
       size: size || 'medium',
       icon: icon || undefined,
     };
-    updateMap.mutate({
-      id: currentMap.id,
-      campaignId: foundCampaignId,
-      token_positions: [...currentMap.token_positions, newToken],
-    });
+    updateMap.mutate({ id: currentMap.id, campaignId: foundCampaignId, token_positions: [...currentMap.token_positions, newToken] });
   }, [currentMap, foundCampaignId, updateMap]);
 
   const updateToken = useCallback((tokenId: string, updates: Partial<TokenPosition>) => {
@@ -158,30 +132,17 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
     const newTokens = currentMap.token_positions.map(t =>
       t.id === tokenId ? { ...t, ...updates } : t
     );
-    updateMap.mutate({
-      id: currentMap.id,
-      campaignId: foundCampaignId,
-      token_positions: newTokens,
-    });
+    updateMap.mutate({ id: currentMap.id, campaignId: foundCampaignId, token_positions: newTokens });
   }, [currentMap, foundCampaignId, updateMap]);
 
   const removeToken = useCallback((tokenId: string) => {
     if (!currentMap || !foundCampaignId) return;
-    updateMap.mutate({
-      id: currentMap.id,
-      campaignId: foundCampaignId,
-      token_positions: currentMap.token_positions.filter(t => t.id !== tokenId),
-    });
+    updateMap.mutate({ id: currentMap.id, campaignId: foundCampaignId, token_positions: currentMap.token_positions.filter(t => t.id !== tokenId) });
   }, [currentMap, foundCampaignId, updateMap]);
 
   const handleGridChange = useCallback((gridWidth: number, gridHeight: number, cellSize: number) => {
     if (!currentMap || !foundCampaignId) return;
-    updateMap.mutate({
-      id: currentMap.id,
-      campaignId: foundCampaignId,
-      grid_width: gridWidth,
-      grid_height: gridHeight,
-    });
+    updateMap.mutate({ id: currentMap.id, campaignId: foundCampaignId, grid_width: gridWidth, grid_height: gridHeight });
   }, [currentMap, foundCampaignId, updateMap]);
 
   const handleImageUpload = useCallback(async (file: File) => {
@@ -189,18 +150,10 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
     const { supabase } = await import("@/integrations/supabase/client");
     const ext = file.name.split('.').pop();
     const path = `${foundCampaignId}/battlemap-${Date.now()}.${ext}`;
-    const { error } = await supabase.storage
-      .from('campaign-images')
-      .upload(path, file, { upsert: true });
+    const { error } = await supabase.storage.from('campaign-images').upload(path, file, { upsert: true });
     if (error) throw error;
-    const { data: { publicUrl } } = supabase.storage
-      .from('campaign-images')
-      .getPublicUrl(path);
-    updateMap.mutate({
-      id: currentMap.id,
-      campaignId: foundCampaignId,
-      image_url: publicUrl,
-    });
+    const { data: { publicUrl } } = supabase.storage.from('campaign-images').getPublicUrl(path);
+    updateMap.mutate({ id: currentMap.id, campaignId: foundCampaignId, image_url: publicUrl });
   }, [currentMap, foundCampaignId, updateMap]);
 
   const handleToggleActive = useCallback(() => {
@@ -232,6 +185,18 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
     );
   }
 
+  const toolbarContent = (
+    <MapEditorToolbar
+      tokens={currentMap.token_positions}
+      players={players || []}
+      onAddPlayers={addPlayerTokens}
+      onAddMonster={addMonsterToken}
+      onRemoveToken={removeToken}
+      onUpdateToken={updateToken}
+      isMobile={isMobile}
+    />
+  );
+
   return (
     <div className="h-screen bg-darker flex flex-col overflow-hidden">
       {/* Top bar */}
@@ -243,20 +208,12 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
         onDelete={handleDelete}
         onToggleGridSettings={() => setShowGridSettings(s => !s)}
         onImageUpload={handleImageUpload}
+        onToggleTokens={isMobile && isMaster ? () => setShowMobileToolbar(true) : undefined}
       />
 
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Lateral toolbar */}
-        {isMaster && (
-          <MapEditorToolbar
-            tokens={currentMap.token_positions}
-            players={players || []}
-            onAddPlayers={addPlayerTokens}
-            onAddMonster={addMonsterToken}
-            onRemoveToken={removeToken}
-            onUpdateToken={updateToken}
-          />
-        )}
+        {/* Desktop: lateral toolbar */}
+        {isMaster && !isMobile && toolbarContent}
 
         {/* Canvas */}
         <div className="flex-1 relative">
@@ -283,6 +240,18 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
           )}
         </div>
       </div>
+
+      {/* Mobile: bottom sheet for tokens */}
+      {isMobile && isMaster && (
+        <Sheet open={showMobileToolbar} onOpenChange={setShowMobileToolbar}>
+          <SheetContent side="bottom" className="max-h-[75vh] rounded-t-2xl px-0">
+            <SheetHeader className="px-4 pb-2">
+              <SheetTitle className="text-sm">Tokens</SheetTitle>
+            </SheetHeader>
+            {toolbarContent}
+          </SheetContent>
+        </Sheet>
+      )}
     </div>
   );
 }
