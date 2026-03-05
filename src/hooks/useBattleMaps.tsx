@@ -155,24 +155,33 @@ export function useDeleteBattleMap() {
 export function useActivateBattleMap() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async ({ id, campaignId }: { id: string; campaignId: string }) => {
-      // Deactivate all maps first
-      await supabase
-        .from('battle_maps')
-        .update({ is_active: false })
-        .eq('campaign_id', campaignId);
-      // Activate selected
-      const { error } = await supabase
-        .from('battle_maps')
-        .update({ is_active: true, updated_at: new Date().toISOString() })
-        .eq('id', id);
-      if (error) throw error;
-      return campaignId;
+    mutationFn: async ({ id, campaignId, currentlyActive }: { id: string; campaignId: string; currentlyActive?: boolean }) => {
+      if (currentlyActive) {
+        // Just deactivate this map
+        const { error } = await supabase
+          .from('battle_maps')
+          .update({ is_active: false, updated_at: new Date().toISOString() })
+          .eq('id', id);
+        if (error) throw error;
+      } else {
+        // Deactivate all maps first
+        await supabase
+          .from('battle_maps')
+          .update({ is_active: false })
+          .eq('campaign_id', campaignId);
+        // Activate selected
+        const { error } = await supabase
+          .from('battle_maps')
+          .update({ is_active: true, updated_at: new Date().toISOString() })
+          .eq('id', id);
+        if (error) throw error;
+      }
+      return { campaignId, activated: !currentlyActive };
     },
-    onSuccess: (campaignId) => {
+    onSuccess: ({ campaignId, activated }) => {
       queryClient.invalidateQueries({ queryKey: ['battle-maps', campaignId] });
-      toast.success('Mapa ativado para jogadores!');
+      toast.success(activated ? 'Mapa ativado para jogadores!' : 'Mapa desativado');
     },
-    onError: () => toast.error('Erro ao ativar mapa'),
+    onError: () => toast.error('Erro ao alterar mapa'),
   });
 }
