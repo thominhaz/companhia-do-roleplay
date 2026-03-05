@@ -1,6 +1,13 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { TokenPosition, TOKEN_SIZE_CELLS } from "@/hooks/useBattleMaps";
 
+function getTouchDistance(t1: Touch, t2: Touch) {
+  return Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
+}
+function getTouchCenter(t1: Touch, t2: Touch) {
+  return { x: (t1.clientX + t2.clientX) / 2, y: (t1.clientY + t2.clientY) / 2 };
+}
+
 interface BattleMapCanvasProps {
   gridWidth: number;
   gridHeight: number;
@@ -31,6 +38,13 @@ export function BattleMapCanvas({
   const [panning, setPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [bgImage, setBgImage] = useState<HTMLImageElement | null>(null);
+
+  // Refs for pinch gesture (avoid stale closures)
+  const pinchRef = useRef<{ startDist: number; startScale: number; startOffset: { x: number; y: number }; startCenter: { x: number; y: number } } | null>(null);
+  const scaleRef = useRef(scale);
+  const offsetRef = useRef(offset);
+  scaleRef.current = scale;
+  offsetRef.current = offset;
 
   const canvasWidth = gridWidth * cellSize;
   const canvasHeight = gridHeight * cellSize;
@@ -95,24 +109,20 @@ export function BattleMapCanvas({
       const cy = token.y * cellSize + tokenPixelSize / 2;
       const radius = tokenPixelSize * 0.42;
 
-      // Shadow
       ctx.shadowColor = "rgba(0,0,0,0.5)";
       ctx.shadowBlur = 6;
       ctx.shadowOffsetY = 2;
 
-      // Circle
       ctx.beginPath();
       ctx.arc(cx, cy, radius, 0, Math.PI * 2);
       ctx.fillStyle = token.color;
       ctx.fill();
       ctx.shadowColor = "transparent";
 
-      // Border ring
       ctx.strokeStyle = dragging === token.id ? "#fff" : "rgba(255,255,255,0.5)";
       ctx.lineWidth = dragging === token.id ? 3 : 1.5;
       ctx.stroke();
 
-      // Inner highlight ring for larger tokens
       if (sizeCells >= 2) {
         ctx.beginPath();
         ctx.arc(cx, cy, radius - 3, 0, Math.PI * 2);
@@ -121,7 +131,6 @@ export function BattleMapCanvas({
         ctx.stroke();
       }
 
-      // Icon/Label
       const icon = token.icon;
       const fontSize = Math.max(10, tokenPixelSize * 0.35);
       ctx.fillStyle = "#fff";
@@ -136,7 +145,6 @@ export function BattleMapCanvas({
         ctx.fillText(label, cx, cy);
       }
 
-      // Name below for large+ tokens
       if (sizeCells >= 2) {
         ctx.font = `${Math.max(9, cellSize * 0.22)}px sans-serif`;
         ctx.fillStyle = "rgba(255,255,255,0.8)";
@@ -188,7 +196,6 @@ export function BattleMapCanvas({
   };
 
   const findTokenAt = (gx: number, gy: number) => {
-    // Check all tokens, considering their size
     return tokens.find(t => {
       const sizeCells = TOKEN_SIZE_CELLS[t.size || 'medium'];
       const cells = Math.max(1, Math.floor(sizeCells));
@@ -197,6 +204,8 @@ export function BattleMapCanvas({
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
+    // Ignore if pinching
+    if (pinchRef.current) return;
     const { gx, gy } = getGridPos(e.clientX, e.clientY);
     const token = findTokenAt(gx, gy);
     if (token && canMoveToken(token)) {
@@ -205,13 +214,13 @@ export function BattleMapCanvas({
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
       return;
     }
-    // Pan
     setPanning(true);
     setPanStart({ x: e.clientX - offset.x, y: e.clientY - offset.y });
     (e.target as HTMLElement).setPointerCapture(e.pointerId);
   };
 
   const handlePointerMove = (e: React.PointerEvent) => {
+    if (pinchRef.current) return;
     if (panning) {
       setOffset({ x: e.clientX - panStart.x, y: e.clientY - panStart.y });
     }
@@ -245,6 +254,65 @@ export function BattleMapCanvas({
     }
     setScale(newScale);
   };
+
+  // Pinch-to-zoom for touch devices
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        const dist = getTouchDistance(e.touches[0], e.touches[1]);
+        const center = getTouchCenter(e.touches[0], e.touches[1]);
+        pinchRef.current = {
+          startDist: dist,
+          startScale: scaleRef.current,
+          startOffset: { ...offsetRef.current },
+          startCenter: center,
+        };
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length === 2 && pinchRef.current) {
+        e.preventDefault();
+        const dist = getTouchDistance(e.touches[0], e.touches[1]);
+        const center = getTouchCenter(e.touches[0], e.touches[1]);
+        const ratio = dist / pinchRef.current.startDist;
+        const newScale = Math.max(0.2, Math.min(3, pinchRef.current.startScale * ratio));
+
+        const rect = canvas.getBoundingClientRect();
+        const cx = pinchRef.current.startCenter.x - rect.left;
+        const cy = pinchRef.current.startCenter.y - rect.top;
+
+        const dx = center.x - pinchRef.current.startCenter.x;
+        const dy = center.y - pinchRef.current.startCenter.y;
+
+        setOffset({
+          x: cx - (cx - pinchRef.current.startOffset.x) * (newScale / pinchRef.current.startScale) + dx,
+          y: cy - (cy - pinchRef.current.startOffset.y) * (newScale / pinchRef.current.startScale) + dy,
+        });
+        setScale(newScale);
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length < 2) {
+        pinchRef.current = null;
+      }
+    };
+
+    canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    canvas.addEventListener("touchend", handleTouchEnd);
+
+    return () => {
+      canvas.removeEventListener("touchstart", handleTouchStart);
+      canvas.removeEventListener("touchmove", handleTouchMove);
+      canvas.removeEventListener("touchend", handleTouchEnd);
+    };
+  }, []);
 
   return (
     <div ref={containerRef} className="w-full h-full relative overflow-hidden bg-background rounded-lg border border-border">
