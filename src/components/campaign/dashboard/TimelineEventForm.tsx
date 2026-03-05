@@ -53,8 +53,8 @@ export function TimelineEventForm({ open, onOpenChange, event, onSubmit, isPendi
   const [icon, setIcon] = useState("calendar");
   const [color, setColor] = useState("primary");
   const [isMajorEvent, setIsMajorEvent] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
 
-  // Reset form when opening for new event or populate when editing
   useEffect(() => {
     if (open) {
       if (event) {
@@ -64,14 +64,15 @@ export function TimelineEventForm({ open, onOpenChange, event, onSubmit, isPendi
         setIcon(event.icon || "calendar");
         setColor(event.color || "primary");
         setIsMajorEvent(event.is_major_event || false);
+        setIsHidden(event.is_hidden || false);
       } else {
-        // Reset to defaults for new event
         setTitle("");
         setDescription("");
         setEventDate("");
         setIcon("calendar");
         setColor("primary");
         setIsMajorEvent(false);
+        setIsHidden(false);
       }
     }
   }, [open, event]);
@@ -86,6 +87,7 @@ export function TimelineEventForm({ open, onOpenChange, event, onSubmit, isPendi
       icon,
       color,
       is_major_event: isMajorEvent,
+      is_hidden: isHidden,
     });
     onOpenChange(false);
   };
@@ -184,6 +186,17 @@ export function TimelineEventForm({ open, onOpenChange, event, onSubmit, isPendi
             <Switch 
               checked={isMajorEvent}
               onCheckedChange={setIsMajorEvent}
+            />
+          </div>
+
+          <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+            <div>
+              <Label>Oculto para Jogadores</Label>
+              <p className="text-xs text-muted-foreground">Apenas o mestre pode ver este evento</p>
+            </div>
+            <Switch 
+              checked={isHidden}
+              onCheckedChange={setIsHidden}
             />
           </div>
 
