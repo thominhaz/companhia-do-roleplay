@@ -221,12 +221,13 @@ export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
                   onNavigateToNote={navigateToNote}
                 />
               ) : (
-                <TipTapEditor
+              <TipTapEditor
                   key={`view-${selectedNote.id}-${selectedNote.updated_at}`}
                   content={selectedNote.content || "<p></p>"}
                   onChange={() => {}}
                   campaignId={campaign.id}
                   editable={false}
+                  availableNotes={availableNotes}
                   onNavigateToNote={navigateToNote}
                 />
               )
