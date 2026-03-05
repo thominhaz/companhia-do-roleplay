@@ -418,6 +418,13 @@ export function HomeScreen({ onNavigate }: HomeScreenProps) {
               {recentItems.map((item) => (
                 <div 
                   key={`${item.type}-${item.id}`}
+                  onClick={() => {
+                    if (item.type === 'character') {
+                      navigate(`/character/${item.id}`);
+                    } else if (item.type === 'campaign') {
+                      onNavigate?.("campaigns");
+                    }
+                  }}
                   className="flex-shrink-0 w-32 sm:w-40 md:w-full bg-white/[0.08] backdrop-blur-[20px] backdrop-saturate-150 border border-white/[0.15] rounded-xl p-2 sm:p-3 shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)] transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.4)] hover:-translate-y-1 hover:border-white/[0.25] cursor-pointer"
                 >
                   <div className={`w-9 h-9 sm:w-12 sm:h-12 rounded-lg border ${item.gradient === 'primary' ? 'border-primary/40 bg-primary/10' : item.gradient === 'secondary' ? 'border-secondary/40 bg-secondary/10' : 'border-muted bg-muted/30'} flex items-center justify-center mb-1.5 sm:mb-3`}>
