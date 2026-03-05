@@ -1010,6 +1010,7 @@ export type Database = {
           icon: string | null
           id: string
           image_url: string | null
+          is_hidden: boolean
           is_major_event: boolean | null
           sort_order: number
           title: string
@@ -1025,6 +1026,7 @@ export type Database = {
           icon?: string | null
           id?: string
           image_url?: string | null
+          is_hidden?: boolean
           is_major_event?: boolean | null
           sort_order?: number
           title: string
@@ -1040,6 +1042,7 @@ export type Database = {
           icon?: string | null
           id?: string
           image_url?: string | null
+          is_hidden?: boolean
           is_major_event?: boolean | null
           sort_order?: number
           title?: string

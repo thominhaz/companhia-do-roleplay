@@ -10,7 +10,8 @@ import {
   Clock, Plus, Edit, Trash2, 
   Calendar, Sword, Shield, Crown, Skull, Map, 
   Users, Star, Heart, Flame, BookOpen, Castle,
-  LayoutList, LayoutGrid, ArrowDownAZ, ListOrdered
+  LayoutList, LayoutGrid, ArrowDownAZ, ListOrdered,
+  EyeOff
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -216,7 +217,10 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                                 </Button>
                               </div>
 
-                              <h4 className="font-semibold text-sm mb-1 line-clamp-2 pr-12">{event.title}</h4>
+                              <h4 className="font-semibold text-sm mb-1 line-clamp-2 pr-12 flex items-center gap-1">
+                                {event.is_hidden && <EyeOff className="w-3 h-3 text-muted-foreground flex-shrink-0" />}
+                                {event.title}
+                              </h4>
                               <p className="text-xs text-primary font-medium mb-2">{event.event_date}</p>
                               {event.description && (
                                 <p className="text-xs text-muted-foreground line-clamp-3">{event.description}</p>
@@ -304,7 +308,10 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                                 </Button>
                               </div>
 
-                              <h4 className="font-semibold text-sm mb-1 line-clamp-2 pr-12">{event.title}</h4>
+                              <h4 className="font-semibold text-sm mb-1 line-clamp-2 pr-12 flex items-center gap-1">
+                                {event.is_hidden && <EyeOff className="w-3 h-3 text-muted-foreground flex-shrink-0" />}
+                                {event.title}
+                              </h4>
                               <p className="text-xs text-primary font-medium mb-2">{event.event_date}</p>
                               {event.description && (
                                 <p className="text-xs text-muted-foreground line-clamp-3">{event.description}</p>
@@ -411,7 +418,10 @@ export function WorkshopTimeline({ campaign }: WorkshopTimelineProps) {
                           <p className={`text-xs font-semibold mb-1 ${event.color === 'primary' ? 'text-primary' : `text-${event.color}-500`}`}>
                             {event.event_date}
                           </p>
-                          <h4 className="font-semibold text-base mb-1">{event.title}</h4>
+                          <h4 className="font-semibold text-base mb-1 flex items-center gap-1.5">
+                            {event.is_hidden && <EyeOff className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />}
+                            {event.title}
+                          </h4>
                           {event.description && (
                             <p className="text-sm text-muted-foreground">{event.description}</p>
                           )}

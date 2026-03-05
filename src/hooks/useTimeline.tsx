@@ -12,6 +12,7 @@ export interface TimelineEvent {
   color: string;
   image_url: string | null;
   is_major_event: boolean;
+  is_hidden: boolean;
   sort_order: number;
   created_at: string;
   updated_at: string;
@@ -53,6 +54,7 @@ export function useTimeline(campaignId: string | undefined, sortBy: "event_date"
           color: event.color || "primary",
           image_url: event.image_url,
           is_major_event: event.is_major_event ?? false,
+          is_hidden: event.is_hidden ?? false,
           sort_order: maxOrder,
           created_by: event.created_by,
         })
