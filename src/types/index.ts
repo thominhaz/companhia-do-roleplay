@@ -282,7 +282,7 @@ export interface Condition {
 }
 
 // Navigation Types
-export type TabRoute = 'home' | 'characters' | 'campaigns' | 'tools' | 'menu';
+export type TabRoute = 'home' | 'characters' | 'campaigns' | 'maps' | 'tools' | 'menu';
 
 // Quick Action Types
 export interface QuickAction {
