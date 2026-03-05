@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
-import { useBattleMaps, useUpdateBattleMap, useDeleteBattleMap, useActivateBattleMap, TokenPosition, BattleMap } from "@/hooks/useBattleMaps";
+import { useBattleMaps, useUpdateBattleMap, useDeleteBattleMap, useActivateBattleMap, TokenPosition, TokenSize, BattleMap } from "@/hooks/useBattleMaps";
 import { useCampaignPlayers } from "@/hooks/useSessions";
 import { useMasterCampaigns } from "@/hooks/useCampaigns";
 import { BattleMapCanvas } from "@/components/campaign/battlemap/BattleMapCanvas";
@@ -132,7 +132,7 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
     });
   }, [currentMap, players, foundCampaignId, updateMap]);
 
-  const addMonsterToken = useCallback((name?: string) => {
+  const addMonsterToken = useCallback((name?: string, color?: string, size?: TokenSize, icon?: string) => {
     if (!currentMap || !foundCampaignId) return;
     const count = currentMap.token_positions.filter(t => !t.isPlayer).length;
     const tokenName = name || `Monstro ${count + 1}`;
@@ -141,13 +141,27 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
       name: tokenName,
       x: Math.floor(currentMap.grid_width / 2),
       y: 0,
-      color: TOKEN_COLORS[(count + 5) % TOKEN_COLORS.length],
+      color: color || TOKEN_COLORS[(count + 5) % TOKEN_COLORS.length],
       isPlayer: false,
+      size: size || 'medium',
+      icon: icon || undefined,
     };
     updateMap.mutate({
       id: currentMap.id,
       campaignId: foundCampaignId,
       token_positions: [...currentMap.token_positions, newToken],
+    });
+  }, [currentMap, foundCampaignId, updateMap]);
+
+  const updateToken = useCallback((tokenId: string, updates: Partial<TokenPosition>) => {
+    if (!currentMap || !foundCampaignId) return;
+    const newTokens = currentMap.token_positions.map(t =>
+      t.id === tokenId ? { ...t, ...updates } : t
+    );
+    updateMap.mutate({
+      id: currentMap.id,
+      campaignId: foundCampaignId,
+      token_positions: newTokens,
     });
   }, [currentMap, foundCampaignId, updateMap]);
 
@@ -240,6 +254,7 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
             onAddPlayers={addPlayerTokens}
             onAddMonster={addMonsterToken}
             onRemoveToken={removeToken}
+            onUpdateToken={updateToken}
           />
         )}
 
