@@ -56,7 +56,7 @@ export function MapsScreen() {
     <div className="min-h-screen bg-darker pb-24">
       <AppHeader title="Mapas Táticos" />
 
-      <div className="px-4 py-4 space-y-4">
+      <div className="px-5 md:px-8 lg:px-12 py-4 space-y-4 max-w-6xl mx-auto">
         {/* Filters + Create */}
         <div className="flex items-center gap-3">
           <Select value={selectedCampaignId} onValueChange={setSelectedCampaignId}>
