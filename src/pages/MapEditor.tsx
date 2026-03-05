@@ -191,7 +191,7 @@ function MapEditorInner({ mapId, onBack }: { mapId: string; onBack: () => void }
 
   const handleToggleActive = useCallback(() => {
     if (!currentMap || !foundCampaignId) return;
-    activateMap.mutate({ id: currentMap.id, campaignId: foundCampaignId });
+    activateMap.mutate({ id: currentMap.id, campaignId: foundCampaignId, currentlyActive: currentMap.is_active });
   }, [currentMap, foundCampaignId, activateMap]);
 
   const handleDelete = useCallback(() => {

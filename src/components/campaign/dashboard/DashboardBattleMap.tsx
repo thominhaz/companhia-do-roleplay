@@ -154,7 +154,7 @@ export function DashboardBattleMap({ campaign, isMaster }: Props) {
               <Button
                 variant={activeMap.is_active ? "secondary" : "outline"}
                 size="sm"
-                onClick={() => activateMap.mutate({ id: activeMap.id, campaignId: campaign.id })}
+                onClick={() => activateMap.mutate({ id: activeMap.id, campaignId: campaign.id, currentlyActive: activeMap.is_active })}
                 className="gap-1"
               >
                 {activeMap.is_active ? <EyeOff className="w-3 h-3" /> : <Eye className="w-3 h-3" />}
