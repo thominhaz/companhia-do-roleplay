@@ -1373,7 +1373,9 @@ export type Database = {
           id: string
           is_active: boolean
           name: string
+          pre_selected_player_ids: string[] | null
           round: number
+          status: string
           updated_at: string
         }
         Insert: {
@@ -1383,7 +1385,9 @@ export type Database = {
           id?: string
           is_active?: boolean
           name: string
+          pre_selected_player_ids?: string[] | null
           round?: number
+          status?: string
           updated_at?: string
         }
         Update: {
@@ -1393,7 +1397,9 @@ export type Database = {
           id?: string
           is_active?: boolean
           name?: string
+          pre_selected_player_ids?: string[] | null
           round?: number
+          status?: string
           updated_at?: string
         }
         Relationships: [

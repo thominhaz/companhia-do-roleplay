@@ -135,7 +135,7 @@ export function useCreateEncounter() {
       // End any active encounters first
       await supabase
         .from('combat_encounters')
-        .update({ is_active: false })
+        .update({ is_active: false, status: 'finished' })
         .eq('campaign_id', campaignId)
         .eq('is_active', true);
 
@@ -147,6 +147,7 @@ export function useCreateEncounter() {
           round: 1,
           current_turn: 0,
           is_active: true,
+          status: 'active',
         })
         .select()
         .single();
@@ -172,7 +173,7 @@ export function useEndEncounter() {
     mutationFn: async (encounterId: string) => {
       const { data, error } = await supabase
         .from('combat_encounters')
-        .update({ is_active: false })
+        .update({ is_active: false, status: 'finished' })
         .eq('id', encounterId)
         .select()
         .single();
