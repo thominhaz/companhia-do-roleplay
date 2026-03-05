@@ -2,6 +2,26 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
+export type TokenSize = 'tiny' | 'small' | 'medium' | 'large' | 'huge' | 'gargantuan';
+
+export const TOKEN_SIZE_CELLS: Record<TokenSize, number> = {
+  tiny: 0.5,
+  small: 1,
+  medium: 1,
+  large: 2,
+  huge: 3,
+  gargantuan: 4,
+};
+
+export const TOKEN_SIZE_LABELS: Record<TokenSize, string> = {
+  tiny: 'Minúsculo',
+  small: 'Pequeno',
+  medium: 'Médio',
+  large: 'Grande',
+  huge: 'Enorme',
+  gargantuan: 'Colossal',
+};
+
 export interface TokenPosition {
   id: string;
   name: string;
@@ -11,6 +31,8 @@ export interface TokenPosition {
   isPlayer: boolean;
   characterId?: string;
   combatantId?: string;
+  size?: TokenSize;
+  icon?: string; // single character/emoji
 }
 
 export interface BattleMap {

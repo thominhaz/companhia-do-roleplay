@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from "react";
-import { TokenPosition } from "@/hooks/useBattleMaps";
+import { TokenPosition, TOKEN_SIZE_CELLS } from "@/hooks/useBattleMaps";
 
 interface BattleMapCanvasProps {
   gridWidth: number;
@@ -9,7 +9,7 @@ interface BattleMapCanvasProps {
   tokens: TokenPosition[];
   onTokenMove: (tokenId: string, x: number, y: number) => void;
   readOnly?: boolean;
-  allowedCharacterId?: string; // if player, only move own token
+  allowedCharacterId?: string;
 }
 
 export function BattleMapCanvas({
@@ -89,13 +89,15 @@ export function BattleMapCanvas({
 
     // Tokens
     tokens.forEach(token => {
-      const cx = token.x * cellSize + cellSize / 2;
-      const cy = token.y * cellSize + cellSize / 2;
-      const radius = cellSize * 0.38;
+      const sizeCells = TOKEN_SIZE_CELLS[token.size || 'medium'];
+      const tokenPixelSize = sizeCells * cellSize;
+      const cx = token.x * cellSize + tokenPixelSize / 2;
+      const cy = token.y * cellSize + tokenPixelSize / 2;
+      const radius = tokenPixelSize * 0.42;
 
       // Shadow
-      ctx.shadowColor = "rgba(0,0,0,0.4)";
-      ctx.shadowBlur = 4;
+      ctx.shadowColor = "rgba(0,0,0,0.5)";
+      ctx.shadowBlur = 6;
       ctx.shadowOffsetY = 2;
 
       // Circle
@@ -105,18 +107,45 @@ export function BattleMapCanvas({
       ctx.fill();
       ctx.shadowColor = "transparent";
 
-      // Border
-      ctx.strokeStyle = dragging === token.id ? "#fff" : "rgba(255,255,255,0.6)";
-      ctx.lineWidth = dragging === token.id ? 2.5 : 1.5;
+      // Border ring
+      ctx.strokeStyle = dragging === token.id ? "#fff" : "rgba(255,255,255,0.5)";
+      ctx.lineWidth = dragging === token.id ? 3 : 1.5;
       ctx.stroke();
 
-      // Label
+      // Inner highlight ring for larger tokens
+      if (sizeCells >= 2) {
+        ctx.beginPath();
+        ctx.arc(cx, cy, radius - 3, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255,255,255,0.15)";
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+
+      // Icon/Label
+      const icon = token.icon;
+      const fontSize = Math.max(10, tokenPixelSize * 0.35);
       ctx.fillStyle = "#fff";
-      ctx.font = `bold ${Math.max(10, cellSize * 0.25)}px sans-serif`;
+      ctx.font = `bold ${fontSize}px sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      const label = token.name.length > 4 ? token.name.substring(0, 3) + "…" : token.name;
-      ctx.fillText(label, cx, cy);
+
+      if (icon) {
+        ctx.fillText(icon, cx, cy);
+      } else {
+        const label = token.name.length > 3 ? token.name.substring(0, 3) : token.name;
+        ctx.fillText(label, cx, cy);
+      }
+
+      // Name below for large+ tokens
+      if (sizeCells >= 2) {
+        ctx.font = `${Math.max(9, cellSize * 0.22)}px sans-serif`;
+        ctx.fillStyle = "rgba(255,255,255,0.8)";
+        ctx.fillText(
+          token.name.length > 8 ? token.name.substring(0, 7) + "…" : token.name,
+          cx,
+          cy + radius + cellSize * 0.2
+        );
+      }
     });
 
     ctx.restore();
@@ -154,16 +183,25 @@ export function BattleMapCanvas({
 
   const canMoveToken = (token: TokenPosition) => {
     if (readOnly) return false;
-    if (!allowedCharacterId) return true; // master can move all
+    if (!allowedCharacterId) return true;
     return token.characterId === allowedCharacterId;
+  };
+
+  const findTokenAt = (gx: number, gy: number) => {
+    // Check all tokens, considering their size
+    return tokens.find(t => {
+      const sizeCells = TOKEN_SIZE_CELLS[t.size || 'medium'];
+      const cells = Math.max(1, Math.floor(sizeCells));
+      return gx >= t.x && gx < t.x + cells && gy >= t.y && gy < t.y + cells;
+    });
   };
 
   const handlePointerDown = (e: React.PointerEvent) => {
     const { gx, gy } = getGridPos(e.clientX, e.clientY);
-    const token = tokens.find(t => t.x === gx && t.y === gy);
+    const token = findTokenAt(gx, gy);
     if (token && canMoveToken(token)) {
       setDragging(token.id);
-      setDragStart({ x: gx, y: gy });
+      setDragStart({ x: token.x, y: token.y });
       (e.target as HTMLElement).setPointerCapture(e.pointerId);
       return;
     }
@@ -176,9 +214,7 @@ export function BattleMapCanvas({
   const handlePointerMove = (e: React.PointerEvent) => {
     if (panning) {
       setOffset({ x: e.clientX - panStart.x, y: e.clientY - panStart.y });
-      return;
     }
-    // Dragging shows live feedback via draw (no snap during drag for smoothness)
   };
 
   const handlePointerUp = (e: React.PointerEvent) => {
@@ -198,7 +234,6 @@ export function BattleMapCanvas({
     e.preventDefault();
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
     const newScale = Math.max(0.2, Math.min(3, scale * delta));
-    // Zoom toward mouse
     const rect = canvasRef.current?.getBoundingClientRect();
     if (rect) {
       const mx = e.clientX - rect.left;
