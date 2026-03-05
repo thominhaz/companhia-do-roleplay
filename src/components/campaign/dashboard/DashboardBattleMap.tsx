@@ -254,7 +254,8 @@ export function DashboardBattleMap({ campaign, isMaster }: Props) {
       <CreateBattleMapSheet
         open={showCreate}
         onOpenChange={setShowCreate}
-        campaignId={campaign.id}
+        campaigns={[{ id: campaign.id, name: campaign.name, master_id: campaign.master_id, description: campaign.description, image_url: campaign.image_url, invite_code: campaign.invite_code, theme_color: campaign.theme_color, icon: campaign.icon, created_at: campaign.created_at, updated_at: campaign.updated_at } as any]}
+        defaultCampaignId={campaign.id}
       />
     </div>
   );
