@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { CampaignDB } from "@/hooks/useCampaigns";
-import { useCampaignNotes, useCreateNote, useUpdateNote, useDeleteNote, CampaignNote } from "@/hooks/useNotes";
+import { useCampaignNotes, useCreateNote, useUpdateNote, useDeleteNote, useReorderNote, CampaignNote } from "@/hooks/useNotes";
 import { useAuth } from "@/hooks/useAuth";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { NotesTreeSidebar } from "../notes/NotesTreeSidebar";
@@ -33,6 +33,7 @@ export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
   const createNote = useCreateNote();
   const updateNote = useUpdateNote();
   const deleteNote = useDeleteNote();
+  const reorderNote = useReorderNote();
 
   // Close sidebar on mobile when selecting a note
   useEffect(() => {
@@ -81,6 +82,10 @@ export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
       setSelectedNote(null);
       setIsEditing(false);
     }
+  };
+
+  const handleMoveNote = (noteId: string, direction: 'up' | 'down') => {
+    reorderNote.mutate({ noteId, direction, campaignId: campaign.id });
   };
 
   const openNote = (note: CampaignNote) => {
@@ -132,6 +137,7 @@ export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
               onSelectNote={openNote}
               onCreateNote={handleCreateNote}
               onDeleteNote={handleDeleteNote}
+              onMoveNote={handleMoveNote}
             />
           </div>
         </>
