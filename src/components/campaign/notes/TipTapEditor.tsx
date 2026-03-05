@@ -105,7 +105,7 @@ export function TipTapEditor({ content, onChange, campaignId, placeholder = 'Esc
   if (!editable) {
     return (
       <div
-        className="prose prose-invert max-w-none prose-img:rounded-lg prose-headings:text-foreground prose-p:text-foreground prose-strong:text-foreground prose-em:text-foreground/80"
+        className="[&_.tiptap]:outline-none [&_.tiptap_h1]:text-2xl [&_.tiptap_h1]:font-bold [&_.tiptap_h1]:mb-2 [&_.tiptap_h2]:text-xl [&_.tiptap_h2]:font-bold [&_.tiptap_h2]:mb-2 [&_.tiptap_h3]:text-lg [&_.tiptap_h3]:font-semibold [&_.tiptap_h3]:mb-1 [&_.tiptap_ul]:list-disc [&_.tiptap_ul]:pl-6 [&_.tiptap_ol]:list-decimal [&_.tiptap_ol]:pl-6 [&_.tiptap_blockquote]:border-l-4 [&_.tiptap_blockquote]:border-primary/50 [&_.tiptap_blockquote]:pl-4 [&_.tiptap_blockquote]:italic [&_.tiptap_blockquote]:text-muted-foreground [&_.tiptap_pre]:bg-muted [&_.tiptap_pre]:rounded-lg [&_.tiptap_pre]:p-3 [&_.tiptap_pre]:font-mono [&_.tiptap_pre]:text-sm [&_.tiptap_hr]:border-border [&_.tiptap_hr]:my-4 [&_.tiptap_img]:rounded-lg [&_.tiptap_img]:max-w-full [&_.tiptap_p]:mb-1 [&_.mention-note]:text-primary [&_.mention-note]:font-medium [&_.mention-note]:bg-primary/10 [&_.mention-note]:rounded [&_.mention-note]:px-1 [&_.mention-note]:py-0.5 [&_.mention-note]:cursor-pointer [&_.mention-note:hover]:bg-primary/20"
         onClick={(e) => {
           const target = e.target as HTMLElement;
           const mention = target.closest('[data-note-id]');
