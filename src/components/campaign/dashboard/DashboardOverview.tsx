@@ -1,4 +1,8 @@
+import { useMemo } from "react";
 import { CampaignDB } from "@/hooks/useCampaigns";
+import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { Progress } from "@/components/ui/progress";
 import { 
   Users, Calendar, Swords, StickyNote, MessageCircle, 
   Library, Crown, Copy, Share2 
@@ -21,12 +25,62 @@ export function DashboardOverview({ campaign, isMaster, sessions, players, onNav
   const upcomingSessions = sessions?.filter(s => isFuture(new Date(s.scheduled_at))) || [];
   const nextSession = upcomingSessions[0];
 
+  // Real stats queries
+  const { data: combatCount } = useQuery({
+    queryKey: ['combat-count', campaign.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('combat_encounters')
+        .select('*', { count: 'exact', head: true })
+        .eq('campaign_id', campaign.id);
+      return count || 0;
+    },
+  });
+
+  const { data: notesCount } = useQuery({
+    queryKey: ['notes-count', campaign.id],
+    queryFn: async () => {
+      const { count } = await supabase
+        .from('campaign_notes')
+        .select('*', { count: 'exact', head: true })
+        .eq('campaign_id', campaign.id);
+      return count || 0;
+    },
+  });
+
+  const { data: activeCombat } = useQuery({
+    queryKey: ['active-combat', campaign.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('combat_encounters')
+        .select('id, name, round, current_turn')
+        .eq('campaign_id', campaign.id)
+        .eq('is_active', true)
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+    refetchInterval: 10000,
+  });
+
+  // Players with character data for HP display
+  const playersWithCharacters = useMemo(() => {
+    return (players || []).filter((p: any) => p.character);
+  }, [players]);
+
   const handleCopyInviteCode = () => {
     if (campaign.invite_code) {
       navigator.clipboard.writeText(campaign.invite_code);
       toast.success("Código copiado: " + campaign.invite_code);
     }
   };
+
+  const statCards = [
+    { id: 'players', label: 'Jogadores', icon: Users, value: players?.length || 0 },
+    { id: 'sessions', label: 'Sessões', icon: Calendar, value: sessions?.length || 0 },
+    { id: 'combat', label: 'Combates', icon: Swords, value: combatCount ?? 0 },
+    { id: 'notes', label: 'Notas', icon: StickyNote, value: notesCount ?? 0 },
+  ];
 
   const quickActions = [
     { id: 'sessions', label: 'Sessões', icon: Calendar, color: 'text-primary', bgColor: 'bg-primary/10' },
@@ -80,28 +134,40 @@ export function DashboardOverview({ campaign, isMaster, sessions, players, onNav
         <p className="text-sm text-muted-foreground">{campaign.description}</p>
       )}
 
-      {/* Stats Grid */}
+      {/* Active Combat Banner */}
+      {activeCombat && (
+        <button
+          onClick={() => onNavigate('combat')}
+          className="w-full bg-destructive/15 rounded-xl p-4 border border-destructive/30 flex items-center gap-3 hover:bg-destructive/20 transition-colors text-left"
+        >
+          <div className="w-10 h-10 rounded-xl bg-destructive/20 flex items-center justify-center animate-pulse">
+            <Swords className="w-5 h-5 text-destructive" />
+          </div>
+          <div className="flex-1">
+            <p className="text-sm font-semibold text-destructive">Combate em andamento</p>
+            <p className="text-xs text-muted-foreground">
+              {activeCombat.name} — Rodada {activeCombat.round}
+            </p>
+          </div>
+        </button>
+      )}
+
+      {/* Stats Grid - Clickable */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        <div className="bg-card rounded-xl p-4 text-center border border-border">
-          <Users className="w-5 h-5 mx-auto mb-2 text-primary" />
-          <p className="text-2xl font-bold">{players?.length || 0}</p>
-          <p className="text-xs text-muted-foreground">Jogadores</p>
-        </div>
-        <div className="bg-card rounded-xl p-4 text-center border border-border">
-          <Calendar className="w-5 h-5 mx-auto mb-2 text-primary" />
-          <p className="text-2xl font-bold">{sessions?.length || 0}</p>
-          <p className="text-xs text-muted-foreground">Sessões</p>
-        </div>
-        <div className="bg-card rounded-xl p-4 text-center border border-border">
-          <Swords className="w-5 h-5 mx-auto mb-2 text-primary" />
-          <p className="text-2xl font-bold">-</p>
-          <p className="text-xs text-muted-foreground">Combates</p>
-        </div>
-        <div className="bg-card rounded-xl p-4 text-center border border-border">
-          <StickyNote className="w-5 h-5 mx-auto mb-2 text-primary" />
-          <p className="text-2xl font-bold">-</p>
-          <p className="text-xs text-muted-foreground">Notas</p>
-        </div>
+        {statCards.map(stat => {
+          const Icon = stat.icon;
+          return (
+            <button
+              key={stat.id}
+              onClick={() => onNavigate(stat.id)}
+              className="bg-card rounded-xl p-4 text-center border border-border hover:border-primary/30 transition-colors cursor-pointer"
+            >
+              <Icon className="w-5 h-5 mx-auto mb-2 text-primary" />
+              <p className="text-2xl font-bold">{stat.value}</p>
+              <p className="text-xs text-muted-foreground">{stat.label}</p>
+            </button>
+          );
+        })}
       </div>
 
       {/* Invite Code (Master only) */}
@@ -134,6 +200,38 @@ export function DashboardOverview({ campaign, isMaster, sessions, players, onNav
                 {format(new Date(nextSession.scheduled_at), "EEEE, d 'de' MMMM 'às' HH:mm", { locale: ptBR })}
               </p>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* Player HP Status (Master only) */}
+      {isMaster && playersWithCharacters.length > 0 && (
+        <div>
+          <h3 className="text-sm font-semibold text-muted-foreground mb-3">Status dos Jogadores</h3>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {playersWithCharacters.map((p: any) => {
+              const char = p.character;
+              const hpPercent = char.max_hp > 0 ? Math.round((char.current_hp / char.max_hp) * 100) : 0;
+              const hpColor = hpPercent > 50 ? 'bg-secondary' : hpPercent > 25 ? 'bg-accent' : 'bg-destructive';
+              
+              return (
+                <div key={p.id} className="bg-card rounded-xl p-3 border border-border flex items-center gap-3">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium truncate">{char.name}</p>
+                    <p className="text-xs text-muted-foreground">{char.class} Nv.{char.level}</p>
+                  </div>
+                  <div className="w-24 space-y-1">
+                    <p className="text-xs text-right font-mono">{char.current_hp}/{char.max_hp}</p>
+                    <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+                      <div 
+                        className={cn("h-full rounded-full transition-all", hpColor)}
+                        style={{ width: `${Math.min(hpPercent, 100)}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}

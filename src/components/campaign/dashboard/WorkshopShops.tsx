@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { CampaignDB } from "@/hooks/useCampaigns";
 import { useShops, Shop, ShopFormData } from "@/hooks/useShops";
 import { ShopFormSheet } from "./ShopFormSheet";
@@ -41,7 +41,7 @@ export function WorkshopShops({ campaign, players = [] }: WorkshopShopsProps) {
   const [editingShop, setEditingShop] = useState<Shop | null>(null);
   const [selectedShop, setSelectedShop] = useState<Shop | null>(null);
 
-  const filteredShops = shops.filter((shop) => {
+  const filteredShops = useMemo(() => shops.filter((shop) => {
     const matchesSearch =
       shop.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       shop.location?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -49,7 +49,7 @@ export function WorkshopShops({ campaign, players = [] }: WorkshopShopsProps) {
         tag.toLowerCase().includes(searchQuery.toLowerCase())
       );
     return matchesSearch;
-  });
+  }), [shops, searchQuery]);
 
   const handleCreateShop = async (data: ShopFormData) => {
     await createShop.mutateAsync(data);

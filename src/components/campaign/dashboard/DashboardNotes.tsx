@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { CampaignDB } from "@/hooks/useCampaigns";
 import { useCampaignNotes, useCreateNote, useUpdateNote, useDeleteNote, CampaignNote } from "@/hooks/useNotes";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { NotesTreeSidebar } from "../notes/NotesTreeSidebar";
 import { TipTapEditor } from "../notes/TipTapEditor";
 import { Button } from "@/components/ui/button";
@@ -12,14 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import {
-  Loader2,
-  Eye,
-  EyeOff,
-  Save,
-  Edit,
-  FileText,
-  PanelLeftClose,
-  PanelLeft,
+  Loader2, Eye, EyeOff, Save, Edit, FileText, PanelLeftClose, PanelLeft,
 } from "lucide-react";
 
 interface DashboardNotesProps {
@@ -29,15 +23,23 @@ interface DashboardNotesProps {
 
 export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
   const { user } = useAuth();
+  const isMobile = useIsMobile();
   const [selectedNote, setSelectedNote] = useState<CampaignNote | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({ title: "", content: "", is_public: false });
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(!isMobile);
 
   const { data: notes, isLoading } = useCampaignNotes(campaign.id);
   const createNote = useCreateNote();
   const updateNote = useUpdateNote();
   const deleteNote = useDeleteNote();
+
+  // Close sidebar on mobile when selecting a note
+  useEffect(() => {
+    if (isMobile && selectedNote) {
+      setSidebarOpen(false);
+    }
+  }, [selectedNote, isMobile]);
 
   useEffect(() => {
     if (selectedNote && notes) {
@@ -112,18 +114,27 @@ export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
   }
 
   return (
-    <div className="flex h-[calc(100vh-200px)] rounded-xl border border-border overflow-hidden bg-card">
-      {/* Sidebar */}
+    <div className="flex h-[calc(100vh-200px)] rounded-xl border border-border overflow-hidden bg-card relative">
+      {/* Sidebar - Desktop inline, Mobile overlay */}
       {sidebarOpen && (
-        <div className="w-64 flex-shrink-0">
-          <NotesTreeSidebar
-            notes={notes || []}
-            selectedNoteId={selectedNote?.id || null}
-            onSelectNote={openNote}
-            onCreateNote={handleCreateNote}
-            onDeleteNote={handleDeleteNote}
-          />
-        </div>
+        <>
+          {isMobile && (
+            <div className="absolute inset-0 z-10 bg-black/50" onClick={() => setSidebarOpen(false)} />
+          )}
+          <div className={
+            isMobile
+              ? "absolute left-0 top-0 bottom-0 z-20 w-64 bg-card border-r border-border"
+              : "w-64 flex-shrink-0"
+          }>
+            <NotesTreeSidebar
+              notes={notes || []}
+              selectedNoteId={selectedNote?.id || null}
+              onSelectNote={openNote}
+              onCreateNote={handleCreateNote}
+              onDeleteNote={handleDeleteNote}
+            />
+          </div>
+        </>
       )}
 
       {/* Main Content */}
