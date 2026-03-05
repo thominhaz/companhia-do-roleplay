@@ -168,41 +168,46 @@ function CampaignMapsSection({
         <span className="text-xs text-muted-foreground">({visibleMaps.length})</span>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      <div className="space-y-3">
         {visibleMaps.map(map => (
           <button
             key={map.id}
             onClick={() => onOpenMap(map.id, campaign.id)}
             className={cn(
-              "relative text-left rounded-xl border border-border/50 bg-card/60 overflow-hidden",
-              "hover:bg-card/80 hover:border-border transition-all group"
+              "relative w-full text-left rounded-2xl border border-border/30 bg-surface-1/80 backdrop-blur-md overflow-hidden",
+              "hover:border-primary/30 hover:shadow-depth-md hover:scale-[1.01] transition-all group shadow-depth-sm"
             )}
           >
-            {/* Map thumbnail */}
-            <div className="h-28 bg-muted/30 relative overflow-hidden">
-              {map.image_url ? (
-                <img src={map.image_url} alt={map.name} className="w-full h-full object-cover opacity-70 group-hover:opacity-90 transition-opacity" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <Map className="w-10 h-10 text-muted-foreground/30" />
-                </div>
-              )}
-              {map.is_active && (
-                <span className="absolute top-2 right-2 text-[10px] bg-primary/90 text-primary-foreground px-2 py-0.5 rounded-full font-medium">
-                  ATIVO
-                </span>
-              )}
-            </div>
+            <div className="flex items-center gap-3 p-4">
+              {/* Thumbnail */}
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl border border-border/30 bg-muted/30 overflow-hidden flex-shrink-0">
+                {map.image_url ? (
+                  <img src={map.image_url} alt={map.name} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Map className="w-6 h-6 text-muted-foreground/30" />
+                  </div>
+                )}
+              </div>
 
-            <div className="p-3">
-              <h4 className="font-medium text-sm truncate">{map.name}</h4>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-[11px] text-muted-foreground">
-                  {map.grid_width}×{map.grid_height}
-                </span>
-                <span className="text-[11px] text-muted-foreground">
-                  {map.token_positions.length} tokens
-                </span>
+              {/* Info */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <h4 className="font-semibold text-sm text-foreground truncate">{map.name}</h4>
+                  {map.is_active && (
+                    <span className="text-[10px] bg-primary/90 text-primary-foreground px-2 py-0.5 rounded-full font-medium flex-shrink-0">
+                      ATIVO
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-3">
+                  <span className="text-xs text-muted-foreground">
+                    {map.grid_width}×{map.grid_height}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {map.token_positions.length} tokens
+                  </span>
+                </div>
               </div>
             </div>
           </button>
