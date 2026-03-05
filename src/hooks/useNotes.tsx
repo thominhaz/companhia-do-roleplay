@@ -33,7 +33,7 @@ export function useCampaignNotes(campaignId: string) {
         .from('campaign_notes')
         .select('*')
         .eq('campaign_id', campaignId)
-        .order('updated_at', { ascending: false });
+        .order('sort_order', { ascending: true });
 
       if (error) throw error;
 
@@ -115,6 +115,58 @@ export function useUpdateNote() {
     },
     onError: () => {
       toast.error('Erro ao salvar nota');
+    },
+  });
+}
+
+// Reorder notes (swap sort_order between two notes)
+export function useReorderNote() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ noteId, direction, campaignId }: { noteId: string; direction: 'up' | 'down'; campaignId: string }) => {
+      // Get all notes for the campaign to find siblings
+      const { data: allNotes, error: fetchError } = await supabase
+        .from('campaign_notes')
+        .select('id, parent_id, sort_order')
+        .eq('campaign_id', campaignId)
+        .order('sort_order', { ascending: true });
+
+      if (fetchError) throw fetchError;
+      if (!allNotes) return campaignId;
+
+      const currentNote = allNotes.find(n => n.id === noteId);
+      if (!currentNote) return campaignId;
+
+      // Get siblings (same parent_id)
+      const siblings = allNotes
+        .filter(n => n.parent_id === currentNote.parent_id)
+        .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
+      const currentIdx = siblings.findIndex(n => n.id === noteId);
+      const swapIdx = direction === 'up' ? currentIdx - 1 : currentIdx + 1;
+
+      if (swapIdx < 0 || swapIdx >= siblings.length) return campaignId;
+
+      const swapNote = siblings[swapIdx];
+      const currentOrder = currentNote.sort_order ?? currentIdx;
+      const swapOrder = swapNote.sort_order ?? swapIdx;
+
+      // Swap sort_order values
+      await Promise.all([
+        supabase.from('campaign_notes').update({ sort_order: swapOrder }).eq('id', noteId),
+        supabase.from('campaign_notes').update({ sort_order: currentOrder }).eq('id', swapNote.id),
+      ]);
+
+      return campaignId;
+    },
+    onSuccess: (campaignId) => {
+      if (campaignId) {
+        queryClient.invalidateQueries({ queryKey: ['campaign-notes', campaignId] });
+      }
+    },
+    onError: () => {
+      toast.error('Erro ao reordenar nota');
     },
   });
 }

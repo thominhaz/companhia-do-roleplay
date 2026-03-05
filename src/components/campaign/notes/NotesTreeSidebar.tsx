@@ -13,9 +13,10 @@ import {
   EyeOff,
   Trash2,
   StickyNote,
+  GripVertical,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
-import { formatDistanceToNow } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
 interface NotesTreeSidebarProps {
   notes: CampaignNote[];
@@ -23,6 +24,7 @@ interface NotesTreeSidebarProps {
   onSelectNote: (note: CampaignNote) => void;
   onCreateNote: (parentId?: string) => void;
   onDeleteNote: (note: CampaignNote) => void;
+  onMoveNote?: (noteId: string, direction: 'up' | 'down') => void;
 }
 
 interface TreeNode {
@@ -34,15 +36,16 @@ function buildTree(notes: CampaignNote[]): TreeNode[] {
   const map = new Map<string, TreeNode>();
   const roots: TreeNode[] = [];
 
-  // Create nodes
-  notes.forEach(note => {
+  // Sort by sort_order first
+  const sorted = [...notes].sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+
+  sorted.forEach(note => {
     map.set(note.id, { note, children: [] });
   });
 
-  // Build tree
-  notes.forEach(note => {
+  sorted.forEach(note => {
     const node = map.get(note.id)!;
-    const parentId = (note as any).parent_id;
+    const parentId = note.parent_id;
     if (parentId && map.has(parentId)) {
       map.get(parentId)!.children.push(node);
     } else {
@@ -62,7 +65,10 @@ function TreeItem({
   onSelectNote, 
   onCreateNote,
   onDeleteNote,
+  onMoveNote,
   userId,
+  isFirst,
+  isLast,
 }: {
   node: TreeNode;
   depth: number;
@@ -72,7 +78,10 @@ function TreeItem({
   onSelectNote: (note: CampaignNote) => void;
   onCreateNote: (parentId?: string) => void;
   onDeleteNote: (note: CampaignNote) => void;
+  onMoveNote?: (noteId: string, direction: 'up' | 'down') => void;
   userId?: string;
+  isFirst: boolean;
+  isLast: boolean;
 }) {
   const hasChildren = node.children.length > 0;
   const isExpanded = expandedIds.has(node.note.id);
@@ -83,7 +92,7 @@ function TreeItem({
     <div>
       <div
         className={cn(
-          'group flex items-center gap-1 px-2 py-1.5 rounded-lg cursor-pointer transition-colors text-sm',
+          'group flex items-start gap-1 px-2 py-1.5 rounded-lg cursor-pointer transition-colors text-sm',
           isSelected 
             ? 'bg-primary/20 text-primary border border-primary/30' 
             : 'hover:bg-muted/60'
@@ -91,22 +100,41 @@ function TreeItem({
         style={{ paddingLeft: `${8 + depth * 16}px` }}
         onClick={() => onSelectNote(node.note)}
       >
-        {hasChildren ? (
-          <button
-            className="p-0.5 hover:bg-muted rounded"
-            onClick={(e) => { e.stopPropagation(); toggleExpand(node.note.id); }}
-          >
-            {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
-          </button>
-        ) : (
-          <span className="w-4.5" />
-        )}
-
-        <FileText className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+        <div className="flex items-center gap-1 flex-shrink-0 mt-0.5">
+          {hasChildren ? (
+            <button
+              className="p-0.5 hover:bg-muted rounded"
+              onClick={(e) => { e.stopPropagation(); toggleExpand(node.note.id); }}
+            >
+              {isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />}
+            </button>
+          ) : (
+            <span className="w-4.5" />
+          )}
+          <FileText className="w-3.5 h-3.5 text-muted-foreground" />
+        </div>
         
-        <span className="flex-1 truncate">{node.note.title}</span>
+        <span className="flex-1 min-w-0 break-words leading-snug">{node.note.title}</span>
 
-        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0 mt-0.5">
+          {isOwner && onMoveNote && (
+            <>
+              <button
+                className={cn("p-0.5 hover:bg-accent rounded", isFirst && "opacity-30 pointer-events-none")}
+                onClick={(e) => { e.stopPropagation(); onMoveNote(node.note.id, 'up'); }}
+                title="Mover para cima"
+              >
+                <ArrowUp className="w-3 h-3" />
+              </button>
+              <button
+                className={cn("p-0.5 hover:bg-accent rounded", isLast && "opacity-30 pointer-events-none")}
+                onClick={(e) => { e.stopPropagation(); onMoveNote(node.note.id, 'down'); }}
+                title="Mover para baixo"
+              >
+                <ArrowDown className="w-3 h-3" />
+              </button>
+            </>
+          )}
           {node.note.is_public ? (
             <Eye className="w-3 h-3 text-muted-foreground" />
           ) : (
@@ -135,7 +163,7 @@ function TreeItem({
 
       {isExpanded && hasChildren && (
         <div>
-          {node.children.map(child => (
+          {node.children.map((child, idx) => (
             <TreeItem
               key={child.note.id}
               node={child}
@@ -146,7 +174,10 @@ function TreeItem({
               onSelectNote={onSelectNote}
               onCreateNote={onCreateNote}
               onDeleteNote={onDeleteNote}
+              onMoveNote={onMoveNote}
               userId={userId}
+              isFirst={idx === 0}
+              isLast={idx === node.children.length - 1}
             />
           ))}
         </div>
@@ -155,7 +186,7 @@ function TreeItem({
   );
 }
 
-export function NotesTreeSidebar({ notes, selectedNoteId, onSelectNote, onCreateNote, onDeleteNote }: NotesTreeSidebarProps) {
+export function NotesTreeSidebar({ notes, selectedNoteId, onSelectNote, onCreateNote, onDeleteNote, onMoveNote }: NotesTreeSidebarProps) {
   const { user } = useAuth();
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
@@ -191,7 +222,7 @@ export function NotesTreeSidebar({ notes, selectedNoteId, onSelectNote, onCreate
           {myTree.length > 0 && (
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-2 mb-1 font-semibold">Minhas Notas</p>
-              {myTree.map(node => (
+              {myTree.map((node, idx) => (
                 <TreeItem
                   key={node.note.id}
                   node={node}
@@ -202,7 +233,10 @@ export function NotesTreeSidebar({ notes, selectedNoteId, onSelectNote, onCreate
                   onSelectNote={onSelectNote}
                   onCreateNote={onCreateNote}
                   onDeleteNote={onDeleteNote}
+                  onMoveNote={onMoveNote}
                   userId={user?.id}
+                  isFirst={idx === 0}
+                  isLast={idx === myTree.length - 1}
                 />
               ))}
             </div>
@@ -211,7 +245,7 @@ export function NotesTreeSidebar({ notes, selectedNoteId, onSelectNote, onCreate
           {sharedTree.length > 0 && (
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-2 mb-1 font-semibold">Compartilhadas</p>
-              {sharedTree.map(node => (
+              {sharedTree.map((node, idx) => (
                 <TreeItem
                   key={node.note.id}
                   node={node}
@@ -222,7 +256,10 @@ export function NotesTreeSidebar({ notes, selectedNoteId, onSelectNote, onCreate
                   onSelectNote={onSelectNote}
                   onCreateNote={onCreateNote}
                   onDeleteNote={onDeleteNote}
+                  onMoveNote={onMoveNote}
                   userId={user?.id}
+                  isFirst={idx === 0}
+                  isLast={idx === sharedTree.length - 1}
                 />
               ))}
             </div>
