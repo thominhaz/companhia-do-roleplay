@@ -72,13 +72,13 @@ export function MapEditorToolbar({ tokens, players, onAddPlayers, onAddMonster, 
             {playerTokens.length > 0 && (
               <div className="grid grid-cols-2 gap-1.5">
                 {playerTokens.map(token => (
-                  <div key={token.id} className="flex items-center gap-2 text-xs bg-background/50 rounded-lg px-2 py-2">
-                    <div className="w-5 h-5 rounded-full shrink-0" style={{ backgroundColor: token.color }} />
-                    <span className="flex-1 truncate">{token.name}</span>
-                    <button onClick={() => onRemoveToken(token.id)} className="text-destructive hover:text-destructive/80">
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
+                  <TokenListItem
+                    key={token.id}
+                    token={token}
+                    onRemove={() => onRemoveToken(token.id)}
+                    onUpdate={onUpdateToken ? (updates) => onUpdateToken(token.id, updates) : undefined}
+                    compact
+                  />
                 ))}
               </div>
             )}
@@ -224,13 +224,12 @@ export function MapEditorToolbar({ tokens, players, onAddPlayers, onAddMonster, 
             {playerTokens.length > 0 && (
               <div className="space-y-1">
                 {playerTokens.map(token => (
-                  <div key={token.id} className="flex items-center gap-2 text-xs bg-background/50 rounded-lg px-2 py-1.5">
-                    <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: token.color }} />
-                    <span className="flex-1 truncate">{token.name}</span>
-                    <button onClick={() => onRemoveToken(token.id)} className="text-destructive hover:text-destructive/80">
-                      <Trash2 className="w-3 h-3" />
-                    </button>
-                  </div>
+                  <TokenListItem
+                    key={token.id}
+                    token={token}
+                    onRemove={() => onRemoveToken(token.id)}
+                    onUpdate={onUpdateToken ? (updates) => onUpdateToken(token.id, updates) : undefined}
+                  />
                 ))}
               </div>
             )}
@@ -343,13 +342,15 @@ function TokenListItem({
   token,
   onRemove,
   onUpdate,
+  compact,
 }: {
   token: TokenPosition;
   onRemove: () => void;
   onUpdate?: (updates: Partial<TokenPosition>) => void;
+  compact?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-2 text-xs bg-background/50 rounded-lg px-2 py-1.5 group">
+    <div className={cn("flex items-center gap-2 text-xs bg-background/50 rounded-lg group", compact ? "px-2 py-2" : "px-2 py-1.5")}>
       <div className="w-5 h-5 rounded-full shrink-0 flex items-center justify-center text-[10px] font-bold text-white" style={{ backgroundColor: token.color }}>
         {token.icon || token.name.charAt(0).toUpperCase()}
       </div>
@@ -367,7 +368,7 @@ function TokenListItem({
               <Settings2 className="w-3 h-3" />
             </button>
           </PopoverTrigger>
-          <PopoverContent side="right" className="w-48 p-2 space-y-2">
+          <PopoverContent side="right" className="w-52 p-2 space-y-2">
             <div className="space-y-1">
               <span className="text-[10px] text-muted-foreground">Cor</span>
               <div className="flex flex-wrap gap-1">
@@ -396,6 +397,32 @@ function TokenListItem({
                   ))}
                 </SelectContent>
               </Select>
+            </div>
+            <div className="space-y-1">
+              <span className="text-[10px] text-muted-foreground">Ícone / Letra</span>
+              <div className="flex flex-wrap gap-1">
+                {PRESET_ICONS.slice(0, 16).map(icon => (
+                  <button
+                    key={icon}
+                    onClick={() => onUpdate({ icon: token.icon === icon ? '' : icon })}
+                    className={cn(
+                      "w-5 h-5 rounded text-[10px] flex items-center justify-center border transition-colors",
+                      token.icon === icon
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-background/50 text-foreground border-border/30 hover:bg-muted"
+                    )}
+                  >
+                    {icon}
+                  </button>
+                ))}
+              </div>
+              <Input
+                placeholder="Ou digite..."
+                value={token.icon || ''}
+                onChange={e => onUpdate({ icon: e.target.value.slice(0, 2) })}
+                maxLength={2}
+                className="h-6 text-xs bg-background/50 border-border/30 mt-1"
+              />
             </div>
           </PopoverContent>
         </Popover>
