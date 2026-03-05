@@ -410,7 +410,7 @@ export function useRemovePlayer() {
   });
 }
 
-// Update player's character in campaign
+// Update player's character in campaign (for masters)
 export function useUpdateCampaignPlayer() {
   const queryClient = useQueryClient();
 
@@ -436,6 +436,39 @@ export function useUpdateCampaignPlayer() {
     },
     onError: () => {
       toast.error('Erro ao atualizar personagem');
+    },
+  });
+}
+
+// Update own character in campaign (for players)
+export function useUpdateMyCharacterInCampaign() {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({ campaignId, characterId }: {
+      campaignId: string;
+      characterId: string | null;
+    }) => {
+      if (!user) throw new Error('Usuário não autenticado');
+
+      const { data, error } = await supabase
+        .from('campaign_players')
+        .update({ character_id: characterId })
+        .eq('campaign_id', campaignId)
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+      return { data, campaignId };
+    },
+    onSuccess: ({ campaignId }) => {
+      queryClient.invalidateQueries({ queryKey: ['campaign-players', campaignId] });
+      toast.success('Personagem vinculado!');
+    },
+    onError: () => {
+      toast.error('Erro ao vincular personagem');
     },
   });
 }
