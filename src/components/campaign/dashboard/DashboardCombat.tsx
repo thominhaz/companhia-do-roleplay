@@ -4,6 +4,8 @@ import { CombatTracker } from "../CombatTracker";
 import { PlayerCombatView } from "../PlayerCombatView";
 import { Button } from "@/components/ui/button";
 import { Swords } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface DashboardCombatProps {
   campaign: CampaignDB;
@@ -13,6 +15,20 @@ interface DashboardCombatProps {
 export function DashboardCombat({ campaign, isMaster }: DashboardCombatProps) {
   const [showCombatTracker, setShowCombatTracker] = useState(false);
   const [showPlayerCombat, setShowPlayerCombat] = useState(false);
+
+  const { data: lastEncounter } = useQuery({
+    queryKey: ['last-encounter', campaign.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('combat_encounters')
+        .select('id, name, round, is_active, created_at')
+        .eq('campaign_id', campaign.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+  });
 
   if (isMaster) {
     return (
@@ -32,11 +48,11 @@ export function DashboardCombat({ campaign, isMaster }: DashboardCombatProps) {
           <Swords className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
           <h3 className="font-semibold mb-2">Combat Tracker</h3>
           <p className="text-sm text-muted-foreground mb-4">
-            Gerencie encontros, iniciativa, HP e condições dos combatentes em tempo real.
+            {lastEncounter
+              ? `Último encontro: ${lastEncounter.name} — ${lastEncounter.is_active ? `Ativo (Rodada ${lastEncounter.round})` : 'Finalizado'}`
+              : 'Gerencie encontros, iniciativa, HP e condições dos combatentes em tempo real.'
+            }
           </p>
-          <Button onClick={() => setShowCombatTracker(true)} variant="outline">
-            Iniciar Combate
-          </Button>
         </div>
 
         <CombatTracker
@@ -64,12 +80,9 @@ export function DashboardCombat({ campaign, isMaster }: DashboardCombatProps) {
       <div className="bg-card rounded-xl p-6 border border-border text-center">
         <Swords className="w-12 h-12 mx-auto mb-4 text-muted-foreground opacity-50" />
         <h3 className="font-semibold mb-2">Visualização de Combate</h3>
-        <p className="text-sm text-muted-foreground mb-4">
+        <p className="text-sm text-muted-foreground">
           Acompanhe a ordem de iniciativa e o status dos combatentes durante o combate.
         </p>
-        <Button onClick={() => setShowPlayerCombat(true)} variant="outline">
-          Abrir Visualização
-        </Button>
       </div>
 
       <PlayerCombatView

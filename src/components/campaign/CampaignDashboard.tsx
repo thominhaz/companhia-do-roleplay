@@ -270,7 +270,7 @@ export function CampaignDashboard({ campaign, open, onOpenChange, isMaster }: Ca
           {showMobileNav && (
             <div className="fixed inset-0 z-50 md:hidden">
               <div className="absolute inset-0 bg-black/60" onClick={() => setShowMobileNav(false)} />
-              <aside className="absolute left-0 top-0 bottom-0 w-64 bg-darker p-4 overflow-y-auto">
+              <aside className="absolute left-0 top-0 bottom-0 w-64 bg-card p-4 overflow-y-auto border-r border-border">
                 <div className="space-y-6">
                   {renderNavGroup(mainItems)}
                   {isMaster && workshopItems.length > 0 && renderNavGroup(workshopItems, 'Oficinas')}

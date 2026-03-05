@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { CampaignDB } from "@/hooks/useCampaigns";
 import { useCampaignNPCs, useDeleteNPC, CampaignNPC } from "@/hooks/useNPCs";
 import { Button } from "@/components/ui/button";
@@ -36,7 +36,7 @@ const statusConfig = {
   alive: { label: 'Vivo', icon: UserSquare2, color: 'text-secondary', bg: 'bg-secondary/10' },
   dead: { label: 'Morto', icon: Skull, color: 'text-destructive', bg: 'bg-destructive/10' },
   unknown: { label: 'Desconhecido', icon: HelpCircle, color: 'text-muted-foreground', bg: 'bg-muted' },
-  missing: { label: 'Desaparecido', icon: HelpCircle, color: 'text-gold', bg: 'bg-gold/10' },
+  missing: { label: 'Desaparecido', icon: HelpCircle, color: 'text-accent-foreground', bg: 'bg-accent/20' },
 };
 
 export function WorkshopNPCs({ campaign }: WorkshopNPCsProps) {
@@ -50,13 +50,13 @@ export function WorkshopNPCs({ campaign }: WorkshopNPCsProps) {
   const { data: npcs, isLoading } = useCampaignNPCs(campaign.id);
   const deleteNPC = useDeleteNPC();
 
-  const filteredNPCs = npcs?.filter(npc => {
+  const filteredNPCs = useMemo(() => npcs?.filter(npc => {
     const matchesSearch = npc.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       npc.occupation?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       npc.location?.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = !statusFilter || npc.status === statusFilter;
     return matchesSearch && matchesStatus;
-  }) || [];
+  }) || [], [npcs, searchQuery, statusFilter]);
 
   const visibleNPCs = filteredNPCs.filter(npc => !npc.is_hidden);
   const hiddenNPCs = filteredNPCs.filter(npc => npc.is_hidden);
