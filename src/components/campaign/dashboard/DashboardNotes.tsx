@@ -212,6 +212,7 @@ export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
             {selectedNote ? (
               isEditing ? (
                 <TipTapEditor
+                  key={`edit-${selectedNote.id}`}
                   content={editForm.content}
                   onChange={(html) => setEditForm(prev => ({ ...prev, content: html }))}
                   campaignId={campaign.id}
@@ -221,6 +222,7 @@ export function DashboardNotes({ campaign, isMaster }: DashboardNotesProps) {
                 />
               ) : (
                 <TipTapEditor
+                  key={`view-${selectedNote.id}-${selectedNote.updated_at}`}
                   content={selectedNote.content || "<p></p>"}
                   onChange={() => {}}
                   campaignId={campaign.id}
