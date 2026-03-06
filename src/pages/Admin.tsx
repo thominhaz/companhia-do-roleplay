@@ -152,18 +152,18 @@ function UsersSection() {
   });
 
   const toggleRole = useMutation({
-    mutationFn: async ({ userId, role, hasRole }: { userId: string; role: string; hasRole: boolean }) => {
+    mutationFn: async ({ userId, role, hasRole }: { userId: string; role: "admin" | "moderator" | "user"; hasRole: boolean }) => {
       if (hasRole) {
         const { error } = await supabase
           .from("user_roles")
           .delete()
           .eq("user_id", userId)
-          .eq("role", role);
+          .eq("role", role as "admin" | "moderator" | "user");
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from("user_roles")
-          .insert({ user_id: userId, role });
+          .insert([{ user_id: userId, role: role as "admin" | "moderator" | "user" }]);
         if (error) throw error;
       }
     },
