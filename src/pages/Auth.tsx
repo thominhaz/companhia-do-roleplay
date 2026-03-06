@@ -465,6 +465,25 @@ export default function Auth() {
 
         <form onSubmit={handleSignup} className="flex flex-col gap-5">
           <div className="space-y-2">
+            <Label htmlFor="invite-code" className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Shield className="w-4 h-4 text-cyan-blue" />
+              Código de Convite
+            </Label>
+            <Input
+              id="invite-code"
+              type="text"
+              placeholder="Digite seu código de acesso"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+              onFocus={() => setActiveCard('signup')}
+              className="w-full rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-cyan-blue focus:border-transparent transition-all duration-200 text-foreground uppercase tracking-widest font-mono"
+            />
+            {errors.inviteCode && activeCard === 'signup' && (
+              <p className="text-sm text-magenta-red">{errors.inviteCode}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
             <Label htmlFor="display-name" className="text-sm font-semibold text-foreground">Nome de Aventureiro</Label>
             <Input
               id="display-name"
