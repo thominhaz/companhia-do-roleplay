@@ -1,7 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from './useAuth';
 
-export type SubscriptionTier = 'mestre';
+// Keep old types for compatibility but always return 'mestre'
+export type SubscriptionTier = 'visitante' | 'aldeao' | 'heroi' | 'mestre';
 
 export interface SubscriptionInfo {
   tier: SubscriptionTier;
