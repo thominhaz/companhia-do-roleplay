@@ -27,6 +27,7 @@ const authSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
   displayName: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').optional(),
+  inviteCode: z.string().min(1, 'Código de convite obrigatório').optional(),
 });
 
 export default function Auth() {
@@ -34,6 +35,7 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -97,9 +99,26 @@ export default function Auth() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate(false)) return;
+
+    if (!inviteCode.trim()) {
+      setErrors(prev => ({ ...prev, inviteCode: 'Código de convite obrigatório' }));
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // Validate invite code first
+      const { data: isValid, error: codeError } = await supabase.rpc('validate_registration_code', {
+        _code: inviteCode.trim()
+      });
+
+      if (codeError || !isValid) {
+        toast.error('Código de convite inválido ou esgotado');
+        setLoading(false);
+        return;
+      }
+
       const { error } = await signUp(email, password, displayName);
       if (error) {
         if (error.message.includes('already registered')) {
