@@ -178,7 +178,7 @@ function UsersSection() {
     (u.display_name || "").toLowerCase().includes(search.toLowerCase())
   );
 
-  const roleOptions: { value: string; label: string; color: string }[] = [
+  const roleOptions: { value: "admin" | "moderator" | "user"; label: string; color: string }[] = [
     { value: "admin", label: "Admin", color: "bg-cosmic-purple/20 text-cosmic-purple border-cosmic-purple/30" },
     { value: "moderator", label: "Moderador", color: "bg-cyan-blue/20 text-cyan-blue border-cyan-blue/30" },
   ];
