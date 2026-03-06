@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useQuery } from "@tanstack/react-query";
 import {
   User,
   Bell,
@@ -15,6 +16,7 @@ import {
   LogIn,
   History,
   MessageCircle,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/layout/AppHeader";

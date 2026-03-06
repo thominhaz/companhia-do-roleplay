@@ -122,6 +122,7 @@ export default function Admin() {
 
 function UsersSection() {
   const [search, setSearch] = useState("");
+  const queryClient = useQueryClient();
 
   const { data: users, isLoading } = useQuery({
     queryKey: ["admin-users"],
@@ -133,12 +134,10 @@ function UsersSection() {
 
       if (error) throw error;
 
-      // Get subscriptions for all users
       const { data: subs } = await supabase
         .from("subscriptions")
         .select("user_id, status, expires_at");
 
-      // Get roles
       const { data: roles } = await supabase
         .from("user_roles")
         .select("user_id, role");
@@ -151,9 +150,37 @@ function UsersSection() {
     },
   });
 
+  const toggleRole = useMutation({
+    mutationFn: async ({ userId, role, hasRole }: { userId: string; role: string; hasRole: boolean }) => {
+      if (hasRole) {
+        const { error } = await supabase
+          .from("user_roles")
+          .delete()
+          .eq("user_id", userId)
+          .eq("role", role);
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from("user_roles")
+          .insert({ user_id: userId, role });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => {
+      toast.success("Permissão atualizada!");
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
   const filtered = users?.filter((u) =>
     (u.display_name || "").toLowerCase().includes(search.toLowerCase())
   );
+
+  const roleOptions: { value: string; label: string; color: string }[] = [
+    { value: "admin", label: "Admin", color: "bg-cosmic-purple/20 text-cosmic-purple border-cosmic-purple/30" },
+    { value: "moderator", label: "Moderador", color: "bg-cyan-blue/20 text-cyan-blue border-cyan-blue/30" },
+  ];
 
   return (
     <div className="space-y-4">
@@ -181,33 +208,46 @@ function UsersSection() {
       ) : (
         <ScrollArea className="h-[calc(100vh-280px)]">
           <div className="space-y-2">
-            {filtered?.map((user) => (
-              <Card key={user.id} className="p-4 bg-white/5 border-white/10">
+            {filtered?.map((u) => (
+              <Card key={u.id} className="p-4 bg-white/5 border-white/10">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center flex-shrink-0 overflow-hidden">
-                      {user.avatar_url ? (
-                        <img src={user.avatar_url} alt="" className="w-full h-full object-cover" />
+                      {u.avatar_url ? (
+                        <img src={u.avatar_url} alt="" className="w-full h-full object-cover" />
                       ) : (
                         <Users className="h-5 w-5 text-muted-foreground" />
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-medium truncate">{user.display_name || "Sem nome"}</p>
+                      <p className="font-medium truncate">{u.display_name || "Sem nome"}</p>
                       <p className="text-xs text-muted-foreground">
-                        Desde {new Date(user.created_at).toLocaleDateString("pt-BR")}
+                        Desde {new Date(u.created_at).toLocaleDateString("pt-BR")}
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2 flex-shrink-0">
-                    {user.roles.includes("admin") && (
-                      <Badge className="bg-cosmic-purple/20 text-cosmic-purple border-cosmic-purple/30">
-                        Admin
-                      </Badge>
-                    )}
+                  <div className="flex items-center gap-2 flex-shrink-0 flex-wrap justify-end">
+                    {roleOptions.map((role) => {
+                      const has = u.roles.includes(role.value);
+                      return (
+                        <button
+                          key={role.value}
+                          onClick={() => toggleRole.mutate({ userId: u.id, role: role.value, hasRole: has })}
+                          className={cn(
+                            "px-2 py-0.5 text-xs font-semibold rounded-full border transition-all",
+                            has
+                              ? role.color
+                              : "bg-muted/30 text-muted-foreground border-muted-foreground/20 opacity-40 hover:opacity-70"
+                          )}
+                          title={has ? `Remover ${role.label}` : `Tornar ${role.label}`}
+                        >
+                          {role.label}
+                        </button>
+                      );
+                    })}
                     <Badge variant="outline" className="bg-gold/10 text-gold border-gold/30">
                       <Crown className="h-3 w-3 mr-1" />
-                      {user.subscription?.status || "mestre"}
+                      {u.subscription?.status || "mestre"}
                     </Badge>
                   </div>
                 </div>
