@@ -23,6 +23,7 @@ const Index = () => {
       navigate('/auth', { replace: true });
     }
   }, [user, loading, navigate]);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabRoute>("home");
   const [direction, setDirection] = useState(0);
