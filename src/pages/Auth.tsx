@@ -178,13 +178,7 @@ export default function Auth() {
   const renderLoginCard = () => (
     <section className={`gradient-border relative w-full max-w-md mx-auto bg-background rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ${activeCard === 'login' ? 'animate-border-glow' : 'border border-border'}`}>
       <header className="flex items-center justify-between px-6 pt-6">
-        <button 
-          type="button"
-          onClick={() => navigate('/')}
-          className="p-2 rounded-xl hover:bg-muted transition-colors duration-200"
-        >
-          <ArrowLeft className="w-5 h-5 text-muted-foreground" />
-        </button>
+        <div className="p-2" /> {/* Spacer */}
         <button 
           type="button"
           onClick={() => setActiveCard('forgot')}
