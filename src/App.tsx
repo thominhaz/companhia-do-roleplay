@@ -17,7 +17,7 @@ import Supporters from "@/pages/Supporters";
 import AdminSupporters from "@/pages/AdminSupporters";
 import SupporterForms from "@/pages/SupporterForms";
 import SupporterSubmission from "@/pages/SupporterSubmission";
-import Landing from "@/pages/Landing";
+
 import AdminStretchGoals from "@/pages/AdminStretchGoals";
 import Admin from "@/pages/Admin";
 import MapEditor from "@/pages/MapEditor";
