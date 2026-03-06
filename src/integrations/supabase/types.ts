@@ -1967,6 +1967,36 @@ export type Database = {
         }
         Relationships: []
       }
+      registration_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          created_by: string | null
+          current_uses: number | null
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          created_by?: string | null
+          current_uses?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          created_by?: string | null
+          current_uses?: number | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+        }
+        Relationships: []
+      }
       session_attendance: {
         Row: {
           created_at: string
@@ -2557,6 +2587,7 @@ export type Database = {
         Args: { _code: string; _user_id: string }
         Returns: Json
       }
+      validate_registration_code: { Args: { _code: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"

@@ -27,6 +27,7 @@ const authSchema = z.object({
   email: z.string().email('Email inválido'),
   password: z.string().min(6, 'Senha deve ter pelo menos 6 caracteres'),
   displayName: z.string().min(2, 'Nome deve ter pelo menos 2 caracteres').optional(),
+  inviteCode: z.string().min(1, 'Código de convite obrigatório').optional(),
 });
 
 export default function Auth() {
@@ -34,6 +35,7 @@ export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [displayName, setDisplayName] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showPassword, setShowPassword] = useState(false);
@@ -97,9 +99,26 @@ export default function Auth() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate(false)) return;
+
+    if (!inviteCode.trim()) {
+      setErrors(prev => ({ ...prev, inviteCode: 'Código de convite obrigatório' }));
+      return;
+    }
+
     setLoading(true);
 
     try {
+      // Validate invite code first
+      const { data: isValid, error: codeError } = await supabase.rpc('validate_registration_code', {
+        _code: inviteCode.trim()
+      });
+
+      if (codeError || !isValid) {
+        toast.error('Código de convite inválido ou esgotado');
+        setLoading(false);
+        return;
+      }
+
       const { error } = await signUp(email, password, displayName);
       if (error) {
         if (error.message.includes('already registered')) {
@@ -159,13 +178,7 @@ export default function Auth() {
   const renderLoginCard = () => (
     <section className={`gradient-border relative w-full max-w-md mx-auto bg-background rounded-2xl lg:rounded-3xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ${activeCard === 'login' ? 'animate-border-glow' : 'border border-border'}`}>
       <header className="flex items-center justify-between px-6 pt-6">
-        <button 
-          type="button"
-          onClick={() => navigate('/')}
-          className="p-2 rounded-xl hover:bg-muted transition-colors duration-200"
-        >
-          <ArrowLeft className="w-5 h-5 text-muted-foreground" />
-        </button>
+        <div className="p-2" /> {/* Spacer */}
         <button 
           type="button"
           onClick={() => setActiveCard('forgot')}
@@ -445,6 +458,25 @@ export default function Auth() {
         </header>
 
         <form onSubmit={handleSignup} className="flex flex-col gap-5">
+          <div className="space-y-2">
+            <Label htmlFor="invite-code" className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Shield className="w-4 h-4 text-cyan-blue" />
+              Código de Convite
+            </Label>
+            <Input
+              id="invite-code"
+              type="text"
+              placeholder="Digite seu código de acesso"
+              value={inviteCode}
+              onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
+              onFocus={() => setActiveCard('signup')}
+              className="w-full rounded-xl border border-border bg-muted/50 px-4 py-3 text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-cyan-blue focus:border-transparent transition-all duration-200 text-foreground uppercase tracking-widest font-mono"
+            />
+            {errors.inviteCode && activeCard === 'signup' && (
+              <p className="text-sm text-magenta-red">{errors.inviteCode}</p>
+            )}
+          </div>
+
           <div className="space-y-2">
             <Label htmlFor="display-name" className="text-sm font-semibold text-foreground">Nome de Aventureiro</Label>
             <Input

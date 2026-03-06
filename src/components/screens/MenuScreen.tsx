@@ -41,13 +41,6 @@ const menuSections = [
         icon: User,
         hasArrow: true,
       },
-      {
-        id: "subscription",
-        label: "Assinatura",
-        icon: Crown,
-        hasArrow: true,
-        dynamic: true,
-      },
     ],
   },
   {

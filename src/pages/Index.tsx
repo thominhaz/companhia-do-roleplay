@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { TabBar } from "@/components/layout/TabBar";
 import { HomeScreen } from "@/components/screens/HomeScreen";
@@ -8,14 +8,22 @@ import { CampaignsScreen } from "@/components/screens/CampaignsScreen";
 import { MapsScreen } from "@/components/screens/MapsScreen";
 import { ToolsScreen } from "@/components/screens/ToolsScreen";
 import { MenuScreen } from "@/components/screens/MenuScreen";
-import { useSubscriptionSync } from "@/hooks/useSubscription";
+import { useAuth } from "@/hooks/useAuth";
 import type { TabRoute } from "@/types";
 import { Helmet } from "react-helmet";
 import { cn } from "@/lib/utils";
 
 const Index = () => {
-  // Hook para sincronizar assinatura com Stripe automaticamente
-  useSubscriptionSync();
+  const { user, loading } = useAuth();
+  const navigate = useNavigate();
+
+  // Redirect to auth if not logged in
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth', { replace: true });
+    }
+  }, [user, loading, navigate]);
+
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<TabRoute>("home");
   const [direction, setDirection] = useState(0);
