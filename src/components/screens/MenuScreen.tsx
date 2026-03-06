@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { useSubscription } from "@/hooks/useSubscription";
+import { useQuery } from "@tanstack/react-query";
 import {
   User,
   Bell,
@@ -15,6 +16,7 @@ import {
   LogIn,
   History,
   MessageCircle,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { AppHeader } from "@/components/layout/AppHeader";
@@ -114,6 +116,19 @@ export function MenuScreen() {
   const [privacyOpen, setPrivacyOpen] = useState(false);
   const [discordOpen, setDiscordOpen] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+
+  const { data: isAdmin } = useQuery({
+    queryKey: ["is-admin", user?.id],
+    queryFn: async () => {
+      if (!user) return false;
+      const { data } = await supabase.rpc("has_role", {
+        _user_id: user.id,
+        _role: "admin",
+      });
+      return data || false;
+    },
+    enabled: !!user,
+  });
 
   // Fetch user profile avatar
   useEffect(() => {
@@ -348,6 +363,33 @@ export function MenuScreen() {
             </div>
           </section>
         ))}
+
+        {/* Admin Link */}
+        {isAdmin && (
+          <section className="animate-fade-in">
+            <button
+              onClick={() => navigate("/admin")}
+              className={cn(
+                "w-full rounded-2xl px-4 py-3.5 flex items-center gap-3 overflow-hidden relative",
+                "bg-white/[0.08] backdrop-blur-[20px] backdrop-saturate-150",
+                "border border-cosmic-purple/30",
+                "shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.1)]",
+                "transition-all hover:bg-cosmic-purple/[0.1] hover:-translate-y-0.5"
+              )}
+            >
+              <div className="w-9 h-9 rounded-xl bg-cosmic-purple/[0.15] border border-cosmic-purple/30 flex items-center justify-center flex-shrink-0">
+                <Settings className="w-4 h-4 text-cosmic-purple drop-shadow-[0_1px_1px_rgba(0,0,0,0.2)]" />
+              </div>
+              <div className="flex-1 text-left">
+                <span className="text-sm font-semibold text-foreground drop-shadow-[0_1px_1px_rgba(0,0,0,0.15)]">
+                  Painel Admin
+                </span>
+                <p className="text-xs text-muted-foreground/70">Gerenciar plataforma</p>
+              </div>
+              <ChevronRight className="w-4 h-4 text-muted-foreground/60 flex-shrink-0" />
+            </button>
+          </section>
+        )}
 
         {/* Community */}
         <CommunitySection />
