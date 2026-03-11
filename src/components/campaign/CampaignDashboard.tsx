@@ -119,6 +119,10 @@ export function CampaignDashboard({ campaign, open, onOpenChange, isMaster }: Ca
 
   const handleNavClick = (section: DashboardSection, comingSoon?: boolean) => {
     if (comingSoon) return;
+    if (section === 'vtt') {
+      window.open('https://vtt.go20.com.br', '_blank', 'noopener,noreferrer');
+      return;
+    }
     setActiveSection(section);
     setShowMobileNav(false);
   };
