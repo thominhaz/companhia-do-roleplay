@@ -28,7 +28,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<TabRoute>("home");
   const [direction, setDirection] = useState(0);
 
-  const tabOrder: TabRoute[] = ["home", "characters", "campaigns", "maps", "tools", "menu"];
+  const tabOrder: TabRoute[] = ["home", "characters", "campaigns", "tools", "menu"];
 
   // Handle tab from URL query param
   useEffect(() => {
