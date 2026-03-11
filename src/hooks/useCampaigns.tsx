@@ -12,6 +12,7 @@ export interface CampaignDB {
   invite_code: string | null;
   theme_color: string | null;
   icon: string | null;
+  foundry_vtt_url: string | null;
   created_at: string;
   updated_at: string;
 }
