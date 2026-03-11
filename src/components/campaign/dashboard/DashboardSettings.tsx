@@ -37,8 +37,12 @@ export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps)
   const queryClient = useQueryClient();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [homebrewOpen, setHomebrewOpen] = useState(false);
+  const [vttOpen, setVttOpen] = useState(false);
   const [vttUrl, setVttUrl] = useState(campaign.foundry_vtt_url || '');
   const [savingVtt, setSavingVtt] = useState(false);
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [generatingKey, setGeneratingKey] = useState(false);
 
   const handleCopyInviteCode = () => {
     if (campaign.invite_code) {
