@@ -67,6 +67,7 @@ const navItems: NavItem[] = [
   { id: 'sessions', label: 'Sessões', icon: Calendar, category: 'main' },
   { id: 'players', label: 'Jogadores', icon: Users, category: 'main' },
   { id: 'combat', label: 'Combate', icon: Swords, category: 'main' },
+  { id: 'vtt' as DashboardSection, label: 'Mapa (VTT)', icon: ExternalLink, category: 'main' },
   
   { id: 'notes', label: 'Notas', icon: StickyNote, category: 'main' },
   { id: 'chat', label: 'Chat', icon: MessageCircle, category: 'main' },
