@@ -1151,6 +1151,7 @@ export type Database = {
           created_at: string
           description: string | null
           discord_webhook_url: string | null
+          foundry_vtt_url: string | null
           homebrew_sharing_policy: Database["public"]["Enums"]["homebrew_sharing_policy"]
           icon: string | null
           id: string
@@ -1165,6 +1166,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           discord_webhook_url?: string | null
+          foundry_vtt_url?: string | null
           homebrew_sharing_policy?: Database["public"]["Enums"]["homebrew_sharing_policy"]
           icon?: string | null
           id?: string
@@ -1179,6 +1181,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           discord_webhook_url?: string | null
+          foundry_vtt_url?: string | null
           homebrew_sharing_policy?: Database["public"]["Enums"]["homebrew_sharing_policy"]
           icon?: string | null
           id?: string

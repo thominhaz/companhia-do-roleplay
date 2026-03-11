@@ -1,0 +1,1 @@
+ALTER TABLE public.campaigns ADD COLUMN foundry_vtt_url text DEFAULT NULL;
