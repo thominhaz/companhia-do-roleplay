@@ -10,7 +10,7 @@ import {
   Crown, Users, Calendar, Settings, ChevronLeft,
   Swords, StickyNote, MessageCircle, Library,
   UserSquare2, Store, FileText, Flag, Clock, Sparkles, Gem,
-  Lock, Map
+  Lock, ExternalLink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -39,7 +39,7 @@ type DashboardSection =
   | 'sessions' 
   | 'players' 
   | 'combat' 
-  
+  | 'vtt'
   | 'notes' 
   | 'chat' 
   | 'compendium'
@@ -67,6 +67,7 @@ const navItems: NavItem[] = [
   { id: 'sessions', label: 'Sessões', icon: Calendar, category: 'main' },
   { id: 'players', label: 'Jogadores', icon: Users, category: 'main' },
   { id: 'combat', label: 'Combate', icon: Swords, category: 'main' },
+  { id: 'vtt' as DashboardSection, label: 'Mapa (VTT)', icon: ExternalLink, category: 'main' },
   
   { id: 'notes', label: 'Notas', icon: StickyNote, category: 'main' },
   { id: 'chat', label: 'Chat', icon: MessageCircle, category: 'main' },
@@ -118,6 +119,10 @@ export function CampaignDashboard({ campaign, open, onOpenChange, isMaster }: Ca
 
   const handleNavClick = (section: DashboardSection, comingSoon?: boolean) => {
     if (comingSoon) return;
+    if (section === 'vtt') {
+      window.open('https://vtt.go20.com.br', '_blank', 'noopener,noreferrer');
+      return;
+    }
     setActiveSection(section);
     setShowMobileNav(false);
   };
