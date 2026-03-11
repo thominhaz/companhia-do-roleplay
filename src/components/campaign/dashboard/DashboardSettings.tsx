@@ -69,6 +69,33 @@ export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps)
     }
   };
 
+  const handleGenerateApiKey = async () => {
+    setGeneratingKey(true);
+    try {
+      const { data, error } = await supabase.rpc('generate_foundry_api_key', {
+        _campaign_id: campaign.id,
+      });
+      if (error) throw error;
+      setApiKey(data as string);
+      setShowApiKey(true);
+      toast.success("API Key gerada! Copie e configure no Foundry VTT.");
+    } catch {
+      toast.error("Erro ao gerar API Key");
+    } finally {
+      setGeneratingKey(false);
+    }
+  };
+
+  const handleCopyApiKey = () => {
+    if (apiKey) {
+      navigator.clipboard.writeText(apiKey);
+      toast.success("API Key copiada!");
+    }
+  };
+
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  const syncEndpoint = `https://${projectId}.supabase.co/functions/v1/foundry-sync`;
+
   const handleDeleteCampaign = async () => {
     try {
       await deleteCampaign.mutateAsync(campaign.id);
