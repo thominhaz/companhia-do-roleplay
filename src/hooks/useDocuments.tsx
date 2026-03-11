@@ -236,29 +236,18 @@ export function useSignDocument() {
       campaignId,
       characterId, 
       characterName,
-      currentSignatures 
     }: { 
       documentId: string;
       campaignId: string;
       characterId: string;
       characterName: string;
-      currentSignatures: CampaignDocument['signature_data'];
+      currentSignatures?: CampaignDocument['signature_data'];
     }) => {
-      const newSignature = {
-        character_id: characterId,
-        character_name: characterName,
-        signed_at: new Date().toISOString()
-      };
-
-      const updatedSignatures = [...currentSignatures, newSignature];
-
-      const { error } = await supabase
-        .from('campaign_documents')
-        .update({ 
-          signature_data: updatedSignatures,
-          is_signed: true
-        })
-        .eq('id', documentId);
+      const { error } = await supabase.rpc('append_document_signature', {
+        _document_id: documentId,
+        _character_id: characterId,
+        _character_name: characterName,
+      });
 
       if (error) throw error;
     },

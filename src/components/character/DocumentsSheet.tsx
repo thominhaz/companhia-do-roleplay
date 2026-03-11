@@ -70,7 +70,6 @@ export function DocumentsSheet({ open, onOpenChange, characterId, characterName 
       campaignId: doc.campaign_id,
       characterId,
       characterName,
-      currentSignatures: doc.signature_data
     });
   };
 

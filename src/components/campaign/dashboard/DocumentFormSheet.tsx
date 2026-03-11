@@ -147,7 +147,7 @@ export function DocumentFormSheet({ open, onOpenChange, campaignId, document }: 
       content,
       document_type: documentType,
       style,
-      requires_signature: requiresSignature,
+      requires_signature: documentType === 'contract' ? requiresSignature : false,
       watermark_type: watermarkType === 'none' ? null : watermarkType,
       watermark_text: watermarkType === 'signature' ? watermarkText : null,
       watermark_image_url: watermarkType === 'image' ? watermarkImageUrl : null,
