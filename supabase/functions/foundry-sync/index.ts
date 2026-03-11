@@ -43,8 +43,109 @@ Deno.serve(async (req) => {
   const campaign = await authenticate(req, supabase);
   if (!campaign) return err("Invalid or missing API key", 401);
 
-  // ─── GET: Foundry polls combat state ───
+  // ─── GET: Foundry polls combat state or fetches characters ───
   if (req.method === "GET") {
+    const url = new URL(req.url);
+    const type = url.searchParams.get("type");
+
+    // --- GET ?type=characters: Return campaign characters for Actor import ---
+    if (type === "characters") {
+      // Get all players in the campaign with their linked characters
+      const { data: players } = await supabase
+        .from("campaign_players")
+        .select("user_id, character_id, role")
+        .eq("campaign_id", campaign.id);
+
+      if (!players || players.length === 0) {
+        return json({ characters: [] });
+      }
+
+      const characterIds = players
+        .map((p: any) => p.character_id)
+        .filter(Boolean);
+
+      if (characterIds.length === 0) {
+        return json({ characters: [] });
+      }
+
+      const { data: characters } = await supabase
+        .from("characters")
+        .select(
+          "id, name, race, subrace, class, level, experience, background, alignment, " +
+          "max_hp, current_hp, temporary_hp, armor_class, initiative, speed, proficiency_bonus, " +
+          "attributes, saving_throws, skills, hit_dice, death_saves, " +
+          "conditions, languages, proficiencies, features, " +
+          "spellcasting, spells, equipment, currency, inventory, " +
+          "personality_traits, ideals, bonds, flaws, image_url"
+        )
+        .in("id", characterIds);
+
+      // Map to a Foundry-friendly format
+      const foundryCharacters = (characters || []).map((c: any) => {
+        const attrs = c.attributes || {};
+        const calcMod = (score: number) => Math.floor((score - 10) / 2);
+
+        return {
+          go20_id: c.id,
+          name: c.name,
+          race: c.race,
+          subrace: c.subrace,
+          class: c.class,
+          level: c.level,
+          experience: c.experience,
+          background: c.background,
+          alignment: c.alignment,
+          image_url: c.image_url,
+
+          // Core stats
+          hp: {
+            value: c.current_hp,
+            max: c.max_hp,
+            temp: c.temporary_hp,
+          },
+          ac: c.armor_class,
+          initiative: c.initiative,
+          speed: c.speed,
+          proficiency_bonus: c.proficiency_bonus,
+
+          // Abilities with modifiers
+          abilities: {
+            str: { value: attrs.strength || 10, mod: calcMod(attrs.strength || 10) },
+            dex: { value: attrs.dexterity || 10, mod: calcMod(attrs.dexterity || 10) },
+            con: { value: attrs.constitution || 10, mod: calcMod(attrs.constitution || 10) },
+            int: { value: attrs.intelligence || 10, mod: calcMod(attrs.intelligence || 10) },
+            wis: { value: attrs.wisdom || 10, mod: calcMod(attrs.wisdom || 10) },
+            cha: { value: attrs.charisma || 10, mod: calcMod(attrs.charisma || 10) },
+          },
+
+          saving_throws: c.saving_throws,
+          skills: c.skills,
+          hit_dice: c.hit_dice,
+          death_saves: c.death_saves,
+          conditions: c.conditions || [],
+          languages: c.languages,
+          proficiencies: c.proficiencies,
+          features: c.features,
+          spellcasting: c.spellcasting,
+          spells: c.spells,
+          equipment: c.equipment,
+          inventory: c.inventory,
+          currency: c.currency,
+
+          // Personality
+          personality: {
+            traits: c.personality_traits,
+            ideals: c.ideals,
+            bonds: c.bonds,
+            flaws: c.flaws,
+          },
+        };
+      });
+
+      return json({ characters: foundryCharacters });
+    }
+
+    // --- Default GET: Poll combat state ---
     const { data: encounter } = await supabase
       .from("combat_encounters")
       .select("*")
