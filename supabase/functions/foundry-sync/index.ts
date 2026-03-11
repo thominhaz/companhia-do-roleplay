@@ -17,7 +17,6 @@ function err(msg: string, status = 400) {
   return json({ error: msg }, status);
 }
 
-// Authenticate via x-api-key header → returns campaign row
 async function authenticate(req: Request, supabase: ReturnType<typeof createClient>) {
   const apiKey = req.headers.get("x-api-key");
   if (!apiKey) return null;
@@ -44,12 +43,8 @@ Deno.serve(async (req) => {
   const campaign = await authenticate(req, supabase);
   if (!campaign) return err("Invalid or missing API key", 401);
 
-  const url = new URL(req.url);
-  const path = url.pathname.split("/").pop(); // last segment after /foundry-sync/
-
   // ─── GET: Foundry polls combat state ───
   if (req.method === "GET") {
-    // Get active encounter
     const { data: encounter } = await supabase
       .from("combat_encounters")
       .select("*")
@@ -63,12 +58,11 @@ Deno.serve(async (req) => {
       return json({ active: false, encounter: null, combatants: [] });
     }
 
-    // Get combatants
     const { data: combatants } = await supabase
       .from("combatants")
-      .select("id, name, initiative, current_hp, max_hp, armor_class, conditions, is_player, character_id, notes, sort_order")
+      .select("id, name, initiative, current_hp, max_hp, armor_class, conditions, is_player, character_id, notes, sort_order, foundry_id")
       .eq("encounter_id", encounter.id)
-      .order("initiative", { ascending: false });
+      .order("sort_order", { ascending: true });
 
     return json({
       active: true,
@@ -77,6 +71,7 @@ Deno.serve(async (req) => {
         name: encounter.name,
         round: encounter.round,
         current_turn: encounter.current_turn,
+        status: encounter.status,
       },
       combatants: combatants || [],
     });
@@ -93,21 +88,37 @@ Deno.serve(async (req) => {
 
     const { action } = body;
 
+    // --- Ping/health check ---
+    if (action === "ping") {
+      return json({ success: true, campaign: campaign.name, timestamp: new Date().toISOString() });
+    }
+
     // --- Update combatant HP/AC/conditions ---
     if (action === "update_combatant") {
-      const { combatant_id, current_hp, max_hp, armor_class, conditions } = body;
-      if (!combatant_id) return err("combatant_id required");
+      const { combatant_id, foundry_id, current_hp, max_hp, armor_class, conditions } = body;
+      
+      // Find by combatant_id or foundry_id
+      let targetId = combatant_id;
+      if (!targetId && foundry_id) {
+        const { data: found } = await supabase
+          .from("combatants")
+          .select("id, encounter_id")
+          .eq("foundry_id", foundry_id)
+          .limit(1)
+          .maybeSingle();
+        if (found) targetId = found.id;
+      }
+      
+      if (!targetId) return err("combatant_id or foundry_id required");
 
-      // Verify combatant belongs to this campaign
       const { data: combatant } = await supabase
         .from("combatants")
         .select("id, encounter_id, character_id")
-        .eq("id", combatant_id)
+        .eq("id", targetId)
         .maybeSingle();
 
       if (!combatant) return err("Combatant not found", 404);
 
-      // Verify encounter belongs to campaign
       const { data: enc } = await supabase
         .from("combat_encounters")
         .select("campaign_id")
@@ -125,11 +136,11 @@ Deno.serve(async (req) => {
       const { error: updateErr } = await supabase
         .from("combatants")
         .update(updates)
-        .eq("id", combatant_id);
+        .eq("id", targetId);
 
       if (updateErr) return err(updateErr.message, 500);
 
-      // Sync to linked character if applicable
+      // Sync to linked character
       if (combatant.character_id) {
         const charUpdates: Record<string, any> = {};
         if (current_hp !== undefined) charUpdates.current_hp = current_hp;
@@ -147,22 +158,37 @@ Deno.serve(async (req) => {
       return json({ success: true });
     }
 
-    // --- Batch update multiple combatants (e.g. initiative sync) ---
+    // --- Batch update multiple combatants ---
     if (action === "batch_update") {
-      const { updates } = body; // Array of { combatant_id, ...fields }
+      const { updates } = body;
       if (!Array.isArray(updates)) return err("updates must be an array");
 
       const results = [];
       for (const upd of updates) {
-        const { combatant_id, ...fields } = upd;
-        if (!combatant_id) continue;
+        const { combatant_id, foundry_id, ...fields } = upd;
+        let targetId = combatant_id;
+        
+        if (!targetId && foundry_id) {
+          const { data: found } = await supabase
+            .from("combatants")
+            .select("id")
+            .eq("foundry_id", foundry_id)
+            .limit(1)
+            .maybeSingle();
+          if (found) targetId = found.id;
+        }
+        
+        if (!targetId) {
+          results.push({ combatant_id, foundry_id, success: false, error: "not found" });
+          continue;
+        }
 
         const { error: e } = await supabase
           .from("combatants")
           .update(fields)
-          .eq("id", combatant_id);
+          .eq("id", targetId);
 
-        results.push({ combatant_id, success: !e, error: e?.message });
+        results.push({ combatant_id: targetId, success: !e, error: e?.message });
       }
 
       return json({ success: true, results });
@@ -184,6 +210,66 @@ Deno.serve(async (req) => {
         .eq("campaign_id", campaign.id);
 
       if (e) return err(e.message, 500);
+      return json({ success: true });
+    }
+
+    // --- Link foundry IDs to existing combatants (matching) ---
+    if (action === "link_combatants") {
+      const { encounter_id, links } = body;
+      // links: Array of { combatant_id, foundry_id }
+      if (!encounter_id || !Array.isArray(links)) return err("encounter_id and links[] required");
+
+      // Verify encounter belongs to campaign
+      const { data: enc } = await supabase
+        .from("combat_encounters")
+        .select("campaign_id")
+        .eq("id", encounter_id)
+        .single();
+
+      if (enc?.campaign_id !== campaign.id) return err("Encounter not in this campaign", 403);
+
+      const results = [];
+      for (const link of links) {
+        const { error: e } = await supabase
+          .from("combatants")
+          .update({ foundry_id: link.foundry_id })
+          .eq("id", link.combatant_id)
+          .eq("encounter_id", encounter_id);
+        results.push({ combatant_id: link.combatant_id, success: !e });
+      }
+
+      return json({ success: true, results });
+    }
+
+    // --- Sync HP from Foundry for a specific combatant by foundry_id ---
+    if (action === "foundry_hp_update") {
+      const { foundry_id, current_hp, max_hp, temp_hp } = body;
+      if (!foundry_id) return err("foundry_id required");
+
+      const { data: combatant } = await supabase
+        .from("combatants")
+        .select("id, encounter_id, character_id")
+        .eq("foundry_id", foundry_id)
+        .limit(1)
+        .maybeSingle();
+
+      if (!combatant) return err("No combatant linked to this foundry_id", 404);
+
+      const updates: Record<string, any> = {};
+      if (current_hp !== undefined) updates.current_hp = current_hp;
+      if (max_hp !== undefined) updates.max_hp = max_hp;
+
+      await supabase.from("combatants").update(updates).eq("id", combatant.id);
+
+      // Also sync to character sheet
+      if (combatant.character_id) {
+        const charUpdates: Record<string, any> = {};
+        if (current_hp !== undefined) charUpdates.current_hp = current_hp;
+        if (temp_hp !== undefined) charUpdates.temporary_hp = temp_hp;
+        if (Object.keys(charUpdates).length > 0) {
+          await supabase.from("characters").update(charUpdates).eq("id", combatant.character_id);
+        }
+      }
 
       return json({ success: true });
     }

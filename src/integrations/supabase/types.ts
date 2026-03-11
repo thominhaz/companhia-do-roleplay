@@ -1527,6 +1527,7 @@ export type Database = {
           created_at: string
           current_hp: number
           encounter_id: string
+          foundry_id: string | null
           id: string
           initiative: number
           is_player: boolean
@@ -1542,6 +1543,7 @@ export type Database = {
           created_at?: string
           current_hp?: number
           encounter_id: string
+          foundry_id?: string | null
           id?: string
           initiative?: number
           is_player?: boolean
@@ -1557,6 +1559,7 @@ export type Database = {
           created_at?: string
           current_hp?: number
           encounter_id?: string
+          foundry_id?: string | null
           id?: string
           initiative?: number
           is_player?: boolean

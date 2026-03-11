@@ -205,52 +205,42 @@ export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps)
             )}
           </div>
 
-          {/* Macro Instructions */}
+          {/* Module Download & Instructions */}
           <div className="bg-card rounded-xl p-4 border border-border space-y-3">
-            <h4 className="text-sm font-semibold">Macro para o Foundry VTT</h4>
+            <h4 className="text-sm font-semibold">Módulo Go20 Sync</h4>
             <p className="text-xs text-muted-foreground">
-              Cole este script como uma Macro no Foundry para enviar atualizações de HP ao Go20:
+              Instale o módulo no Foundry VTT para sincronização automática de HP, iniciativa e condições.
             </p>
-            <div className="bg-muted rounded-lg p-3 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all">
-{`// Go20 Sync Macro - Cole no Foundry VTT
-const GO20_API = "${syncEndpoint}";
-const API_KEY = "SUA_API_KEY_AQUI";
-
-// Buscar estado do combate no Go20
-async function getGo20Combat() {
-  const res = await fetch(GO20_API, {
-    headers: { "x-api-key": API_KEY }
-  });
-  return res.json();
-}
-
-// Enviar atualização de HP
-async function updateHP(combatantId, hp) {
-  await fetch(GO20_API, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-api-key": API_KEY
-    },
-    body: JSON.stringify({
-      action: "update_combatant",
-      combatant_id: combatantId,
-      current_hp: hp
-    })
-  });
-}`}
+            
+            <div className="bg-muted rounded-lg p-3 space-y-2">
+              <p className="text-xs font-semibold">Como instalar:</p>
+              <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
+                <li>Baixe o módulo e extraia na pasta <code className="bg-background px-1 rounded">Data/modules/go20-sync/</code></li>
+                <li>No Foundry, vá em <strong>Add-on Modules</strong> e ative "Go20 Combat Sync"</li>
+                <li>Em <strong>Module Settings</strong>, cole o Endpoint e a API Key abaixo</li>
+                <li>O indicador verde 🟢 aparecerá quando a conexão estiver ativa</li>
+              </ol>
             </div>
-            <div className="flex gap-2">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() => {
+
+            <div className="space-y-2">
+              <div className="flex gap-2 items-center">
+                <Input readOnly value={syncEndpoint} className="flex-1 font-mono text-xs" />
+                <Button size="sm" variant="outline" onClick={() => {
                   navigator.clipboard.writeText(syncEndpoint);
                   toast.success("Endpoint copiado!");
-                }}
-              >
-                <Copy className="w-4 h-4 mr-1" />
-                Copiar Endpoint
+                }}>
+                  <Copy className="w-4 h-4 mr-1" />
+                  Endpoint
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <Button size="sm" variant="outline" asChild>
+                <a href="/foundry-module/" target="_blank" rel="noopener noreferrer">
+                  <ExternalLink className="w-4 h-4 mr-1" />
+                  Abrir Arquivos do Módulo
+                </a>
               </Button>
             </div>
           </div>
