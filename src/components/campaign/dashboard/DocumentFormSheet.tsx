@@ -329,7 +329,7 @@ export function DocumentFormSheet({ open, onOpenChange, campaignId, document }: 
             )}
           </div>
 
-          {documentType === 'contract' ? (
+          {documentType === 'contract' && (
             <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
               <div>
                 <p className="font-medium text-sm">Requer Assinatura</p>
