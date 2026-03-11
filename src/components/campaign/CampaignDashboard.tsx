@@ -10,7 +10,7 @@ import {
   Crown, Users, Calendar, Settings, ChevronLeft,
   Swords, StickyNote, MessageCircle, Library,
   UserSquare2, Store, FileText, Flag, Clock, Sparkles, Gem,
-  Lock, Map
+  Lock, ExternalLink
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
