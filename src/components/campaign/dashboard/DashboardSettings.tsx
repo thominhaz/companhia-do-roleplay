@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CampaignDB, useDeleteCampaign } from "@/hooks/useCampaigns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Settings, Trash2, Copy, Share2, Palette, Hammer, ExternalLink } from "lucide-react";
+import { Settings, Trash2, Copy, Share2, Palette, Hammer, ExternalLink, Key, RefreshCw, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { DiscordWebhookConfig } from "../DiscordWebhookConfig";
@@ -37,8 +37,12 @@ export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps)
   const queryClient = useQueryClient();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [homebrewOpen, setHomebrewOpen] = useState(false);
+  const [vttOpen, setVttOpen] = useState(false);
   const [vttUrl, setVttUrl] = useState(campaign.foundry_vtt_url || '');
   const [savingVtt, setSavingVtt] = useState(false);
+  const [apiKey, setApiKey] = useState<string | null>(null);
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [generatingKey, setGeneratingKey] = useState(false);
 
   const handleCopyInviteCode = () => {
     if (campaign.invite_code) {
@@ -64,6 +68,33 @@ export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps)
       setSavingVtt(false);
     }
   };
+
+  const handleGenerateApiKey = async () => {
+    setGeneratingKey(true);
+    try {
+      const { data, error } = await supabase.rpc('generate_foundry_api_key', {
+        _campaign_id: campaign.id,
+      });
+      if (error) throw error;
+      setApiKey(data as string);
+      setShowApiKey(true);
+      toast.success("API Key gerada! Copie e configure no Foundry VTT.");
+    } catch {
+      toast.error("Erro ao gerar API Key");
+    } finally {
+      setGeneratingKey(false);
+    }
+  };
+
+  const handleCopyApiKey = () => {
+    if (apiKey) {
+      navigator.clipboard.writeText(apiKey);
+      toast.success("API Key copiada!");
+    }
+  };
+
+  const projectId = import.meta.env.VITE_SUPABASE_PROJECT_ID;
+  const syncEndpoint = `https://${projectId}.supabase.co/functions/v1/foundry-sync`;
 
   const handleDeleteCampaign = async () => {
     try {
@@ -98,27 +129,133 @@ export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps)
         </div>
       )}
 
-      {/* Foundry VTT URL */}
-      <div className="bg-card rounded-xl p-4 border border-border space-y-3">
-        <h3 className="font-semibold flex items-center gap-2">
-          <ExternalLink className="w-4 h-4" />
-          Foundry VTT
-        </h3>
-        <p className="text-xs text-muted-foreground">
-          URL do mundo no Foundry VTT para esta campanha. Ex: https://vtt.go20.com.br/join
-        </p>
-        <div className="flex gap-2">
-          <Input
-            placeholder="https://vtt.go20.com.br/join"
-            value={vttUrl}
-            onChange={(e) => setVttUrl(e.target.value)}
-            className="flex-1"
-          />
-          <Button size="sm" onClick={handleSaveVttUrl} disabled={savingVtt}>
-            {savingVtt ? "Salvando..." : "Salvar"}
-          </Button>
-        </div>
-      </div>
+      {/* Foundry VTT Integration */}
+      <Collapsible open={vttOpen} onOpenChange={setVttOpen}>
+        <CollapsibleTrigger asChild>
+          <div className="bg-card rounded-xl p-4 border border-border cursor-pointer hover:bg-accent/50 transition-colors">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <ExternalLink className="w-5 h-5 text-muted-foreground" />
+                <div>
+                  <h3 className="font-semibold">Foundry VTT</h3>
+                  <p className="text-xs text-muted-foreground">URL do mundo e API de sincronização</p>
+                </div>
+              </div>
+              <span className="text-xs text-muted-foreground">{vttOpen ? '▲' : '▼'}</span>
+            </div>
+          </div>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="mt-2 space-y-4">
+          {/* URL */}
+          <div className="bg-card rounded-xl p-4 border border-border space-y-3">
+            <h4 className="text-sm font-semibold">URL do Mundo</h4>
+            <p className="text-xs text-muted-foreground">
+              URL do mundo no Foundry VTT. Ex: https://vtt.go20.com.br/join
+            </p>
+            <div className="flex gap-2">
+              <Input
+                placeholder="https://vtt.go20.com.br/join"
+                value={vttUrl}
+                onChange={(e) => setVttUrl(e.target.value)}
+                className="flex-1"
+              />
+              <Button size="sm" onClick={handleSaveVttUrl} disabled={savingVtt}>
+                {savingVtt ? "Salvando..." : "Salvar"}
+              </Button>
+            </div>
+          </div>
+
+          {/* API Key */}
+          <div className="bg-card rounded-xl p-4 border border-border space-y-3">
+            <h4 className="text-sm font-semibold flex items-center gap-2">
+              <Key className="w-4 h-4" />
+              API Key para Sincronização
+            </h4>
+            <p className="text-xs text-muted-foreground">
+              Gere uma chave para o módulo do Foundry VTT se comunicar com o Go20. 
+              A chave permite sincronizar HP, iniciativa e condições em tempo real.
+            </p>
+
+            {apiKey ? (
+              <div className="space-y-2">
+                <div className="flex gap-2 items-center">
+                  <Input
+                    readOnly
+                    value={showApiKey ? apiKey : '•'.repeat(32)}
+                    className="flex-1 font-mono text-xs"
+                  />
+                  <Button size="icon" variant="ghost" onClick={() => setShowApiKey(!showApiKey)}>
+                    {showApiKey ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={handleCopyApiKey}>
+                    <Copy className="w-4 h-4 mr-1" />
+                    Copiar
+                  </Button>
+                </div>
+                <Button size="sm" variant="ghost" onClick={handleGenerateApiKey} disabled={generatingKey}>
+                  <RefreshCw className="w-4 h-4 mr-1" />
+                  Gerar Nova Chave
+                </Button>
+              </div>
+            ) : (
+              <Button size="sm" onClick={handleGenerateApiKey} disabled={generatingKey}>
+                <Key className="w-4 h-4 mr-1" />
+                {generatingKey ? "Gerando..." : "Gerar API Key"}
+              </Button>
+            )}
+          </div>
+
+          {/* Macro Instructions */}
+          <div className="bg-card rounded-xl p-4 border border-border space-y-3">
+            <h4 className="text-sm font-semibold">Macro para o Foundry VTT</h4>
+            <p className="text-xs text-muted-foreground">
+              Cole este script como uma Macro no Foundry para enviar atualizações de HP ao Go20:
+            </p>
+            <div className="bg-muted rounded-lg p-3 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-all">
+{`// Go20 Sync Macro - Cole no Foundry VTT
+const GO20_API = "${syncEndpoint}";
+const API_KEY = "SUA_API_KEY_AQUI";
+
+// Buscar estado do combate no Go20
+async function getGo20Combat() {
+  const res = await fetch(GO20_API, {
+    headers: { "x-api-key": API_KEY }
+  });
+  return res.json();
+}
+
+// Enviar atualização de HP
+async function updateHP(combatantId, hp) {
+  await fetch(GO20_API, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": API_KEY
+    },
+    body: JSON.stringify({
+      action: "update_combatant",
+      combatant_id: combatantId,
+      current_hp: hp
+    })
+  });
+}`}
+            </div>
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => {
+                  navigator.clipboard.writeText(syncEndpoint);
+                  toast.success("Endpoint copiado!");
+                }}
+              >
+                <Copy className="w-4 h-4 mr-1" />
+                Copiar Endpoint
+              </Button>
+            </div>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
 
       {/* Homebrew Share Requests */}
       {campaign.homebrew_sharing_policy === 'approval_required' && (
