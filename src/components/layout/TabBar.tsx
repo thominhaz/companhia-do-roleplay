@@ -14,7 +14,7 @@ const tabs = [
   { id: "home" as TabRoute, label: "Início", shortLabel: "Início", icon: Home },
   { id: "characters" as TabRoute, label: "Personagens", shortLabel: "Perso.", icon: Users },
   { id: "campaigns" as TabRoute, label: "Campanhas", shortLabel: "Camp.", icon: Swords },
-  { id: "maps" as TabRoute, label: "Mapas", shortLabel: "Mapas", icon: Map },
+  
   { id: "tools" as TabRoute, label: "Ferramentas", shortLabel: "Ferra.", icon: Wrench },
   { id: "menu" as TabRoute, label: "Menu", shortLabel: "Menu", icon: Menu },
 ];
