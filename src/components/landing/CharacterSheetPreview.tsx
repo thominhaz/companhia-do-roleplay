@@ -87,7 +87,7 @@ export function CharacterSheetPreview() {
   const [activeTheme, setActiveTheme] = useState(0);
   const [isRolling, setIsRolling] = useState(false);
   const [diceResults, setDiceResults] = useState<number[]>([20, 8, 6]);
-  const rollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const rollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const currentChar = demoCharacters[activeTheme].character;
 

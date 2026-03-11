@@ -5,7 +5,7 @@ import { TabBar } from "@/components/layout/TabBar";
 import { HomeScreen } from "@/components/screens/HomeScreen";
 import { CharactersScreen } from "@/components/screens/CharactersScreen";
 import { CampaignsScreen } from "@/components/screens/CampaignsScreen";
-import { MapsScreen } from "@/components/screens/MapsScreen";
+
 import { ToolsScreen } from "@/components/screens/ToolsScreen";
 import { MenuScreen } from "@/components/screens/MenuScreen";
 import { useAuth } from "@/hooks/useAuth";
@@ -28,12 +28,12 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<TabRoute>("home");
   const [direction, setDirection] = useState(0);
 
-  const tabOrder: TabRoute[] = ["home", "characters", "campaigns", "maps", "tools", "menu"];
+  const tabOrder: TabRoute[] = ["home", "characters", "campaigns", "tools", "menu"];
 
   // Handle tab from URL query param
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam && ['home', 'characters', 'campaigns', 'maps', 'tools', 'menu'].includes(tabParam)) {
+    if (tabParam && ['home', 'characters', 'campaigns', 'tools', 'menu'].includes(tabParam)) {
       setActiveTab(tabParam as TabRoute);
       // Keep other params like tool=notes, create=true, join=true
       const newParams = new URLSearchParams();
@@ -85,8 +85,6 @@ const Index = () => {
         return <CharactersScreen />;
       case "campaigns":
         return <CampaignsScreen />;
-      case "maps":
-        return <MapsScreen />;
       case "tools":
         return <ToolsScreen />;
       case "menu":
