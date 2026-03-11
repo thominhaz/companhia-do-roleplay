@@ -5,7 +5,7 @@ import { TabBar } from "@/components/layout/TabBar";
 import { HomeScreen } from "@/components/screens/HomeScreen";
 import { CharactersScreen } from "@/components/screens/CharactersScreen";
 import { CampaignsScreen } from "@/components/screens/CampaignsScreen";
-import { MapsScreen } from "@/components/screens/MapsScreen";
+
 import { ToolsScreen } from "@/components/screens/ToolsScreen";
 import { MenuScreen } from "@/components/screens/MenuScreen";
 import { useAuth } from "@/hooks/useAuth";
