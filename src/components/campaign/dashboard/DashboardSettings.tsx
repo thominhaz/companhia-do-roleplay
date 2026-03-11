@@ -2,7 +2,7 @@ import { useState } from "react";
 import { CampaignDB, useDeleteCampaign } from "@/hooks/useCampaigns";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Settings, Trash2, Copy, Share2, Palette, Hammer, ExternalLink } from "lucide-react";
+import { Settings, Trash2, Copy, Share2, Palette, Hammer, ExternalLink, Key, RefreshCw, Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { DiscordWebhookConfig } from "../DiscordWebhookConfig";
