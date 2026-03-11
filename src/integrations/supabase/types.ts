@@ -1151,6 +1151,7 @@ export type Database = {
           created_at: string
           description: string | null
           discord_webhook_url: string | null
+          foundry_api_key: string | null
           foundry_vtt_url: string | null
           homebrew_sharing_policy: Database["public"]["Enums"]["homebrew_sharing_policy"]
           icon: string | null
@@ -1166,6 +1167,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           discord_webhook_url?: string | null
+          foundry_api_key?: string | null
           foundry_vtt_url?: string | null
           homebrew_sharing_policy?: Database["public"]["Enums"]["homebrew_sharing_policy"]
           icon?: string | null
@@ -1181,6 +1183,7 @@ export type Database = {
           created_at?: string
           description?: string | null
           discord_webhook_url?: string | null
+          foundry_api_key?: string | null
           foundry_vtt_url?: string | null
           homebrew_sharing_policy?: Database["public"]["Enums"]["homebrew_sharing_policy"]
           icon?: string | null
@@ -2526,6 +2529,10 @@ export type Database = {
           _type: Database["public"]["Enums"]["notification_type"]
           _user_id: string
         }
+        Returns: string
+      }
+      generate_foundry_api_key: {
+        Args: { _campaign_id: string }
         Returns: string
       }
       generate_invite_code: { Args: never; Returns: string }
