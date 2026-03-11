@@ -2490,6 +2490,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      append_document_signature: {
+        Args: {
+          _character_id: string
+          _character_name: string
+          _document_id: string
+        }
+        Returns: undefined
+      }
       can_create_character: { Args: { _user_id: string }; Returns: boolean }
       can_create_homebrew: { Args: { _user_id: string }; Returns: boolean }
       can_create_homebrew_with_limit: {
