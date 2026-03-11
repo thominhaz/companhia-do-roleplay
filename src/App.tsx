@@ -20,7 +20,7 @@ import SupporterSubmission from "@/pages/SupporterSubmission";
 
 import AdminStretchGoals from "@/pages/AdminStretchGoals";
 import Admin from "@/pages/Admin";
-import MapEditor from "@/pages/MapEditor";
+
 
 const queryClient = new QueryClient();
 
