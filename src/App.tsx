@@ -54,7 +54,7 @@ const App = () => (
                 <Route path="/admin/apoiadores/formularios" element={<SupporterForms />} />
                 <Route path="/admin/metas" element={<AdminStretchGoals />} />
                 <Route path="/apoiadores/submeter" element={<SupporterSubmission />} />
-                <Route path="/map/:id" element={<MapEditor />} />
+                
                 {/* Tab redirects - redirect to Index with tab query param */}
                 <Route path="/characters" element={<RedirectWithParams to="/?tab=characters" />} />
                 <Route path="/campaigns" element={<RedirectWithParams to="/?tab=campaigns" />} />

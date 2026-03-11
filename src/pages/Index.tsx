@@ -85,8 +85,6 @@ const Index = () => {
         return <CharactersScreen />;
       case "campaigns":
         return <CampaignsScreen />;
-      case "maps":
-        return <MapsScreen />;
       case "tools":
         return <ToolsScreen />;
       case "menu":

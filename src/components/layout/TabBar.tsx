@@ -1,4 +1,4 @@
-import { Home, Users, Swords, Map, Wrench, Menu } from "lucide-react";
+import { Home, Users, Swords, Wrench, Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { TabRoute } from "@/types";
 import { motion } from "framer-motion";
