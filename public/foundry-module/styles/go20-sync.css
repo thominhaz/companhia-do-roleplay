@@ -1,0 +1,64 @@
+/* Go20 Sync Status Indicator */
+#go20-status-indicator {
+  position: fixed;
+  bottom: 8px;
+  left: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 16px;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-size: 11px;
+  font-family: "Signika", sans-serif;
+  z-index: 100;
+  cursor: pointer;
+  transition: opacity 0.3s, background 0.3s;
+  user-select: none;
+}
+
+#go20-status-indicator:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+#go20-status-indicator .go20-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+#go20-status-indicator .go20-dot.connected {
+  background: #22c55e;
+  box-shadow: 0 0 4px #22c55e;
+  animation: go20-pulse 2s infinite;
+}
+
+#go20-status-indicator .go20-dot.syncing {
+  background: #eab308;
+  box-shadow: 0 0 4px #eab308;
+  animation: go20-pulse 0.8s infinite;
+}
+
+#go20-status-indicator .go20-dot.error {
+  background: #ef4444;
+  box-shadow: 0 0 4px #ef4444;
+}
+
+#go20-status-indicator .go20-dot.disconnected {
+  background: #6b7280;
+}
+
+#go20-status-indicator .go20-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 1px 6px;
+  border-radius: 8px;
+  font-size: 10px;
+  margin-left: 4px;
+}
+
+@keyframes go20-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

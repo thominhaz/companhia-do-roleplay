@@ -1,0 +1,37 @@
+{
+  "id": "go20-sync",
+  "title": "Go20 Combat Sync",
+  "description": "Sincronização bidirecional de combate entre Go20 e Foundry VTT. HP, iniciativa e condições em tempo real.",
+  "version": "1.0.0",
+  "compatibility": {
+    "minimum": "11",
+    "verified": "12"
+  },
+  "authors": [
+    {
+      "name": "Go20",
+      "url": "https://go20.lovable.app"
+    }
+  ],
+  "esmodules": [
+    "scripts/main.mjs"
+  ],
+  "styles": [
+    "styles/go20-sync.css"
+  ],
+  "languages": [
+    {
+      "lang": "pt-BR",
+      "name": "Português (Brasil)",
+      "path": "lang/pt-BR.json"
+    },
+    {
+      "lang": "en",
+      "name": "English",
+      "path": "lang/en.json"
+    }
+  ],
+  "url": "https://go20.lovable.app",
+  "manifest": "https://go20.lovable.app/foundry-module/module.json",
+  "download": "https://go20.lovable.app/foundry-module/go20-sync.zip"
+}
