@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { CampaignDB, useDeleteCampaign } from "@/hooks/useCampaigns";
 import { Button } from "@/components/ui/button";
-import { Settings, Trash2, Copy, Share2, Palette, Hammer } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Settings, Trash2, Copy, Share2, Palette, Hammer, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 import { DiscordWebhookConfig } from "../DiscordWebhookConfig";
 import { CampaignAppearanceSettings } from "./CampaignAppearanceSettings";
 import { HomebrewSharingSettings } from "./HomebrewSharingSettings";
@@ -23,6 +25,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface DashboardSettingsProps {
   campaign: CampaignDB & { discord_webhook_url?: string | null; homebrew_sharing_policy?: string };
@@ -31,13 +34,34 @@ interface DashboardSettingsProps {
 
 export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps) {
   const deleteCampaign = useDeleteCampaign();
+  const queryClient = useQueryClient();
   const [appearanceOpen, setAppearanceOpen] = useState(false);
   const [homebrewOpen, setHomebrewOpen] = useState(false);
+  const [vttUrl, setVttUrl] = useState(campaign.foundry_vtt_url || '');
+  const [savingVtt, setSavingVtt] = useState(false);
 
   const handleCopyInviteCode = () => {
     if (campaign.invite_code) {
       navigator.clipboard.writeText(campaign.invite_code);
       toast.success("Código copiado: " + campaign.invite_code);
+    }
+  };
+
+  const handleSaveVttUrl = async () => {
+    setSavingVtt(true);
+    try {
+      const trimmed = vttUrl.trim() || null;
+      const { error } = await supabase
+        .from('campaigns')
+        .update({ foundry_vtt_url: trimmed })
+        .eq('id', campaign.id);
+      if (error) throw error;
+      queryClient.invalidateQueries({ queryKey: ['campaigns'] });
+      toast.success("URL do Foundry VTT salva!");
+    } catch {
+      toast.error("Erro ao salvar URL do VTT");
+    } finally {
+      setSavingVtt(false);
     }
   };
 
@@ -73,6 +97,28 @@ export function DashboardSettings({ campaign, onClose }: DashboardSettingsProps)
           </div>
         </div>
       )}
+
+      {/* Foundry VTT URL */}
+      <div className="bg-card rounded-xl p-4 border border-border space-y-3">
+        <h3 className="font-semibold flex items-center gap-2">
+          <ExternalLink className="w-4 h-4" />
+          Foundry VTT
+        </h3>
+        <p className="text-xs text-muted-foreground">
+          URL do mundo no Foundry VTT para esta campanha. Ex: https://vtt.go20.com.br/join
+        </p>
+        <div className="flex gap-2">
+          <Input
+            placeholder="https://vtt.go20.com.br/join"
+            value={vttUrl}
+            onChange={(e) => setVttUrl(e.target.value)}
+            className="flex-1"
+          />
+          <Button size="sm" onClick={handleSaveVttUrl} disabled={savingVtt}>
+            {savingVtt ? "Salvando..." : "Salvar"}
+          </Button>
+        </div>
+      </div>
 
       {/* Homebrew Share Requests */}
       {campaign.homebrew_sharing_policy === 'approval_required' && (

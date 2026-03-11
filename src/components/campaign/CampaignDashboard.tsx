@@ -120,7 +120,8 @@ export function CampaignDashboard({ campaign, open, onOpenChange, isMaster }: Ca
   const handleNavClick = (section: DashboardSection, comingSoon?: boolean) => {
     if (comingSoon) return;
     if (section === 'vtt') {
-      window.open('https://vtt.go20.com.br', '_blank', 'noopener,noreferrer');
+      const url = campaign.foundry_vtt_url || 'https://vtt.go20.com.br';
+      window.open(url, '_blank', 'noopener,noreferrer');
       return;
     }
     setActiveSection(section);
