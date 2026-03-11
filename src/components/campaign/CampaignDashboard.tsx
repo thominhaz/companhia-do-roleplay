@@ -39,7 +39,7 @@ type DashboardSection =
   | 'sessions' 
   | 'players' 
   | 'combat' 
-  
+  | 'vtt'
   | 'notes' 
   | 'chat' 
   | 'compendium'
