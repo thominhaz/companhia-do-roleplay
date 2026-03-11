@@ -13,7 +13,7 @@ interface CombatantHpBarProps {
 export function CombatantHpBar({ combatant, isCurrentTurn, showAnimation = true }: CombatantHpBarProps) {
   const [prevHp, setPrevHp] = useState(combatant.current_hp);
   const [hpChange, setHpChange] = useState<{ amount: number; type: 'damage' | 'heal' } | null>(null);
-  const timeoutRef = useRef<NodeJS.Timeout>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
 
   const hpPercent = Math.max(0, Math.min(100, (combatant.current_hp / combatant.max_hp) * 100));
   const isDead = combatant.current_hp === 0;

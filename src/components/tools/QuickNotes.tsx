@@ -126,7 +126,7 @@ export function QuickNotes({ onBack }: QuickNotesProps) {
   const [editTags, setEditTags] = useState<string[]>([]);
 
   // Auto-save timer
-  const [saveTimeout, setSaveTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [saveTimeout, setSaveTimeout] = useState<ReturnType<typeof setTimeout> | null>(null);
 
   // Get all unique tags from notes
   const allTags = useMemo(() => {
