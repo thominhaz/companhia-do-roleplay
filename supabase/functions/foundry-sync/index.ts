@@ -83,23 +83,109 @@ Deno.serve(async (req) => {
       // Map to a Foundry-friendly format
       const foundryCharacters = (characters || []).map((c: any) => {
         const attrs = c.attributes || {};
-        const calcMod = (score: number) => Math.floor((score - 10) / 2);
+        const saves = c.saving_throws || {};
+        const skills = c.skills || {};
+
+        // Map abilities with score + save_proficient (format expected by importer)
+        const mapAbility = (key: string, ptKey: string) => ({
+          score: attrs[ptKey] || attrs[key] || 10,
+          save_proficient: saves[ptKey] || saves[key] || false,
+        });
+
+        // Map skills with proficient/expertise flags
+        const mappedSkills: Record<string, { proficient: boolean; expertise: boolean }> = {};
+        for (const [skillName, skillVal] of Object.entries(skills)) {
+          if (typeof skillVal === 'object' && skillVal !== null) {
+            const sv = skillVal as any;
+            mappedSkills[skillName] = {
+              proficient: sv.proficient ?? sv.trained ?? false,
+              expertise: sv.expertise ?? false,
+            };
+          } else if (typeof skillVal === 'boolean') {
+            mappedSkills[skillName] = { proficient: skillVal, expertise: false };
+          }
+        }
+
+        // Map equipment with type hints
+        const mappedEquipment = (c.equipment || []).map((item: any) => ({
+          name: item.name || item.nome || '',
+          type: item.type || item.tipo || 'gear',
+          equipped: item.equipped ?? item.equipado ?? false,
+          quantity: item.quantity ?? item.quantidade ?? 1,
+          damage: item.damage || item.dano || null,
+          damage_type: item.damage_type || item.tipo_dano || null,
+          properties: item.properties || item.propriedades || [],
+          ac: item.ac || item.ca || null,
+          ac_type: item.ac_type || item.tipo_armadura || null,
+          weight: item.weight || item.peso || null,
+          description: item.description || item.descricao || null,
+        }));
+
+        // Map spells
+        const mappedSpells = (c.spells || []).map((spell: any) => ({
+          name: spell.name || spell.nome || '',
+          level: spell.level ?? spell.nivel ?? 0,
+          school: spell.school || spell.escola || '',
+          casting_time: spell.casting_time || spell.tempo_conjuracao || '',
+          range: spell.range || spell.alcance || '',
+          components: spell.components || spell.componentes || '',
+          duration: spell.duration || spell.duracao || '',
+          description: spell.description || spell.descricao || '',
+          damage: spell.damage || spell.dano || null,
+          save: spell.save || spell.salvaguarda || null,
+          prepared: spell.prepared ?? spell.preparada ?? false,
+        }));
+
+        // Map features
+        const mappedFeatures = (c.features || []).map((feat: any) => ({
+          name: feat.name || feat.nome || '',
+          description: feat.description || feat.descricao || '',
+          source: feat.source || feat.fonte || '',
+          uses: feat.uses || feat.usos || null,
+          recharge: feat.recharge || feat.recarga || null,
+        }));
+
+        // Spell slots from spellcasting data
+        const spellcasting = c.spellcasting || {};
+        const spellSlots: Record<string, { value: number; max: number }> = {};
+        if (spellcasting.spell_slots) {
+          for (const [lvl, slot] of Object.entries(spellcasting.spell_slots)) {
+            const s = slot as any;
+            spellSlots[lvl] = {
+              value: s.remaining ?? s.value ?? s.current ?? 0,
+              max: s.max ?? s.total ?? 0,
+            };
+          }
+        }
 
         return {
-          go20_id: c.id,
+          id: c.id,
           name: c.name,
+          avatar: c.image_url || null,
           race: c.race,
           subrace: c.subrace,
           class: c.class,
           level: c.level,
-          experience: c.experience,
+          xp: c.experience,
           background: c.background,
           alignment: c.alignment,
-          image_url: c.image_url,
 
-          // Core stats
+          // Abilities in { score, save_proficient } format
+          abilities: {
+            str: mapAbility('strength', 'strength'),
+            dex: mapAbility('dexterity', 'dexterity'),
+            con: mapAbility('constitution', 'constitution'),
+            int: mapAbility('intelligence', 'intelligence'),
+            wis: mapAbility('wisdom', 'wisdom'),
+            cha: mapAbility('charisma', 'charisma'),
+          },
+
+          // Skills with proficient/expertise
+          skills: mappedSkills,
+
+          // HP in { current, max, temp } format
           hp: {
-            value: c.current_hp,
+            current: c.current_hp,
             max: c.max_hp,
             temp: c.temporary_hp,
           },
@@ -108,37 +194,33 @@ Deno.serve(async (req) => {
           speed: c.speed,
           proficiency_bonus: c.proficiency_bonus,
 
-          // Abilities with modifiers
-          abilities: {
-            str: { value: attrs.strength || 10, mod: calcMod(attrs.strength || 10) },
-            dex: { value: attrs.dexterity || 10, mod: calcMod(attrs.dexterity || 10) },
-            con: { value: attrs.constitution || 10, mod: calcMod(attrs.constitution || 10) },
-            int: { value: attrs.intelligence || 10, mod: calcMod(attrs.intelligence || 10) },
-            wis: { value: attrs.wisdom || 10, mod: calcMod(attrs.wisdom || 10) },
-            cha: { value: attrs.charisma || 10, mod: calcMod(attrs.charisma || 10) },
-          },
-
-          saving_throws: c.saving_throws,
-          skills: c.skills,
           hit_dice: c.hit_dice,
           death_saves: c.death_saves,
           conditions: c.conditions || [],
-          languages: c.languages,
-          proficiencies: c.proficiencies,
-          features: c.features,
-          spellcasting: c.spellcasting,
-          spells: c.spells,
-          equipment: c.equipment,
+
+          // Spellcasting
+          spellcasting_ability: spellcasting.ability || null,
+          spell_slots: spellSlots,
+          spells: mappedSpells,
+
+          // Equipment & inventory
+          equipment: mappedEquipment,
           inventory: c.inventory,
           currency: c.currency,
 
-          // Personality
-          personality: {
-            traits: c.personality_traits,
-            ideals: c.ideals,
-            bonds: c.bonds,
-            flaws: c.flaws,
-          },
+          // Features
+          features: mappedFeatures,
+
+          // Traits
+          languages: c.languages,
+          proficiencies: c.proficiencies,
+
+          // Biography
+          backstory: c.backstory,
+          personality_traits: c.personality_traits,
+          ideals: c.ideals,
+          bonds: c.bonds,
+          flaws: c.flaws,
         };
       });
 
