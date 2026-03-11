@@ -33,7 +33,7 @@ const Index = () => {
   // Handle tab from URL query param
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam && ['home', 'characters', 'campaigns', 'maps', 'tools', 'menu'].includes(tabParam)) {
+    if (tabParam && ['home', 'characters', 'campaigns', 'tools', 'menu'].includes(tabParam)) {
       setActiveTab(tabParam as TabRoute);
       // Keep other params like tool=notes, create=true, join=true
       const newParams = new URLSearchParams();
