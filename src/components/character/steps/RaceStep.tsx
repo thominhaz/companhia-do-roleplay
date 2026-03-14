@@ -14,12 +14,58 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
   const { homebrewContent: homebrewRaces } = useHomebrew('race');
   const selectedRace = RACES.find(r => r.id === data.race);
   const selectedHomebrewRace = homebrewRaces.find(r => r.id === data.race);
+
+  const parseList = (value: unknown): string[] => {
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item).trim()).filter(Boolean);
+    }
+
+    if (typeof value === 'string') {
+      return value
+        .split(',')
+        .map((item) => item.trim())
+        .filter(Boolean);
+    }
+
+    return [];
+  };
+
+  const normalizeHomebrewTraits = (value: unknown) => {
+    if (!Array.isArray(value)) return [];
+
+    return value.map((trait, index) => {
+      if (typeof trait === 'string') {
+        return {
+          id: `homebrew-trait-${index}`,
+          name: trait,
+          description: trait,
+        };
+      }
+
+      if (trait && typeof trait === 'object') {
+        const normalizedTrait = trait as any;
+        return {
+          id: normalizedTrait.id || `homebrew-trait-${index}`,
+          name: normalizedTrait.name || `Traço ${index + 1}`,
+          description: normalizedTrait.description,
+          description_markdown: normalizedTrait.description_markdown,
+        };
+      }
+
+      return {
+        id: `homebrew-trait-${index}`,
+        name: `Traço ${index + 1}`,
+        description: '',
+      };
+    });
+  };
+
   const selectedRaceData = selectedRace || (selectedHomebrewRace ? {
     ...selectedHomebrewRace,
     id: selectedHomebrewRace.id,
     name: selectedHomebrewRace.name,
-    traits: (selectedHomebrewRace.data as any)?.traits || [],
-    languages: (selectedHomebrewRace.data as any)?.languages?.split(',').map((l: string) => l.trim()) || [],
+    traits: normalizeHomebrewTraits((selectedHomebrewRace.data as any)?.traits),
+    languages: parseList((selectedHomebrewRace.data as any)?.languages),
     subraces: []
   } : null);
 
