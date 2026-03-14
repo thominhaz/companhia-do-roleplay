@@ -152,6 +152,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
   const createCharacter = useCreateCharacter();
   const { homebrewContent: homebrewRaces } = useHomebrew('race');
   const { homebrewContent: homebrewBackgrounds } = useHomebrew('background');
+  const { homebrewContent: homebrewSubclasses } = useHomebrew('subclass');
 
   // Check localStorage for SRD modal preference
   useEffect(() => {
