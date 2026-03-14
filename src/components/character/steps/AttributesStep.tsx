@@ -51,9 +51,9 @@ export function AttributesStep({ data, updateData }: AttributesStepProps) {
 
   const getRacialBonus = (attr: Attribute): number => {
     let bonus = 0;
-    // Fixed racial bonuses
-    if (selectedRace?.ability_bonuses[attr]) {
-      bonus += (selectedRace.ability_bonuses[attr] as number) || 0;
+    // Fixed racial bonuses (SRD or homebrew)
+    if (raceAbilityBonuses[attr]) {
+      bonus += (raceAbilityBonuses[attr] as number) || 0;
     }
     // Chosen racial bonuses
     if (currentChoices.includes(attr)) {

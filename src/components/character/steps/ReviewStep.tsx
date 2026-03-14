@@ -2,6 +2,7 @@ import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, getModifier, getModifierString
 import { WizardData } from '../CharacterWizard';
 import { Heart, Shield, Zap } from 'lucide-react';
 import armaduras from '@/data/equipment/armaduras.json';
+import { useHomebrew } from '@/hooks/useHomebrew';
 
 interface ReviewStepProps {
   data: WizardData;
@@ -17,17 +18,45 @@ const ATTRIBUTE_ABBR: Record<Attribute, string> = {
 };
 
 export function ReviewStep({ data }: ReviewStepProps) {
+  const { homebrewContent: homebrewRaces } = useHomebrew('race');
+  const { homebrewContent: homebrewBackgrounds } = useHomebrew('background');
+
   const selectedRace = RACES.find(r => r.id === data.race);
+  const selectedHomebrewRace = homebrewRaces.find(r => r.id === data.race);
+  const homebrewRaceData = selectedHomebrewRace?.data as any;
+
   const selectedSubrace = selectedRace?.subraces?.find(s => s.id === data.subrace);
   const selectedClass = CLASSES.find(c => c.id === data.class);
   const selectedBackground = BACKGROUNDS.find(b => b.id === data.background);
+  const selectedHomebrewBg = homebrewBackgrounds.find(b => b.id === data.background);
   const selectedAlignment = ALIGNMENTS.find(a => a.id === data.alignment);
+
+  const raceName = selectedRace?.name || selectedHomebrewRace?.name || '';
+  const raceSpeed = selectedRace?.speed || homebrewRaceData?.speed || 9;
+  const raceAbilityBonuses: Partial<Record<Attribute, number>> = selectedRace?.ability_bonuses || homebrewRaceData?.ability_bonuses || {};
+  const raceLanguages: string[] = selectedRace?.languages || (
+    homebrewRaceData?.languages
+      ? (typeof homebrewRaceData.languages === 'string' 
+          ? homebrewRaceData.languages.split(',').map((l: string) => l.trim())
+          : homebrewRaceData.languages)
+      : []
+  );
+
+  // Resolve background name
+  let backgroundName = selectedBackground?.name;
+  if (!backgroundName) {
+    if (data.background === 'custom') {
+      backgroundName = data.customBackgroundName || 'Customizado';
+    } else {
+      backgroundName = selectedHomebrewBg?.name || 'Sem antecedente';
+    }
+  }
 
   // Calculate final attributes with racial bonuses
   const getFinalScore = (attr: Attribute): number => {
     let score = data.attributes[attr];
-    if (selectedRace?.ability_bonuses[attr]) {
-      score += (selectedRace.ability_bonuses[attr] as number) || 0;
+    if (raceAbilityBonuses[attr]) {
+      score += (raceAbilityBonuses[attr] as number) || 0;
     }
     if (data.abilityBonusChoices?.includes(attr)) {
       score += 1;
@@ -77,6 +106,10 @@ export function ReviewStep({ data }: ReviewStepProps) {
     }
   }
 
+  // Race traits for display
+  const raceTraits = selectedRace?.traits || [];
+  const homebrewTraits: string[] = homebrewRaceData?.traits || [];
+
   return (
     <div className="px-4 py-6 space-y-6">
       <div>
@@ -90,11 +123,11 @@ export function ReviewStep({ data }: ReviewStepProps) {
       <div className="p-5 rounded-2xl bg-gradient-to-br from-primary/20 to-secondary/20 border border-primary/30">
         <h3 className="text-2xl font-bold">{data.name || 'Sem Nome'}</h3>
         <p className="text-muted-foreground mt-1">
-          {selectedSubrace ? `${selectedSubrace.name} ` : ''}{selectedRace?.name || ''} {selectedClass?.name || ''} • Nível 1
+          {selectedSubrace ? `${selectedSubrace.name} ` : ''}{raceName} {selectedClass?.name || ''} • Nível 1
         </p>
         <div className="flex gap-2 mt-3">
           <span className="px-3 py-1 text-xs rounded-full bg-muted text-muted-foreground">
-            {selectedBackground?.name || 'Sem antecedente'}
+            {backgroundName}
           </span>
           <span className="px-3 py-1 text-xs rounded-full bg-muted text-muted-foreground">
             {selectedAlignment?.name || 'Sem alinhamento'}
@@ -116,7 +149,7 @@ export function ReviewStep({ data }: ReviewStepProps) {
         </div>
         <div className="p-4 rounded-xl bg-card border border-border text-center">
           <Zap className="w-5 h-5 mx-auto text-secondary mb-1" />
-          <p className="text-2xl font-bold">{selectedRace?.speed || 9}m</p>
+          <p className="text-2xl font-bold">{raceSpeed}m</p>
           <p className="text-xs text-muted-foreground">Velocidade</p>
         </div>
       </div>
@@ -159,11 +192,11 @@ export function ReviewStep({ data }: ReviewStepProps) {
       )}
 
       {/* Racial Traits */}
-      {selectedRace && (
+      {(raceTraits.length > 0 || homebrewTraits.length > 0) && (
         <div className="p-4 rounded-xl bg-card border border-border">
           <h4 className="font-semibold mb-3">Traços Raciais</h4>
           <ul className="space-y-1">
-            {selectedRace.traits.map((trait) => (
+            {raceTraits.map((trait) => (
               <li key={trait.id} className="text-sm flex items-start gap-2">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
                 <span className="text-muted-foreground">{trait.name}</span>
@@ -175,10 +208,18 @@ export function ReviewStep({ data }: ReviewStepProps) {
                 <span className="text-muted-foreground">{trait.name}</span>
               </li>
             ))}
+            {homebrewTraits.map((trait, idx) => (
+              <li key={idx} className="text-sm flex items-start gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 mt-1.5 flex-shrink-0" />
+                <span className="text-muted-foreground">{typeof trait === 'string' ? trait : (trait as any).name || trait}</span>
+              </li>
+            ))}
           </ul>
-          <p className="mt-3 pt-3 border-t border-border text-sm text-muted-foreground">
-            <strong>Idiomas:</strong> {selectedRace.languages.join(', ')}
-          </p>
+          {raceLanguages.length > 0 && (
+            <p className="mt-3 pt-3 border-t border-border text-sm text-muted-foreground">
+              <strong>Idiomas:</strong> {raceLanguages.join(', ')}
+            </p>
+          )}
         </div>
       )}
 
