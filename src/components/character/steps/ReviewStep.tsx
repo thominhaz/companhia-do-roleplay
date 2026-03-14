@@ -20,6 +20,7 @@ const ATTRIBUTE_ABBR: Record<Attribute, string> = {
 export function ReviewStep({ data }: ReviewStepProps) {
   const { homebrewContent: homebrewRaces } = useHomebrew('race');
   const { homebrewContent: homebrewBackgrounds } = useHomebrew('background');
+  const { homebrewContent: homebrewSubclasses } = useHomebrew('subclass');
 
   const selectedRace = RACES.find(r => r.id === data.race);
   const selectedHomebrewRace = homebrewRaces.find(r => r.id === data.race);
