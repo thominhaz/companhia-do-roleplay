@@ -177,7 +177,7 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
                           {raceData?.speed || 9}m velocidade
                         </span>
                         <span className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground capitalize">
-                          {raceData?.size === 'small' ? 'Pequeno' : 'Médio'}
+                          {String(raceData?.size || '').toLowerCase() === 'small' ? 'Pequeno' : 'Médio'}
                         </span>
                       </div>
                     </div>
