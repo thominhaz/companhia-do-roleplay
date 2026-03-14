@@ -152,6 +152,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
   const createCharacter = useCreateCharacter();
   const { homebrewContent: homebrewRaces } = useHomebrew('race');
   const { homebrewContent: homebrewBackgrounds } = useHomebrew('background');
+  const { homebrewContent: homebrewSubclasses } = useHomebrew('subclass');
 
   // Check localStorage for SRD modal preference
   useEffect(() => {
@@ -374,6 +375,24 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
         description: f.description_markdown || '',
         mechanical: f.mechanical || {},
       }));
+
+    // Merge homebrew subclass features
+    if (data.subclass) {
+      const selectedSubclass = homebrewSubclasses.find(s => s.id === data.subclass);
+      if (selectedSubclass) {
+        const subData = selectedSubclass.data as any;
+        const subFeatures = subData?.features || [];
+        subFeatures.forEach((f: any) => {
+          level1Features.push({
+            id: f.id || `subclass-${f.name?.toLowerCase().replace(/\s+/g, '-')}`,
+            name: `${f.name} (${selectedSubclass.name})`,
+            level: f.level || 1,
+            description: f.description || f.description_markdown || '',
+            mechanical: f.mechanical || {},
+          });
+        });
+      }
+    }
 
     // Calculate AC based on selected armor, class, and attributes
     let armorClass = 10 + dexModifier; // Default: no armor

@@ -341,6 +341,26 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
                     </button>
                   );
                 })}
+                {/* Show selected subclass features */}
+                {data.subclass && (() => {
+                  const selectedSub = availableSubclasses.find(s => s.id === data.subclass);
+                  const subFeatures = (selectedSub?.data as any)?.features || [];
+                  if (subFeatures.length === 0) return null;
+                  return (
+                    <div className="mt-3 p-3 rounded-lg bg-card border border-border space-y-2">
+                      <p className="text-sm font-medium">Habilidades da Subclasse: {selectedSub?.name}</p>
+                      {subFeatures.map((feature: any, idx: number) => (
+                        <div key={idx} className="text-sm text-muted-foreground">
+                          <span className="font-medium text-foreground">{feature.name}</span>
+                          {feature.level && <span className="text-xs ml-1">(Nível {feature.level})</span>}
+                          {feature.description && (
+                            <p className="text-xs mt-0.5 line-clamp-2">{feature.description}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  );
+                })()}
               </CollapsibleContent>
             </Collapsible>
           )}
