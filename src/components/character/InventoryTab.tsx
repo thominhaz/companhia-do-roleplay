@@ -128,6 +128,7 @@ export function InventoryTab({ character, characterCampaign, campaignPlayers }: 
   const [searchQuery, setSearchQuery] = useState("");
   const [showInventorySheet, setShowInventorySheet] = useState(false);
   const [showTradeSheet, setShowTradeSheet] = useState(false);
+  const updateCharacter = useUpdateCharacter();
 
   const isValidItem = (item: any): item is { name: string } =>
     !!item && typeof item === "object" && typeof item.name === "string" && item.name.trim().length > 0;
@@ -135,6 +136,66 @@ export function InventoryTab({ character, characterCampaign, campaignPlayers }: 
   const equipment = (Array.isArray(character.equipment) ? character.equipment : []).filter(isValidItem);
   const inventory = (Array.isArray(character.inventory) ? character.inventory : []).filter(isValidItem);
   const currency = (character.currency as any) || {};
+  const attributes = character.attributes as Record<string, number>;
+  const dexMod = getModifier(attributes?.dexterity || 10);
+
+  // Calculate AC based on equipped armor
+  const calculateNewAC = (equipmentList: any[]) => {
+    const equippedArmor = equipmentList.find((e: any) => e.type === 'armor' && e.equipped);
+    const equippedShield = equipmentList.find((e: any) => e.type === 'shield' && e.equipped);
+    let baseAC = 10 + dexMod;
+    if (equippedArmor) {
+      const armorAC = equippedArmor.armorClass || 10;
+      if (equippedArmor.armorCategory === 'heavy') {
+        baseAC = armorAC;
+      } else if (equippedArmor.armorCategory === 'medium') {
+        const maxDex = equippedArmor.maxDexBonus !== null && equippedArmor.maxDexBonus !== undefined
+          ? Math.min(dexMod, equippedArmor.maxDexBonus) : Math.min(dexMod, 2);
+        baseAC = armorAC + maxDex;
+      } else {
+        baseAC = armorAC + dexMod;
+      }
+    }
+    if (equippedShield) {
+      baseAC += equippedShield.armorClass || 2;
+    }
+    return baseAC;
+  };
+
+  // Direct toggle equip from inventory list
+  const handleToggleEquip = async (itemId: string) => {
+    const itemIndex = equipment.findIndex((e: any) => e.id === itemId);
+    if (itemIndex < 0) {
+      toast.error("Item não encontrado no equipamento");
+      return;
+    }
+    const item = equipment[itemIndex];
+    const newEquipped = !item.equipped;
+    const newEquipment = [...equipment];
+
+    // If equipping armor/shield, unequip other of same type
+    if (newEquipped && (item.type === 'armor' || item.type === 'shield')) {
+      newEquipment.forEach((e: any, i: number) => {
+        if (i !== itemIndex && e.type === item.type && e.equipped) {
+          newEquipment[i] = { ...e, equipped: false };
+        }
+      });
+    }
+
+    newEquipment[itemIndex] = { ...item, equipped: newEquipped };
+    const newAC = calculateNewAC(newEquipment);
+
+    try {
+      await updateCharacter.mutateAsync({
+        id: character.id,
+        equipment: newEquipment,
+        armor_class: newAC,
+      });
+      toast.success(newEquipped ? `${item.name} equipado` : `${item.name} desequipado`);
+    } catch {
+      toast.error("Erro ao equipar item");
+    }
+  };
 
   // Combine and categorize items
   const allItems = [
