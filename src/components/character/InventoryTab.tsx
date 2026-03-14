@@ -11,7 +11,9 @@ import {
   Shirt,
   CircleDot,
   ChevronRight,
-  Filter
+  Filter,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,6 +23,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { VisualEquipmentDisplay } from "./VisualEquipmentDisplay";
 import { InventoryManagementSheet } from "./InventoryManagementSheet";
 import { InitiateTradeSheet } from "./InitiateTradeSheet";
+import { useUpdateCharacter } from "@/hooks/useCharacters";
+import { getModifier } from "@/data/srd";
+import { toast } from "sonner";
+import armorsData from "@/data/equipment/armaduras.json";
 
 interface InventoryTabProps {
   character: any;
@@ -37,7 +43,7 @@ const RARITY_COLORS: Record<string, string> = {
   artefato: "text-destructive",
 };
 
-function ItemCard({ item, onSelect }: { item: any; onSelect?: () => void }) {
+function ItemCard({ item, onSelect, onToggleEquip }: { item: any; onSelect?: () => void; onToggleEquip?: (e: React.MouseEvent) => void }) {
   const isEquipped = item.isEquipped || item.equipped;
   const rarityColor = RARITY_COLORS[item.rarity?.toLowerCase()] || "text-muted-foreground";
   
@@ -51,47 +57,69 @@ function ItemCard({ item, onSelect }: { item: any; onSelect?: () => void }) {
   };
   
   const Icon = getItemIcon();
+  const isEquipable = item.source === 'equipment';
   
   return (
-    <button
-      onClick={onSelect}
+    <div
       className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all duration-200
         ${isEquipped 
-          ? "bg-primary/10 border border-primary/30 hover:bg-primary/20" 
-          : "bg-muted/30 hover:bg-muted/50 border border-transparent hover:border-border/50"
+          ? "bg-primary/10 border border-primary/30" 
+          : "bg-muted/30 border border-transparent"
         }`}
     >
-      <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0
-        ${isEquipped ? "bg-primary/20" : "bg-muted/50"}`}
+      <button
+        onClick={onSelect}
+        className="flex items-center gap-3 flex-1 min-w-0 text-left"
       >
-        <Icon className={`w-5 h-5 ${isEquipped ? "text-primary" : "text-muted-foreground"}`} />
-      </div>
-      <div className="flex-1 min-w-0 text-left">
-        <div className="flex items-center gap-2">
-          <span className="font-medium text-sm truncate">{item.name}</span>
-          {isEquipped && (
-            <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-primary text-primary">
-              Equipado
-            </Badge>
-          )}
+        <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0
+          ${isEquipped ? "bg-primary/20" : "bg-muted/50"}`}
+        >
+          <Icon className={`w-5 h-5 ${isEquipped ? "text-primary" : "text-muted-foreground"}`} />
         </div>
-        <div className="flex items-center gap-2 mt-0.5">
-          {item.quantity && item.quantity > 1 && (
-            <span className="text-xs text-muted-foreground">x{item.quantity}</span>
-          )}
-          {item.rarity && (
-            <span className={`text-[10px] ${rarityColor}`}>{item.rarity}</span>
-          )}
-          {item.damage && (
-            <span className="text-[10px] text-destructive">{item.damage}</span>
-          )}
-          {item.armorClass && (
-            <span className="text-[10px] text-primary">CA +{item.armorClass}</span>
-          )}
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <span className="font-medium text-sm truncate">{item.name}</span>
+            {isEquipped && (
+              <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 border-primary text-primary">
+                Equipado
+              </Badge>
+            )}
+          </div>
+          <div className="flex items-center gap-2 mt-0.5">
+            {item.quantity && item.quantity > 1 && (
+              <span className="text-xs text-muted-foreground">x{item.quantity}</span>
+            )}
+            {item.rarity && (
+              <span className={`text-[10px] ${rarityColor}`}>{item.rarity}</span>
+            )}
+            {item.damage && (
+              <span className="text-[10px] text-destructive">{item.damage}</span>
+            )}
+            {item.armorClass && (
+              <span className="text-[10px] text-primary">CA +{item.armorClass}</span>
+            )}
+          </div>
         </div>
-      </div>
-      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-    </button>
+      </button>
+      {isEquipable && onToggleEquip && (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggleEquip}
+          className="w-9 h-9 shrink-0"
+          title={isEquipped ? "Desequipar" : "Equipar"}
+        >
+          {isEquipped ? (
+            <Eye className="w-4 h-4 text-primary" />
+          ) : (
+            <EyeOff className="w-4 h-4 text-muted-foreground" />
+          )}
+        </Button>
+      )}
+      {!isEquipable && (
+        <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+      )}
+    </div>
   );
 }
 
