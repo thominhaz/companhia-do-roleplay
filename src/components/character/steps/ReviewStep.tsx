@@ -224,6 +224,28 @@ export function ReviewStep({ data }: ReviewStepProps) {
         </div>
       )}
 
+      {/* Subclass Features */}
+      {data.subclass && (() => {
+        const selectedSubclass = homebrewSubclasses.find(s => s.id === data.subclass);
+        const subFeatures = (selectedSubclass?.data as any)?.features || [];
+        if (!selectedSubclass || subFeatures.length === 0) return null;
+        return (
+          <div className="p-4 rounded-xl bg-card border border-border">
+            <h4 className="font-semibold mb-3">Subclasse: {selectedSubclass.name}</h4>
+            <ul className="space-y-1">
+              {subFeatures.map((f: any, idx: number) => (
+                <li key={idx} className="text-sm flex items-start gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-primary mt-1.5 flex-shrink-0" />
+                  <span className="text-muted-foreground">
+                    {f.name}{f.level ? ` (Nível ${f.level})` : ''}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      })()}
+
       {/* Personality */}
       {(data.personalityTraits || data.ideals || data.bonds || data.flaws) && (
         <div className="p-4 rounded-xl bg-card border border-border">
