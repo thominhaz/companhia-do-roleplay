@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { Check, Globe, Info } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import languagesData from '@/data/rules/idiomas.json';
+import { useHomebrew } from '@/hooks/useHomebrew';
 
 interface LanguagesStepProps {
   data: WizardData;
@@ -18,12 +19,21 @@ interface Language {
 }
 
 export function LanguagesStep({ data, updateData }: LanguagesStepProps) {
+  const { homebrewContent: homebrewRaces } = useHomebrew('race');
   const selectedRace = RACES.find(r => r.id === data.race);
+  const selectedHomebrewRace = homebrewRaces.find(r => r.id === data.race);
+  const homebrewRaceData = selectedHomebrewRace?.data as any;
   
-  // Get base languages from race
-  const baseLanguages = selectedRace?.languages || [];
+  // Get base languages from race (SRD or homebrew)
+  const baseLanguages: string[] = selectedRace?.languages || (
+    homebrewRaceData?.languages
+      ? (typeof homebrewRaceData.languages === 'string'
+          ? homebrewRaceData.languages.split(',').map((l: string) => l.trim())
+          : homebrewRaceData.languages)
+      : ['Comum']
+  );
   
-  // Check if race has extra language trait (like Human)
+  // Check if race has extra language trait (like Human) — SRD races only
   const extraLanguageTrait = selectedRace?.traits?.find(t => t.mechanical?.extra_languages);
   const extraLanguagesCount: number = (extraLanguageTrait?.mechanical?.extra_languages as number) || 0;
   

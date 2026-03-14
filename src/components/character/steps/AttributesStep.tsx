@@ -3,6 +3,7 @@ import { WizardData } from '../CharacterWizard';
 import { Minus, Plus, RotateCcw, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { useHomebrew } from '@/hooks/useHomebrew';
 
 interface AttributesStepProps {
   data: WizardData;
@@ -25,13 +26,19 @@ const ATTRIBUTE_NAMES: Record<Attribute, string> = {
 const STANDARD_ARRAY = [15, 14, 13, 12, 10, 8];
 
 export function AttributesStep({ data, updateData }: AttributesStepProps) {
+  const { homebrewContent: homebrewRaces } = useHomebrew('race');
   const selectedRace = RACES.find(r => r.id === data.race);
+  const selectedHomebrewRace = homebrewRaces.find(r => r.id === data.race);
+  const homebrewRaceData = selectedHomebrewRace?.data as any;
   
-  // Check if race has ability bonus choices (like Half-Elf)
+  // Check if race has ability bonus choices (like Half-Elf) — SRD races only
   const abilityBonusChoice = selectedRace?.ability_bonuses_choice;
   const choicesNeeded = abilityBonusChoice?.count || 0;
   const choicesAvailable = abilityBonusChoice?.options || [];
   const currentChoices = data.abilityBonusChoices || [];
+  
+  // Get ability bonuses from either SRD or homebrew race
+  const raceAbilityBonuses: Partial<Record<Attribute, number>> = selectedRace?.ability_bonuses || homebrewRaceData?.ability_bonuses || {};
   
   const calculatePointsUsed = () => {
     return Object.values(data.attributes).reduce((total, score) => {
@@ -44,9 +51,9 @@ export function AttributesStep({ data, updateData }: AttributesStepProps) {
 
   const getRacialBonus = (attr: Attribute): number => {
     let bonus = 0;
-    // Fixed racial bonuses
-    if (selectedRace?.ability_bonuses[attr]) {
-      bonus += (selectedRace.ability_bonuses[attr] as number) || 0;
+    // Fixed racial bonuses (SRD or homebrew)
+    if (raceAbilityBonuses[attr]) {
+      bonus += (raceAbilityBonuses[attr] as number) || 0;
     }
     // Chosen racial bonuses
     if (currentChoices.includes(attr)) {

@@ -49,11 +49,13 @@ const ABILITY_COLORS: Record<string, string> = {
 
 export function SkillsStep({ data, updateData }: SkillsStepProps) {
   const { homebrewContent: homebrewClasses } = useHomebrew('class');
+  const { homebrewContent: homebrewRaces } = useHomebrew('race');
   
   // Check for official class first
   const selectedClass = CLASSES.find(c => c.id === data.class);
   const selectedHomebrewClass = homebrewClasses.find(c => c.id === data.class);
   const selectedRace = RACES.find(r => r.id === data.race);
+  const selectedHomebrewRace = homebrewRaces.find(r => r.id === data.race) as any;
   
   let availableSkillIds: string[] = [];
   let classMaxChoices = 2;

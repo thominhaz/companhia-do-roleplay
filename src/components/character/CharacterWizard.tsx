@@ -6,8 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { useCreateCharacter, CharacterInsert } from '@/hooks/useCharacters';
 import { useSubscription } from '@/hooks/useSubscription';
 import { useAuth } from '@/hooks/useAuth';
-import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, getModifier, calculateHP, Attribute } from '@/data/srd';
+import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, ALL_SKILLS, getModifier, calculateHP, Attribute } from '@/data/srd';
 import armaduras from '@/data/equipment/armaduras.json';
+import { useHomebrew } from '@/hooks/useHomebrew';
 import { RaceStep } from './steps/RaceStep';
 import { ClassStep } from './steps/ClassStep';
 import { AttributesStep } from './steps/AttributesStep';
@@ -149,6 +150,8 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
   const { user } = useAuth();
   const { data: subscription } = useSubscription();
   const createCharacter = useCreateCharacter();
+  const { homebrewContent: homebrewRaces } = useHomebrew('race');
+  const { homebrewContent: homebrewBackgrounds } = useHomebrew('background');
 
   // Check localStorage for SRD modal preference
   useEffect(() => {
@@ -221,13 +224,27 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     if (!user) return;
 
     const selectedRace = RACES.find(r => r.id === data.race);
+    const selectedHomebrewRace = homebrewRaces.find(r => r.id === data.race);
     const selectedClass = CLASSES.find(c => c.id === data.class);
     
-    if (!selectedRace || !selectedClass) return;
+    if ((!selectedRace && !selectedHomebrewRace) || !selectedClass) return;
+
+    // Normalize homebrew race data
+    const homebrewRaceData = selectedHomebrewRace?.data as any;
+    const raceAbilityBonuses: Partial<Record<Attribute, number>> = selectedRace?.ability_bonuses || homebrewRaceData?.ability_bonuses || {};
+    const raceName = selectedRace?.name || selectedHomebrewRace?.name || data.race;
+    const raceSpeed = selectedRace?.speed || homebrewRaceData?.speed || 9;
+    const raceLanguages: string[] = selectedRace?.languages || (
+      homebrewRaceData?.languages
+        ? (typeof homebrewRaceData.languages === 'string' 
+            ? homebrewRaceData.languages.split(',').map((l: string) => l.trim())
+            : homebrewRaceData.languages)
+        : ['Comum']
+    );
 
     // Apply racial bonuses to attributes
     const finalAttributes = { ...data.attributes };
-    Object.entries(selectedRace.ability_bonuses).forEach(([attr, bonus]) => {
+    Object.entries(raceAbilityBonuses).forEach(([attr, bonus]) => {
       finalAttributes[attr as Attribute] += (bonus as number) || 0;
     });
 
@@ -239,7 +256,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     }
 
     // Apply subrace bonuses if applicable
-    if (data.subrace && selectedRace.subraces) {
+    if (data.subrace && selectedRace?.subraces) {
       const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
       if (subrace) {
         Object.entries(subrace.ability_bonuses).forEach(([attr, bonus]) => {
@@ -253,7 +270,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     
     // Calculate racial HP bonus (e.g., Hill Dwarf gets +1 HP per level)
     let raceHpBonus = 0;
-    if (data.subrace && selectedRace.subraces) {
+    if (data.subrace && selectedRace?.subraces) {
       const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
       if (subrace?.traits) {
         const hpTrait = subrace.traits.find(t => (t.mechanical as any)?.hp_bonus_per_level);
@@ -270,35 +287,67 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     const racialWeaponProficiencies: string[] = [];
     const racialSkillProficiencies: string[] = [];
     
-    // Check race traits for proficiencies
-    selectedRace.traits.forEach(trait => {
-      const mechanical = trait.mechanical as any;
-      if (mechanical?.weapon_proficiencies) {
-        racialWeaponProficiencies.push(...mechanical.weapon_proficiencies);
-      }
-      if (mechanical?.skill_proficiencies) {
-        racialSkillProficiencies.push(...mechanical.skill_proficiencies);
-      }
-    });
-    
-    // Check subrace traits for proficiencies
-    if (data.subrace && selectedRace.subraces) {
-      const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
-      if (subrace?.traits) {
-        subrace.traits.forEach(trait => {
-          const mechanical = trait.mechanical as any;
-          if (mechanical?.weapon_proficiencies) {
-            racialWeaponProficiencies.push(...mechanical.weapon_proficiencies);
-          }
-          if (mechanical?.skill_proficiencies) {
-            racialSkillProficiencies.push(...mechanical.skill_proficiencies);
-          }
-        });
+    // Check race traits for proficiencies (SRD races only - homebrew races have simple string traits)
+    if (selectedRace) {
+      selectedRace.traits.forEach(trait => {
+        const mechanical = trait.mechanical as any;
+        if (mechanical?.weapon_proficiencies) {
+          racialWeaponProficiencies.push(...mechanical.weapon_proficiencies);
+        }
+        if (mechanical?.skill_proficiencies) {
+          racialSkillProficiencies.push(...mechanical.skill_proficiencies);
+        }
+      });
+      
+      // Check subrace traits for proficiencies
+      if (data.subrace && selectedRace.subraces) {
+        const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
+        if (subrace?.traits) {
+          subrace.traits.forEach(trait => {
+            const mechanical = trait.mechanical as any;
+            if (mechanical?.weapon_proficiencies) {
+              racialWeaponProficiencies.push(...mechanical.weapon_proficiencies);
+            }
+            if (mechanical?.skill_proficiencies) {
+              racialSkillProficiencies.push(...mechanical.skill_proficiencies);
+            }
+          });
+        }
       }
     }
 
-    // Combine selected skills with racial skill proficiencies
-    const allSkillProficiencies = [...new Set([...data.selectedSkills, ...racialSkillProficiencies])];
+    // Collect background skill proficiencies
+    const backgroundSkillProficiencies: string[] = [];
+    
+    // Custom background skills
+    if (data.background === 'custom' && data.customBackgroundSkills.length > 0) {
+      backgroundSkillProficiencies.push(...data.customBackgroundSkills);
+    } else {
+      // SRD background skills
+      const srdBackground = BACKGROUNDS.find(b => b.id === data.background);
+      if (srdBackground && srdBackground.skills.length > 0) {
+        backgroundSkillProficiencies.push(...srdBackground.skills);
+      } else {
+        // Homebrew background skills
+        const homebrewBg = homebrewBackgrounds.find(b => b.id === data.background);
+        if (homebrewBg) {
+          const bgData = homebrewBg.data as any;
+          const bgSkills: string[] = bgData?.skill_proficiencies || [];
+          // Convert Portuguese skill names to IDs
+          bgSkills.forEach(skillName => {
+            const skillEntry = ALL_SKILLS.find(s => 
+              s.name.toLowerCase() === skillName.toLowerCase() || s.id === skillName
+            );
+            if (skillEntry) {
+              backgroundSkillProficiencies.push(skillEntry.id);
+            }
+          });
+        }
+      }
+    }
+
+    // Combine selected skills with racial and background skill proficiencies
+    const allSkillProficiencies = [...new Set([...data.selectedSkills, ...racialSkillProficiencies, ...backgroundSkillProficiencies])];
 
     // Build structured proficiencies object combining class and racial proficiencies
     const classProficiencies = selectedClass.proficiencies as { armor?: string[]; weapons?: string[]; tools?: string[] } || {};
@@ -379,10 +428,22 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       }
     }
 
+    // Resolve background name
+    let backgroundName: string;
+    if (data.background === 'custom') {
+      backgroundName = data.customBackgroundName || 'Customizado';
+    } else {
+      const srdBg = BACKGROUNDS.find(b => b.id === data.background);
+      const homebrewBg = homebrewBackgrounds.find(b => b.id === data.background);
+      backgroundName = srdBg?.name || homebrewBg?.name || data.background;
+    }
+
     const character: CharacterInsert = {
       name: data.name,
-      race: selectedRace.name,
-      subrace: data.subrace ? selectedRace.subraces?.find(s => s.id === data.subrace)?.name || null : null,
+      race: raceName,
+      subrace: data.subrace && selectedRace?.subraces 
+        ? selectedRace.subraces.find(s => s.id === data.subrace)?.name || null 
+        : null,
       class: selectedClass.name,
       level: 1,
       experience: 0,
@@ -391,7 +452,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       temporary_hp: 0,
       armor_class: armorClass,
       initiative: dexModifier,
-      speed: Math.floor(selectedRace.speed),
+      speed: Math.floor(raceSpeed),
       proficiency_bonus: 2,
       attributes: finalAttributes,
       saving_throws: selectedClass.saving_throw_proficiencies.reduce(
@@ -424,7 +485,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       currency: { copper: 0, silver: 0, electrum: 0, gold: 10, platinum: 0 },
       spellcasting: spellcastingObj,
       spells: [...data.selectedCantrips, ...data.selectedSpells],
-      background: BACKGROUNDS.find(b => b.id === data.background)?.name || data.background,
+      background: backgroundName,
       alignment: ALIGNMENTS.find(a => a.id === data.alignment)?.name || data.alignment,
       personality_traits: data.personalityTraits,
       ideals: data.ideals,
@@ -433,7 +494,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       backstory: data.backstory || null,
       features: level1Features,
       proficiencies: proficienciesObject,
-      languages: [...selectedRace.languages, ...data.extraLanguages],
+      languages: [...raceLanguages, ...data.extraLanguages],
       image_url: null,
       conditions: [],
       // Physical appearance fields
