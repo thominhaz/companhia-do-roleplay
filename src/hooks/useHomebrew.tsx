@@ -115,12 +115,13 @@ export function useHomebrew(type?: HomebrewContentType) {
       queryClient.invalidateQueries({ queryKey: ['homebrew-count'] });
       toast.success('Conteúdo criado com sucesso!');
     },
-    onError: (error: Error) => {
+    onError: (error: any) => {
       console.error('Error creating homebrew:', error);
-      if (error.message.includes('row-level security')) {
+      const msg = error?.message || String(error);
+      if (msg.includes('row-level security')) {
         toast.error('Você precisa ser premium para criar conteúdo homebrew');
       } else {
-        toast.error('Erro ao criar conteúdo');
+        toast.error(`Erro ao criar conteúdo: ${msg}`);
       }
     },
   });
