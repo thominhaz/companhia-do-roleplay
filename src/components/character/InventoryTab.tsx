@@ -329,6 +329,7 @@ export function InventoryTab({ character, characterCampaign, campaignPlayers }: 
                         key={item.id || i} 
                         item={item}
                         onSelect={() => setShowInventorySheet(true)}
+                        onToggleEquip={(e) => { e.stopPropagation(); handleToggleEquip(item.id); }}
                       />
                     ))}
                   </div>
