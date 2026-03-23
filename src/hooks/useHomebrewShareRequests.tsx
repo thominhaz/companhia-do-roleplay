@@ -231,6 +231,7 @@ export function useRespondToShareRequest() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['homebrew-share-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['homebrew-share-status'] });
       toast.success('Solicitação rejeitada');
     },
     onError: (error: Error) => {
