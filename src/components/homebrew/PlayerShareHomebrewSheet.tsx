@@ -14,7 +14,7 @@ import {
   useRequestHomebrewShare 
 } from "@/hooks/useHomebrewShareRequests";
 import { useHomebrew } from "@/hooks/useHomebrew";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { HomebrewContent } from "@/types";
 import { cn } from "@/lib/utils";
@@ -26,9 +26,10 @@ interface PlayerShareHomebrewSheetProps {
 }
 
 export function PlayerShareHomebrewSheet({ open, onOpenChange, item }: PlayerShareHomebrewSheetProps) {
-  const { shareWithCampaign, isSharing } = useHomebrew();
+  const queryClient = useQueryClient();
+  const { shareWithCampaignAsync, isSharing } = useHomebrew();
   const { eligibleCampaigns, isLoading: loadingCampaigns } = useEligibleCampaignsForSharing();
-  const { requestShare, isRequesting } = useRequestHomebrewShare();
+  const { requestShareAsync, isRequesting } = useRequestHomebrewShare();
   const [processingCampaignId, setProcessingCampaignId] = useState<string | null>(null);
 
   // Busca status atual (compartilhamentos e solicitações pendentes)
@@ -74,12 +75,13 @@ export function PlayerShareHomebrewSheet({ open, onOpenChange, item }: PlayerSha
     
     try {
       if (policy === 'enabled') {
-        // Compartilha direto
-        shareWithCampaign({ contentId: item.id, campaignId });
+        await shareWithCampaignAsync({ contentId: item.id, campaignId });
       } else if (policy === 'approval_required') {
-        // Solicita aprovação
-        requestShare({ contentId: item.id, campaignId });
+        await requestShareAsync({ contentId: item.id, campaignId });
       }
+      queryClient.invalidateQueries({ queryKey: ['homebrew-share-status', item.id] });
+    } catch {
+      // errors handled by mutation onError
     } finally {
       setProcessingCampaignId(null);
     }

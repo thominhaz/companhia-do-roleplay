@@ -209,6 +209,8 @@ export function useHomebrew(type?: HomebrewContentType) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['homebrew-shares'] });
+      queryClient.invalidateQueries({ queryKey: ['homebrew-share-status'] });
+      queryClient.invalidateQueries({ queryKey: ['campaign-homebrew'] });
       toast.success('Compartilhado com a campanha!');
     },
     onError: (error: Error) => {
@@ -236,6 +238,8 @@ export function useHomebrew(type?: HomebrewContentType) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['homebrew-shares'] });
+      queryClient.invalidateQueries({ queryKey: ['homebrew-share-status'] });
+      queryClient.invalidateQueries({ queryKey: ['campaign-homebrew'] });
       toast.success('Compartilhamento removido!');
     },
     onError: (error: Error) => {
@@ -257,6 +261,7 @@ export function useHomebrew(type?: HomebrewContentType) {
     updateHomebrew: updateMutation.mutate,
     deleteHomebrew: deleteMutation.mutate,
     shareWithCampaign: shareMutation.mutate,
+    shareWithCampaignAsync: shareMutation.mutateAsync,
     unshareFromCampaign: unshareMutation.mutate,
     
     // Mutation states

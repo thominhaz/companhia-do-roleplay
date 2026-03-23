@@ -145,6 +145,7 @@ export function useRequestHomebrewShare() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['homebrew-share-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['homebrew-share-status'] });
       toast.success('Solicitação enviada ao mestre!');
     },
     onError: (error: Error) => {
@@ -159,6 +160,7 @@ export function useRequestHomebrewShare() {
 
   return {
     requestShare: mutation.mutate,
+    requestShareAsync: mutation.mutateAsync,
     isRequesting: mutation.isPending,
   };
 }
@@ -203,6 +205,7 @@ export function useRespondToShareRequest() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['homebrew-share-requests'] });
       queryClient.invalidateQueries({ queryKey: ['campaign-homebrew'] });
+      queryClient.invalidateQueries({ queryKey: ['homebrew-share-status'] });
       toast.success('Solicitação aprovada!');
     },
     onError: (error: Error) => {
@@ -228,6 +231,7 @@ export function useRespondToShareRequest() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['homebrew-share-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['homebrew-share-status'] });
       toast.success('Solicitação rejeitada');
     },
     onError: (error: Error) => {
