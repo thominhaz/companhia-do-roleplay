@@ -26,9 +26,10 @@ interface PlayerShareHomebrewSheetProps {
 }
 
 export function PlayerShareHomebrewSheet({ open, onOpenChange, item }: PlayerShareHomebrewSheetProps) {
-  const { shareWithCampaign, isSharing } = useHomebrew();
+  const queryClient = useQueryClient();
+  const { shareWithCampaignAsync, isSharing } = useHomebrew();
   const { eligibleCampaigns, isLoading: loadingCampaigns } = useEligibleCampaignsForSharing();
-  const { requestShare, isRequesting } = useRequestHomebrewShare();
+  const { requestShareAsync, isRequesting } = useRequestHomebrewShare();
   const [processingCampaignId, setProcessingCampaignId] = useState<string | null>(null);
 
   // Busca status atual (compartilhamentos e solicitações pendentes)
