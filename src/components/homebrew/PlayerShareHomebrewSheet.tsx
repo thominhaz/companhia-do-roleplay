@@ -14,7 +14,7 @@ import {
   useRequestHomebrewShare 
 } from "@/hooks/useHomebrewShareRequests";
 import { useHomebrew } from "@/hooks/useHomebrew";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { HomebrewContent } from "@/types";
 import { cn } from "@/lib/utils";
