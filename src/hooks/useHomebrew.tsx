@@ -209,6 +209,8 @@ export function useHomebrew(type?: HomebrewContentType) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['homebrew-shares'] });
+      queryClient.invalidateQueries({ queryKey: ['homebrew-share-status'] });
+      queryClient.invalidateQueries({ queryKey: ['campaign-homebrew'] });
       toast.success('Compartilhado com a campanha!');
     },
     onError: (error: Error) => {
