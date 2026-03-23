@@ -160,6 +160,7 @@ export function useRequestHomebrewShare() {
 
   return {
     requestShare: mutation.mutate,
+    requestShareAsync: mutation.mutateAsync,
     isRequesting: mutation.isPending,
   };
 }
