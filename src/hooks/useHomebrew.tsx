@@ -257,6 +257,7 @@ export function useHomebrew(type?: HomebrewContentType) {
     updateHomebrew: updateMutation.mutate,
     deleteHomebrew: deleteMutation.mutate,
     shareWithCampaign: shareMutation.mutate,
+    shareWithCampaignAsync: shareMutation.mutateAsync,
     unshareFromCampaign: unshareMutation.mutate,
     
     // Mutation states
