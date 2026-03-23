@@ -145,6 +145,7 @@ export function useRequestHomebrewShare() {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['homebrew-share-requests'] });
+      queryClient.invalidateQueries({ queryKey: ['homebrew-share-status'] });
       toast.success('Solicitação enviada ao mestre!');
     },
     onError: (error: Error) => {
