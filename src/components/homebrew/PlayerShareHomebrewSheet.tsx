@@ -74,12 +74,13 @@ export function PlayerShareHomebrewSheet({ open, onOpenChange, item }: PlayerSha
     
     try {
       if (policy === 'enabled') {
-        // Compartilha direto
-        shareWithCampaign({ contentId: item.id, campaignId });
+        await shareWithCampaignAsync({ contentId: item.id, campaignId });
       } else if (policy === 'approval_required') {
-        // Solicita aprovação
-        requestShare({ contentId: item.id, campaignId });
+        await requestShareAsync({ contentId: item.id, campaignId });
       }
+      queryClient.invalidateQueries({ queryKey: ['homebrew-share-status', item.id] });
+    } catch {
+      // errors handled by mutation onError
     } finally {
       setProcessingCampaignId(null);
     }
