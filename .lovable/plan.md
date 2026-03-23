@@ -1,86 +1,89 @@
 
 
-# Plano: Revisao e Melhoria do Painel do Mestre
+# Revisão do Sistema de Compartilhamento de Homebrew
 
-## Fase 1 — Correcoes de Bugs (Prioridade Alta)
+## Análise Atual
 
-### 1.1 Overview: Stats com dados reais
-**Arquivo**: `DashboardOverview.tsx` (L95-104)
-- Substituir os placeholders "-" por queries reais:
-  - **Combates**: contar registros da tabela `combat_encounters` para a campanha
-  - **Notas**: contar registros de `campaign_notes` para a campanha
-- Passar os contadores como props ou usar hooks diretos no componente
+Estudei todos os arquivos envolvidos: hooks, sheets, RLS policies e tabelas. Identifiquei os seguintes problemas:
 
-### 1.2 Compendio: Remover aba "Apoiadores"
-**Arquivo**: `DashboardCompendium.tsx`
-- A aba "Apoiadores" com `SupporterGallery` nao pertence ao contexto de campanha — e conteudo global da plataforma
-- Remover as tabs e manter apenas o conteudo de compendio homebrew diretamente
-- Simplificar para um unico layout sem tab wrapper
+### Problemas Encontrados
 
-### 1.3 Combate: Remover botao duplicado
-**Arquivo**: `DashboardCombat.tsx`
-- O botao "Abrir Tracker" aparece no header E dentro do card central (dois CTAs identicos)
-- Manter apenas o botao no header e transformar o card em conteudo informativo/status do ultimo combate
+**1. RLS de `homebrew_shares` bloqueia compartilhamento via aprovação do mestre**
+A política INSERT de `homebrew_shares` exige: `is_homebrew_owner(content_id, auth.uid()) AND is_campaign_master(campaign_id, auth.uid())`. Quando o mestre aprova uma solicitação de jogador, o mestre NÃO é o dono do conteúdo. Isso causa falha silenciosa no `useRespondToShareRequest` ao tentar inserir em `homebrew_shares` após aprovar.
 
-## Fase 2 — Melhorias de UX (Prioridade Media)
+**2. RLS de `homebrew_shares` bloqueia compartilhamento direto de jogador (política "enabled")**
+Quando a campanha tem `homebrew_sharing_policy = 'enabled'`, o `PlayerShareHomebrewSheet` chama `shareWithCampaign` direto. Mas a RLS INSERT exige `is_campaign_master`, então jogadores nunca conseguem inserir diretamente, mesmo com a política liberada.
 
-### 2.1 Notas: Sidebar responsiva no mobile
-**Arquivo**: `DashboardNotes.tsx` (L118)
-- A sidebar usa `w-64` fixo sem colapso automatico em telas pequenas
-- No mobile: iniciar com `sidebarOpen = false` usando o hook `useIsMobile()`
-- Quando aberta em mobile, renderizar como overlay com backdrop (similar ao nav mobile do CampaignDashboard)
+**3. Falta SELECT policy para o mestre ver solicitações no `homebrew_share_requests`**
+A política SELECT atual é apenas `is_campaign_member`, que verifica a tabela `campaign_players`. O mestre não está em `campaign_players` (ele é `master_id` na tabela `campaigns`), então o mestre pode não ver as solicitações pendentes.
 
-### 2.2 Overview: Mostrar HP dos jogadores
-**Arquivo**: `DashboardOverview.tsx`
-- Adicionar um card "Status dos Jogadores" abaixo dos stats
-- Para cada jogador com `character_id`, exibir: nome, classe, HP atual/maximo em barra de progresso
-- Dados ja disponiveis via `players` prop (expandir query para incluir character data)
-
-### 2.3 Overview: Indicador de combate ativo
-**Arquivo**: `DashboardOverview.tsx`
-- Verificar se existe um combate ativo (status != 'finished') para a campanha
-- Se sim, exibir banner destacado "Combate em andamento — Rodada X" com botao para abrir o tracker
-
-### 2.4 DashboardChat: Eliminar wrapper desnecessario
-**Arquivo**: `DashboardChat.tsx`
-- Componente de 10 linhas que apenas renderiza `PlayerChatSelector`
-- Inlinar diretamente no `CampaignDashboard.tsx` ou manter mas adicionar header consistente com as outras secoes
-
-## Fase 3 — Refatoracao (Prioridade Baixa)
-
-### 3.1 Extrair navegacao do CampaignDashboard
-**Arquivo**: `CampaignDashboard.tsx` (296 linhas)
-- Extrair `navItems` config e `renderNavGroup` para um componente `DashboardNav.tsx`
-- Extrair `renderContent` switch para um componente `DashboardContent.tsx`
-- Reduzir o arquivo principal para ~100 linhas (layout + state)
-
-### 3.2 Memoizar listas filtradas nos Workshops
-**Arquivos**: `WorkshopNPCs.tsx`, `WorkshopShops.tsx`
-- Os `filteredNPCs` e `filteredShops` sao recalculados a cada render
-- Envolver em `useMemo` com dependencias em `[npcs, searchQuery, statusFilter]` e `[shops, searchQuery]`
-
-### 3.3 Padronizar cores semanticas
-**Arquivos**: `WorkshopNPCs.tsx` (L39), `GeneratorTreasure.tsx`
-- Substituir `text-gold`, `bg-gold/10` por tokens do tema (`text-warning`, `bg-warning/10`)
-- Garantir consistencia visual entre todos os workshops
-
-## Fase 4 — Features Novas (Apos Estabilizacao)
-
-### 4.1 Resumo de atividade recente no Overview
-- Card "Atividade Recente" listando as ultimas 5 acoes da campanha (nota criada, sessao agendada, NPC adicionado, etc.)
-- Query agregada das tabelas relevantes com `ORDER BY created_at DESC LIMIT 5`
-
-### 4.2 Quick-stats clicaveis
-- Os cards de stats no Overview (Jogadores, Sessoes, Combates, Notas) devem navegar para a secao correspondente ao clicar
-- Adicionar `cursor-pointer` e `onClick={() => onNavigate('players')}` em cada card
+### Problemas Menores
+- `handleShare` no `PlayerShareHomebrewSheet` não aguarda resultado (fire-and-forget) e faz `setProcessingCampaignId(null)` imediatamente no `finally`.
+- Query cache keys inconsistentes entre `ShareHomebrewSheet` e `PlayerShareHomebrewSheet`.
 
 ---
 
-## Ordem de Execucao Sugerida
+## Plano de Correção
 
-1. **Fase 1** (3 correcoes): Overview stats reais, remover aba Apoiadores do Compendio, eliminar botao duplicado no Combate
-2. **Fase 2.1-2.2**: Sidebar responsiva nas Notas, HP dos jogadores no Overview
-3. **Fase 2.3-2.4**: Indicador combate ativo, cleanup DashboardChat
-4. **Fase 3**: Refatoracao (extrair nav, memoizar, padronizar cores)
-5. **Fase 4**: Features novas (atividade recente, stats clicaveis)
+### Etapa 1 — Corrigir RLS de `homebrew_shares` (migração SQL)
+
+Adicionar nova política INSERT que permite:
+- O mestre da campanha inserir compartilhamentos (para aprovar solicitações de jogadores)
+- Jogadores premium inserirem quando a política da campanha é "enabled"
+
+```sql
+-- Dropar política INSERT restritiva atual
+DROP POLICY "Owners can share to their campaigns" ON public.homebrew_shares;
+
+-- Nova: Mestre pode compartilhar próprio conteúdo OU aprovar de outros
+CREATE POLICY "Masters can share to their campaigns"
+ON public.homebrew_shares FOR INSERT
+WITH CHECK (
+  is_campaign_master(campaign_id, auth.uid())
+);
+
+-- Nova: Jogadores premium podem compartilhar direto quando política = 'enabled'
+CREATE POLICY "Players can share when policy enabled"
+ON public.homebrew_shares FOR INSERT
+WITH CHECK (
+  is_homebrew_owner(content_id, auth.uid())
+  AND is_premium(auth.uid())
+  AND can_share_homebrew_in_campaign(campaign_id, auth.uid())
+);
+```
+
+### Etapa 2 — Corrigir RLS de `homebrew_share_requests` (SELECT para mestre)
+
+Adicionar política que permite o mestre ver solicitações:
+
+```sql
+-- Adicionar acesso do mestre
+CREATE POLICY "Masters can view campaign share requests"
+ON public.homebrew_share_requests FOR SELECT
+USING (is_campaign_master(campaign_id, auth.uid()));
+```
+
+### Etapa 3 — Corrigir lógica no `PlayerShareHomebrewSheet.tsx`
+
+- Usar `mutateAsync` em vez de `mutate` para aguardar resultado antes de limpar estado.
+- Invalidar queries após sucesso para atualizar status visual.
+
+### Etapa 4 — Corrigir `useRespondToShareRequest` (aprovação)
+
+- Após aprovar, invalidar também `['homebrew-share-status']` para atualizar o status no sheet do jogador.
+
+### Etapa 5 — Invalidação de cache consistente
+
+- Alinhar todas as invalidações de query para usar as mesmas keys (`homebrew-shares`, `campaign-homebrew`, `homebrew-share-status`, `homebrew-share-requests`).
+
+---
+
+## Resumo de Arquivos Modificados
+
+| Arquivo | Mudança |
+|---|---|
+| Migração SQL | Fix RLS `homebrew_shares` (INSERT) e `homebrew_share_requests` (SELECT) |
+| `src/components/homebrew/PlayerShareHomebrewSheet.tsx` | Usar `mutateAsync`, invalidar queries |
+| `src/hooks/useHomebrewShareRequests.tsx` | Invalidar mais query keys na aprovação/rejeição |
+| `src/hooks/useHomebrew.tsx` | Invalidar `campaign-homebrew` e `homebrew-share-status` no share/unshare |
 
