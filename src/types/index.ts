@@ -307,6 +307,9 @@ export type HomebrewContentType =
   | 'background'
   | 'feat';
 
+// Virtual type used in UI only - stored as 'race' in DB with parent_race_id in data
+export type HomebrewContentTypeUI = HomebrewContentType | 'subrace';
+
 export type HomebrewSource = 'user' | 'master_shared' | 'community';
 
 export interface HomebrewContent {

@@ -259,14 +259,22 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       });
     }
 
-    // Apply subrace bonuses if applicable (SRD or homebrew)
+    // Apply subrace bonuses if applicable (SRD, homebrew inline, or standalone homebrew subrace)
     const srdSubrace = data.subrace && selectedRace?.subraces 
       ? selectedRace.subraces.find(s => s.id === data.subrace) 
       : null;
     const homebrewSubrace = data.subrace && homebrewRaceData?.subraces
       ? (homebrewRaceData.subraces as any[]).find((s: any) => s.id === data.subrace)
       : null;
-    const activeSubrace = srdSubrace || homebrewSubrace;
+    // Standalone homebrew subrace (stored as separate 'race' entry with parent_race_id)
+    const standaloneHomebrewSubrace = data.subrace 
+      ? homebrewRaces.find(r => r.id === data.subrace && !!(r.data as any)?.parent_race_id)
+      : null;
+    const standaloneSubraceData = standaloneHomebrewSubrace?.data as any;
+    const activeSubrace = srdSubrace || homebrewSubrace || (standaloneSubraceData ? {
+      ability_bonuses: standaloneSubraceData.ability_bonuses || {},
+      traits: standaloneSubraceData.traits || [],
+    } : null);
     
     if (activeSubrace?.ability_bonuses) {
       Object.entries(activeSubrace.ability_bonuses).forEach(([attr, bonus]) => {

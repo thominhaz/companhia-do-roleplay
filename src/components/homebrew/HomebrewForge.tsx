@@ -19,7 +19,8 @@ import {
   Download,
   Upload,
   Filter,
-  X
+  X,
+  Dna
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useHomebrew } from "@/hooks/useHomebrew";
@@ -27,10 +28,11 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { HomebrewContentType, HomebrewContent, HomebrewSpellData, HomebrewItemData } from "@/types";
+import { HomebrewContentType, HomebrewContentTypeUI, HomebrewContent, HomebrewSpellData, HomebrewItemData } from "@/types";
 import { CreateSpellSheet } from "./CreateSpellSheet";
 import { CreateItemSheet } from "./CreateItemSheet";
 import { CreateRaceSheet } from "./CreateRaceSheet";
+import { CreateSubraceSheet } from "./CreateSubraceSheet";
 import { CreateBackgroundSheet } from "./CreateBackgroundSheet";
 import { CreateFeatSheet } from "./CreateFeatSheet";
 import { CreateMonsterSheet } from "./CreateMonsterSheet";
@@ -61,10 +63,11 @@ interface HomebrewForgeProps {
   onBack: () => void;
 }
 
-const contentTypes: { type: HomebrewContentType; label: string; icon: React.ElementType; color: string }[] = [
+const contentTypes: { type: HomebrewContentTypeUI; label: string; icon: React.ElementType; color: string }[] = [
   { type: 'spell', label: 'Magias', icon: Sparkles, color: 'from-primary to-primary/70' },
   { type: 'item', label: 'Itens', icon: Gem, color: 'from-gold to-gold/70' },
   { type: 'race', label: 'Raças', icon: Users, color: 'from-primary to-primary/70' },
+  { type: 'subrace', label: 'Sub-raças', icon: Dna, color: 'from-cyan-500 to-cyan-500/70' },
   { type: 'class', label: 'Classes', icon: Sword, color: 'from-destructive to-destructive/70' },
   { type: 'subclass', label: 'Subclasses', icon: Star, color: 'from-accent to-accent/70' },
   { type: 'monster', label: 'Monstros', icon: Skull, color: 'from-muted-foreground to-muted-foreground/70' },
@@ -115,6 +118,7 @@ const getSingularInfo = (label: string | undefined): { singular: string; article
     'Magias': { singular: 'magia', article: 'Nenhuma' },
     'Itens': { singular: 'item', article: 'Nenhum' },
     'Raças': { singular: 'raça', article: 'Nenhuma' },
+    'Sub-raças': { singular: 'sub-raça', article: 'Nenhuma' },
     'Classes': { singular: 'classe', article: 'Nenhuma' },
     'Subclasses': { singular: 'subclasse', article: 'Nenhuma' },
     'Monstros': { singular: 'monstro', article: 'Nenhum' },
@@ -135,11 +139,12 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const canCreateHomebrew = subscription?.canCreateHomebrew || false;
   const currentTier = subscription?.tier || 'aldeao';
   
-  const [selectedType, setSelectedType] = useState<HomebrewContentType>('spell');
+  const [selectedType, setSelectedType] = useState<HomebrewContentTypeUI>('spell');
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateSpell, setShowCreateSpell] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
   const [showCreateRace, setShowCreateRace] = useState(false);
+  const [showCreateSubrace, setShowCreateSubrace] = useState(false);
   const [showCreateBackground, setShowCreateBackground] = useState(false);
   const [showCreateFeat, setShowCreateFeat] = useState(false);
   const [showCreateMonster, setShowCreateMonster] = useState(false);
@@ -157,8 +162,11 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const [spellSchoolFilter, setSpellSchoolFilter] = useState('all');
   const [itemRarityFilter, setItemRarityFilter] = useState('all');
   
+  // Map UI type to DB type: 'subrace' is stored as 'race' in DB
+  const dbType: HomebrewContentType = selectedType === 'subrace' ? 'race' : selectedType as HomebrewContentType;
+  
   const { 
-    homebrewContent, 
+    homebrewContent: rawHomebrewContent, 
     homebrewCount, 
     canCreate, 
     isLoading,
@@ -166,7 +174,15 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
     createHomebrew,
     isDeleting,
     isCreating
-  } = useHomebrew(selectedType);
+  } = useHomebrew(dbType);
+
+  // Filter: 'subrace' shows only items with parent_race_id, 'race' shows items without
+  const homebrewContent = rawHomebrewContent.filter(item => {
+    const hasParentRace = !!(item.data as any)?.parent_race_id;
+    if (selectedType === 'subrace') return hasParentRace;
+    if (selectedType === 'race') return !hasParentRace;
+    return true;
+  });
 
   // Apply filters
   const filteredContent = homebrewContent.filter(item => {
@@ -212,6 +228,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
       case 'spell': setShowCreateSpell(true); break;
       case 'item': setShowCreateItem(true); break;
       case 'race': setShowCreateRace(true); break;
+      case 'subrace': setShowCreateSubrace(true); break;
       case 'background': setShowCreateBackground(true); break;
       case 'feat': setShowCreateFeat(true); break;
       case 'monster': setShowCreateMonster(true); break;
@@ -222,10 +239,12 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
 
   const handleEdit = (item: HomebrewContent) => {
     setEditingItem(item);
-    switch (item.type) {
+    const isSubrace = !!(item.data as any)?.parent_race_id;
+    switch (isSubrace ? 'subrace' : item.type) {
       case 'spell': setShowCreateSpell(true); break;
       case 'item': setShowCreateItem(true); break;
       case 'race': setShowCreateRace(true); break;
+      case 'subrace': setShowCreateSubrace(true); break;
       case 'background': setShowCreateBackground(true); break;
       case 'feat': setShowCreateFeat(true); break;
       case 'monster': setShowCreateMonster(true); break;
@@ -254,6 +273,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
     setShowCreateSpell(false);
     setShowCreateItem(false);
     setShowCreateRace(false);
+    setShowCreateSubrace(false);
     setShowCreateBackground(false);
     setShowCreateFeat(false);
     setShowCreateMonster(false);
@@ -276,10 +296,12 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
     };
     setDuplicatingItem(duplicatedItem);
     setEditingItem(duplicatedItem);
-    switch (item.type) {
+    const isSubrace = !!(item.data as any)?.parent_race_id;
+    switch (isSubrace ? 'subrace' : item.type) {
       case 'spell': setShowCreateSpell(true); break;
       case 'item': setShowCreateItem(true); break;
       case 'race': setShowCreateRace(true); break;
+      case 'subrace': setShowCreateSubrace(true); break;
       case 'background': setShowCreateBackground(true); break;
       case 'feat': setShowCreateFeat(true); break;
       case 'monster': setShowCreateMonster(true); break;
@@ -694,7 +716,12 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
       <CreateRaceSheet
         open={showCreateRace}
         onOpenChange={(open) => !open && handleSheetClose()}
-        editingRace={editingItem?.type === 'race' ? editingItem : undefined}
+        editingRace={editingItem?.type === 'race' && !(editingItem.data as any)?.parent_race_id ? editingItem : undefined}
+      />
+      <CreateSubraceSheet
+        open={showCreateSubrace}
+        onOpenChange={(open) => !open && handleSheetClose()}
+        editingSubrace={editingItem?.type === 'race' && !!(editingItem.data as any)?.parent_race_id ? editingItem : undefined}
       />
       <CreateBackgroundSheet
         open={showCreateBackground}
