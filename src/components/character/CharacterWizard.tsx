@@ -52,10 +52,8 @@ export type WizardData = {
   ideals: string;
   bonds: string;
   flaws: string;
-  equipmentChoices: Record<number, number>; // choice index → selected option index
-  equipmentCategorySelections: Record<string, string>; // category key → specific item id
-  equipmentChoices: Record<number, number>; // choice index → selected option index
-  equipmentCategorySelections: Record<string, string>; // category key → specific item id
+  equipmentChoices: Record<number, number>;
+  equipmentCategorySelections: Record<string, string>;
   selectedSkills: string[];
   extraLanguages: string[];
   // Custom background fields
