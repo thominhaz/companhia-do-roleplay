@@ -59,10 +59,12 @@ export function AttributesStep({ data, updateData }: AttributesStepProps) {
     if (currentChoices.includes(attr)) {
       bonus += 1;
     }
-    // Subrace bonuses
-    if (data.subrace && selectedRace?.subraces) {
-      const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
-      if (subrace?.ability_bonuses[attr]) {
+    // Subrace bonuses (SRD or homebrew)
+    if (data.subrace) {
+      const srdSubrace = selectedRace?.subraces?.find(s => s.id === data.subrace);
+      const homebrewSubrace = homebrewRaceData?.subraces?.find((s: any) => s.id === data.subrace);
+      const subrace = srdSubrace || homebrewSubrace;
+      if (subrace?.ability_bonuses?.[attr]) {
         bonus += (subrace.ability_bonuses[attr] as number) || 0;
       }
     }
