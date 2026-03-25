@@ -8,6 +8,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { useAuth } from '@/hooks/useAuth';
 import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, ALL_SKILLS, getModifier, calculateHP, Attribute } from '@/data/srd';
 import armaduras from '@/data/equipment/armaduras.json';
+import pacotesData from '@/data/equipment/pacotes-iniciais.json';
 import { useHomebrew } from '@/hooks/useHomebrew';
 import { RaceStep } from './steps/RaceStep';
 import { ClassStep } from './steps/ClassStep';
@@ -506,7 +507,16 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
           }];
         })() : []),
       ],
-      inventory: [],
+      inventory: (() => {
+        const selectedPack = pacotesData.equipment_packs.packs.find(p => p.id === data.equipmentPack);
+        if (!selectedPack) return [];
+        return selectedPack.items.map((item, idx) => ({
+          id: `pack-${idx}`,
+          name: item.item_pt,
+          quantity: item.quantity,
+          description: item.unit ? `${item.unit}${item.note ? ` (${item.note})` : ''}` : (item.note || undefined),
+        }));
+      })(),
       currency: { copper: 0, silver: 0, electrum: 0, gold: 10, platinum: 0 },
       spellcasting: spellcastingObj,
       spells: [...data.selectedCantrips, ...data.selectedSpells],
