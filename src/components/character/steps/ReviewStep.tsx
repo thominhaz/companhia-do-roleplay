@@ -79,36 +79,53 @@ export function ReviewStep({ data }: ReviewStepProps) {
   const dexMod = getModifier(finalAttributes.dexterity);
   const hp = selectedClass ? calculateHP(selectedClass.hit_die, conMod, 1) : 10;
   
-  // Calculate AC properly based on selected armor
-  let ac = 10 + dexMod; // Default: no armor
-  if (data.armor) {
-    const selectedArmor = armaduras.items.find(a => a.name === data.armor);
+  // Calculate AC from dynamic equipment choices
+  let ac = 10 + dexMod;
+  let hasShieldBonus = false;
+  let armorForAC: string | null = null;
+  
+  const startEquip = selectedClass?.starting_equipment;
+  if (startEquip?.choices) {
+    // Find armor/shield selections
+    const allItems: string[] = [];
+    startEquip.choices.forEach((choice: any, choiceIdx: number) => {
+      const optionIdx = data.equipmentChoices?.[choiceIdx];
+      if (optionIdx === undefined) return;
+      const optionItems = choice.from[optionIdx];
+      if (!optionItems) return;
+      optionItems.forEach((rawItem: string) => {
+        const itemId = rawItem.split(':')[0];
+        const catKey = `${choiceIdx}-${optionIdx}-${itemId}`;
+        const specific = data.equipmentCategorySelections?.[catKey];
+        allItems.push(specific || itemId);
+      });
+    });
+    if (startEquip.granted) {
+      startEquip.granted.forEach((rawItem: string) => allItems.push(rawItem.split(':')[0]));
+    }
+    
+    allItems.forEach(itemId => {
+      const armorInfo = armaduras.items.find(a => a.id === itemId);
+      if (armorInfo && armorInfo.category !== 'shield') armorForAC = itemId;
+      if (itemId === 'shield' || itemId === 'wooden_shield' || armorInfo?.category === 'shield') hasShieldBonus = true;
+    });
+  }
+  
+  if (armorForAC) {
+    const selectedArmor = armaduras.items.find(a => a.id === armorForAC);
     if (selectedArmor) {
-      if (selectedArmor.category === 'shield') {
-        ac += (selectedArmor.armor_class as any).bonus || 2;
-      } else if (selectedArmor.category === 'heavy') {
-        ac = selectedArmor.armor_class.base;
-      } else if (selectedArmor.category === 'medium') {
+      if (selectedArmor.category === 'heavy') ac = selectedArmor.armor_class.base;
+      else if (selectedArmor.category === 'medium') {
         const maxDex = selectedArmor.armor_class.max_dex_bonus ?? 2;
         ac = selectedArmor.armor_class.base + Math.min(dexMod, maxDex);
-      } else {
-        ac = selectedArmor.armor_class.base + dexMod;
-      }
+      } else ac = selectedArmor.armor_class.base + dexMod;
     }
   } else if (selectedClass?.id === 'monk') {
-    const wisMod = getModifier(finalAttributes.wisdom);
-    ac = 10 + dexMod + wisMod;
+    ac = 10 + dexMod + getModifier(finalAttributes.wisdom);
   } else if (selectedClass?.id === 'barbarian' || selectedClass?.id === 'barbaro') {
     ac = 10 + dexMod + conMod;
   }
-
-  // Add shield bonus if shield selected as secondary weapon
-  if (data.secondaryWeapon) {
-    const shieldItem = armaduras.items.find(a => a.name === data.secondaryWeapon && a.category === 'shield');
-    if (shieldItem) {
-      ac += (shieldItem.armor_class as any).bonus || 2;
-    }
-  }
+  if (hasShieldBonus) ac += 2;
 
   // Race traits for display
   const raceTraits = selectedRace?.traits || [];
