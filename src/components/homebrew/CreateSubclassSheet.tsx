@@ -96,9 +96,12 @@ export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: Cre
   };
 
   const addFeature = () => {
+    const levels = getSubclassLevels();
+    const usedLevels = formData.features.map(f => f.level);
+    const nextLevel = levels.find(l => !usedLevels.includes(l)) || levels[0] || 3;
     setFormData(prev => ({
       ...prev,
-      features: [...prev.features, { name: '', level: formData.subclassLevel, description: '' }]
+      features: [...prev.features, { name: '', level: nextLevel, description: '' }]
     }));
   };
 
