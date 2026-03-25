@@ -36,17 +36,39 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
   const selectedClass = CLASSES.find(c => c.id === data.class);
   const selectedHomebrewClass = homebrewClasses.find(c => c.id === data.class);
   
-  // Get available subclasses for the selected class
-  const availableSubclasses = useMemo(() => {
+  // Get SRD subclasses from class JSON
+  const srdSubclasses = useMemo(() => {
+    if (!selectedClass?.subclasses) return [];
+    return (selectedClass.subclasses as any[]).map((sc: any) => ({
+      id: sc.id,
+      name: sc.name,
+      description: sc.description || '',
+      icon: '📜',
+      features: sc.features || [],
+      isSRD: true,
+    }));
+  }, [selectedClass]);
+
+  // Get homebrew subclasses for the selected class
+  const homebrewSubclassesForClass = useMemo(() => {
     if (!data.class) return [];
-    
-    // Filter homebrew subclasses that match the selected class
     return homebrewSubclasses.filter(sub => {
       const subData = sub.data as any;
       return subData?.parent_class?.toLowerCase() === data.class.toLowerCase() ||
              subData?.parentClass?.toLowerCase() === data.class.toLowerCase();
-    });
+    }).map(sub => ({
+      id: sub.id,
+      name: sub.name,
+      description: sub.description || '',
+      icon: sub.icon || '⚔️',
+      features: (sub.data as any)?.features || [],
+      isSRD: false,
+    }));
   }, [data.class, homebrewSubclasses]);
+
+  const availableSubclasses = useMemo(() => {
+    return [...srdSubclasses, ...homebrewSubclassesForClass];
+  }, [srdSubclasses, homebrewSubclassesForClass]);
 
   const getSkillsDisplay = (skills: { choose: number; from: string | string[] }) => {
     if (skills.from === 'any') return 'Qualquer';
@@ -285,7 +307,7 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
                   <div className="flex items-center gap-2">
                     <Layers className="w-4 h-4 text-primary" />
                     <span className="text-sm font-medium">
-                      Subclasses Homebrew Disponíveis ({availableSubclasses.length})
+                      Subclasses Disponíveis ({availableSubclasses.length})
                     </span>
                   </div>
                   {showSubclasses ? (
@@ -297,64 +319,70 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
               </CollapsibleTrigger>
               <CollapsibleContent className="pt-3 space-y-2">
                 <p className="text-xs text-muted-foreground mb-2">
-                  Subclasses são desbloqueadas no nível 3. Você pode pré-selecionar uma agora.
+                  Subclasses são desbloqueadas conforme o nível da classe. Você pode pré-selecionar uma agora.
                 </p>
-                {availableSubclasses.map((subclass) => {
-                  const subData = subclass.data as any;
-                  return (
-                    <button
-                      key={subclass.id}
-                      onClick={() => updateData({ subclass: subclass.id })}
-                      className={cn(
-                        "w-full p-3 rounded-lg border text-left transition-all",
+                {availableSubclasses.map((subclass) => (
+                  <button
+                    key={subclass.id}
+                    onClick={() => updateData({ subclass: subclass.id })}
+                    className={cn(
+                      "w-full p-3 rounded-lg border text-left transition-all",
+                      data.subclass === subclass.id
+                        ? subclass.isSRD
+                          ? "border-secondary bg-secondary/10"
+                          : "border-amber-500 bg-amber-500/10"
+                        : "border-border bg-card hover:border-primary/50"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={cn(
+                        "w-8 h-8 rounded-lg flex items-center justify-center text-lg",
                         data.subclass === subclass.id
-                          ? "border-primary bg-primary/10"
-                          : "border-border bg-card hover:border-primary/50"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className={cn(
-                          "w-8 h-8 rounded-lg flex items-center justify-center text-lg",
-                          data.subclass === subclass.id
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted"
-                        )}>
-                          {subclass.icon || '⚔️'}
-                        </div>
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-sm">{subclass.name}</span>
-                            <Badge variant="outline" className="text-[10px] bg-primary/20 text-primary border-primary/30">
-                              Homebrew
-                            </Badge>
-                            {data.subclass === subclass.id && (
-                              <Check className="w-4 h-4 text-primary" />
-                            )}
-                          </div>
-                          {subclass.description && (
-                            <p className="text-xs text-muted-foreground mt-1 line-clamp-1">
-                              {subclass.description}
-                            </p>
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted"
+                      )}>
+                        {subclass.icon}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-medium text-sm">{subclass.name}</span>
+                          <Badge variant="outline" className={cn(
+                            "text-[9px] px-1.5 py-0",
+                            subclass.isSRD
+                              ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/30"
+                              : "bg-amber-500/10 text-amber-500 border-amber-500/30"
+                          )}>
+                            {subclass.isSRD ? 'SRD 5.1' : 'Homebrew'}
+                          </Badge>
+                          {data.subclass === subclass.id && (
+                            <Check className="w-4 h-4 text-primary" />
                           )}
                         </div>
+                        {subclass.description && (
+                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                            {subclass.description}
+                          </p>
+                        )}
                       </div>
-                    </button>
-                  );
-                })}
+                    </div>
+                  </button>
+                ))}
                 {/* Show selected subclass features */}
                 {data.subclass && (() => {
                   const selectedSub = availableSubclasses.find(s => s.id === data.subclass);
-                  const subFeatures = (selectedSub?.data as any)?.features || [];
+                  const subFeatures = selectedSub?.features || [];
                   if (subFeatures.length === 0) return null;
                   return (
                     <div className="mt-3 p-3 rounded-lg bg-card border border-border space-y-2">
-                      <p className="text-sm font-medium">Habilidades da Subclasse: {selectedSub?.name}</p>
+                      <p className="text-sm font-medium">Habilidades: {selectedSub?.name}</p>
                       {subFeatures.map((feature: any, idx: number) => (
                         <div key={idx} className="text-sm text-muted-foreground">
                           <span className="font-medium text-foreground">{feature.name}</span>
                           {feature.level && <span className="text-xs ml-1">(Nível {feature.level})</span>}
-                          {feature.description && (
-                            <p className="text-xs mt-0.5 line-clamp-2">{feature.description}</p>
+                          {(feature.description || feature.description_markdown) && (
+                            <p className="text-xs mt-0.5 line-clamp-2">
+                              {(feature.description_markdown || feature.description || '').replace(/\*\*/g, '').slice(0, 200)}
+                            </p>
                           )}
                         </div>
                       ))}

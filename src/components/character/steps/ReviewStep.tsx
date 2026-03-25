@@ -246,12 +246,20 @@ export function ReviewStep({ data }: ReviewStepProps) {
 
       {/* Subclass Features */}
       {data.subclass && (() => {
-        const selectedSubclass = homebrewSubclasses.find(s => s.id === data.subclass);
-        const subFeatures = (selectedSubclass?.data as any)?.features || [];
-        if (!selectedSubclass || subFeatures.length === 0) return null;
+        // Try SRD subclass first
+        const selectedClassData = CLASSES.find(c => c.id === data.class);
+        const srdSubclass = selectedClassData?.subclasses
+          ? (selectedClassData.subclasses as any[]).find((sc: any) => sc.id === data.subclass)
+          : null;
+        
+        const subclassName = srdSubclass?.name || homebrewSubclasses.find(s => s.id === data.subclass)?.name;
+        const subFeatures = srdSubclass?.features || 
+          ((homebrewSubclasses.find(s => s.id === data.subclass)?.data as any)?.features || []);
+        
+        if (!subclassName || subFeatures.length === 0) return null;
         return (
           <div className="p-4 rounded-xl bg-card border border-border">
-            <h4 className="font-semibold mb-3">Subclasse: {selectedSubclass.name}</h4>
+            <h4 className="font-semibold mb-3">Subclasse: {subclassName}</h4>
             <ul className="space-y-1">
               {subFeatures.map((f: any, idx: number) => (
                 <li key={idx} className="text-sm flex items-start gap-2">
