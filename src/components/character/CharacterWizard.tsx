@@ -105,6 +105,8 @@ const initialData: WizardData = {
   primaryWeapon: '',
   secondaryWeapon: '',
   armor: '',
+  equipmentChoices: {},
+  equipmentCategorySelections: {},
   selectedSkills: [],
   extraLanguages: [],
   customBackgroundSkills: [],
