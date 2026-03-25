@@ -13,7 +13,23 @@ interface RaceStepProps {
 export function RaceStep({ data, updateData }: RaceStepProps) {
   const { homebrewContent: homebrewRaces } = useHomebrew('race');
   const selectedRace = RACES.find(r => r.id === data.race);
-  const selectedHomebrewRace = homebrewRaces.find(r => r.id === data.race);
+  const selectedHomebrewRace = homebrewRaces.filter(r => !(r.data as any)?.parent_race_id).find(r => r.id === data.race);
+
+  // Get homebrew subraces that target the selected race
+  const homebrewSubracesForSelected = homebrewRaces
+    .filter(r => !!(r.data as any)?.parent_race_id && (r.data as any).parent_race_id === data.race)
+    .map(r => {
+      const rData = r.data as any;
+      return {
+        id: r.id,
+        name: r.name,
+        name_en: r.name,
+        description: r.description || '',
+        ability_bonuses: rData.ability_bonuses || {},
+        traits: normalizeHomebrewTraits(rData.traits || []),
+        isHomebrew: true,
+      };
+    });
 
   const parseList = (value: unknown): string[] => {
     if (Array.isArray(value)) {
