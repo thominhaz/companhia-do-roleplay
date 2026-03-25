@@ -188,8 +188,8 @@ export function Import5eToolsSheet({ open, onOpenChange }: Import5eToolsSheetPro
               {/* Warnings */}
               {parseResult.warnings.length > 0 && (
                 <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 space-y-1">
-                  {parseResult.warnings.map((w, i) => (
-                    <p key={i} className="text-xs text-yellow-600 dark:text-yellow-400 flex items-start gap-2">
+              {parseResult.warnings.map((w, i) => (
+                    <p key={i} className="text-xs text-amber-600 dark:text-amber-400 flex items-start gap-2">
                       <AlertTriangle className="w-3 h-3 mt-0.5 flex-shrink-0" />
                       {w}
                     </p>
@@ -202,7 +202,7 @@ export function Import5eToolsSheet({ open, onOpenChange }: Import5eToolsSheetPro
                 <>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-4 h-4 text-green-500" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
                       <span className="text-sm font-medium">
                         {parseResult.items.length} item(ns) encontrado(s)
                       </span>
