@@ -96,9 +96,12 @@ export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: Cre
   };
 
   const addFeature = () => {
+    const levels = getSubclassLevels();
+    const usedLevels = formData.features.map(f => f.level);
+    const nextLevel = levels.find(l => !usedLevels.includes(l)) || levels[0] || 3;
     setFormData(prev => ({
       ...prev,
-      features: [...prev.features, { name: '', level: formData.subclassLevel, description: '' }]
+      features: [...prev.features, { name: '', level: nextLevel, description: '' }]
     }));
   };
 
@@ -189,25 +192,19 @@ export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: Cre
               </Select>
             </div>
 
-            {/* Subclass Level */}
+            {/* Subclass Feature Levels Info */}
             {formData.parentClass && (
               <div className="space-y-1">
-                <Label>Nível da Subclasse</Label>
-                <Select 
-                  value={formData.subclassLevel.toString()} 
-                  onValueChange={(v) => updateField('subclassLevel', parseInt(v))}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getSubclassLevels().map(level => (
-                      <SelectItem key={level} value={level.toString()}>Nível {level}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label>Níveis de Características</Label>
+                <div className="flex flex-wrap gap-2 p-3 bg-muted/30 rounded-lg">
+                  {getSubclassLevels().map(level => (
+                    <span key={level} className="px-2.5 py-1 text-xs font-medium rounded-full bg-primary/20 text-primary border border-primary/30">
+                      Nível {level}
+                    </span>
+                  ))}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  Níveis em que esta subclasse concede características
+                  Níveis em que esta subclasse concede características. Adicione uma característica para cada nível abaixo.
                 </p>
               </div>
             )}
@@ -240,13 +237,20 @@ export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: Cre
                         value={feature.level.toString()} 
                         onValueChange={(v) => updateFeature(idx, 'level', parseInt(v))}
                       >
-                        <SelectTrigger className="w-24">
+                        <SelectTrigger className="w-28">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {getSubclassLevels().map(level => (
-                            <SelectItem key={level} value={level.toString()}>Nv.{level}</SelectItem>
-                          ))}
+                          {Array.from({ length: 20 }, (_, i) => i + 1).map(level => {
+                            const isCanonical = getSubclassLevels().includes(level);
+                            return (
+                              <SelectItem key={level} value={level.toString()}>
+                                <span className={isCanonical ? 'font-semibold' : 'text-muted-foreground'}>
+                                  Nv.{level}{isCanonical ? ' ★' : ''}
+                                </span>
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                       <Button 
