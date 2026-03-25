@@ -100,8 +100,6 @@ const initialData: WizardData = {
   flaws: '',
   equipmentChoices: {},
   equipmentCategorySelections: {},
-  equipmentChoices: {},
-  equipmentCategorySelections: {},
   selectedSkills: [],
   extraLanguages: [],
   customBackgroundSkills: [],
