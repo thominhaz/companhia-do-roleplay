@@ -185,7 +185,12 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     if (data.selectedSkills.length < requiredSkills) {
       items.push({ step: 3, label: `Perícias (${data.selectedSkills.length}/${requiredSkills})` });
     }
-    if (!data.equipmentPack) items.push({ step: 5, label: 'Equipamento inicial' });
+    const classData = CLASSES.find(c => c.id === data.class || c.name.toLowerCase() === data.class);
+    const totalChoices = classData?.starting_equipment?.choices?.length || 0;
+    const madeChoices = Object.keys(data.equipmentChoices).length;
+    if (totalChoices > 0 && madeChoices < totalChoices) {
+      items.push({ step: 5, label: `Equipamento (${madeChoices}/${totalChoices} escolhas)` });
+    }
     if (!data.name) items.push({ step: 7, label: 'Nome do personagem' });
     if (!data.background) items.push({ step: 7, label: 'Antecedente' });
     if (!data.alignment) items.push({ step: 7, label: 'Alinhamento' });
