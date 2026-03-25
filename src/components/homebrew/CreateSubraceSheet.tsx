@@ -96,7 +96,7 @@ export function CreateSubraceSheet({ open, onOpenChange, editingSubrace }: Creat
     } else {
       createHomebrew({
         name: formData.name,
-        type: 'subrace',
+        type: 'race',
         description: formData.description,
         icon: formData.icon,
         data: subraceData,
