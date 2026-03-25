@@ -716,7 +716,12 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
       <CreateRaceSheet
         open={showCreateRace}
         onOpenChange={(open) => !open && handleSheetClose()}
-        editingRace={editingItem?.type === 'race' ? editingItem : undefined}
+        editingRace={editingItem?.type === 'race' && !(editingItem.data as any)?.parent_race_id ? editingItem : undefined}
+      />
+      <CreateSubraceSheet
+        open={showCreateSubrace}
+        onOpenChange={(open) => !open && handleSheetClose()}
+        editingSubrace={editingItem?.type === 'race' && !!(editingItem.data as any)?.parent_race_id ? editingItem : undefined}
       />
       <CreateBackgroundSheet
         open={showCreateBackground}
