@@ -162,8 +162,11 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const [spellSchoolFilter, setSpellSchoolFilter] = useState('all');
   const [itemRarityFilter, setItemRarityFilter] = useState('all');
   
+  // Map UI type to DB type: 'subrace' is stored as 'race' in DB
+  const dbType: HomebrewContentType = selectedType === 'subrace' ? 'race' : selectedType as HomebrewContentType;
+  
   const { 
-    homebrewContent, 
+    homebrewContent: rawHomebrewContent, 
     homebrewCount, 
     canCreate, 
     isLoading,
@@ -171,7 +174,15 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
     createHomebrew,
     isDeleting,
     isCreating
-  } = useHomebrew(selectedType);
+  } = useHomebrew(dbType);
+
+  // Filter: 'subrace' shows only items with parent_race_id, 'race' shows items without
+  const homebrewContent = rawHomebrewContent.filter(item => {
+    const hasParentRace = !!(item.data as any)?.parent_race_id;
+    if (selectedType === 'subrace') return hasParentRace;
+    if (selectedType === 'race') return !hasParentRace;
+    return true;
+  });
 
   // Apply filters
   const filteredContent = homebrewContent.filter(item => {
