@@ -20,7 +20,8 @@ import {
   Upload,
   Filter,
   X,
-  Dna
+  Dna,
+  FileJson
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useHomebrew } from "@/hooks/useHomebrew";
@@ -40,6 +41,7 @@ import { CreateClassSheet } from "./CreateClassSheet";
 import { CreateSubclassSheet } from "./CreateSubclassSheet";
 import { HomebrewCard } from "./HomebrewCard";
 import { ShareHomebrewSheet } from "./ShareHomebrewSheet";
+import { Import5eToolsSheet } from "./Import5eToolsSheet";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -155,6 +157,7 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const [sharingItem, setSharingItem] = useState<HomebrewContent | null>(null);
   const [deletingItem, setDeletingItem] = useState<HomebrewContent | null>(null);
   const [duplicatingItem, setDuplicatingItem] = useState<HomebrewContent | null>(null);
+  const [showImport5eTools, setShowImport5eTools] = useState(false);
   
   // Advanced filters
   const [showFilters, setShowFilters] = useState(false);
@@ -627,6 +630,15 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
               <Button
                 variant="outline"
                 size="sm"
+                onClick={() => setShowImport5eTools(true)}
+                className="h-8 text-xs gap-1 border-primary/30 text-primary hover:bg-primary/10"
+              >
+                <FileJson className="w-3 h-3" />
+                5e.tools
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleImport}
                 className="h-8 text-xs gap-1"
               >
@@ -754,6 +766,12 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
         open={showShareSheet}
         onOpenChange={handleShareSheetClose}
         item={sharingItem}
+      />
+
+      {/* 5e.tools Import */}
+      <Import5eToolsSheet
+        open={showImport5eTools}
+        onOpenChange={setShowImport5eTools}
       />
 
       {/* Delete Confirmation */}
