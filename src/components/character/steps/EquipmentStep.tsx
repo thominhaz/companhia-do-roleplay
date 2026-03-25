@@ -22,22 +22,26 @@ type EquipmentPack = {
 };
 
 const PACKS = pacotesData.equipment_packs.packs as EquipmentPack[];
+const PACK_IDS = new Set(PACKS.map(p => p.id));
 
-// Map class to available packs
-const CLASS_PACKS: Record<string, string[]> = {
-  barbaro: ['explorers_pack'],
-  bardo: ['diplomats_pack', 'entertainers_pack'],
-  bruxo: ['dungeoneers_pack', 'scholars_pack'],
-  clerigo: ['priests_pack', 'explorers_pack'],
-  druida: ['explorers_pack'],
-  feiticeiro: ['dungeoneers_pack', 'explorers_pack'],
-  guerreiro: ['dungeoneers_pack', 'explorers_pack'],
-  ladino: ['burglars_pack', 'dungeoneers_pack', 'explorers_pack'],
-  mago: ['scholars_pack', 'explorers_pack'],
-  monge: ['dungeoneers_pack', 'explorers_pack'],
-  paladino: ['priests_pack', 'explorers_pack'],
-  patrulheiro: ['dungeoneers_pack', 'explorers_pack'],
-};
+// Derive available packs dynamically from class starting_equipment JSON
+function getClassPacks(classId: string): string[] {
+  const classData = CLASSES.find(c => c.id === classId || c.name.toLowerCase() === classId);
+  if (!classData?.starting_equipment?.choices) return ['explorers_pack'];
+  
+  const packIds: string[] = [];
+  for (const choice of classData.starting_equipment.choices) {
+    for (const option of choice.from) {
+      for (const item of option) {
+        const baseItem = item.split(':')[0];
+        if (PACK_IDS.has(baseItem)) {
+          packIds.push(baseItem);
+        }
+      }
+    }
+  }
+  return packIds.length > 0 ? [...new Set(packIds)] : ['explorers_pack'];
+}
 
 // Simple weapon and armor choices based on class proficiencies
 const CLASS_WEAPONS: Record<string, { primary: string[]; secondary: string[] }> = {
