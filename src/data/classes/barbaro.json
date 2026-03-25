@@ -15,6 +15,13 @@
     }
   },
   "equipment_markdown": "Você começa com o seguinte equipamento, além do equipamento concedido pelo seu antecedente:\n\n- **(a)** um machado grande OU **(b)** qualquer arma marcial corpo a corpo\n- **(a)** duas machadinhas OU **(b)** qualquer arma simples\n- Um pacote de explorador e quatro azagaias",
+  "starting_equipment": {
+    "choices": [
+      {"choose": 1, "from": [["greataxe"], ["martial_melee_weapon"]]},
+      {"choose": 1, "from": [["handaxe:2"], ["simple_weapon"]]}
+    ],
+    "granted": ["explorers_pack", "javelin:4"]
+  },
   "features": [
     {
       "id": "rage",

@@ -8,6 +8,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { useAuth } from '@/hooks/useAuth';
 import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, ALL_SKILLS, getModifier, calculateHP, Attribute } from '@/data/srd';
 import armaduras from '@/data/equipment/armaduras.json';
+import armasJson from '@/data/equipment/armas.json';
 import pacotesData from '@/data/equipment/pacotes-iniciais.json';
 import { useHomebrew } from '@/hooks/useHomebrew';
 import { RaceStep } from './steps/RaceStep';
@@ -51,10 +52,12 @@ export type WizardData = {
   ideals: string;
   bonds: string;
   flaws: string;
-  equipmentPack: string;
-  primaryWeapon: string;
-  secondaryWeapon: string;
-  armor: string;
+  equipmentPack: string; // kept for backward compat
+  primaryWeapon: string; // kept for backward compat
+  secondaryWeapon: string; // kept for backward compat
+  armor: string; // kept for backward compat
+  equipmentChoices: Record<number, number>; // choice index → selected option index
+  equipmentCategorySelections: Record<string, string>; // category key → specific item id
   selectedSkills: string[];
   extraLanguages: string[];
   // Custom background fields
@@ -103,6 +106,8 @@ const initialData: WizardData = {
   primaryWeapon: '',
   secondaryWeapon: '',
   armor: '',
+  equipmentChoices: {},
+  equipmentCategorySelections: {},
   selectedSkills: [],
   extraLanguages: [],
   customBackgroundSkills: [],
@@ -181,7 +186,12 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     if (data.selectedSkills.length < requiredSkills) {
       items.push({ step: 3, label: `Perícias (${data.selectedSkills.length}/${requiredSkills})` });
     }
-    if (!data.equipmentPack) items.push({ step: 5, label: 'Equipamento inicial' });
+    const classData = CLASSES.find(c => c.id === data.class || c.name.toLowerCase() === data.class);
+    const totalChoices = classData?.starting_equipment?.choices?.length || 0;
+    const madeChoices = Object.keys(data.equipmentChoices).length;
+    if (totalChoices > 0 && madeChoices < totalChoices) {
+      items.push({ step: 5, label: `Equipamento (${madeChoices}/${totalChoices} escolhas)` });
+    }
     if (!data.name) items.push({ step: 7, label: 'Nome do personagem' });
     if (!data.background) items.push({ step: 7, label: 'Antecedente' });
     if (!data.alignment) items.push({ step: 7, label: 'Alinhamento' });
@@ -403,41 +413,136 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       }
     }
 
-    // Calculate AC based on selected armor, class, and attributes
-    let armorClass = 10 + dexModifier; // Default: no armor
+    // ========== Build equipment and inventory from dynamic choices ==========
+    
+    // Collect all selected items from equipment choices + granted
+    const allSelectedItems: { id: string; quantity: number }[] = [];
+    
+    const startEquip = selectedClass?.starting_equipment;
+    if (startEquip?.choices) {
+      startEquip.choices.forEach((choice: any, choiceIdx: number) => {
+        const optionIdx = data.equipmentChoices[choiceIdx];
+        if (optionIdx === undefined) return;
+        const optionItems = choice.from[optionIdx];
+        if (!optionItems) return;
+        
+        optionItems.forEach((rawItem: string) => {
+          const parts = rawItem.split(':');
+          const itemId = parts[0];
+          const qty = parts.length > 1 ? parseInt(parts[1], 10) : 1;
+          
+          const catKey = `${choiceIdx}-${optionIdx}-${itemId}`;
+          const specificSelection = data.equipmentCategorySelections[catKey];
+          
+          if (specificSelection) {
+            allSelectedItems.push({ id: specificSelection, quantity: qty });
+          } else {
+            allSelectedItems.push({ id: itemId, quantity: qty });
+          }
+        });
+      });
+    }
+    
+    if (startEquip?.granted) {
+      startEquip.granted.forEach((rawItem: string) => {
+        const parts = rawItem.split(':');
+        allSelectedItems.push({ 
+          id: parts[0], 
+          quantity: parts.length > 1 ? parseInt(parts[1], 10) : 1 
+        });
+      });
+    }
 
-    // Check if armor was selected in equipment step
-    if (data.armor) {
-      const selectedArmor = armaduras.items.find(a => a.name === data.armor);
+    // Helper to resolve item name
+    const miscNames: Record<string, string> = {
+      shield: 'Escudo', wooden_shield: 'Escudo de Madeira', holy_symbol: 'Símbolo Sagrado',
+      druidic_focus: 'Foco Druídico', component_pouch: 'Bolsa de Componentes',
+      arcane_focus: 'Foco Arcano', thieves_tools: 'Ferramentas de Ladrão',
+      spellbook: 'Grimório', crossbow_bolts: 'Virotes', arrows: 'Flechas',
+      lute: 'Alaúde', musical_instrument: 'Instrumento Musical',
+    };
+    const resolveItemName = (itemId: string): string => {
+      if (itemId.startsWith('homebrew:')) return itemId.replace('homebrew:', '');
+      const weapon = armasJson.items.find(w => w.id === itemId);
+      if (weapon) return weapon.name;
+      const armorItem = armaduras.items.find(a => a.id === itemId);
+      if (armorItem) return armorItem.name;
+      return miscNames[itemId] || itemId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    };
+
+    const equipmentItems: any[] = [];
+    const inventoryItems: { id: string; name: string; quantity: number; description?: string }[] = [];
+    let armorForAC: string | null = null;
+    let hasShield = false;
+    
+    allSelectedItems.forEach((item, idx) => {
+      const { id: itemId, quantity } = item;
+      const name = resolveItemName(itemId);
+      
+      // Pack → expand into inventory
+      const packData = pacotesData.equipment_packs.packs.find(p => p.id === itemId);
+      if (packData) {
+        packData.items.forEach((packItem: any, packIdx: number) => {
+          inventoryItems.push({
+            id: `pack-${idx}-${packIdx}`,
+            name: packItem.item_pt,
+            quantity: packItem.quantity,
+            description: packItem.unit || undefined,
+          });
+        });
+        return;
+      }
+      
+      const isWeapon = !!armasJson.items.find(w => w.id === itemId) || itemId.startsWith('homebrew:');
+      const armorInfo = armaduras.items.find(a => a.id === itemId);
+      const isShieldItem = itemId === 'shield' || itemId === 'wooden_shield' || armorInfo?.category === 'shield';
+      
+      if (isWeapon) {
+        for (let q = 0; q < quantity; q++) {
+          equipmentItems.push({ id: `equip-${idx}-${q}`, name, type: 'weapon' as const, equipped: true });
+        }
+      } else if (armorInfo || isShieldItem) {
+        equipmentItems.push({
+          id: `equip-${idx}`,
+          name,
+          type: (isShieldItem ? 'shield' : 'armor') as 'armor' | 'shield',
+          equipped: true,
+          ...(armorInfo ? {
+            armorClass: isShieldItem ? (armorInfo.armor_class as any).bonus : armorInfo.armor_class.base,
+            armorCategory: armorInfo.category,
+            maxDexBonus: armorInfo.armor_class.max_dex_bonus,
+          } : {}),
+        });
+        if (isShieldItem) hasShield = true;
+        else if (armorInfo) armorForAC = itemId;
+      } else {
+        inventoryItems.push({ id: `item-${idx}`, name, quantity });
+      }
+    });
+
+    // Calculate AC
+    let armorClass = 10 + dexModifier;
+    
+    if (armorForAC) {
+      const selectedArmor = armaduras.items.find(a => a.id === armorForAC);
       if (selectedArmor) {
-        if (selectedArmor.category === 'shield') {
-          armorClass += (selectedArmor.armor_class as any).bonus || 2;
-        } else if (selectedArmor.category === 'heavy') {
+        if (selectedArmor.category === 'heavy') {
           armorClass = selectedArmor.armor_class.base;
         } else if (selectedArmor.category === 'medium') {
           const maxDex = selectedArmor.armor_class.max_dex_bonus ?? 2;
           armorClass = selectedArmor.armor_class.base + Math.min(dexModifier, maxDex);
         } else {
-          // Light armor: base + full DEX
           armorClass = selectedArmor.armor_class.base + dexModifier;
         }
       }
     } else if (selectedClass.id === 'monk') {
-      // Monk Unarmored Defense: 10 + DEX + WIS
       const wisModifier = getModifier(finalAttributes.wisdom);
       armorClass = 10 + dexModifier + wisModifier;
     } else if (selectedClass.id === 'barbarian' || selectedClass.id === 'barbaro') {
-      // Barbarian Unarmored Defense: 10 + DEX + CON
       armorClass = 10 + dexModifier + conModifier;
     }
-
-    // Add shield bonus if shield selected as secondary weapon
-    if (data.secondaryWeapon) {
-      const shieldItem = armaduras.items.find(a => a.name === data.secondaryWeapon && a.category === 'shield');
-      if (shieldItem) {
-        armorClass += (shieldItem.armor_class as any).bonus || 2;
-      }
-    }
+    
+    if (hasShield) armorClass += 2;
 
     // Build spellcasting object with sorcery points if applicable
     const level1Data = selectedClass.levels?.[0];
@@ -447,7 +552,6 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
         cantrips: data.selectedCantrips,
         knownSpells: data.selectedSpells,
       };
-      // Add sorcery points for sorcerer
       if (selectedClass.id === 'sorcerer' && level1Data) {
         spellcastingObj.sorceryPoints = {
           max: (level1Data as any).sorcery_points || 0,
@@ -488,66 +592,8 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       skills: allSkillProficiencies.reduce((acc, skillId) => ({ ...acc, [skillId]: { proficient: true } }), {}),
       hit_dice: { total: 1, current: 1, diceType: `d${selectedClass.hit_die}` },
       death_saves: { successes: 0, failures: 0 },
-      equipment: [
-        ...(data.primaryWeapon ? [{ id: 'primary', name: data.primaryWeapon, type: 'weapon' as const, equipped: true }] : []),
-        ...(data.secondaryWeapon ? [{ id: 'secondary', name: data.secondaryWeapon, type: 'weapon' as const, equipped: true }] : []),
-        ...(data.armor ? (() => {
-          const armorInfo = armaduras.items.find(a => a.name === data.armor);
-          const isShield = armorInfo?.category === 'shield';
-          return [{
-            id: 'armor',
-            name: data.armor,
-            type: (isShield ? 'shield' : 'armor') as 'armor' | 'shield',
-            equipped: true,
-            ...(armorInfo ? {
-              armorClass: isShield ? (armorInfo.armor_class as any).bonus : armorInfo.armor_class.base,
-              armorCategory: armorInfo.category as 'light' | 'medium' | 'heavy' | 'shield',
-              maxDexBonus: armorInfo.armor_class.max_dex_bonus,
-            } : {}),
-          }];
-        })() : []),
-      ],
-      inventory: (() => {
-        const items: { id: string; name: string; quantity: number; description?: string }[] = [];
-        
-        // Add pack items
-        const selectedPack = pacotesData.equipment_packs.packs.find(p => p.id === data.equipmentPack);
-        if (selectedPack) {
-          selectedPack.items.forEach((item, idx) => {
-            items.push({
-              id: `pack-${idx}`,
-              name: item.item_pt,
-              quantity: item.quantity,
-              description: item.unit ? `${item.unit}${item.note ? ` (${item.note})` : ''}` : (item.note || undefined),
-            });
-          });
-        }
-        
-        // Add granted items from class starting_equipment
-        const GRANTED_ITEM_NAMES: Record<string, string> = {
-          leather_armor: 'Armadura de Couro', dagger: 'Adaga', thieves_tools: 'Ferramentas de Ladrão',
-          shield: 'Escudo', holy_symbol: 'Símbolo Sagrado', druidic_focus: 'Foco Druídico',
-          component_pouch: 'Bolsa de Componentes', arcane_focus: 'Foco Arcano',
-          javelin: 'Azagaia', handaxe: 'Machadinha', dart: 'Dardo',
-        };
-        if (selectedClass?.starting_equipment?.granted) {
-          const grantedCounts: Record<string, number> = {};
-          selectedClass.starting_equipment.granted.forEach(itemId => {
-            grantedCounts[itemId] = (grantedCounts[itemId] || 0) + 1;
-          });
-          Object.entries(grantedCounts).forEach(([itemId, qty], idx) => {
-            const name = GRANTED_ITEM_NAMES[itemId] || itemId.replace(/_/g, ' ');
-            // Skip if already in equipment (weapon/armor)
-            const isEquipped = [data.primaryWeapon, data.secondaryWeapon, data.armor]
-              .some(e => e && name.toLowerCase().includes(e.toLowerCase().substring(0, 4)));
-            if (!isEquipped) {
-              items.push({ id: `granted-${idx}`, name, quantity: qty });
-            }
-          });
-        }
-        
-        return items;
-      })(),
+      equipment: equipmentItems,
+      inventory: inventoryItems,
       currency: { copper: 0, silver: 0, electrum: 0, gold: 10, platinum: 0 },
       spellcasting: spellcastingObj,
       spells: [...data.selectedCantrips, ...data.selectedSpells],
@@ -563,7 +609,6 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       languages: [...raceLanguages, ...data.extraLanguages],
       image_url: null,
       conditions: [],
-      // Physical appearance fields
       age: data.age || null,
       height: data.height || null,
       weight: data.weight || null,

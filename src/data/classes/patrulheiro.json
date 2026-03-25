@@ -12,6 +12,14 @@
     "skills": {"choose": 3, "from": ["animal_handling", "athletics", "insight", "investigation", "nature", "perception", "stealth", "survival"]}
   },
   "equipment_markdown": "Você começa com:\n- **(a)** brunea OU **(b)** armadura de couro\n- **(a)** duas espadas curtas OU **(b)** duas armas corpo a corpo simples\n- **(a)** pacote de aventureiro OU **(b)** pacote de explorador\n- Arco longo e aljava de 20 flechas",
+  "starting_equipment": {
+    "choices": [
+      {"choose": 1, "from": [["scale_mail"], ["leather_armor"]]},
+      {"choose": 1, "from": [["shortsword:2"], ["simple_melee_weapon:2"]]},
+      {"choose": 1, "from": [["dungeoneers_pack"], ["explorers_pack"]]}
+    ],
+    "granted": ["longbow", "arrows:20"]
+  },
   "levels": [
     {"level": 1, "proficiency_bonus": 2, "features": ["favored_enemy", "natural_explorer"], "spells_known": 0, "spell_slots": [0, 0, 0, 0, 0]},
     {"level": 2, "proficiency_bonus": 2, "features": ["fighting_style", "spellcasting"], "spells_known": 2, "spell_slots": [2, 0, 0, 0, 0]},

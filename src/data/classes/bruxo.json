@@ -12,6 +12,14 @@
     "skills": {"choose": 2, "from": ["arcana", "deception", "history", "intimidation", "investigation", "nature", "religion"]}
   },
   "equipment_markdown": "Você começa com:\n- **(a)** uma besta leve e 20 virotes OU **(b)** qualquer arma simples\n- **(a)** uma bolsa de componentes OU **(b)** um foco arcano\n- **(a)** um pacote de estudioso OU **(b)** um pacote de aventureiro\n- Armadura de couro, qualquer arma simples e duas adagas",
+  "starting_equipment": {
+    "choices": [
+      {"choose": 1, "from": [["light_crossbow", "crossbow_bolts:20"], ["simple_weapon"]]},
+      {"choose": 1, "from": [["component_pouch"], ["arcane_focus"]]},
+      {"choose": 1, "from": [["scholars_pack"], ["dungeoneers_pack"]]}
+    ],
+    "granted": ["leather_armor", "simple_weapon", "dagger:2"]
+  },
   "levels": [
     {"level": 1, "proficiency_bonus": 2, "features": ["otherworldly_patron", "pact_magic"], "cantrips_known": 2, "spells_known": 2, "spell_slots": 1, "slot_level": 1, "invocations_known": 0},
     {"level": 2, "proficiency_bonus": 2, "features": ["eldritch_invocations"], "cantrips_known": 2, "spells_known": 3, "spell_slots": 2, "slot_level": 1, "invocations_known": 2},

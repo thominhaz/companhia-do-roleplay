@@ -12,6 +12,14 @@
     "skills": {"choose": 2, "from": ["arcana", "deception", "insight", "intimidation", "persuasion", "religion"]}
   },
   "equipment_markdown": "Você começa com:\n- **(a)** uma besta leve e 20 virotes OU **(b)** qualquer arma simples\n- **(a)** uma bolsa de componentes OU **(b)** um foco arcano\n- **(a)** um pacote de aventureiro OU **(b)** um pacote de explorador\n- Duas adagas",
+  "starting_equipment": {
+    "choices": [
+      {"choose": 1, "from": [["light_crossbow", "crossbow_bolts:20"], ["simple_weapon"]]},
+      {"choose": 1, "from": [["component_pouch"], ["arcane_focus"]]},
+      {"choose": 1, "from": [["dungeoneers_pack"], ["explorers_pack"]]}
+    ],
+    "granted": ["dagger:2"]
+  },
   "levels": [
     {"level": 1, "proficiency_bonus": 2, "sorcery_points": 0, "features": ["spellcasting", "sorcerous_origin"], "cantrips_known": 4, "spells_known": 2, "spell_slots": [2, 0, 0, 0, 0, 0, 0, 0, 0]},
     {"level": 2, "proficiency_bonus": 2, "sorcery_points": 2, "features": ["font_of_magic"], "cantrips_known": 4, "spells_known": 3, "spell_slots": [3, 0, 0, 0, 0, 0, 0, 0, 0]},
