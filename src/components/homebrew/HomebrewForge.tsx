@@ -296,10 +296,12 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
     };
     setDuplicatingItem(duplicatedItem);
     setEditingItem(duplicatedItem);
-    switch (item.type) {
+    const isSubrace = !!(item.data as any)?.parent_race_id;
+    switch (isSubrace ? 'subrace' : item.type) {
       case 'spell': setShowCreateSpell(true); break;
       case 'item': setShowCreateItem(true); break;
       case 'race': setShowCreateRace(true); break;
+      case 'subrace': setShowCreateSubrace(true); break;
       case 'background': setShowCreateBackground(true); break;
       case 'feat': setShowCreateFeat(true); break;
       case 'monster': setShowCreateMonster(true); break;
