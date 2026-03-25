@@ -15,6 +15,35 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
   const selectedRace = RACES.find(r => r.id === data.race);
   const selectedHomebrewRace = homebrewRaces.filter(r => !(r.data as any)?.parent_race_id).find(r => r.id === data.race);
 
+  const parseList = (value: unknown): string[] => {
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item).trim()).filter(Boolean);
+    }
+    if (typeof value === 'string') {
+      return value.split(',').map((item) => item.trim()).filter(Boolean);
+    }
+    return [];
+  };
+
+  const normalizeHomebrewTraits = (value: unknown) => {
+    if (!Array.isArray(value)) return [];
+    return value.map((trait, index) => {
+      if (typeof trait === 'string') {
+        return { id: `homebrew-trait-${index}`, name: trait, description: trait };
+      }
+      if (trait && typeof trait === 'object') {
+        const normalizedTrait = trait as any;
+        return {
+          id: normalizedTrait.id || `homebrew-trait-${index}`,
+          name: normalizedTrait.name || `Traço ${index + 1}`,
+          description: normalizedTrait.description,
+          description_markdown: normalizedTrait.description_markdown,
+        };
+      }
+      return { id: `homebrew-trait-${index}`, name: `Traço ${index + 1}`, description: '' };
+    });
+  };
+
   // Get homebrew subraces that target the selected race
   const homebrewSubracesForSelected = homebrewRaces
     .filter(r => !!(r.data as any)?.parent_race_id && (r.data as any).parent_race_id === data.race)
@@ -30,51 +59,6 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
         isHomebrew: true,
       };
     });
-
-  const parseList = (value: unknown): string[] => {
-    if (Array.isArray(value)) {
-      return value.map((item) => String(item).trim()).filter(Boolean);
-    }
-
-    if (typeof value === 'string') {
-      return value
-        .split(',')
-        .map((item) => item.trim())
-        .filter(Boolean);
-    }
-
-    return [];
-  };
-
-  const normalizeHomebrewTraits = (value: unknown) => {
-    if (!Array.isArray(value)) return [];
-
-    return value.map((trait, index) => {
-      if (typeof trait === 'string') {
-        return {
-          id: `homebrew-trait-${index}`,
-          name: trait,
-          description: trait,
-        };
-      }
-
-      if (trait && typeof trait === 'object') {
-        const normalizedTrait = trait as any;
-        return {
-          id: normalizedTrait.id || `homebrew-trait-${index}`,
-          name: normalizedTrait.name || `Traço ${index + 1}`,
-          description: normalizedTrait.description,
-          description_markdown: normalizedTrait.description_markdown,
-        };
-      }
-
-      return {
-        id: `homebrew-trait-${index}`,
-        name: `Traço ${index + 1}`,
-        description: '',
-      };
-    });
-  };
 
   const homebrewSubraces = selectedHomebrewRace 
     ? ((selectedHomebrewRace.data as any)?.subraces || []).map((sr: any) => ({
