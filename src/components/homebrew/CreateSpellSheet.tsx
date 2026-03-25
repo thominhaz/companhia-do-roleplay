@@ -126,7 +126,7 @@ export function CreateSpellSheet({ open, onOpenChange, editingSpell }: CreateSpe
         description: editingSpell.description || "",
         icon: editingSpell.icon,
         level: String(data.level ?? 1),
-        school: data.school || "evocation",
+        school: normalizeSchool(data.school || "evocation"),
         casting_time: data.casting_time || "1 ação",
         range: data.range || "9 metros",
         components: data.components || "V, S",
