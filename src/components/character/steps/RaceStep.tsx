@@ -137,7 +137,7 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
         ))}
 
         {/* Homebrew Races */}
-        {homebrewRaces.length > 0 && (
+        {homebrewRaces.filter(r => !(r.data as any)?.parent_race_id).length > 0 && (
           <>
             <div className="col-span-full pt-2">
               <p className="text-xs text-muted-foreground flex items-center gap-1">
@@ -145,7 +145,7 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
                 Raças Homebrew
               </p>
             </div>
-            {homebrewRaces.map((race) => {
+            {homebrewRaces.filter(r => !(r.data as any)?.parent_race_id).map((race) => {
               const raceData = race.data as any;
               const abilityBonuses = raceData?.ability_bonuses || {};
               return (
