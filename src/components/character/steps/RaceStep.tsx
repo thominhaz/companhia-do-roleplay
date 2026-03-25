@@ -200,49 +200,62 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
       </div>
 
       {/* Subrace Selection */}
-      {selectedRace?.subraces && selectedRace.subraces.length > 0 && (
-        <div className="mt-6 pt-6 border-t border-border">
-          <h3 className="text-lg font-semibold mb-3">Escolha uma Sub-raça</h3>
-          <div className="grid gap-3">
-            {selectedRace.subraces.map((subrace) => (
-              <button
-                key={subrace.id}
-                onClick={() => updateData({ subrace: subrace.id })}
-                className={cn(
-                  "w-full p-4 rounded-xl border text-left transition-all",
-                  data.subrace === subrace.id
-                    ? "border-secondary bg-secondary/10"
-                    : "border-border bg-card hover:border-secondary/50"
-                )}
-              >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h4 className="font-medium">{subrace.name}</h4>
-                      {data.subrace === subrace.id && (
-                        <Check className="w-4 h-4 text-secondary" />
-                      )}
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      {subrace.description}
-                    </p>
-                    <div className="flex flex-wrap gap-2 mt-2">
-                      {Object.entries(subrace.ability_bonuses).map(([attr, bonus]) => (
-                        <span
-                          key={attr}
-                          className="px-2 py-0.5 text-xs font-medium rounded-full bg-secondary/20 text-secondary"
-                        >
-                          +{bonus} {getAttributeAbbr(attr)}
-                        </span>
-                      ))}
+      {(() => {
+        const srdSubraces = (selectedRace?.subraces || []).map(sr => ({ ...sr, isHomebrew: false }));
+        const allSubraces = [...srdSubraces, ...homebrewSubracesForSelected];
+        if (allSubraces.length === 0 && !selectedRaceData) return null;
+        if (allSubraces.length === 0) return null;
+        return (
+          <div className="mt-6 pt-6 border-t border-border">
+            <h3 className="text-lg font-semibold mb-3">Escolha uma Sub-raça</h3>
+            <div className="grid gap-3">
+              {allSubraces.map((subrace: any) => (
+                <button
+                  key={subrace.id}
+                  onClick={() => updateData({ subrace: subrace.id })}
+                  className={cn(
+                    "w-full p-4 rounded-xl border text-left transition-all",
+                    data.subrace === subrace.id
+                      ? subrace.isHomebrew
+                        ? "border-amber-500 bg-amber-500/10"
+                        : "border-secondary bg-secondary/10"
+                      : "border-border bg-card hover:border-secondary/50"
+                  )}
+                >
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <h4 className="font-medium">{subrace.name}</h4>
+                        {subrace.isHomebrew && (
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0 bg-amber-500/10 text-amber-500 border-amber-500/30">
+                            Homebrew
+                          </Badge>
+                        )}
+                        {data.subrace === subrace.id && (
+                          <Check className="w-4 h-4 text-secondary" />
+                        )}
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {subrace.description}
+                      </p>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {Object.entries(subrace.ability_bonuses).map(([attr, bonus]) => (
+                          <span
+                            key={attr}
+                            className="px-2 py-0.5 text-xs font-medium rounded-full bg-secondary/20 text-secondary"
+                          >
+                            +{bonus as number} {getAttributeAbbr(attr)}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </button>
-            ))}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Selected Race Details */}
       {selectedRaceData && (
