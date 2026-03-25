@@ -36,17 +36,39 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
   const selectedClass = CLASSES.find(c => c.id === data.class);
   const selectedHomebrewClass = homebrewClasses.find(c => c.id === data.class);
   
-  // Get available subclasses for the selected class
-  const availableSubclasses = useMemo(() => {
+  // Get SRD subclasses from class JSON
+  const srdSubclasses = useMemo(() => {
+    if (!selectedClass?.subclasses) return [];
+    return (selectedClass.subclasses as any[]).map((sc: any) => ({
+      id: sc.id,
+      name: sc.name,
+      description: sc.description || '',
+      icon: '📜',
+      features: sc.features || [],
+      isSRD: true,
+    }));
+  }, [selectedClass]);
+
+  // Get homebrew subclasses for the selected class
+  const homebrewSubclassesForClass = useMemo(() => {
     if (!data.class) return [];
-    
-    // Filter homebrew subclasses that match the selected class
     return homebrewSubclasses.filter(sub => {
       const subData = sub.data as any;
       return subData?.parent_class?.toLowerCase() === data.class.toLowerCase() ||
              subData?.parentClass?.toLowerCase() === data.class.toLowerCase();
-    });
+    }).map(sub => ({
+      id: sub.id,
+      name: sub.name,
+      description: sub.description || '',
+      icon: sub.icon || '⚔️',
+      features: (sub.data as any)?.features || [],
+      isSRD: false,
+    }));
   }, [data.class, homebrewSubclasses]);
+
+  const availableSubclasses = useMemo(() => {
+    return [...srdSubclasses, ...homebrewSubclassesForClass];
+  }, [srdSubclasses, homebrewSubclassesForClass]);
 
   const getSkillsDisplay = (skills: { choose: number; from: string | string[] }) => {
     if (skills.from === 'any') return 'Qualquer';
