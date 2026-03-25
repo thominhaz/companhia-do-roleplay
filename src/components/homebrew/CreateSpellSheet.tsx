@@ -108,7 +108,7 @@ export function CreateSpellSheet({ open, onOpenChange, editingSpell }: CreateSpe
         name: editingSpell.name,
         description: editingSpell.description || "",
         icon: editingSpell.icon,
-        level: String(data.level || 1),
+        level: String(data.level ?? 1),
         school: data.school || "evocation",
         casting_time: data.casting_time || "1 ação",
         range: data.range || "9 metros",
