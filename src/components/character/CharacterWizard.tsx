@@ -395,21 +395,40 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
         mechanical: f.mechanical || {},
       }));
 
-    // Merge homebrew subclass features
+    // Merge subclass features (SRD or homebrew)
     if (data.subclass) {
-      const selectedSubclass = homebrewSubclasses.find(s => s.id === data.subclass);
-      if (selectedSubclass) {
-        const subData = selectedSubclass.data as any;
-        const subFeatures = subData?.features || [];
-        subFeatures.forEach((f: any) => {
+      // Try SRD subclass first
+      const srdSubclass = selectedClass?.subclasses
+        ? (selectedClass.subclasses as any[]).find((sc: any) => sc.id === data.subclass)
+        : null;
+      
+      if (srdSubclass) {
+        const srdFeatures = srdSubclass.features || [];
+        srdFeatures.forEach((f: any) => {
           level1Features.push({
             id: f.id || `subclass-${f.name?.toLowerCase().replace(/\s+/g, '-')}`,
-            name: `${f.name} (${selectedSubclass.name})`,
+            name: `${f.name} (${srdSubclass.name})`,
             level: f.level || 1,
-            description: f.description || f.description_markdown || '',
+            description: f.description_markdown || f.description || '',
             mechanical: f.mechanical || {},
           });
         });
+      } else {
+        // Try homebrew subclass
+        const selectedSubclass = homebrewSubclasses.find(s => s.id === data.subclass);
+        if (selectedSubclass) {
+          const subData = selectedSubclass.data as any;
+          const subFeatures = subData?.features || [];
+          subFeatures.forEach((f: any) => {
+            level1Features.push({
+              id: f.id || `subclass-${f.name?.toLowerCase().replace(/\s+/g, '-')}`,
+              name: `${f.name} (${selectedSubclass.name})`,
+              level: f.level || 1,
+              description: f.description || f.description_markdown || '',
+              mechanical: f.mechanical || {},
+            });
+          });
+        }
       }
     }
 
