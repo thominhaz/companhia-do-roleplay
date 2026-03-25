@@ -370,13 +370,40 @@ export interface HomebrewItemData extends HomebrewData {
   recharge?: string;
 }
 
+export interface HomebrewRaceTrait {
+  id: string;
+  name: string;
+  description: string;
+  description_markdown?: string;
+  mechanical?: {
+    weapon_proficiencies?: string[];
+    skill_proficiencies?: string[];
+    hp_bonus_per_level?: number;
+    darkvision_range?: number;
+    damage_resistance?: string[];
+    saving_throw_advantage?: string[];
+    [key: string]: unknown;
+  };
+}
+
+export interface HomebrewSubrace {
+  id: string;
+  name: string;
+  description?: string;
+  ability_bonuses: Partial<CharacterAttributes>;
+  traits: HomebrewRaceTrait[];
+}
+
 export interface HomebrewRaceData extends HomebrewData {
   size: 'Small' | 'Medium' | 'Large';
   speed: number;
   ability_bonuses: Partial<CharacterAttributes>;
-  traits: string[];
+  traits: string[] | HomebrewRaceTrait[];
   languages: string[];
   darkvision?: number;
+  weapon_proficiencies?: string[];
+  skill_proficiencies?: string[];
+  subraces?: HomebrewSubrace[];
 }
 
 export interface HomebrewMonsterData extends HomebrewData {

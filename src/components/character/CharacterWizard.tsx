@@ -256,65 +256,73 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       });
     }
 
-    // Apply subrace bonuses if applicable
-    if (data.subrace && selectedRace?.subraces) {
-      const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
-      if (subrace) {
-        Object.entries(subrace.ability_bonuses).forEach(([attr, bonus]) => {
-          finalAttributes[attr as Attribute] += (bonus as number) || 0;
-        });
-      }
+    // Apply subrace bonuses if applicable (SRD or homebrew)
+    const srdSubrace = data.subrace && selectedRace?.subraces 
+      ? selectedRace.subraces.find(s => s.id === data.subrace) 
+      : null;
+    const homebrewSubrace = data.subrace && homebrewRaceData?.subraces
+      ? (homebrewRaceData.subraces as any[]).find((s: any) => s.id === data.subrace)
+      : null;
+    const activeSubrace = srdSubrace || homebrewSubrace;
+    
+    if (activeSubrace?.ability_bonuses) {
+      Object.entries(activeSubrace.ability_bonuses).forEach(([attr, bonus]) => {
+        finalAttributes[attr as Attribute] += (bonus as number) || 0;
+      });
     }
 
     const conModifier = getModifier(finalAttributes.constitution);
     const dexModifier = getModifier(finalAttributes.dexterity);
     
-    // Calculate racial HP bonus (e.g., Hill Dwarf gets +1 HP per level)
+    // Calculate racial HP bonus from traits (race + subrace, SRD + homebrew)
     let raceHpBonus = 0;
-    if (data.subrace && selectedRace?.subraces) {
-      const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
-      if (subrace?.traits) {
-        const hpTrait = subrace.traits.find(t => (t.mechanical as any)?.hp_bonus_per_level);
-        if (hpTrait) {
-          raceHpBonus = (hpTrait.mechanical as any).hp_bonus_per_level || 0;
-        }
-      }
+    const collectHpBonus = (traits: any[]) => {
+      if (!traits) return;
+      traits.forEach((t: any) => {
+        const mech = t.mechanical || {};
+        if (mech.hp_bonus_per_level) raceHpBonus += mech.hp_bonus_per_level;
+      });
+    };
+    // Check SRD subrace traits
+    if (srdSubrace?.traits) collectHpBonus(srdSubrace.traits);
+    // Check homebrew race traits
+    if (homebrewRaceData?.traits && Array.isArray(homebrewRaceData.traits)) {
+      collectHpBonus(homebrewRaceData.traits.filter((t: any) => typeof t === 'object'));
     }
+    // Check homebrew subrace traits
+    if (homebrewSubrace?.traits) collectHpBonus(homebrewSubrace.traits);
     
     const baseMaxHp = calculateHP(selectedClass.hit_die, conModifier, 1);
-    const maxHp = baseMaxHp + raceHpBonus; // Apply racial HP bonus for level 1
+    const maxHp = baseMaxHp + raceHpBonus;
 
-    // Collect racial weapon proficiencies and skill proficiencies
+    // Collect racial weapon proficiencies and skill proficiencies (SRD + homebrew)
     const racialWeaponProficiencies: string[] = [];
     const racialSkillProficiencies: string[] = [];
     
-    // Check race traits for proficiencies (SRD races only - homebrew races have simple string traits)
-    if (selectedRace) {
-      selectedRace.traits.forEach(trait => {
-        const mechanical = trait.mechanical as any;
-        if (mechanical?.weapon_proficiencies) {
-          racialWeaponProficiencies.push(...mechanical.weapon_proficiencies);
-        }
-        if (mechanical?.skill_proficiencies) {
-          racialSkillProficiencies.push(...mechanical.skill_proficiencies);
-        }
+    const collectProficiencies = (traits: any[]) => {
+      if (!traits) return;
+      traits.forEach((t: any) => {
+        const mech = t.mechanical || {};
+        if (mech.weapon_proficiencies) racialWeaponProficiencies.push(...mech.weapon_proficiencies);
+        if (mech.skill_proficiencies) racialSkillProficiencies.push(...mech.skill_proficiencies);
       });
-      
-      // Check subrace traits for proficiencies
-      if (data.subrace && selectedRace.subraces) {
-        const subrace = selectedRace.subraces.find(s => s.id === data.subrace);
-        if (subrace?.traits) {
-          subrace.traits.forEach(trait => {
-            const mechanical = trait.mechanical as any;
-            if (mechanical?.weapon_proficiencies) {
-              racialWeaponProficiencies.push(...mechanical.weapon_proficiencies);
-            }
-            if (mechanical?.skill_proficiencies) {
-              racialSkillProficiencies.push(...mechanical.skill_proficiencies);
-            }
-          });
-        }
+    };
+
+    if (selectedRace) {
+      collectProficiencies(selectedRace.traits);
+      if (srdSubrace?.traits) collectProficiencies(srdSubrace.traits);
+    }
+    
+    // Homebrew race-level proficiencies
+    if (homebrewRaceData) {
+      if (homebrewRaceData.weapon_proficiencies) racialWeaponProficiencies.push(...homebrewRaceData.weapon_proficiencies);
+      if (homebrewRaceData.skill_proficiencies) racialSkillProficiencies.push(...homebrewRaceData.skill_proficiencies);
+      // Homebrew structured traits
+      if (Array.isArray(homebrewRaceData.traits)) {
+        collectProficiencies(homebrewRaceData.traits.filter((t: any) => typeof t === 'object'));
       }
+      // Homebrew subrace traits
+      if (homebrewSubrace?.traits) collectProficiencies(homebrewSubrace.traits);
     }
 
     // Collect background skill proficiencies
@@ -460,9 +468,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     const character: CharacterInsert = {
       name: data.name,
       race: raceName,
-      subrace: data.subrace && selectedRace?.subraces 
-        ? selectedRace.subraces.find(s => s.id === data.subrace)?.name || null 
-        : null,
+      subrace: activeSubrace?.name || null,
       class: selectedClass.name,
       level: 1,
       experience: 0,

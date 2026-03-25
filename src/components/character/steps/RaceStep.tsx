@@ -60,13 +60,23 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
     });
   };
 
+  const homebrewSubraces = selectedHomebrewRace 
+    ? ((selectedHomebrewRace.data as any)?.subraces || []).map((sr: any) => ({
+        id: sr.id,
+        name: sr.name,
+        description: sr.description || '',
+        ability_bonuses: sr.ability_bonuses || {},
+        traits: normalizeHomebrewTraits(sr.traits),
+      }))
+    : [];
+
   const selectedRaceData = selectedRace || (selectedHomebrewRace ? {
     ...selectedHomebrewRace,
     id: selectedHomebrewRace.id,
     name: selectedHomebrewRace.name,
     traits: normalizeHomebrewTraits((selectedHomebrewRace.data as any)?.traits),
     languages: parseList((selectedHomebrewRace.data as any)?.languages),
-    subraces: []
+    subraces: homebrewSubraces,
   } : null);
 
   return (
