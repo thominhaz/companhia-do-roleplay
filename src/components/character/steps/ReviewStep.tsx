@@ -2,7 +2,10 @@ import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, getModifier, getModifierString
 import { WizardData } from '../CharacterWizard';
 import { Heart, Shield, Zap } from 'lucide-react';
 import armaduras from '@/data/equipment/armaduras.json';
+import armasJson from '@/data/equipment/armas.json';
+import pacotesData from '@/data/equipment/pacotes-iniciais.json';
 import { useHomebrew } from '@/hooks/useHomebrew';
+import { getItemName } from '@/lib/equipmentUtils';
 
 interface ReviewStepProps {
   data: WizardData;
