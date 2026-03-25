@@ -20,7 +20,8 @@ import {
   Upload,
   Filter,
   X,
-  Dna
+  Dna,
+  FileJson
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useHomebrew } from "@/hooks/useHomebrew";
