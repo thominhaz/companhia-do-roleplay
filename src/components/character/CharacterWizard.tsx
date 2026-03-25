@@ -468,9 +468,7 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     const character: CharacterInsert = {
       name: data.name,
       race: raceName,
-      subrace: data.subrace && selectedRace?.subraces 
-        ? selectedRace.subraces.find(s => s.id === data.subrace)?.name || null 
-        : null,
+      subrace: activeSubrace?.name || null,
       class: selectedClass.name,
       level: 1,
       experience: 0,
