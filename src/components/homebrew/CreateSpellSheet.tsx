@@ -38,6 +38,23 @@ const spellSchools = [
   { value: "transmutation", label: "Transmutação" },
 ];
 
+// Map Portuguese school names (from 5e.tools importer) back to internal values
+const schoolPtToValue: Record<string, string> = {
+  'Abjuração': 'abjuration',
+  'Conjuração': 'conjuration',
+  'Adivinhação': 'divination',
+  'Encantamento': 'enchantment',
+  'Evocação': 'evocation',
+  'Ilusão': 'illusion',
+  'Necromancia': 'necromancy',
+  'Transmutação': 'transmutation',
+};
+
+function normalizeSchool(school: string): string {
+  if (spellSchools.some(s => s.value === school)) return school;
+  return schoolPtToValue[school] || 'evocation';
+}
+
 const spellLevels = [
   { value: "0", label: "Truque" },
   { value: "1", label: "1º Nível" },
@@ -108,8 +125,8 @@ export function CreateSpellSheet({ open, onOpenChange, editingSpell }: CreateSpe
         name: editingSpell.name,
         description: editingSpell.description || "",
         icon: editingSpell.icon,
-        level: String(data.level || 1),
-        school: data.school || "evocation",
+        level: String(data.level ?? 1),
+        school: normalizeSchool(data.school || "evocation"),
         casting_time: data.casting_time || "1 ação",
         range: data.range || "9 metros",
         components: data.components || "V, S",
