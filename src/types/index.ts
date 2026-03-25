@@ -301,6 +301,7 @@ export type HomebrewContentType =
   | 'spell'
   | 'item'
   | 'race'
+  | 'subrace'
   | 'class'
   | 'subclass'
   | 'monster'
