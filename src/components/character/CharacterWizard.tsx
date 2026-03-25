@@ -508,14 +508,45 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
         })() : []),
       ],
       inventory: (() => {
+        const items: { id: string; name: string; quantity: number; description?: string }[] = [];
+        
+        // Add pack items
         const selectedPack = pacotesData.equipment_packs.packs.find(p => p.id === data.equipmentPack);
-        if (!selectedPack) return [];
-        return selectedPack.items.map((item, idx) => ({
-          id: `pack-${idx}`,
-          name: item.item_pt,
-          quantity: item.quantity,
-          description: item.unit ? `${item.unit}${item.note ? ` (${item.note})` : ''}` : (item.note || undefined),
-        }));
+        if (selectedPack) {
+          selectedPack.items.forEach((item, idx) => {
+            items.push({
+              id: `pack-${idx}`,
+              name: item.item_pt,
+              quantity: item.quantity,
+              description: item.unit ? `${item.unit}${item.note ? ` (${item.note})` : ''}` : (item.note || undefined),
+            });
+          });
+        }
+        
+        // Add granted items from class starting_equipment
+        const GRANTED_ITEM_NAMES: Record<string, string> = {
+          leather_armor: 'Armadura de Couro', dagger: 'Adaga', thieves_tools: 'Ferramentas de Ladrão',
+          shield: 'Escudo', holy_symbol: 'Símbolo Sagrado', druidic_focus: 'Foco Druídico',
+          component_pouch: 'Bolsa de Componentes', arcane_focus: 'Foco Arcano',
+          javelin: 'Azagaia', handaxe: 'Machadinha', dart: 'Dardo',
+        };
+        if (selectedClass?.starting_equipment?.granted) {
+          const grantedCounts: Record<string, number> = {};
+          selectedClass.starting_equipment.granted.forEach(itemId => {
+            grantedCounts[itemId] = (grantedCounts[itemId] || 0) + 1;
+          });
+          Object.entries(grantedCounts).forEach(([itemId, qty], idx) => {
+            const name = GRANTED_ITEM_NAMES[itemId] || itemId.replace(/_/g, ' ');
+            // Skip if already in equipment (weapon/armor)
+            const isEquipped = [data.primaryWeapon, data.secondaryWeapon, data.armor]
+              .some(e => e && name.toLowerCase().includes(e.toLowerCase().substring(0, 4)));
+            if (!isEquipped) {
+              items.push({ id: `granted-${idx}`, name, quantity: qty });
+            }
+          });
+        }
+        
+        return items;
       })(),
       currency: { copper: 0, silver: 0, electrum: 0, gold: 10, platinum: 0 },
       spellcasting: spellcastingObj,
