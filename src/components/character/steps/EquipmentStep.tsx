@@ -114,7 +114,7 @@ export function EquipmentStep({ data, updateData }: EquipmentStepProps) {
   const [expandedPack, setExpandedPack] = useState<string | null>(null);
   const { homebrewContent, isLoading: homebrewLoading } = useHomebrew('item');
   
-  const availablePacks = CLASS_PACKS[data.class] || ['explorers_pack'];
+  const availablePacks = getClassPacks(data.class);
   const filteredPacks = PACKS.filter(p => availablePacks.includes(p.id));
   
   const weapons = CLASS_WEAPONS[data.class] || { primary: [], secondary: [] };
