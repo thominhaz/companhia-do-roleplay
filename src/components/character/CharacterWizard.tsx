@@ -8,6 +8,7 @@ import { useSubscription } from '@/hooks/useSubscription';
 import { useAuth } from '@/hooks/useAuth';
 import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, ALL_SKILLS, getModifier, calculateHP, Attribute } from '@/data/srd';
 import armaduras from '@/data/equipment/armaduras.json';
+import armasJson from '@/data/equipment/armas.json';
 import pacotesData from '@/data/equipment/pacotes-iniciais.json';
 import { useHomebrew } from '@/hooks/useHomebrew';
 import { RaceStep } from './steps/RaceStep';
