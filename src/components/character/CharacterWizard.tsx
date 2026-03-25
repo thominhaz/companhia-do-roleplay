@@ -52,12 +52,8 @@ export type WizardData = {
   ideals: string;
   bonds: string;
   flaws: string;
-  equipmentPack: string; // kept for backward compat
-  primaryWeapon: string; // kept for backward compat
-  secondaryWeapon: string; // kept for backward compat
-  armor: string; // kept for backward compat
-  equipmentChoices: Record<number, number>; // choice index → selected option index
-  equipmentCategorySelections: Record<string, string>; // category key → specific item id
+  equipmentChoices: Record<number, number>;
+  equipmentCategorySelections: Record<string, string>;
   selectedSkills: string[];
   extraLanguages: string[];
   // Custom background fields
@@ -102,10 +98,6 @@ const initialData: WizardData = {
   ideals: '',
   bonds: '',
   flaws: '',
-  equipmentPack: '',
-  primaryWeapon: '',
-  secondaryWeapon: '',
-  armor: '',
   equipmentChoices: {},
   equipmentCategorySelections: {},
   selectedSkills: [],
