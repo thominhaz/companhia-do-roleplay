@@ -237,13 +237,20 @@ export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: Cre
                         value={feature.level.toString()} 
                         onValueChange={(v) => updateFeature(idx, 'level', parseInt(v))}
                       >
-                        <SelectTrigger className="w-24">
+                        <SelectTrigger className="w-28">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          {getSubclassLevels().map(level => (
-                            <SelectItem key={level} value={level.toString()}>Nv.{level}</SelectItem>
-                          ))}
+                          {Array.from({ length: 20 }, (_, i) => i + 1).map(level => {
+                            const isCanonical = getSubclassLevels().includes(level);
+                            return (
+                              <SelectItem key={level} value={level.toString()}>
+                                <span className={isCanonical ? 'font-semibold' : 'text-muted-foreground'}>
+                                  Nv.{level}{isCanonical ? ' ★' : ''}
+                                </span>
+                              </SelectItem>
+                            );
+                          })}
                         </SelectContent>
                       </Select>
                       <Button 
