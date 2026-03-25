@@ -414,12 +414,10 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     }
 
     // ========== Build equipment and inventory from dynamic choices ==========
-    import('@/lib/equipmentUtils').then(() => {}); // type hint only, actual import at top
     
     // Collect all selected items from equipment choices + granted
-    const allSelectedItems: { id: string; quantity: number; fromChoice: boolean }[] = [];
+    const allSelectedItems: { id: string; quantity: number }[] = [];
     
-    // Process choices
     const startEquip = selectedClass?.starting_equipment;
     if (startEquip?.choices) {
       startEquip.choices.forEach((choice: any, choiceIdx: number) => {
@@ -433,60 +431,47 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
           const itemId = parts[0];
           const qty = parts.length > 1 ? parseInt(parts[1], 10) : 1;
           
-          // If it's a category, check for specific selection
           const catKey = `${choiceIdx}-${optionIdx}-${itemId}`;
           const specificSelection = data.equipmentCategorySelections[catKey];
           
           if (specificSelection) {
-            const isHomebrew = specificSelection.startsWith('homebrew:');
-            allSelectedItems.push({ 
-              id: isHomebrew ? specificSelection : specificSelection, 
-              quantity: qty, 
-              fromChoice: true 
-            });
+            allSelectedItems.push({ id: specificSelection, quantity: qty });
           } else {
-            allSelectedItems.push({ id: itemId, quantity: qty, fromChoice: true });
+            allSelectedItems.push({ id: itemId, quantity: qty });
           }
         });
       });
     }
     
-    // Process granted items
     if (startEquip?.granted) {
       startEquip.granted.forEach((rawItem: string) => {
         const parts = rawItem.split(':');
-        const itemId = parts[0];
-        const qty = parts.length > 1 ? parseInt(parts[1], 10) : 1;
-        allSelectedItems.push({ id: itemId, quantity: qty, fromChoice: false });
+        allSelectedItems.push({ 
+          id: parts[0], 
+          quantity: parts.length > 1 ? parseInt(parts[1], 10) : 1 
+        });
       });
     }
 
-    // Separate items into equipment (weapons/armor) and inventory
-    const equipmentItems: any[] = [];
-    const inventoryItems: { id: string; name: string; quantity: number; description?: string }[] = [];
-    
     // Helper to resolve item name
+    const miscNames: Record<string, string> = {
+      shield: 'Escudo', wooden_shield: 'Escudo de Madeira', holy_symbol: 'Símbolo Sagrado',
+      druidic_focus: 'Foco Druídico', component_pouch: 'Bolsa de Componentes',
+      arcane_focus: 'Foco Arcano', thieves_tools: 'Ferramentas de Ladrão',
+      spellbook: 'Grimório', crossbow_bolts: 'Virotes', arrows: 'Flechas',
+      lute: 'Alaúde', musical_instrument: 'Instrumento Musical',
+    };
     const resolveItemName = (itemId: string): string => {
       if (itemId.startsWith('homebrew:')) return itemId.replace('homebrew:', '');
-      const weapon = armasData.items.find((w: any) => w.id === itemId);
+      const weapon = armasJson.items.find(w => w.id === itemId);
       if (weapon) return weapon.name;
-      const armorItem = armaduras.items.find((a: any) => a.id === itemId);
+      const armorItem = armaduras.items.find(a => a.id === itemId);
       if (armorItem) return armorItem.name;
-      // Known misc items
-      const miscNames: Record<string, string> = {
-        shield: 'Escudo', wooden_shield: 'Escudo de Madeira', holy_symbol: 'Símbolo Sagrado',
-        druidic_focus: 'Foco Druídico', component_pouch: 'Bolsa de Componentes',
-        arcane_focus: 'Foco Arcano', thieves_tools: 'Ferramentas de Ladrão',
-        spellbook: 'Grimório', crossbow_bolts: 'Virotes', arrows: 'Flechas',
-        lute: 'Alaúde', musical_instrument: 'Instrumento Musical',
-      };
       return miscNames[itemId] || itemId.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
     };
-    
-    // Import armas for weapon detection
-    const armasData = (await import('@/data/equipment/armas.json')).default;
-    // Actually we can't use await here, let's use the sync imported data
-    
+
+    const equipmentItems: any[] = [];
+    const inventoryItems: { id: string; name: string; quantity: number; description?: string }[] = [];
     let armorForAC: string | null = null;
     let hasShield = false;
     
@@ -494,8 +479,8 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       const { id: itemId, quantity } = item;
       const name = resolveItemName(itemId);
       
-      // Check if it's a pack
-      const packData = pacotesData.equipment_packs.packs.find((p: any) => p.id === itemId);
+      // Pack → expand into inventory
+      const packData = pacotesData.equipment_packs.packs.find(p => p.id === itemId);
       if (packData) {
         packData.items.forEach((packItem: any, packIdx: number) => {
           inventoryItems.push({
@@ -508,22 +493,15 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
         return;
       }
       
-      // Check if it's a weapon
-      const isWeapon = !!armasDataImported.items.find((w: any) => w.id === itemId) || itemId.startsWith('homebrew:');
-      
-      // Check if it's armor
-      const armorInfo = armaduras.items.find((a: any) => a.id === itemId);
-      const isArmorItem = !!armorInfo;
+      const isWeapon = !!armasJson.items.find(w => w.id === itemId) || itemId.startsWith('homebrew:');
+      const armorInfo = armaduras.items.find(a => a.id === itemId);
       const isShieldItem = itemId === 'shield' || itemId === 'wooden_shield' || armorInfo?.category === 'shield';
       
       if (isWeapon) {
-        equipmentItems.push({
-          id: `equip-${idx}`,
-          name,
-          type: 'weapon' as const,
-          equipped: true,
-        });
-      } else if (isArmorItem || isShieldItem) {
+        for (let q = 0; q < quantity; q++) {
+          equipmentItems.push({ id: `equip-${idx}-${q}`, name, type: 'weapon' as const, equipped: true });
+        }
+      } else if (armorInfo || isShieldItem) {
         equipmentItems.push({
           id: `equip-${idx}`,
           name,
@@ -538,17 +516,12 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
         if (isShieldItem) hasShield = true;
         else if (armorInfo) armorForAC = itemId;
       } else {
-        // Goes to inventory
-        inventoryItems.push({
-          id: `item-${idx}`,
-          name,
-          quantity,
-        });
+        inventoryItems.push({ id: `item-${idx}`, name, quantity });
       }
     });
 
     // Calculate AC
-    let armorClass = 10 + dexModifier; // Default: no armor
+    let armorClass = 10 + dexModifier;
     
     if (armorForAC) {
       const selectedArmor = armaduras.items.find(a => a.id === armorForAC);
@@ -569,9 +542,58 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       armorClass = 10 + dexModifier + conModifier;
     }
     
-    if (hasShield) {
-      armorClass += 2;
+    if (hasShield) armorClass += 2;
+
+    // Build spellcasting object with sorcery points if applicable
+    const level1Data = selectedClass.levels?.[0];
+    let spellcastingObj: any = null;
+    if (data.selectedCantrips.length > 0 || data.selectedSpells.length > 0) {
+      spellcastingObj = {
+        cantrips: data.selectedCantrips,
+        knownSpells: data.selectedSpells,
+      };
+      if (selectedClass.id === 'sorcerer' && level1Data) {
+        spellcastingObj.sorceryPoints = {
+          max: (level1Data as any).sorcery_points || 0,
+          current: (level1Data as any).sorcery_points || 0,
+        };
+      }
     }
+
+    // Resolve background name
+    let backgroundName: string;
+    if (data.background === 'custom') {
+      backgroundName = data.customBackgroundName || 'Customizado';
+    } else {
+      const srdBg = BACKGROUNDS.find(b => b.id === data.background);
+      const homebrewBg = homebrewBackgrounds.find(b => b.id === data.background);
+      backgroundName = srdBg?.name || homebrewBg?.name || data.background;
+    }
+
+    const character: CharacterInsert = {
+      name: data.name,
+      race: raceName,
+      subrace: activeSubrace?.name || null,
+      class: selectedClass.name,
+      level: 1,
+      experience: 0,
+      max_hp: maxHp,
+      current_hp: maxHp,
+      temporary_hp: 0,
+      armor_class: armorClass,
+      initiative: dexModifier,
+      speed: Math.floor(raceSpeed),
+      proficiency_bonus: 2,
+      attributes: finalAttributes,
+      saving_throws: selectedClass.saving_throw_proficiencies.reduce(
+        (acc, save) => ({ ...acc, [save]: { proficient: true } }), 
+        {}
+      ),
+      skills: allSkillProficiencies.reduce((acc, skillId) => ({ ...acc, [skillId]: { proficient: true } }), {}),
+      hit_dice: { total: 1, current: 1, diceType: `d${selectedClass.hit_die}` },
+      death_saves: { successes: 0, failures: 0 },
+      equipment: equipmentItems,
+      inventory: inventoryItems,
       currency: { copper: 0, silver: 0, electrum: 0, gold: 10, platinum: 0 },
       spellcasting: spellcastingObj,
       spells: [...data.selectedCantrips, ...data.selectedSpells],
@@ -587,7 +609,6 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
       languages: [...raceLanguages, ...data.extraLanguages],
       image_url: null,
       conditions: [],
-      // Physical appearance fields
       age: data.age || null,
       height: data.height || null,
       weight: data.weight || null,
