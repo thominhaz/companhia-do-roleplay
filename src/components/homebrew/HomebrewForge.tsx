@@ -139,11 +139,12 @@ export function HomebrewForge({ onBack }: HomebrewForgeProps) {
   const canCreateHomebrew = subscription?.canCreateHomebrew || false;
   const currentTier = subscription?.tier || 'aldeao';
   
-  const [selectedType, setSelectedType] = useState<HomebrewContentType>('spell');
+  const [selectedType, setSelectedType] = useState<HomebrewContentTypeUI>('spell');
   const [searchQuery, setSearchQuery] = useState("");
   const [showCreateSpell, setShowCreateSpell] = useState(false);
   const [showCreateItem, setShowCreateItem] = useState(false);
   const [showCreateRace, setShowCreateRace] = useState(false);
+  const [showCreateSubrace, setShowCreateSubrace] = useState(false);
   const [showCreateBackground, setShowCreateBackground] = useState(false);
   const [showCreateFeat, setShowCreateFeat] = useState(false);
   const [showCreateMonster, setShowCreateMonster] = useState(false);
