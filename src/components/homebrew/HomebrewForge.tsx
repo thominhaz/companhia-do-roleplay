@@ -19,7 +19,8 @@ import {
   Download,
   Upload,
   Filter,
-  X
+  X,
+  Dna
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useHomebrew } from "@/hooks/useHomebrew";
@@ -27,10 +28,11 @@ import { useSubscription } from "@/hooks/useSubscription";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { HomebrewContentType, HomebrewContent, HomebrewSpellData, HomebrewItemData } from "@/types";
+import { HomebrewContentType, HomebrewContentTypeUI, HomebrewContent, HomebrewSpellData, HomebrewItemData } from "@/types";
 import { CreateSpellSheet } from "./CreateSpellSheet";
 import { CreateItemSheet } from "./CreateItemSheet";
 import { CreateRaceSheet } from "./CreateRaceSheet";
+import { CreateSubraceSheet } from "./CreateSubraceSheet";
 import { CreateBackgroundSheet } from "./CreateBackgroundSheet";
 import { CreateFeatSheet } from "./CreateFeatSheet";
 import { CreateMonsterSheet } from "./CreateMonsterSheet";
@@ -61,10 +63,11 @@ interface HomebrewForgeProps {
   onBack: () => void;
 }
 
-const contentTypes: { type: HomebrewContentType; label: string; icon: React.ElementType; color: string }[] = [
+const contentTypes: { type: HomebrewContentTypeUI; label: string; icon: React.ElementType; color: string }[] = [
   { type: 'spell', label: 'Magias', icon: Sparkles, color: 'from-primary to-primary/70' },
   { type: 'item', label: 'Itens', icon: Gem, color: 'from-gold to-gold/70' },
   { type: 'race', label: 'Raças', icon: Users, color: 'from-primary to-primary/70' },
+  { type: 'subrace', label: 'Sub-raças', icon: Dna, color: 'from-cyan-500 to-cyan-500/70' },
   { type: 'class', label: 'Classes', icon: Sword, color: 'from-destructive to-destructive/70' },
   { type: 'subclass', label: 'Subclasses', icon: Star, color: 'from-accent to-accent/70' },
   { type: 'monster', label: 'Monstros', icon: Skull, color: 'from-muted-foreground to-muted-foreground/70' },
@@ -115,6 +118,7 @@ const getSingularInfo = (label: string | undefined): { singular: string; article
     'Magias': { singular: 'magia', article: 'Nenhuma' },
     'Itens': { singular: 'item', article: 'Nenhum' },
     'Raças': { singular: 'raça', article: 'Nenhuma' },
+    'Sub-raças': { singular: 'sub-raça', article: 'Nenhuma' },
     'Classes': { singular: 'classe', article: 'Nenhuma' },
     'Subclasses': { singular: 'subclasse', article: 'Nenhuma' },
     'Monstros': { singular: 'monstro', article: 'Nenhum' },
