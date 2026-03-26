@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useHomebrew } from "@/hooks/useHomebrew";
 import { HomebrewContent } from "@/types";
 import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CLASSES } from "@/data/srd";
+import periciasData from "@/data/rules/pericias.json";
 
 interface CreateSubclassSheetProps {
   open: boolean;
@@ -23,13 +25,22 @@ interface SubclassFeature {
   description: string;
 }
 
+interface BonusProficiency {
+  level: number;
+  choose: number;
+  from: string[];
+}
+
+const ALL_SKILLS = periciasData.skills.map(s => s.name);
+
 const defaultFormState = {
   icon: '🌟',
   name: '',
   parentClass: '',
   subclassLevel: 3,
   features: [] as SubclassFeature[],
-  description: ''
+  description: '',
+  bonusProficiencies: [] as BonusProficiency[],
 };
 
 export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: CreateSubclassSheetProps) {
