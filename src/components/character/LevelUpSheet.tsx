@@ -625,6 +625,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       setAttributePoints({});
       setPointsRemaining(2);
       setSelectedFeatureOptions({});
+      setSelectedBonusSkills([]);
     }
     onOpenChange(newOpen);
   };
