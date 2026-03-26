@@ -840,6 +840,58 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
                   </div>
                 )}
 
+                {/* Bonus Proficiency Skills from Subclass */}
+                {subclassBonusProficiencies && (
+                  <div className="glass rounded-xl p-4">
+                    <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-primary" />
+                      Perícias Bônus da Subclasse
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                        Escolha {subclassBonusProficiencies.choose}
+                      </Badge>
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Sua subclasse concede proficiência em {subclassBonusProficiencies.choose} perícia(s) adicionais.
+                    </p>
+                    <div className="space-y-2">
+                      {subclassBonusProficiencies.from.map(skill => {
+                        const isSelected = selectedBonusSkills.includes(skill);
+                        return (
+                          <button
+                            key={skill}
+                            onClick={() => {
+                              setSelectedBonusSkills(prev => {
+                                if (isSelected) return prev.filter(s => s !== skill);
+                                if (prev.length >= subclassBonusProficiencies.choose) return prev;
+                                return [...prev, skill];
+                              });
+                            }}
+                            className={cn(
+                              "w-full p-3 rounded-lg border text-left transition-all flex items-center gap-2",
+                              isSelected
+                                ? "border-primary bg-primary/10"
+                                : "bg-muted/50 hover:bg-muted border-transparent"
+                            )}
+                          >
+                            <div className={cn(
+                              "w-4 h-4 rounded border-2 flex items-center justify-center shrink-0",
+                              isSelected ? "border-primary bg-primary" : "border-muted-foreground"
+                            )}>
+                              {isSelected && <Check className="w-2.5 h-2.5 text-primary-foreground" />}
+                            </div>
+                            <span className="text-sm">{skill}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {selectedBonusSkills.length > 0 && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Selecionadas: {selectedBonusSkills.length}/{subclassBonusProficiencies.choose}
+                      </p>
+                    )}
+                  </div>
+                )}
+
                 {/* Feat / Ability Score Improvement - Only show if level grants one */}
                 {grantsFeat && (
                   <div className="glass rounded-xl p-4">
