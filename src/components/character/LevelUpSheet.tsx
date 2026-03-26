@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, ChevronDown } from "lucide-react";
+import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, ChevronDown, Layers } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,6 +38,22 @@ const CLASS_HIT_DICE: Record<string, { dice: string; avg: number }> = {
 
 // Feat levels (4, 8, 12, 16, 19 for most classes)
 const FEAT_LEVELS = [4, 8, 12, 16, 19];
+
+// Subclass unlock levels per class (D&D 5e SRD)
+const SUBCLASS_LEVELS: Record<string, number> = {
+  'Clérigo': 1,
+  'Feiticeiro': 1,
+  'Bruxo': 1,
+  'Druida': 2,
+  'Mago': 2,
+  'Bárbaro': 3,
+  'Bardo': 3,
+  'Guerreiro': 3,
+  'Ladino': 3,
+  'Monge': 3,
+  'Paladino': 3,
+  'Patrulheiro': 3,
+};
 
 const ATTRIBUTES = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const;
 
@@ -84,9 +100,11 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
   const [attributePoints, setAttributePoints] = useState<Record<string, number>>({});
   const [pointsRemaining, setPointsRemaining] = useState(2);
   const [selectedFeatAttribute, setSelectedFeatAttribute] = useState<string | null>(null);
+  const [selectedSubclass, setSelectedSubclass] = useState<string | null>(null);
   
-  // Fetch homebrew feats
+  // Fetch homebrew feats and subclasses
   const { homebrewContent: homebrewFeats, isLoading: loadingFeats } = useHomebrew('feat');
+  const { homebrewContent: homebrewSubclasses } = useHomebrew('subclass');
 
   const levels = advancementData.character_advancement.levels;
   const currentLevel = character.level;
@@ -95,11 +113,47 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
   const nextLevelData = levels.find(l => l.level === nextLevel);
 
   const xpForNext = nextLevelData?.xp_required || 0;
-  // Allow level up if XP is enough OR if using milestone (controlled externally)
   const canLevelUp = (character.experience >= xpForNext || currentLevel < 20) && currentLevel < 20;
   
   // Check if next level grants a feat/ability score improvement
   const grantsFeat = FEAT_LEVELS.includes(nextLevel);
+
+  // Check if next level unlocks subclass selection
+  const subclassLevel = SUBCLASS_LEVELS[character.class] || 3;
+  const classDataForSubclass = CLASSES.find(c => c.name === character.class);
+  
+  const characterFeatures = (character.features as any[]) || [];
+  const hasExistingSubclass = useMemo(() => {
+    return characterFeatures.some(f => f.source === 'Subclasse');
+  }, [characterFeatures]);
+
+  const showSubclassSelection = nextLevel === subclassLevel && !hasExistingSubclass;
+
+  const availableSubclasses = useMemo(() => {
+    const srdSubs = (classDataForSubclass?.subclasses as any[] || []).map((sc: any) => ({
+      id: sc.id,
+      name: sc.name,
+      description: sc.description || '',
+      features: sc.features || [],
+      isSRD: true,
+    }));
+    
+    const homebrewSubs = homebrewSubclasses
+      .filter(sub => {
+        const subData = sub.data as any;
+        return subData?.parent_class?.toLowerCase() === character.class.toLowerCase() ||
+               subData?.parentClassId === classDataForSubclass?.id;
+      })
+      .map(sub => ({
+        id: sub.id,
+        name: sub.name,
+        description: sub.description || '',
+        features: (sub.data as any)?.features || [],
+        isSRD: false,
+      }));
+    
+    return [...srdSubs, ...homebrewSubs];
+  }, [classDataForSubclass, homebrewSubclasses, character.class]);
   
   // Filter feats by search
   const filteredFeats = useMemo(() => {
@@ -235,6 +289,11 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       return;
     }
     
+    if (showSubclassSelection && !selectedSubclass) {
+      toast.error('Selecione uma subclasse');
+      return;
+    }
+
     if (grantsFeat) {
       if (improvementChoice === 'feat' && !selectedFeat) {
         toast.error('Selecione um talento');
@@ -256,6 +315,24 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     // Get existing features and add the selected feat
     const existingFeatures = (character.features as any[]) || [];
     let updatedFeatures = [...existingFeatures];
+
+    // Add subclass features for this level
+    if (showSubclassSelection && selectedSubclass) {
+      const chosenSubclass = availableSubclasses.find(sc => sc.id === selectedSubclass);
+      if (chosenSubclass) {
+        const levelFeatures = chosenSubclass.features.filter((f: any) => f.level === nextLevel);
+        levelFeatures.forEach((f: any) => {
+          updatedFeatures.push({
+            name: f.name,
+            source: 'Subclasse',
+            subclass_id: selectedSubclass,
+            subclass_name: chosenSubclass.name,
+            level: f.level,
+            description: f.description_markdown || f.description || '',
+          });
+        });
+      }
+    }
     
     if (grantsFeat && improvementChoice === 'feat' && selectedFeat) {
       updatedFeatures.push({ 
@@ -330,6 +407,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     setHasRolledHp(false);
     setSelectedFeat(null);
     setSelectedFeatAttribute(null);
+    setSelectedSubclass(null);
     setImprovementChoice('feat');
     setAttributePoints({});
     setPointsRemaining(2);
@@ -344,6 +422,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       setHasRolledHp(false);
       setSelectedFeat(null);
       setSelectedFeatAttribute(null);
+      setSelectedSubclass(null);
       setImprovementChoice('feat');
       setAttributePoints({});
       setPointsRemaining(2);
@@ -659,6 +738,75 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
                   </div>
                 )}
 
+                {/* Subclass Selection */}
+                {showSubclassSelection && availableSubclasses.length > 0 && (
+                  <div className="glass rounded-xl p-4">
+                    <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-primary" />
+                      Escolha de Subclasse — Nível {nextLevel}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      No nível {subclassLevel}, você deve escolher uma especialização para seu {character.class}.
+                    </p>
+                    <div className="space-y-2">
+                      {availableSubclasses.map((subclass) => {
+                        const levelFeatures = subclass.features.filter((f: any) => f.level === nextLevel);
+                        return (
+                          <button
+                            key={subclass.id}
+                            onClick={() => setSelectedSubclass(subclass.id)}
+                            className={cn(
+                              "w-full p-3 rounded-lg border text-left transition-all",
+                              selectedSubclass === subclass.id
+                                ? subclass.isSRD
+                                  ? "border-primary bg-primary/10"
+                                  : "border-amber-500 bg-amber-500/10"
+                                : "bg-muted/50 hover:bg-muted border-transparent"
+                            )}
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className={cn(
+                                "w-5 h-5 rounded border-2 flex items-center justify-center shrink-0",
+                                selectedSubclass === subclass.id
+                                  ? "border-primary bg-primary"
+                                  : "border-muted-foreground"
+                              )}>
+                                {selectedSubclass === subclass.id && (
+                                  <Check className="w-3 h-3 text-primary-foreground" />
+                                )}
+                              </div>
+                              <span className="text-sm font-semibold">{subclass.name}</span>
+                              {!subclass.isSRD && (
+                                <Badge variant="outline" className="text-[10px] border-amber-500/50 text-amber-500">
+                                  Homebrew
+                                </Badge>
+                              )}
+                            </div>
+                            {subclass.description && (
+                              <p className="text-xs text-muted-foreground mt-1 ml-7 line-clamp-2">
+                                {subclass.description}
+                              </p>
+                            )}
+                            {selectedSubclass === subclass.id && levelFeatures.length > 0 && (
+                              <div className="mt-2 ml-7 space-y-1">
+                                <p className="text-xs font-medium text-primary">Habilidades no nível {nextLevel}:</p>
+                                {levelFeatures.map((f: any, idx: number) => (
+                                  <div key={idx} className="text-xs text-muted-foreground bg-background/50 rounded p-2">
+                                    <span className="font-medium text-foreground">{f.name}</span>
+                                    {f.description_markdown && (
+                                      <p className="mt-0.5 line-clamp-3">{f.description_markdown.replace(/\*\*/g, '')}</p>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Confirm */}
                 <Button
                   className="w-full"
@@ -666,6 +814,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
                   disabled={
                     hpRoll === null || 
                     updateCharacter.isPending || 
+                    (showSubclassSelection && !selectedSubclass) ||
                     (grantsFeat && improvementChoice === 'feat' && !selectedFeat) ||
                     (grantsFeat && improvementChoice === 'feat' && featRequiresAttributeChoice && !selectedFeatAttribute) ||
                     (grantsFeat && improvementChoice === 'attributes' && pointsRemaining > 0)
