@@ -738,6 +738,75 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
                   </div>
                 )}
 
+                {/* Subclass Selection */}
+                {showSubclassSelection && availableSubclasses.length > 0 && (
+                  <div className="glass rounded-xl p-4">
+                    <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-primary" />
+                      Escolha de Subclasse — Nível {nextLevel}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      No nível {subclassLevel}, você deve escolher uma especialização para seu {character.class}.
+                    </p>
+                    <div className="space-y-2">
+                      {availableSubclasses.map((subclass) => {
+                        const levelFeatures = subclass.features.filter((f: any) => f.level === nextLevel);
+                        return (
+                          <button
+                            key={subclass.id}
+                            onClick={() => setSelectedSubclass(subclass.id)}
+                            className={cn(
+                              "w-full p-3 rounded-lg border text-left transition-all",
+                              selectedSubclass === subclass.id
+                                ? subclass.isSRD
+                                  ? "border-primary bg-primary/10"
+                                  : "border-amber-500 bg-amber-500/10"
+                                : "bg-muted/50 hover:bg-muted border-transparent"
+                            )}
+                          >
+                            <div className="flex items-center gap-2 mb-1">
+                              <div className={cn(
+                                "w-5 h-5 rounded border-2 flex items-center justify-center shrink-0",
+                                selectedSubclass === subclass.id
+                                  ? "border-primary bg-primary"
+                                  : "border-muted-foreground"
+                              )}>
+                                {selectedSubclass === subclass.id && (
+                                  <Check className="w-3 h-3 text-primary-foreground" />
+                                )}
+                              </div>
+                              <span className="text-sm font-semibold">{subclass.name}</span>
+                              {!subclass.isSRD && (
+                                <Badge variant="outline" className="text-[10px] border-amber-500/50 text-amber-500">
+                                  Homebrew
+                                </Badge>
+                              )}
+                            </div>
+                            {subclass.description && (
+                              <p className="text-xs text-muted-foreground mt-1 ml-7 line-clamp-2">
+                                {subclass.description}
+                              </p>
+                            )}
+                            {selectedSubclass === subclass.id && levelFeatures.length > 0 && (
+                              <div className="mt-2 ml-7 space-y-1">
+                                <p className="text-xs font-medium text-primary">Habilidades no nível {nextLevel}:</p>
+                                {levelFeatures.map((f: any, idx: number) => (
+                                  <div key={idx} className="text-xs text-muted-foreground bg-background/50 rounded p-2">
+                                    <span className="font-medium text-foreground">{f.name}</span>
+                                    {f.description_markdown && (
+                                      <p className="mt-0.5 line-clamp-3">{f.description_markdown.replace(/\*\*/g, '')}</p>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Confirm */}
                 <Button
                   className="w-full"
@@ -745,6 +814,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
                   disabled={
                     hpRoll === null || 
                     updateCharacter.isPending || 
+                    (showSubclassSelection && !selectedSubclass) ||
                     (grantsFeat && improvementChoice === 'feat' && !selectedFeat) ||
                     (grantsFeat && improvementChoice === 'feat' && featRequiresAttributeChoice && !selectedFeatAttribute) ||
                     (grantsFeat && improvementChoice === 'attributes' && pointsRemaining > 0)
