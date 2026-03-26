@@ -141,7 +141,11 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     const homebrewSubs = homebrewSubclasses
       .filter(sub => {
         const subData = sub.data as any;
-        return subData?.parent_class?.toLowerCase() === character.class.toLowerCase() ||
+        const parentClass = subData?.parent_class?.toLowerCase();
+        const classId = classDataForSubclass?.id?.toLowerCase();
+        const className = character.class.toLowerCase();
+        return parentClass === className ||
+               parentClass === classId ||
                subData?.parentClassId === classDataForSubclass?.id;
       })
       .map(sub => ({
