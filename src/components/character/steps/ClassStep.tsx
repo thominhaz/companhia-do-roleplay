@@ -39,7 +39,6 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
   const isSubclassMandatory = LEVEL_1_SUBCLASS_CLASSES.has(data.class);
   const [showSubclasses, setShowSubclasses] = useState(false);
   
-  const selectedClass = CLASSES.find(c => c.id === data.class);
   const selectedHomebrewClass = homebrewClasses.find(c => c.id === data.class);
   
   // Get SRD subclasses from class JSON
