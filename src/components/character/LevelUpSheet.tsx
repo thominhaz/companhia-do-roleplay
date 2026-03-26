@@ -242,6 +242,42 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       subclass_name: subclassName || srdSubclass?.name || '',
     }));
   }, [showSubclassSelection, hasExistingSubclass, characterFeatures, character.class, nextLevel, homebrewSubclasses]);
+
+  // Get bonus proficiencies from subclass for this level
+  const subclassBonusProficiencies = useMemo(() => {
+    // Check if the selected or existing subclass has bonus proficiencies for this level
+    let subclassData: any = null;
+
+    if (showSubclassSelection && selectedSubclass) {
+      // Check from newly selected subclass
+      const hwSub = homebrewSubclasses.find(s => s.id === selectedSubclass);
+      if (hwSub) {
+        subclassData = hwSub.data as any;
+      }
+      // SRD subclasses don't have bonus_proficiencies in data
+    } else if (hasExistingSubclass) {
+      const subclassFeature = characterFeatures.find(f => f.source === 'Subclasse');
+      if (subclassFeature?.subclass_id) {
+        const hwSub = homebrewSubclasses.find(s => s.id === subclassFeature.subclass_id);
+        if (hwSub) {
+          subclassData = hwSub.data as any;
+        }
+      }
+    }
+
+    if (!subclassData?.bonus_proficiencies) return null;
+    const bp = (subclassData.bonus_proficiencies as any[]).find((bp: any) => bp.level === nextLevel);
+    if (!bp || !bp.from?.length || !bp.choose) return null;
+
+    // Filter out skills the character already has
+    const existingSkills = (character.skills as any[]) || [];
+    const existingSkillNames = existingSkills
+      .filter((s: any) => s.proficient)
+      .map((s: any) => s.name);
+    const availableSkills = (bp.from as string[]).filter(s => !existingSkillNames.includes(s));
+
+    return { choose: bp.choose, from: availableSkills };
+  }, [showSubclassSelection, selectedSubclass, hasExistingSubclass, characterFeatures, homebrewSubclasses, nextLevel, character.skills]);
   
   // Filter feats by search
   const filteredFeats = useMemo(() => {
