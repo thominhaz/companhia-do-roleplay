@@ -235,8 +235,7 @@ export function SpellsManagementSheet({ character, open, onOpenChange }: SpellsM
       // Check level filter
       if (compendiumLevelFilter !== null && spell.level !== compendiumLevelFilter) return false;
 
-      // Check if spell level is accessible (0 = cantrips always allowed, or spell level <= maxSpellLevel)
-      if (spell.level > 0 && spell.level > maxSpellLevel) return false;
+      // Note: No level restriction - subclasses and homebrew content may grant spells beyond normal slots
 
       // Check class filter
       if (compendiumClassFilter !== null) {
