@@ -180,6 +180,13 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     
     if (!data.race) items.push({ step: 0, label: 'Raça' });
     if (!data.class) items.push({ step: 1, label: 'Classe' });
+    
+    // Classes that require subclass at level 1
+    const level1SubclassClasses = new Set(['clerigo', 'feiticeiro', 'bruxo']);
+    if (data.class && level1SubclassClasses.has(data.class) && !data.subclass) {
+      items.push({ step: 1, label: 'Subclasse (obrigatória no nível 1)' });
+    }
+    
     if (data.selectedSkills.length < requiredSkills) {
       items.push({ step: 3, label: `Perícias (${data.selectedSkills.length}/${requiredSkills})` });
     }
