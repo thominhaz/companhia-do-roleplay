@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, ChevronDown, Layers, Swords, Shield } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -102,6 +102,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
   const [selectedFeatAttribute, setSelectedFeatAttribute] = useState<string | null>(null);
   const [selectedSubclass, setSelectedSubclass] = useState<string | null>(null);
   const [selectedFeatureOptions, setSelectedFeatureOptions] = useState<Record<string, string>>({});
+  const [selectedBonusSkills, setSelectedBonusSkills] = useState<string[]>([]);
   
   // Fetch homebrew feats and subclasses
   const { homebrewContent: homebrewFeats, isLoading: loadingFeats } = useHomebrew('feat');
