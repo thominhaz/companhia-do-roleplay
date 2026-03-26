@@ -315,6 +315,24 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     // Get existing features and add the selected feat
     const existingFeatures = (character.features as any[]) || [];
     let updatedFeatures = [...existingFeatures];
+
+    // Add subclass features for this level
+    if (showSubclassSelection && selectedSubclass) {
+      const chosenSubclass = availableSubclasses.find(sc => sc.id === selectedSubclass);
+      if (chosenSubclass) {
+        const levelFeatures = chosenSubclass.features.filter((f: any) => f.level === nextLevel);
+        levelFeatures.forEach((f: any) => {
+          updatedFeatures.push({
+            name: f.name,
+            source: 'Subclasse',
+            subclass_id: selectedSubclass,
+            subclass_name: chosenSubclass.name,
+            level: f.level,
+            description: f.description_markdown || f.description || '',
+          });
+        });
+      }
+    }
     
     if (grantsFeat && improvementChoice === 'feat' && selectedFeat) {
       updatedFeatures.push({ 
