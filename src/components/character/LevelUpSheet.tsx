@@ -407,6 +407,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     setHasRolledHp(false);
     setSelectedFeat(null);
     setSelectedFeatAttribute(null);
+    setSelectedSubclass(null);
     setImprovementChoice('feat');
     setAttributePoints({});
     setPointsRemaining(2);
