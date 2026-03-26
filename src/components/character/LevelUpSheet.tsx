@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, ChevronDown } from "lucide-react";
+import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, ChevronDown, Layers } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
