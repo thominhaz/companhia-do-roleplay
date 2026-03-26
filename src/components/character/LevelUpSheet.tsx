@@ -39,6 +39,22 @@ const CLASS_HIT_DICE: Record<string, { dice: string; avg: number }> = {
 // Feat levels (4, 8, 12, 16, 19 for most classes)
 const FEAT_LEVELS = [4, 8, 12, 16, 19];
 
+// Subclass unlock levels per class (D&D 5e SRD)
+const SUBCLASS_LEVELS: Record<string, number> = {
+  'Clérigo': 1,
+  'Feiticeiro': 1,
+  'Bruxo': 1,
+  'Druida': 2,
+  'Mago': 2,
+  'Bárbaro': 3,
+  'Bardo': 3,
+  'Guerreiro': 3,
+  'Ladino': 3,
+  'Monge': 3,
+  'Paladino': 3,
+  'Patrulheiro': 3,
+};
+
 const ATTRIBUTES = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const;
 
 // Standard feats from SRD with effects
