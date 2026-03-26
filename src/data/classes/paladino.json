@@ -64,8 +64,13 @@
       "id": "fighting_style",
       "name": "Estilo de Luta",
       "level": 2,
-      "description_markdown": "No 2º nível, você adota um estilo de luta como sua especialidade.",
-      "mechanical": {"styles": ["defense", "dueling", "great_weapon_fighting", "protection"]}
+      "description_markdown": "No 2º nível, você adota um estilo de luta como sua especialidade. Escolha uma das opções a seguir.",
+      "options": [
+        {"id": "defense", "name": "Defesa", "description_markdown": "Enquanto você estiver usando armadura, você ganha **+1** de bônus na CA.", "mechanical": {"ac_bonus": 1, "requires": "wearing_armor"}},
+        {"id": "dueling", "name": "Duelismo", "description_markdown": "Quando você estiver empunhando uma arma corpo a corpo em uma mão e nenhuma outra arma, você ganha **+2** de bônus nas jogadas de dano com essa arma.", "mechanical": {"damage_bonus": 2, "requires": "one_handed_melee_no_other_weapon"}},
+        {"id": "great_weapon_fighting", "name": "Luta com Arma Grande", "description_markdown": "Quando você rolar um **1** ou **2** num dado de dano com uma arma **duas mãos** ou **versátil**, pode rolar novamente.", "mechanical": {"reroll_damage_1_or_2": true, "requires": "two_handed_or_versatile_melee"}},
+        {"id": "protection", "name": "Proteção", "description_markdown": "Quando uma criatura a até **1,5 m** de você for atacada, você pode usar sua **reação** para impor **desvantagem** na jogada de ataque. Requer **escudo**.", "mechanical": {"reaction": true, "impose_disadvantage": true, "requires": "wielding_shield"}}
+      ]
     },
     {
       "id": "spellcasting",

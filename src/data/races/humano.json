@@ -26,5 +26,43 @@
       }
     }
   ],
-  "subraces": []
+  "subraces": [
+    {
+      "id": "variant_human",
+      "name": "Humano Variante",
+      "name_en": "Variant Human",
+      "description": "Em vez dos bônus padrão, você ganha +1 em dois atributos à sua escolha, uma perícia extra e um talento.",
+      "ability_bonuses": {},
+      "replaces_base_bonuses": true,
+      "traits": [
+        {
+          "id": "variant_ability_bonus",
+          "name": "Bônus de Atributo Variante",
+          "description_markdown": "Dois atributos diferentes à sua escolha aumentam em **1**.",
+          "mechanical": {
+            "ability_bonus_choices": {
+              "choose": 2,
+              "amount": 1
+            }
+          }
+        },
+        {
+          "id": "variant_skill",
+          "name": "Perícia Extra",
+          "description_markdown": "Você ganha proficiência em uma **perícia** à sua escolha.",
+          "mechanical": {
+            "skill_proficiency_choices": 1
+          }
+        },
+        {
+          "id": "variant_feat",
+          "name": "Talento",
+          "description_markdown": "Você ganha um **talento** à sua escolha.",
+          "mechanical": {
+            "feat_choices": 1
+          }
+        }
+      ]
+    }
+  ]
 }

@@ -75,6 +75,9 @@ export type WizardData = {
   // Spells
   selectedCantrips: string[];
   selectedSpells: string[];
+  // Variant Human
+  variantHumanFeat: string;
+  variantHumanSkill: string;
 };
 
 const initialData: WizardData = {
@@ -118,6 +121,8 @@ const initialData: WizardData = {
   alliesOrganizations: '',
   selectedCantrips: [],
   selectedSpells: [],
+  variantHumanFeat: '',
+  variantHumanSkill: '',
 };
 
 const STEPS = [
@@ -247,10 +252,15 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     );
 
     // Apply racial bonuses to attributes
+    // Check if variant human (replaces base bonuses)
+    const isVariantHuman = data.race === 'human' && data.subrace === 'variant_human';
     const finalAttributes = { ...data.attributes };
-    Object.entries(raceAbilityBonuses).forEach(([attr, bonus]) => {
-      finalAttributes[attr as Attribute] += (bonus as number) || 0;
-    });
+    
+    if (!isVariantHuman) {
+      Object.entries(raceAbilityBonuses).forEach(([attr, bonus]) => {
+        finalAttributes[attr as Attribute] += (bonus as number) || 0;
+      });
+    }
 
     // Apply ability bonus choices (for races like Half-Elf)
     if (data.abilityBonusChoices && data.abilityBonusChoices.length > 0) {
@@ -367,6 +377,11 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
     }
 
     // Combine selected skills with racial and background skill proficiencies
+    // Add variant human extra skill
+    if (isVariantHuman && data.variantHumanSkill) {
+      racialSkillProficiencies.push(data.variantHumanSkill);
+    }
+
     const allSkillProficiencies = [...new Set([...data.selectedSkills, ...racialSkillProficiencies, ...backgroundSkillProficiencies])];
 
     // Build structured proficiencies object combining class and racial proficiencies
@@ -394,6 +409,17 @@ export function CharacterWizard({ onClose }: CharacterWizardProps) {
         description: f.description_markdown || '',
         mechanical: f.mechanical || {},
       }));
+
+    // Add variant human feat
+    if (isVariantHuman && data.variantHumanFeat) {
+      level1Features.push({
+        id: `variant-feat-${data.variantHumanFeat.toLowerCase().replace(/\s+/g, '-')}`,
+        name: data.variantHumanFeat,
+        level: 1,
+        description: '',
+        mechanical: {},
+      });
+    }
 
     // Merge subclass features (SRD or homebrew)
     if (data.subclass) {

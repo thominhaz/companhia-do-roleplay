@@ -1,9 +1,22 @@
-import { RACES, getAttributeAbbr } from '@/data/srd';
+import { RACES, getAttributeAbbr, getAttributeName, ALL_SKILLS } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
 import { Check, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHomebrew } from '@/hooks/useHomebrew';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+
+const VARIANT_HUMAN_FEATS = [
+  "Alerta", "Atleta", "Ator", "Investidor", "Especialista em Besta", "Duelista Defensivo",
+  "Combatente com Duas Armas", "Explorador de Masmorras", "Durão", "Lutador",
+  "Mestre em Armas Grandes", "Curandeiro", "Armadura Pesada", "Líder Inspirador",
+  "Sortudo", "Matador de Magos", "Mobilidade", "Observador", "Resiliente",
+  "Sentinela", "Atirador Aguçado", "Mestre dos Escudos", "Habilidoso", "Furtivo",
+  "Atirador Mágico", "Brigão de Taverna", "Robusto", "Conjurador de Guerra",
+];
+
+const ALL_ATTRIBUTES = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const;
 
 interface RaceStepProps {
   data: WizardData;
@@ -266,7 +279,7 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
               <li key={trait.id || idx} className="text-sm">
                 <span className="font-medium text-foreground">{trait.name}:</span>{' '}
                 <span className="text-muted-foreground">
-                  {(trait.description_markdown || trait.description || '').slice(0, 150)}
+              {(trait.description_markdown || trait.description || '').slice(0, 150)}
                   {(trait.description_markdown || trait.description || '').length > 150 && '...'}
                 </span>
               </li>
@@ -276,6 +289,76 @@ export function RaceStep({ data, updateData }: RaceStepProps) {
             <p className="text-xs text-muted-foreground">
               <strong>Idiomas:</strong> {selectedRaceData.languages.join(', ')}
             </p>
+          </div>
+        </div>
+      )}
+
+      {/* Variant Human Selections */}
+      {data.race === 'human' && data.subrace === 'variant_human' && (
+        <div className="mt-6 p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-4">
+          <h3 className="font-semibold text-amber-400">Opções do Humano Variante</h3>
+          
+          {/* Attribute Choices (+1 to two) */}
+          <div className="space-y-2">
+            <Label className="text-sm">+1 em dois atributos à sua escolha</Label>
+            <div className="grid grid-cols-3 gap-2">
+              {ALL_ATTRIBUTES.map(attr => {
+                const isSelected = data.abilityBonusChoices.includes(attr);
+                return (
+                  <button
+                    key={attr}
+                    onClick={() => {
+                      const current = data.abilityBonusChoices;
+                      if (isSelected) {
+                        updateData({ abilityBonusChoices: current.filter(a => a !== attr) });
+                      } else if (current.length < 2) {
+                        updateData({ abilityBonusChoices: [...current, attr] });
+                      }
+                    }}
+                    className={cn(
+                      "p-2 rounded-lg border text-xs font-medium transition-all",
+                      isSelected
+                        ? "border-primary bg-primary/20 text-primary"
+                        : "border-border bg-card hover:border-primary/50"
+                    )}
+                  >
+                    {isSelected && <Check className="w-3 h-3 inline mr-1" />}
+                    +1 {getAttributeName(attr)}
+                  </button>
+                );
+              })}
+            </div>
+            <p className="text-xs text-muted-foreground">{data.abilityBonusChoices.length}/2 selecionados</p>
+          </div>
+
+          {/* Extra Skill */}
+          <div className="space-y-1">
+            <Label className="text-sm">Perícia extra</Label>
+            <Select value={data.variantHumanSkill} onValueChange={(v) => updateData({ variantHumanSkill: v })}>
+              <SelectTrigger className="bg-background/50">
+                <SelectValue placeholder="Selecione uma perícia" />
+              </SelectTrigger>
+              <SelectContent>
+                {ALL_SKILLS.map(skill => (
+                  <SelectItem key={skill.id} value={skill.id}>{skill.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Feat Selection */}
+          <div className="space-y-1">
+            <Label className="text-sm">Talento gratuito</Label>
+            <Select value={data.variantHumanFeat} onValueChange={(v) => updateData({ variantHumanFeat: v })}>
+              <SelectTrigger className="bg-background/50">
+                <SelectValue placeholder="Selecione um talento" />
+              </SelectTrigger>
+              <SelectContent>
+                {VARIANT_HUMAN_FEATS.map(feat => (
+                  <SelectItem key={feat} value={feat}>{feat}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
       )}

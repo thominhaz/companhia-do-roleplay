@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect } from "react";
-import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, ChevronDown, Layers } from "lucide-react";
+import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, ChevronDown, Layers, Swords, Shield } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -101,6 +101,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
   const [pointsRemaining, setPointsRemaining] = useState(2);
   const [selectedFeatAttribute, setSelectedFeatAttribute] = useState<string | null>(null);
   const [selectedSubclass, setSelectedSubclass] = useState<string | null>(null);
+  const [selectedFeatureOptions, setSelectedFeatureOptions] = useState<Record<string, string>>({});
   
   // Fetch homebrew feats and subclasses
   const { homebrewContent: homebrewFeats, isLoading: loadingFeats } = useHomebrew('feat');
@@ -158,6 +159,88 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     
     return [...srdSubs, ...homebrewSubs];
   }, [classDataForSubclass, homebrewSubclasses, character.class]);
+
+  // Get class features for the next level (auto-granted + features with options)
+  const classLevelFeatures = useMemo(() => {
+    const classInfo = CLASSES.find(c => c.name === character.class) as any;
+    if (!classInfo) return { autoFeatures: [] as any[], optionFeatures: [] as any[] };
+    
+    const levelData = (classInfo.levels || []).find((l: any) => l.level === nextLevel);
+    if (!levelData) return { autoFeatures: [] as any[], optionFeatures: [] as any[] };
+    
+    const featureIds: string[] = levelData.features || [];
+    const allFeatureDefs = classInfo.features || [];
+    
+    // Known subclass marker IDs that should not be auto-added
+    const subclassMarkers = new Set([
+      'martial_archetype', 'primal_path', 'arcane_tradition', 'bard_college',
+      'divine_domain', 'druid_circle', 'monastic_tradition', 'sacred_oath',
+      'ranger_archetype', 'roguish_archetype', 'sorcerous_origin', 'otherworldly_patron',
+    ]);
+    
+    const autoFeatures: any[] = [];
+    const optionFeatures: any[] = [];
+    
+    featureIds.forEach((fId: string) => {
+      if (fId === 'ability_score_improvement') return;
+      if (subclassMarkers.has(fId)) return;
+      // Skip subclass feature markers (e.g., martial_archetype_feature)
+      if (fId.endsWith('_feature') && Array.from(subclassMarkers).some(m => fId.startsWith(m.replace(/_/g, '_')))) return;
+      // More general: skip any ID ending in _feature that references a subclass marker prefix
+      const isSubclassFeatureMarker = Array.from(subclassMarkers).some(marker => {
+        const prefix = marker.replace(/^(.*?)$/, '$1');
+        return fId === `${prefix}_feature`;
+      });
+      if (isSubclassFeatureMarker) return;
+      
+      const featureDef = allFeatureDefs.find((f: any) => f.id === fId);
+      if (!featureDef) return;
+      
+      if (featureDef.options && Array.isArray(featureDef.options) && featureDef.options.length > 0) {
+        optionFeatures.push(featureDef);
+      } else {
+        autoFeatures.push(featureDef);
+      }
+    });
+    
+    return { autoFeatures, optionFeatures };
+  }, [character.class, nextLevel]);
+
+  // Get higher-level subclass features (when character already has a subclass)
+  const higherLevelSubclassFeatures = useMemo(() => {
+    if (showSubclassSelection) return []; // Don't add during initial subclass selection
+    if (!hasExistingSubclass) return [];
+    
+    const subclassFeature = characterFeatures.find(f => f.source === 'Subclasse');
+    if (!subclassFeature?.subclass_id) return [];
+    
+    const subclassId = subclassFeature.subclass_id;
+    const subclassName = subclassFeature.subclass_name || '';
+    
+    // Check SRD subclasses
+    const classInfo = CLASSES.find(c => c.name === character.class) as any;
+    if (!classInfo) return [];
+    
+    const srdSubclass = (classInfo.subclasses || []).find((sc: any) => sc.id === subclassId);
+    let features: any[] = [];
+    
+    if (srdSubclass) {
+      features = (srdSubclass.features || []).filter((f: any) => f.level === nextLevel);
+    } else {
+      // Check homebrew subclasses
+      const hwSub = homebrewSubclasses.find(s => s.id === subclassId);
+      if (hwSub) {
+        const subData = hwSub.data as any;
+        features = (subData?.features || []).filter((f: any) => f.level === nextLevel);
+      }
+    }
+    
+    return features.map((f: any) => ({
+      ...f,
+      subclass_id: subclassId,
+      subclass_name: subclassName || srdSubclass?.name || '',
+    }));
+  }, [showSubclassSelection, hasExistingSubclass, characterFeatures, character.class, nextLevel, homebrewSubclasses]);
   
   // Filter feats by search
   const filteredFeats = useMemo(() => {
@@ -298,6 +381,15 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       return;
     }
 
+    // Validate features with options (e.g., fighting style)
+    const unselectedOptions = classLevelFeatures.optionFeatures.filter(
+      f => !selectedFeatureOptions[f.id]
+    );
+    if (unselectedOptions.length > 0) {
+      toast.error(`Selecione uma opção para: ${unselectedOptions.map(f => f.name).join(', ')}`);
+      return;
+    }
+
     if (grantsFeat) {
       if (improvementChoice === 'feat' && !selectedFeat) {
         toast.error('Selecione um talento');
@@ -337,6 +429,50 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
         });
       }
     }
+
+    // Auto-add class features for this level
+    classLevelFeatures.autoFeatures.forEach((f: any) => {
+      updatedFeatures.push({
+        id: f.id,
+        name: f.name,
+        source: character.class,
+        level: nextLevel,
+        description: f.description_markdown || '',
+        mechanical: f.mechanical || {},
+      });
+    });
+
+    // Add features with selected options (e.g., fighting style)
+    classLevelFeatures.optionFeatures.forEach((f: any) => {
+      const selectedOptionId = selectedFeatureOptions[f.id];
+      if (selectedOptionId) {
+        const selectedOption = f.options.find((o: any) => o.id === selectedOptionId);
+        if (selectedOption) {
+          updatedFeatures.push({
+            id: f.id,
+            name: `${f.name}: ${selectedOption.name}`,
+            source: character.class,
+            level: nextLevel,
+            description: selectedOption.description_markdown || '',
+            mechanical: selectedOption.mechanical || {},
+            selected_option: selectedOptionId,
+          });
+        }
+      }
+    });
+
+    // Add higher-level subclass features
+    higherLevelSubclassFeatures.forEach((f: any) => {
+      updatedFeatures.push({
+        name: f.name,
+        source: 'Subclasse',
+        subclass_id: f.subclass_id,
+        subclass_name: f.subclass_name,
+        level: nextLevel,
+        description: f.description_markdown || f.description || '',
+        mechanical: f.mechanical || {},
+      });
+    });
     
     if (grantsFeat && improvementChoice === 'feat' && selectedFeat) {
       updatedFeatures.push({ 
@@ -430,6 +566,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       setImprovementChoice('feat');
       setAttributePoints({});
       setPointsRemaining(2);
+      setSelectedFeatureOptions({});
     }
     onOpenChange(newOpen);
   };
@@ -544,6 +681,105 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
                     )}
                   </div>
                 </div>
+
+                {/* Class Features for this Level */}
+                {(classLevelFeatures.autoFeatures.length > 0 || classLevelFeatures.optionFeatures.length > 0 || higherLevelSubclassFeatures.length > 0) && (
+                  <div className="glass rounded-xl p-4">
+                    <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                      <Swords className="w-4 h-4 text-primary" />
+                      Novas Habilidades — Nível {nextLevel}
+                    </h3>
+                    
+                    <div className="space-y-3">
+                      {/* Auto-granted features */}
+                      {classLevelFeatures.autoFeatures.map((f: any) => (
+                        <div key={f.id} className="bg-primary/10 rounded-lg p-3 border border-primary/20">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Check className="w-4 h-4 text-green-500" />
+                            <span className="text-sm font-semibold">{f.name}</span>
+                            <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                              Auto
+                            </Badge>
+                          </div>
+                          {f.description_markdown && (
+                            <p className="text-xs text-muted-foreground ml-6 line-clamp-3">
+                              {f.description_markdown.replace(/\*\*/g, '')}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+
+                      {/* Higher-level subclass features */}
+                      {higherLevelSubclassFeatures.map((f: any, idx: number) => (
+                        <div key={`sub-${idx}`} className="bg-amber-500/10 rounded-lg p-3 border border-amber-500/20">
+                          <div className="flex items-center gap-2 mb-1">
+                            <Check className="w-4 h-4 text-amber-500" />
+                            <span className="text-sm font-semibold">{f.name}</span>
+                            <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-amber-500/50 text-amber-500">
+                              {f.subclass_name || 'Subclasse'}
+                            </Badge>
+                          </div>
+                          {(f.description_markdown || f.description) && (
+                            <p className="text-xs text-muted-foreground ml-6 line-clamp-3">
+                              {(f.description_markdown || f.description || '').replace(/\*\*/g, '')}
+                            </p>
+                          )}
+                        </div>
+                      ))}
+
+                      {/* Features with options (e.g., Fighting Style) */}
+                      {classLevelFeatures.optionFeatures.map((f: any) => (
+                        <div key={f.id} className="space-y-2">
+                          <div className="flex items-center gap-2">
+                            <Shield className="w-4 h-4 text-primary" />
+                            <span className="text-sm font-semibold">{f.name}</span>
+                            <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-primary/50 text-primary">
+                              Escolha
+                            </Badge>
+                          </div>
+                          {f.description_markdown && (
+                            <p className="text-xs text-muted-foreground ml-6">
+                              {f.description_markdown.replace(/\*\*/g, '')}
+                            </p>
+                          )}
+                          <div className="space-y-2 ml-2">
+                            {(f.options || []).map((option: any) => (
+                              <button
+                                key={option.id}
+                                onClick={() => setSelectedFeatureOptions(prev => ({ ...prev, [f.id]: option.id }))}
+                                className={cn(
+                                  "w-full p-3 rounded-lg border text-left transition-all",
+                                  selectedFeatureOptions[f.id] === option.id
+                                    ? "border-primary bg-primary/10"
+                                    : "bg-muted/50 hover:bg-muted border-transparent"
+                                )}
+                              >
+                                <div className="flex items-center gap-2">
+                                  <div className={cn(
+                                    "w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0",
+                                    selectedFeatureOptions[f.id] === option.id
+                                      ? "border-primary bg-primary"
+                                      : "border-muted-foreground"
+                                  )}>
+                                    {selectedFeatureOptions[f.id] === option.id && (
+                                      <Check className="w-2.5 h-2.5 text-primary-foreground" />
+                                    )}
+                                  </div>
+                                  <span className="text-sm font-medium">{option.name}</span>
+                                </div>
+                                {option.description_markdown && (
+                                  <p className="text-xs text-muted-foreground mt-1 ml-6">
+                                    {option.description_markdown.replace(/\*\*/g, '')}
+                                  </p>
+                                )}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
                 {/* Feat / Ability Score Improvement - Only show if level grants one */}
                 {grantsFeat && (
@@ -821,7 +1057,8 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
                     (showSubclassSelection && !selectedSubclass) ||
                     (grantsFeat && improvementChoice === 'feat' && !selectedFeat) ||
                     (grantsFeat && improvementChoice === 'feat' && featRequiresAttributeChoice && !selectedFeatAttribute) ||
-                    (grantsFeat && improvementChoice === 'attributes' && pointsRemaining > 0)
+                    (grantsFeat && improvementChoice === 'attributes' && pointsRemaining > 0) ||
+                    classLevelFeatures.optionFeatures.some(f => !selectedFeatureOptions[f.id])
                   }
                   onClick={handleLevelUp}
                 >

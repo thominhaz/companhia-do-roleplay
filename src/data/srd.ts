@@ -116,7 +116,7 @@ export const RACES: Race[] = [
   anaoData as Race,
   elfoData as Race,
   halflingData as Race,
-  humanoData as Race,
+  humanoData as unknown as Race,
   draconatoData as Race,
   gnomoData as Race,
   meioElfoData as Race,
