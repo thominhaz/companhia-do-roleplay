@@ -569,6 +569,19 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     const conModDiff = newConMod - conMod;
     const retroactiveHpFromCon = conModDiff * currentLevel;
 
+    // Apply bonus proficiency skills from subclass
+    let updatedSkills = [...((character.skills as any[]) || [])];
+    if (subclassBonusProficiencies && selectedBonusSkills.length > 0) {
+      selectedBonusSkills.forEach(skillName => {
+        const existingIdx = updatedSkills.findIndex((s: any) => s.name === skillName);
+        if (existingIdx >= 0) {
+          updatedSkills[existingIdx] = { ...updatedSkills[existingIdx], proficient: true };
+        } else {
+          updatedSkills.push({ name: skillName, proficient: true, bonus: 0 });
+        }
+      });
+    }
+
     await updateCharacter.mutateAsync({
       id: character.id,
       level: nextLevel,
@@ -577,6 +590,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       proficiency_bonus: newProficiencyBonus,
       features: updatedFeatures,
       attributes: newAttributes,
+      skills: updatedSkills,
       initiative: Math.floor((newAttributes.dexterity - 10) / 2),
       hit_dice: {
         ...(character.hit_dice as any),
@@ -594,6 +608,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     setImprovementChoice('feat');
     setAttributePoints({});
     setPointsRemaining(2);
+    setSelectedBonusSkills([]);
     toast.success(`Subiu para o nível ${nextLevel}!`);
     onOpenChange(false);
   };
