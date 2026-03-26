@@ -306,25 +306,22 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
 
           {/* Subclass Selection */}
           {availableSubclasses.length > 0 && (
-            <Collapsible open={showSubclasses} onOpenChange={setShowSubclasses}>
-              <CollapsibleTrigger className="w-full">
-                <div className="flex items-center justify-between p-3 rounded-lg bg-primary/10 border border-primary/30 mt-4">
-                  <div className="flex items-center gap-2">
-                    <Layers className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-medium">
-                      Subclasses Disponíveis ({availableSubclasses.length})
-                    </span>
-                  </div>
-                  {showSubclasses ? (
-                    <ChevronUp className="w-4 h-4 text-primary" />
-                  ) : (
-                    <ChevronDown className="w-4 h-4 text-primary" />
+            isSubclassMandatory ? (
+              // Mandatory subclass selection (level 1 classes)
+              <div className="mt-4 space-y-2">
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                  <Layers className="w-4 h-4 text-amber-500" />
+                  <span className="text-sm font-medium">
+                    Subclasse Obrigatória — Nível 1
+                  </span>
+                  {!data.subclass && (
+                    <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-destructive text-destructive">
+                      Obrigatório
+                    </Badge>
                   )}
                 </div>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="pt-3 space-y-2">
                 <p className="text-xs text-muted-foreground mb-2">
-                  Subclasses são desbloqueadas conforme o nível da classe. Você pode pré-selecionar uma agora.
+                  {selectedClass?.name || 'Esta classe'} escolhe sua subclasse já no 1º nível. Selecione uma abaixo.
                 </p>
                 {availableSubclasses.map((subclass) => (
                   <button
