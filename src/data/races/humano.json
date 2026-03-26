@@ -30,6 +30,7 @@
     {
       "id": "variant_human",
       "name": "Humano Variante",
+      "name_en": "Variant Human",
       "description": "Em vez dos bônus padrão, você ganha +1 em dois atributos à sua escolha, uma perícia extra e um talento.",
       "ability_bonuses": {},
       "replaces_base_bonuses": true,
