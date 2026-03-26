@@ -100,9 +100,11 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
   const [attributePoints, setAttributePoints] = useState<Record<string, number>>({});
   const [pointsRemaining, setPointsRemaining] = useState(2);
   const [selectedFeatAttribute, setSelectedFeatAttribute] = useState<string | null>(null);
+  const [selectedSubclass, setSelectedSubclass] = useState<string | null>(null);
   
-  // Fetch homebrew feats
+  // Fetch homebrew feats and subclasses
   const { homebrewContent: homebrewFeats, isLoading: loadingFeats } = useHomebrew('feat');
+  const { homebrewContent: homebrewSubclasses } = useHomebrew('subclass');
 
   const levels = advancementData.character_advancement.levels;
   const currentLevel = character.level;
@@ -111,11 +113,47 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
   const nextLevelData = levels.find(l => l.level === nextLevel);
 
   const xpForNext = nextLevelData?.xp_required || 0;
-  // Allow level up if XP is enough OR if using milestone (controlled externally)
   const canLevelUp = (character.experience >= xpForNext || currentLevel < 20) && currentLevel < 20;
   
   // Check if next level grants a feat/ability score improvement
   const grantsFeat = FEAT_LEVELS.includes(nextLevel);
+
+  // Check if next level unlocks subclass selection
+  const subclassLevel = SUBCLASS_LEVELS[character.class] || 3;
+  const classDataForSubclass = CLASSES.find(c => c.name === character.class);
+  
+  const characterFeatures = (character.features as any[]) || [];
+  const hasExistingSubclass = useMemo(() => {
+    return characterFeatures.some(f => f.source === 'Subclasse');
+  }, [characterFeatures]);
+
+  const showSubclassSelection = nextLevel === subclassLevel && !hasExistingSubclass;
+
+  const availableSubclasses = useMemo(() => {
+    const srdSubs = (classDataForSubclass?.subclasses as any[] || []).map((sc: any) => ({
+      id: sc.id,
+      name: sc.name,
+      description: sc.description || '',
+      features: sc.features || [],
+      isSRD: true,
+    }));
+    
+    const homebrewSubs = homebrewSubclasses
+      .filter(sub => {
+        const subData = sub.data as any;
+        return subData?.parent_class?.toLowerCase() === character.class.toLowerCase() ||
+               subData?.parentClassId === classDataForSubclass?.id;
+      })
+      .map(sub => ({
+        id: sub.id,
+        name: sub.name,
+        description: sub.description || '',
+        features: (sub.data as any)?.features || [],
+        isSRD: false,
+      }));
+    
+    return [...srdSubs, ...homebrewSubs];
+  }, [classDataForSubclass, homebrewSubclasses, character.class]);
   
   // Filter feats by search
   const filteredFeats = useMemo(() => {
