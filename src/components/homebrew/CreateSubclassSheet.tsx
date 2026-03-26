@@ -9,7 +9,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useHomebrew } from "@/hooks/useHomebrew";
 import { HomebrewContent } from "@/types";
 import { Loader2, Plus, Trash2 } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { CLASSES } from "@/data/srd";
+import periciasData from "@/data/rules/pericias.json";
 
 interface CreateSubclassSheetProps {
   open: boolean;
@@ -23,13 +25,22 @@ interface SubclassFeature {
   description: string;
 }
 
+interface BonusProficiency {
+  level: number;
+  choose: number;
+  from: string[];
+}
+
+const ALL_SKILLS = periciasData.skills.map(s => s.name);
+
 const defaultFormState = {
   icon: '🌟',
   name: '',
   parentClass: '',
   subclassLevel: 3,
   features: [] as SubclassFeature[],
-  description: ''
+  description: '',
+  bonusProficiencies: [] as BonusProficiency[],
 };
 
 export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: CreateSubclassSheetProps) {
@@ -49,7 +60,8 @@ export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: Cre
           parentClass: data.parent_class || '',
           subclassLevel: data.subclass_level || 3,
           features: data.features || [],
-          description: editingSubclass.description || ''
+          description: editingSubclass.description || '',
+          bonusProficiencies: data.bonus_proficiencies || [],
         });
       } else {
         setFormData(defaultFormState);
@@ -63,7 +75,8 @@ export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: Cre
     const subclassData = {
       parent_class: formData.parentClass,
       subclass_level: formData.subclassLevel,
-      features: formData.features
+      features: formData.features,
+      bonus_proficiencies: formData.bonusProficiencies.filter(bp => bp.from.length > 0 && bp.choose > 0),
     };
 
     if (isEditing && editingSubclass) {
@@ -271,6 +284,109 @@ export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: Cre
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* Bonus Proficiencies */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label>Perícias Bônus</Label>
+                <Button type="button" variant="outline" size="sm" onClick={() => {
+                  const levels = getSubclassLevels();
+                  const usedLevels = formData.bonusProficiencies.map(bp => bp.level);
+                  const nextLevel = levels.find(l => !usedLevels.includes(l)) || levels[0] || 3;
+                  setFormData(prev => ({
+                    ...prev,
+                    bonusProficiencies: [...prev.bonusProficiencies, { level: nextLevel, choose: 1, from: [] }]
+                  }));
+                }}>
+                  <Plus className="w-4 h-4 mr-1" />
+                  Adicionar
+                </Button>
+              </div>
+              {formData.bonusProficiencies.length === 0 && (
+                <p className="text-sm text-muted-foreground text-center py-3 bg-muted/30 rounded-lg">
+                  Adicione perícias bônus que a subclasse concede (ex: Cavaleiro ganha 1 perícia extra no nível 3)
+                </p>
+              )}
+              {formData.bonusProficiencies.map((bp, bpIdx) => (
+                <div key={bpIdx} className="p-3 bg-muted/30 rounded-lg space-y-2">
+                  <div className="flex gap-2 items-center">
+                    <Select
+                      value={bp.level.toString()}
+                      onValueChange={(v) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          bonusProficiencies: prev.bonusProficiencies.map((b, i) => i === bpIdx ? { ...b, level: parseInt(v) } : b)
+                        }));
+                      }}
+                    >
+                      <SelectTrigger className="w-28">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 20 }, (_, i) => i + 1).map(level => (
+                          <SelectItem key={level} value={level.toString()}>Nv.{level}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <span className="text-xs text-muted-foreground">Escolher</span>
+                    <Input
+                      type="number"
+                      min={1}
+                      max={5}
+                      value={bp.choose}
+                      onChange={(e) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          bonusProficiencies: prev.bonusProficiencies.map((b, i) => i === bpIdx ? { ...b, choose: parseInt(e.target.value) || 1 } : b)
+                        }));
+                      }}
+                      className="w-16"
+                    />
+                    <span className="text-xs text-muted-foreground">de:</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setFormData(prev => ({
+                          ...prev,
+                          bonusProficiencies: prev.bonusProficiencies.filter((_, i) => i !== bpIdx)
+                        }));
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4 text-destructive" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {ALL_SKILLS.map(skill => {
+                      const isSelected = bp.from.includes(skill);
+                      return (
+                        <label key={skill} className="flex items-center gap-1.5 text-xs cursor-pointer">
+                          <Checkbox
+                            checked={isSelected}
+                            onCheckedChange={(checked) => {
+                              setFormData(prev => ({
+                                ...prev,
+                                bonusProficiencies: prev.bonusProficiencies.map((b, i) => {
+                                  if (i !== bpIdx) return b;
+                                  return {
+                                    ...b,
+                                    from: checked
+                                      ? [...b.from, skill]
+                                      : b.from.filter(s => s !== skill)
+                                  };
+                                })
+                              }));
+                            }}
+                          />
+                          {skill}
+                        </label>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Description */}

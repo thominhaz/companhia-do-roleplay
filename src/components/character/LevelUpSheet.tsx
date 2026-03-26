@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, ChevronDown, Layers, Swords, Shield } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
@@ -102,6 +102,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
   const [selectedFeatAttribute, setSelectedFeatAttribute] = useState<string | null>(null);
   const [selectedSubclass, setSelectedSubclass] = useState<string | null>(null);
   const [selectedFeatureOptions, setSelectedFeatureOptions] = useState<Record<string, string>>({});
+  const [selectedBonusSkills, setSelectedBonusSkills] = useState<string[]>([]);
   
   // Fetch homebrew feats and subclasses
   const { homebrewContent: homebrewFeats, isLoading: loadingFeats } = useHomebrew('feat');
@@ -241,6 +242,42 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       subclass_name: subclassName || srdSubclass?.name || '',
     }));
   }, [showSubclassSelection, hasExistingSubclass, characterFeatures, character.class, nextLevel, homebrewSubclasses]);
+
+  // Get bonus proficiencies from subclass for this level
+  const subclassBonusProficiencies = useMemo(() => {
+    // Check if the selected or existing subclass has bonus proficiencies for this level
+    let subclassData: any = null;
+
+    if (showSubclassSelection && selectedSubclass) {
+      // Check from newly selected subclass
+      const hwSub = homebrewSubclasses.find(s => s.id === selectedSubclass);
+      if (hwSub) {
+        subclassData = hwSub.data as any;
+      }
+      // SRD subclasses don't have bonus_proficiencies in data
+    } else if (hasExistingSubclass) {
+      const subclassFeature = characterFeatures.find(f => f.source === 'Subclasse');
+      if (subclassFeature?.subclass_id) {
+        const hwSub = homebrewSubclasses.find(s => s.id === subclassFeature.subclass_id);
+        if (hwSub) {
+          subclassData = hwSub.data as any;
+        }
+      }
+    }
+
+    if (!subclassData?.bonus_proficiencies) return null;
+    const bp = (subclassData.bonus_proficiencies as any[]).find((bp: any) => bp.level === nextLevel);
+    if (!bp || !bp.from?.length || !bp.choose) return null;
+
+    // Filter out skills the character already has
+    const existingSkills = (character.skills as any[]) || [];
+    const existingSkillNames = existingSkills
+      .filter((s: any) => s.proficient)
+      .map((s: any) => s.name);
+    const availableSkills = (bp.from as string[]).filter(s => !existingSkillNames.includes(s));
+
+    return { choose: bp.choose, from: availableSkills };
+  }, [showSubclassSelection, selectedSubclass, hasExistingSubclass, characterFeatures, homebrewSubclasses, nextLevel, character.skills]);
   
   // Filter feats by search
   const filteredFeats = useMemo(() => {
@@ -390,6 +427,12 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       return;
     }
 
+    // Validate bonus proficiency selections
+    if (subclassBonusProficiencies && selectedBonusSkills.length < subclassBonusProficiencies.choose) {
+      toast.error(`Selecione ${subclassBonusProficiencies.choose} perícia(s) bônus da subclasse`);
+      return;
+
+    }
     if (grantsFeat) {
       if (improvementChoice === 'feat' && !selectedFeat) {
         toast.error('Selecione um talento');
@@ -526,6 +569,19 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     const conModDiff = newConMod - conMod;
     const retroactiveHpFromCon = conModDiff * currentLevel;
 
+    // Apply bonus proficiency skills from subclass
+    let updatedSkills = [...((character.skills as any[]) || [])];
+    if (subclassBonusProficiencies && selectedBonusSkills.length > 0) {
+      selectedBonusSkills.forEach(skillName => {
+        const existingIdx = updatedSkills.findIndex((s: any) => s.name === skillName);
+        if (existingIdx >= 0) {
+          updatedSkills[existingIdx] = { ...updatedSkills[existingIdx], proficient: true };
+        } else {
+          updatedSkills.push({ name: skillName, proficient: true, bonus: 0 });
+        }
+      });
+    }
+
     await updateCharacter.mutateAsync({
       id: character.id,
       level: nextLevel,
@@ -534,6 +590,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       proficiency_bonus: newProficiencyBonus,
       features: updatedFeatures,
       attributes: newAttributes,
+      skills: updatedSkills,
       initiative: Math.floor((newAttributes.dexterity - 10) / 2),
       hit_dice: {
         ...(character.hit_dice as any),
@@ -551,6 +608,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     setImprovementChoice('feat');
     setAttributePoints({});
     setPointsRemaining(2);
+    setSelectedBonusSkills([]);
     toast.success(`Subiu para o nível ${nextLevel}!`);
     onOpenChange(false);
   };
@@ -567,6 +625,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       setAttributePoints({});
       setPointsRemaining(2);
       setSelectedFeatureOptions({});
+      setSelectedBonusSkills([]);
     }
     onOpenChange(newOpen);
   };
@@ -778,6 +837,58 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
                         </div>
                       ))}
                     </div>
+                  </div>
+                )}
+
+                {/* Bonus Proficiency Skills from Subclass */}
+                {subclassBonusProficiencies && (
+                  <div className="glass rounded-xl p-4">
+                    <h3 className="text-sm font-semibold mb-4 flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-primary" />
+                      Perícias Bônus da Subclasse
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                        Escolha {subclassBonusProficiencies.choose}
+                      </Badge>
+                    </h3>
+                    <p className="text-xs text-muted-foreground mb-3">
+                      Sua subclasse concede proficiência em {subclassBonusProficiencies.choose} perícia(s) adicionais.
+                    </p>
+                    <div className="space-y-2">
+                      {subclassBonusProficiencies.from.map(skill => {
+                        const isSelected = selectedBonusSkills.includes(skill);
+                        return (
+                          <button
+                            key={skill}
+                            onClick={() => {
+                              setSelectedBonusSkills(prev => {
+                                if (isSelected) return prev.filter(s => s !== skill);
+                                if (prev.length >= subclassBonusProficiencies.choose) return prev;
+                                return [...prev, skill];
+                              });
+                            }}
+                            className={cn(
+                              "w-full p-3 rounded-lg border text-left transition-all flex items-center gap-2",
+                              isSelected
+                                ? "border-primary bg-primary/10"
+                                : "bg-muted/50 hover:bg-muted border-transparent"
+                            )}
+                          >
+                            <div className={cn(
+                              "w-4 h-4 rounded border-2 flex items-center justify-center shrink-0",
+                              isSelected ? "border-primary bg-primary" : "border-muted-foreground"
+                            )}>
+                              {isSelected && <Check className="w-2.5 h-2.5 text-primary-foreground" />}
+                            </div>
+                            <span className="text-sm">{skill}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                    {selectedBonusSkills.length > 0 && (
+                      <p className="text-xs text-muted-foreground mt-2">
+                        Selecionadas: {selectedBonusSkills.length}/{subclassBonusProficiencies.choose}
+                      </p>
+                    )}
                   </div>
                 )}
 
