@@ -289,6 +289,11 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       return;
     }
     
+    if (showSubclassSelection && !selectedSubclass) {
+      toast.error('Selecione uma subclasse');
+      return;
+    }
+
     if (grantsFeat) {
       if (improvementChoice === 'feat' && !selectedFeat) {
         toast.error('Selecione um talento');
