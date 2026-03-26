@@ -60,7 +60,8 @@ export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: Cre
           parentClass: data.parent_class || '',
           subclassLevel: data.subclass_level || 3,
           features: data.features || [],
-          description: editingSubclass.description || ''
+          description: editingSubclass.description || '',
+          bonusProficiencies: data.bonus_proficiencies || [],
         });
       } else {
         setFormData(defaultFormState);
@@ -74,7 +75,8 @@ export function CreateSubclassSheet({ open, onOpenChange, editingSubclass }: Cre
     const subclassData = {
       parent_class: formData.parentClass,
       subclass_level: formData.subclassLevel,
-      features: formData.features
+      features: formData.features,
+      bonus_proficiencies: formData.bonusProficiencies.filter(bp => bp.from.length > 0 && bp.choose > 0),
     };
 
     if (isEditing && editingSubclass) {
