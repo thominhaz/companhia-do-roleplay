@@ -432,6 +432,7 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       toast.error(`Selecione ${subclassBonusProficiencies.choose} perícia(s) bônus da subclasse`);
       return;
 
+    }
     if (grantsFeat) {
       if (improvementChoice === 'feat' && !selectedFeat) {
         toast.error('Selecione um talento');
