@@ -28,9 +28,15 @@ const classIcons: Record<string, typeof Sword> = {
   wizard: BookOpen,
 };
 
+// Classes that get their subclass at level 1 (mandatory at creation)
+const LEVEL_1_SUBCLASS_CLASSES = new Set(['clerigo', 'feiticeiro', 'bruxo']);
+
 export function ClassStep({ data, updateData }: ClassStepProps) {
   const { homebrewContent: homebrewClasses, isLoading: isLoadingHomebrew } = useHomebrew('class');
   const { homebrewContent: homebrewSubclasses, isLoading: isLoadingSubclasses } = useHomebrew('subclass');
+  
+  const selectedClass = CLASSES.find(c => c.id === data.class);
+  const isSubclassMandatory = LEVEL_1_SUBCLASS_CLASSES.has(data.class);
   const [showSubclasses, setShowSubclasses] = useState(false);
   
   const selectedClass = CLASSES.find(c => c.id === data.class);
