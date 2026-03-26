@@ -1,9 +1,22 @@
-import { RACES, getAttributeAbbr } from '@/data/srd';
+import { RACES, getAttributeAbbr, getAttributeName, ALL_SKILLS } from '@/data/srd';
 import { WizardData } from '../CharacterWizard';
 import { Check, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHomebrew } from '@/hooks/useHomebrew';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+
+const VARIANT_HUMAN_FEATS = [
+  "Alerta", "Atleta", "Ator", "Investidor", "Especialista em Besta", "Duelista Defensivo",
+  "Combatente com Duas Armas", "Explorador de Masmorras", "Durão", "Lutador",
+  "Mestre em Armas Grandes", "Curandeiro", "Armadura Pesada", "Líder Inspirador",
+  "Sortudo", "Matador de Magos", "Mobilidade", "Observador", "Resiliente",
+  "Sentinela", "Atirador Aguçado", "Mestre dos Escudos", "Habilidoso", "Furtivo",
+  "Atirador Mágico", "Brigão de Taverna", "Robusto", "Conjurador de Guerra",
+];
+
+const ALL_ATTRIBUTES = ['strength', 'dexterity', 'constitution', 'intelligence', 'wisdom', 'charisma'] as const;
 
 interface RaceStepProps {
   data: WizardData;
