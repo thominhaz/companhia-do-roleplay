@@ -427,6 +427,11 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
       return;
     }
 
+    // Validate bonus proficiency selections
+    if (subclassBonusProficiencies && selectedBonusSkills.length < subclassBonusProficiencies.choose) {
+      toast.error(`Selecione ${subclassBonusProficiencies.choose} perícia(s) bônus da subclasse`);
+      return;
+
     if (grantsFeat) {
       if (improvementChoice === 'feat' && !selectedFeat) {
         toast.error('Selecione um talento');
