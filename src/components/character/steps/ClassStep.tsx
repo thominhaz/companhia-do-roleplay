@@ -305,95 +305,126 @@ export function ClassStep({ data, updateData }: ClassStepProps) {
           </div>
 
           {/* Subclass Selection */}
-          {availableSubclasses.length > 0 && (
-            isSubclassMandatory ? (
-              // Mandatory subclass selection (level 1 classes)
-              <div className="mt-4 space-y-2">
-                <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
-                  <Layers className="w-4 h-4 text-amber-500" />
-                  <span className="text-sm font-medium">
-                    Subclasse Obrigatória — Nível 1
-                  </span>
-                  {!data.subclass && (
-                    <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-destructive text-destructive">
-                      Obrigatório
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground mb-2">
-                  {selectedClass?.name || 'Esta classe'} escolhe sua subclasse já no 1º nível. Selecione uma abaixo.
-                </p>
-                {availableSubclasses.map((subclass) => (
-                  <button
-                    key={subclass.id}
-                    onClick={() => updateData({ subclass: subclass.id })}
-                    className={cn(
-                      "w-full p-3 rounded-lg border text-left transition-all",
-                      data.subclass === subclass.id
-                        ? subclass.isSRD
-                          ? "border-secondary bg-secondary/10"
-                          : "border-amber-500 bg-amber-500/10"
-                        : "border-border bg-card hover:border-primary/50"
-                    )}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={cn(
-                        "w-8 h-8 rounded-lg flex items-center justify-center text-lg",
-                        data.subclass === subclass.id
-                          ? "bg-primary text-primary-foreground"
-                          : "bg-muted"
+          {availableSubclasses.length > 0 && (() => {
+            const subclassCards = availableSubclasses.map((subclass) => (
+              <button
+                key={subclass.id}
+                onClick={() => updateData({ subclass: subclass.id })}
+                className={cn(
+                  "w-full p-3 rounded-lg border text-left transition-all",
+                  data.subclass === subclass.id
+                    ? subclass.isSRD
+                      ? "border-secondary bg-secondary/10"
+                      : "border-amber-500 bg-amber-500/10"
+                    : "border-border bg-card hover:border-primary/50"
+                )}
+              >
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "w-8 h-8 rounded-lg flex items-center justify-center text-lg",
+                    data.subclass === subclass.id
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted"
+                  )}>
+                    {subclass.icon}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-sm">{subclass.name}</span>
+                      <Badge variant="outline" className={cn(
+                        "text-[9px] px-1.5 py-0",
+                        subclass.isSRD
+                          ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/30"
+                          : "bg-amber-500/10 text-amber-500 border-amber-500/30"
                       )}>
-                        {subclass.icon}
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-medium text-sm">{subclass.name}</span>
-                          <Badge variant="outline" className={cn(
-                            "text-[9px] px-1.5 py-0",
-                            subclass.isSRD
-                              ? "bg-cyan-500/10 text-cyan-400 border-cyan-500/30"
-                              : "bg-amber-500/10 text-amber-500 border-amber-500/30"
-                          )}>
-                            {subclass.isSRD ? 'SRD 5.1' : 'Homebrew'}
-                          </Badge>
-                          {data.subclass === subclass.id && (
-                            <Check className="w-4 h-4 text-primary" />
-                          )}
-                        </div>
-                        {subclass.description && (
-                          <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                            {subclass.description}
-                          </p>
-                        )}
-                      </div>
+                        {subclass.isSRD ? 'SRD 5.1' : 'Homebrew'}
+                      </Badge>
+                      {data.subclass === subclass.id && (
+                        <Check className="w-4 h-4 text-primary" />
+                      )}
                     </div>
-                  </button>
-                ))}
-                {/* Show selected subclass features */}
-                {data.subclass && (() => {
-                  const selectedSub = availableSubclasses.find(s => s.id === data.subclass);
-                  const subFeatures = selectedSub?.features || [];
-                  if (subFeatures.length === 0) return null;
-                  return (
-                    <div className="mt-3 p-3 rounded-lg bg-card border border-border space-y-2">
-                      <p className="text-sm font-medium">Habilidades: {selectedSub?.name}</p>
-                      {subFeatures.map((feature: any, idx: number) => (
-                        <div key={idx} className="text-sm text-muted-foreground">
-                          <span className="font-medium text-foreground">{feature.name}</span>
-                          {feature.level && <span className="text-xs ml-1">(Nível {feature.level})</span>}
-                          {(feature.description || feature.description_markdown) && (
-                            <p className="text-xs mt-0.5 line-clamp-2">
-                              {(feature.description_markdown || feature.description || '').replace(/\*\*/g, '').slice(0, 200)}
-                            </p>
-                          )}
-                        </div>
-                      ))}
+                    {subclass.description && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
+                        {subclass.description}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </button>
+            ));
+
+            const selectedSubFeatures = data.subclass ? (() => {
+              const selectedSub = availableSubclasses.find(s => s.id === data.subclass);
+              const subFeatures = selectedSub?.features || [];
+              if (subFeatures.length === 0) return null;
+              return (
+                <div className="mt-3 p-3 rounded-lg bg-card border border-border space-y-2">
+                  <p className="text-sm font-medium">Habilidades: {selectedSub?.name}</p>
+                  {subFeatures.map((feature: any, idx: number) => (
+                    <div key={idx} className="text-sm text-muted-foreground">
+                      <span className="font-medium text-foreground">{feature.name}</span>
+                      {feature.level && <span className="text-xs ml-1">(Nível {feature.level})</span>}
+                      {(feature.description || feature.description_markdown) && (
+                        <p className="text-xs mt-0.5 line-clamp-2">
+                          {(feature.description_markdown || feature.description || '').replace(/\*\*/g, '').slice(0, 200)}
+                        </p>
+                      )}
                     </div>
-                  );
-                })()}
-              </CollapsibleContent>
-            </Collapsible>
-          )}
+                  ))}
+                </div>
+              );
+            })() : null;
+
+            if (isSubclassMandatory) {
+              return (
+                <div className="mt-4 space-y-2">
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-500/10 border border-amber-500/30">
+                    <Layers className="w-4 h-4 text-amber-500" />
+                    <span className="text-sm font-medium">
+                      Subclasse Obrigatória — Nível 1
+                    </span>
+                    {!data.subclass && (
+                      <Badge variant="outline" className="text-[9px] px-1.5 py-0 border-destructive text-destructive">
+                        Obrigatório
+                      </Badge>
+                    )}
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-2">
+                    {selectedClass?.name || 'Esta classe'} escolhe sua subclasse já no 1º nível.
+                  </p>
+                  {subclassCards}
+                  {selectedSubFeatures}
+                </div>
+              );
+            }
+
+            return (
+              <Collapsible open={showSubclasses} onOpenChange={setShowSubclasses}>
+                <CollapsibleTrigger className="w-full">
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-primary/10 border border-primary/30 mt-4">
+                    <div className="flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-primary" />
+                      <span className="text-sm font-medium">
+                        Subclasses Disponíveis ({availableSubclasses.length})
+                      </span>
+                    </div>
+                    {showSubclasses ? (
+                      <ChevronUp className="w-4 h-4 text-primary" />
+                    ) : (
+                      <ChevronDown className="w-4 h-4 text-primary" />
+                    )}
+                  </div>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-3 space-y-2">
+                  <p className="text-xs text-muted-foreground mb-2">
+                    Subclasses são desbloqueadas conforme o nível da classe. Você pode pré-selecionar uma agora.
+                  </p>
+                  {subclassCards}
+                  {selectedSubFeatures}
+                </CollapsibleContent>
+              </Collapsible>
+            );
+          })()}
         </div>
       )}
 
