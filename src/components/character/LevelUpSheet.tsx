@@ -269,11 +269,16 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     const bp = (subclassData.bonus_proficiencies as any[]).find((bp: any) => bp.level === nextLevel);
     if (!bp || !bp.from?.length || !bp.choose) return null;
 
-    // Filter out skills the character already has
-    const existingSkills = (character.skills as any[]) || [];
-    const existingSkillNames = existingSkills
-      .filter((s: any) => s.proficient)
-      .map((s: any) => s.name);
+    // Filter out skills the character already has (skills can be object or array)
+    const rawSkills = character.skills as any;
+    let existingSkillNames: string[] = [];
+    if (Array.isArray(rawSkills)) {
+      existingSkillNames = rawSkills.filter((s: any) => s.proficient).map((s: any) => s.name);
+    } else if (rawSkills && typeof rawSkills === 'object') {
+      existingSkillNames = Object.entries(rawSkills)
+        .filter(([_, v]: [string, any]) => v?.proficient)
+        .map(([k]) => k);
+    }
     const availableSkills = (bp.from as string[]).filter(s => !existingSkillNames.includes(s));
 
     return { choose: bp.choose, from: availableSkills };
@@ -577,16 +582,30 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
     const retroactiveHpFromCon = conModDiff * currentLevel;
 
     // Apply bonus proficiency skills from subclass
-    let updatedSkills = [...((character.skills as any[]) || [])];
-    if (subclassBonusProficiencies && selectedBonusSkills.length > 0) {
-      selectedBonusSkills.forEach(skillName => {
-        const existingIdx = updatedSkills.findIndex((s: any) => s.name === skillName);
-        if (existingIdx >= 0) {
-          updatedSkills[existingIdx] = { ...updatedSkills[existingIdx], proficient: true };
-        } else {
-          updatedSkills.push({ name: skillName, proficient: true, bonus: 0 });
-        }
-      });
+    // Skills can be an object {skillId: {proficient: true}} or an array
+    const rawSkills = character.skills as any;
+    let updatedSkills: any;
+    if (Array.isArray(rawSkills)) {
+      updatedSkills = [...rawSkills];
+      if (subclassBonusProficiencies && selectedBonusSkills.length > 0) {
+        selectedBonusSkills.forEach(skillName => {
+          const existingIdx = updatedSkills.findIndex((s: any) => s.name === skillName);
+          if (existingIdx >= 0) {
+            updatedSkills[existingIdx] = { ...updatedSkills[existingIdx], proficient: true };
+          } else {
+            updatedSkills.push({ name: skillName, proficient: true, bonus: 0 });
+          }
+        });
+      }
+    } else if (rawSkills && typeof rawSkills === 'object') {
+      updatedSkills = { ...rawSkills };
+      if (subclassBonusProficiencies && selectedBonusSkills.length > 0) {
+        selectedBonusSkills.forEach(skillName => {
+          updatedSkills[skillName] = { ...(updatedSkills[skillName] || {}), proficient: true };
+        });
+      }
+    } else {
+      updatedSkills = {};
     }
 
     await updateCharacter.mutateAsync({
