@@ -1166,6 +1166,19 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
                 )}
 
                 {/* Confirm */}
+                {(() => {
+                  const disabledReasons = [];
+                  if (hpRoll === null) disabledReasons.push('hpRoll null');
+                  if (updateCharacter.isPending) disabledReasons.push('pending');
+                  if (showSubclassSelection && !selectedSubclass) disabledReasons.push('no subclass');
+                  if (grantsFeat && improvementChoice === 'feat' && !selectedFeat) disabledReasons.push('no feat');
+                  if (grantsFeat && improvementChoice === 'feat' && featRequiresAttributeChoice && !selectedFeatAttribute) disabledReasons.push('no feat attr');
+                  if (grantsFeat && improvementChoice === 'attributes' && pointsRemaining > 0) disabledReasons.push('points remaining');
+                  const blockedOptions = classLevelFeatures.optionFeatures.filter(f => !selectedFeatureOptions[f.id]);
+                  if (blockedOptions.length > 0) disabledReasons.push(`options: ${blockedOptions.map(f => f.id).join(',')}`);
+                  if (disabledReasons.length > 0) console.log('[LevelUp] Button disabled:', disabledReasons);
+                  return null;
+                })()}
                 <Button
                   className="w-full"
                   size="lg"
