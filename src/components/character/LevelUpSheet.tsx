@@ -408,6 +408,13 @@ export function LevelUpSheet({ character, open, onOpenChange }: LevelUpSheetProp
   };
 
   const handleLevelUp = async () => {
+    console.log('[LevelUp] handleLevelUp called', {
+      hpRoll, showSubclassSelection, selectedSubclass, grantsFeat, improvementChoice, selectedFeat,
+      featRequiresAttributeChoice, selectedFeatAttribute, pointsRemaining,
+      optionFeatures: classLevelFeatures.optionFeatures.map(f => f.id),
+      selectedFeatureOptions,
+      subclassBonusProficiencies, selectedBonusSkills,
+    });
     if (hpRoll === null) {
       toast.error('Escolha como calcular o HP primeiro');
       return;
