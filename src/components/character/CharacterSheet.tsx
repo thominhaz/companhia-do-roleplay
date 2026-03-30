@@ -1998,7 +1998,7 @@ export function CharacterSheet() {
                       variant="ghost" 
                       size="sm" 
                       className="h-7 text-xs text-primary"
-                      onClick={() => setShowSpells(true)}
+                      onClick={() => navigate(`/characters/${character.id}/builder`)}
                     >
                       Gerenciar
                     </Button>
