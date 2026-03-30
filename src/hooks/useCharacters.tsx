@@ -220,7 +220,7 @@ export function useUpdateCharacter() {
 
       const { data, error } = await supabase
         .from('characters')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single();
