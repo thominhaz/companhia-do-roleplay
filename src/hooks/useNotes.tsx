@@ -70,12 +70,24 @@ export function useCreateNote() {
     mutationFn: async (note: { campaign_id: string; title: string; content?: string; is_public?: boolean; parent_id?: string | null }) => {
       if (!user) throw new Error('Usuário não autenticado');
 
+      // Calculate next sort_order for siblings
+      const { data: siblings } = await supabase
+        .from('campaign_notes')
+        .select('sort_order')
+        .eq('campaign_id', note.campaign_id)
+        .is('parent_id', note.parent_id ?? null)
+        .order('sort_order', { ascending: false })
+        .limit(1);
+
+      const nextOrder = (siblings?.[0]?.sort_order ?? -1) + 1;
+
       const { data, error } = await supabase
         .from('campaign_notes')
         .insert({
           ...note,
           user_id: user.id,
           is_public: note.is_public ?? false,
+          sort_order: nextOrder,
         })
         .select()
         .single();
