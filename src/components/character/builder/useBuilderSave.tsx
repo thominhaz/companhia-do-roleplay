@@ -4,6 +4,9 @@
  * CRITICAL: When editing, only structural/builder fields are updated.
  * Gameplay state (HP atual, inventário, moedas, slots usados, condições, etc.)
  * é preservado intacto para não destruir dados de jogo.
+ * 
+ * MULTICLASS: Handles combined hit dice, multiclass class string, 
+ * combined spell slots, and multiclass proficiencies.
  */
 import { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +14,13 @@ import { useBuilderContext } from './BuilderContext';
 import { useCreateCharacter, useUpdateCharacter } from '@/hooks/useCharacters';
 import { RACES, CLASSES, BACKGROUNDS, getModifier } from '@/data/srd';
 import { toast } from 'sonner';
+import {
+  getMulticlassString,
+  getMulticlassHitDice,
+  isMulticlassed,
+  getDistinctClasses,
+  getClassLevelCount,
+} from '@/lib/multiclassUtils';
 
 export function useBuilderSave() {
   const ctx = useBuilderContext();
@@ -27,8 +37,8 @@ export function useBuilderSave() {
     if (!ctx.name.trim()) { toast.error('Digite um nome'); return; }
 
     const race = RACES.find(r => r.id === bd.race_id);
-    const cls = CLASSES.find(c => c.id === bd.class_id);
-    if (!cls) { toast.error('Classe inválida'); return; }
+    const primaryCls = CLASSES.find(c => c.id === bd.class_id);
+    if (!primaryCls) { toast.error('Classe inválida'); return; }
 
     const attrs = ctx.getComputedAttributes();
     const typedAttrs = {
@@ -43,7 +53,7 @@ export function useBuilderSave() {
     const totalHP = ctx.getComputedHP();
     const level = ctx.currentLevel;
 
-    // Proficiency bonus from advancement table
+    // Proficiency bonus from advancement table (based on TOTAL level)
     const profBonus = level >= 17 ? 6 : level >= 13 ? 5 : level >= 9 ? 4 : level >= 5 ? 3 : 2;
 
     // Build features from level choices
@@ -53,7 +63,11 @@ export function useBuilderSave() {
         features.push({ name: lc.selected_feat, source: 'Talento', level: lc.level });
       }
       if (lc.subclass_id) {
-        features.push({ name: 'Subclasse', source: 'Subclasse', subclass_id: lc.subclass_id, level: lc.level });
+        features.push({ name: 'Subclasse', source: 'Subclasse', subclass_id: lc.subclass_id, class_id: lc.class_id, level: lc.level });
+      }
+      // Multiclass proficiencies
+      if (lc.multiclass_proficiencies?.length) {
+        features.push({ name: 'Proficiências Multiclasse', source: 'Multiclasse', class_id: lc.class_id, level: lc.level, proficiencies: lc.multiclass_proficiencies });
       }
     });
 
@@ -62,28 +76,53 @@ export function useBuilderSave() {
     const skillsObj: Record<string, any> = {};
     selectedSkills.forEach(s => { skillsObj[s] = { proficient: true, bonus: 0 }; });
 
-    // Saving throws
+    // Saving throws — from PRIMARY class only (multiclass rule)
     const savingThrows: Record<string, any> = {};
-    cls.saving_throw_proficiencies.forEach(st => {
+    primaryCls.saving_throw_proficiencies.forEach(st => {
       savingThrows[st] = { proficient: true };
     });
 
     const background = BACKGROUNDS.find(b => b.id === bd.background_id);
 
+    // === MULTICLASS: Determine class string and hit dice ===
+    const multiclassed = isMulticlassed(ctx.levelChoices);
+    const classString = multiclassed
+      ? getMulticlassString(ctx.levelChoices)
+      : primaryCls.name;
+
+    // Hit dice for multiclass: grouped by type
+    const hitDiceGroups = getMulticlassHitDice(ctx.levelChoices);
+    
+    // For the DB hit_dice field, we store primary info for single-class
+    // or the first (largest) dice group for multiclass
+    const buildHitDice = () => {
+      if (!multiclassed) {
+        return { total: level, current: level, diceType: `d${primaryCls.hit_die}` };
+      }
+      // Multiclass: store groups as an array under a special key
+      return {
+        total: level,
+        current: level,
+        diceType: hitDiceGroups[0]?.diceType || `d${primaryCls.hit_die}`,
+        groups: hitDiceGroups.map(g => ({
+          diceType: g.diceType,
+          total: g.total,
+          current: g.total, // fresh on creation
+        })),
+      };
+    };
+
     try {
       if (ctx.mode === 'edit' && ctx.characterId) {
         // =====================================================
         // EDIT MODE: Only update structural/builder fields.
-        // Gameplay state is PRESERVED (current_hp, equipment,
-        // inventory, currency, spellcasting, spells, conditions,
-        // death_saves, temporary_hp, hit_dice used slots, etc.)
         // =====================================================
         const editData = {
           id: ctx.characterId,
           name: ctx.name,
           race: race?.name || bd.race_id || '',
           subrace: bd.subrace_id || null,
-          class: cls.name,
+          class: classString,
           level,
           max_hp: totalHP,
           armor_class: 10 + dexMod,
@@ -93,9 +132,6 @@ export function useBuilderSave() {
           attributes: typedAttrs,
           saving_throws: savingThrows,
           skills: skillsObj,
-          // NOTE: hit_dice.current is NOT updated here — it's gameplay state.
-          // Only total and diceType are structural. We omit hit_dice entirely
-          // in edit mode to avoid resetting spent dice. The Sheet handles current.
           background: background?.name || bd.background_id || null,
           alignment: bd.alignment || null,
           personality_traits: ctx.personalityTraits || null,
@@ -123,13 +159,12 @@ export function useBuilderSave() {
       } else {
         // =====================================================
         // CREATE MODE: Full character data including defaults
-        // for all gameplay fields.
         // =====================================================
         const createData = {
           name: ctx.name,
           race: race?.name || bd.race_id || '',
           subrace: bd.subrace_id || null,
-          class: cls.name,
+          class: classString,
           level,
           experience: 0,
           max_hp: totalHP,
@@ -142,7 +177,7 @@ export function useBuilderSave() {
           attributes: typedAttrs,
           saving_throws: savingThrows,
           skills: skillsObj,
-          hit_dice: { total: level, current: level, diceType: `d${cls.hit_die}` },
+          hit_dice: buildHitDice(),
           death_saves: { successes: 0, failures: 0 },
           equipment: [],
           inventory: [],
