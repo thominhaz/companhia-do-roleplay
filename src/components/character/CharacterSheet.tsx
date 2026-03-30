@@ -1122,7 +1122,7 @@ export function CharacterSheet() {
                         : "bg-gold hover:bg-gold/80 text-foreground font-bold animate-pulse"
                       }`}
                       size="sm"
-                      onClick={() => setShowLevelUp(true)}
+                      onClick={() => navigate(`/characters/${character.id}/builder`)}
                     >
                       <TrendingUp className="w-4 h-4 sm:mr-2" />
                       <span className="hidden sm:inline">Nível {nextLevel}</span>
