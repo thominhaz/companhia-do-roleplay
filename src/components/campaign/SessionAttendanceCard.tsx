@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   Check, X, HelpCircle, Calendar, MapPin, Clock, 
-  Users, ChevronDown, ChevronUp, Loader2 
+  Users, ChevronDown, ChevronUp, Loader2, Trash2, Ban,
+  MoreVertical
 } from "lucide-react";
 import { format, formatDistanceToNow, isFuture } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -11,11 +12,29 @@ import {
   SessionDB, 
   useSessionAttendance, 
   useUpdateAttendance, 
-  useMyAttendance 
+  useMyAttendance,
+  useDeleteSession,
+  useUpdateSession,
 } from "@/hooks/useSessions";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface SessionAttendanceCardProps {
   session: SessionDB;
