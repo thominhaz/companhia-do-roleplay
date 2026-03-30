@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacter } from '@/hooks/useCharacters';
 import { useAuth } from '@/hooks/useAuth';
 import { BuilderProvider, useBuilderContext, BUILDER_STEPS } from './BuilderContext';
+import { useBuilderWizardAdapter } from './useBuilderWizardAdapter';
 import { BuilderSidebar } from './BuilderSidebar';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
@@ -97,8 +98,7 @@ function BuilderContent() {
 }
 
 function BuilderStepContent({ step }: { step: number }) {
-  // For now, show a placeholder for each step.
-  // Fase 1B will refactor each step to use BuilderContext.
+  const { data, updateData } = useBuilderWizardAdapter();
   const stepDef = BUILDER_STEPS[step];
 
   if (!stepDef) {
@@ -114,14 +114,30 @@ function BuilderStepContent({ step }: { step: number }) {
     );
   }
 
-  return (
-    <div className="text-center py-16">
-      <h3 className="text-lg font-semibold mb-2">{stepDef.title}</h3>
-      <p className="text-sm text-muted-foreground">
-        Este step será refatorado na Fase 1B para utilizar o BuilderContext.
-      </p>
-    </div>
-  );
+  switch (stepDef.id) {
+    case 'race':
+      return <RaceStep data={data} updateData={updateData} />;
+    case 'class':
+      return <ClassStep data={data} updateData={updateData} />;
+    case 'attributes':
+      return <AttributesStep data={data} updateData={updateData} />;
+    case 'skills':
+      return <SkillsStep data={data} updateData={updateData} />;
+    case 'languages':
+      return <LanguagesStep data={data} updateData={updateData} />;
+    case 'equipment':
+      return <EquipmentStep data={data} updateData={updateData} />;
+    case 'spells':
+      return <SpellsStep data={data} updateData={updateData} />;
+    case 'background':
+      return <BackgroundStep data={data} updateData={updateData} />;
+    case 'backstory':
+      return <BackstoryStep data={data} updateData={updateData} />;
+    case 'review':
+      return <ReviewStep data={data} />;
+    default:
+      return null;
+  }
 }
 
 // ===========================
