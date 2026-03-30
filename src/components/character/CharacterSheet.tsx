@@ -2186,21 +2186,6 @@ export function CharacterSheet() {
       </div> {/* End Flex Container */}
 
       {/* Sheets */}
-      <LevelUpSheet 
-        character={character} 
-        open={showLevelUp} 
-        onOpenChange={setShowLevelUp} 
-      />
-      <EditStatsSheet 
-        character={character} 
-        open={showEditStats} 
-        onOpenChange={setShowEditStats} 
-      />
-      <SpellsManagementSheet 
-        character={character} 
-        open={showSpells} 
-        onOpenChange={setShowSpells} 
-      />
       <NotesSheet 
         character={character} 
         open={showNotes} 
