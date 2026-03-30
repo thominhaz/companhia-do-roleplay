@@ -93,7 +93,9 @@ export function useBuilderSave() {
           attributes: typedAttrs,
           saving_throws: savingThrows,
           skills: skillsObj,
-          hit_dice: { total: level, current: level, diceType: `d${cls.hit_die}` },
+          // NOTE: hit_dice.current is NOT updated here — it's gameplay state.
+          // Only total and diceType are structural. We omit hit_dice entirely
+          // in edit mode to avoid resetting spent dice. The Sheet handles current.
           background: background?.name || bd.background_id || null,
           alignment: bd.alignment || null,
           personality_traits: ctx.personalityTraits || null,
