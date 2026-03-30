@@ -48,7 +48,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { NotesSheet } from "./NotesSheet";
-import { NotesSheet } from "./NotesSheet";
 import { CharacterHistorySheet } from "./CharacterHistorySheet";
 import { CombatStatusCard } from "./CombatStatusCard";
 import { InventoryManagementSheet } from "./InventoryManagementSheet";
