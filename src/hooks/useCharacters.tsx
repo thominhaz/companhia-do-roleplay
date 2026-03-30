@@ -179,7 +179,7 @@ export function useCreateCharacter() {
       const { data, error } = await supabase
         .from('characters')
         .insert({
-          ...character,
+          ...character as any,
           user_id: user.id,
         })
         .select()
