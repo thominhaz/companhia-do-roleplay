@@ -52,7 +52,7 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
       const updated = notes.find(n => n.id === selectedNote.id);
       if (updated) setSelectedNote(updated);
     }
-  }, [notes]);
+  }, [notes, selectedNote]);
 
   const handleCreateNote = async (parentId?: string) => {
     const newNote = await createNote.mutateAsync({
