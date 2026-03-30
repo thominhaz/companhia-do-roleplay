@@ -39,6 +39,7 @@ import {
 interface SessionAttendanceCardProps {
   session: SessionDB;
   isUpcoming?: boolean;
+  isMaster?: boolean;
 }
 
 export function SessionAttendanceCard({ session, isUpcoming = true }: SessionAttendanceCardProps) {
