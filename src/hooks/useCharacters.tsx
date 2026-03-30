@@ -310,7 +310,7 @@ export function useArchiveCharacter() {
         .single();
 
       if (error) throw error;
-      return data as CharacterDB;
+      return data as unknown as CharacterDB;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['characters'] });
