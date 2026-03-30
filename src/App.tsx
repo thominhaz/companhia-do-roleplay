@@ -47,7 +47,8 @@ const App = () => (
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/character/:id" element={<CharacterSheet />} />
-                <Route path="/grimoire" element={<SpellGrimoire />} />
+                <Route path="/characters/new" element={<CharacterBuilder />} />
+                <Route path="/characters/:id/builder" element={<CharacterBuilder />} />
                 <Route path="/checklist" element={<Checklist />} />
                 <Route path="/apoiadores" element={<Supporters />} />
                 <Route path="/admin" element={<Admin />} />
