@@ -148,7 +148,7 @@ export function useCharacter(id: string) {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (ownData) return ownData as CharacterDB;
+      if (ownData) return ownData as unknown as CharacterDB;
 
       // If not found as owner, try to fetch as campaign member (read-only view)
       const { data: memberData, error: memberError } = await supabase
