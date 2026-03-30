@@ -125,7 +125,7 @@ export function CharactersScreen() {
       showUpgradeModal('heroi', 'Mais Personagens', 'Aumente seu limite de personagens');
       return;
     }
-    setShowWizard(true);
+    navigate('/characters/new');
   };
 
   const handleArchive = (id: string, currentlyArchived: boolean) => {
