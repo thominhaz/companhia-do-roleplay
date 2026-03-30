@@ -126,7 +126,7 @@ export function useCharacters() {
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
-      return data as CharacterDB[];
+      return data as unknown as CharacterDB[];
     },
     enabled: !!user,
   });
