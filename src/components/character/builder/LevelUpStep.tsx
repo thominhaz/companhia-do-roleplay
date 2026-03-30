@@ -215,11 +215,12 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
     return [...srdSubs, ...hwSubs];
   }, [showSubclassSelection, classInfo, selectedClassForLevel, className, homebrewSubclasses]);
 
-  // Class features for this level
+  // Class features for this CLASS level (not total level)
   const classLevelFeatures = useMemo(() => {
     if (!classInfo) return { autoFeatures: [] as any[], optionFeatures: [] as any[] };
     const cInfo = classInfo as any;
-    const ld = (cInfo.levels || []).find((l: any) => l.level === level);
+    // Use classLevelInSelectedClass for multiclass — features are based on class level, not total level
+    const ld = (cInfo.levels || []).find((l: any) => l.level === classLevelInSelectedClass);
     if (!ld) return { autoFeatures: [] as any[], optionFeatures: [] as any[] };
 
     const featureIds: string[] = ld.features || [];
@@ -250,7 +251,7 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
     });
 
     return { autoFeatures, optionFeatures };
-  }, [classInfo, level]);
+  }, [classInfo, classLevelInSelectedClass]);
 
   // Subclass features for higher levels
   const higherLevelSubclassFeatures = useMemo(() => {
