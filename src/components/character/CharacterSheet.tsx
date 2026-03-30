@@ -785,19 +785,11 @@ export function CharacterSheet() {
   // Menu action items - reusable between sidebar and dropdown
   const menuActions = [
     {
-      id: 'edit',
-      label: 'Editar Personagem',
+      id: 'builder',
+      label: 'Abrir Builder',
       icon: Edit3,
       color: 'blue',
-      onClick: () => setShowEditStats(true),
-      show: true,
-    },
-    {
-      id: 'edit-appearance',
-      label: 'Aparência & Personalidade',
-      icon: User,
-      color: 'pink',
-      onClick: () => setShowEditAppearance(true),
+      onClick: () => navigate(`/characters/${character.id}/builder`),
       show: true,
     },
     {
@@ -805,7 +797,7 @@ export function CharacterSheet() {
       label: 'Subir de Nível',
       icon: TrendingUp,
       color: 'green',
-      onClick: () => setShowLevelUp(true),
+      onClick: () => navigate(`/characters/${character.id}/builder`),
       show: true,
     },
     {
