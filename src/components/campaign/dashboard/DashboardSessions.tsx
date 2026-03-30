@@ -57,7 +57,7 @@ export function DashboardSessions({ campaign, isMaster }: DashboardSessionsProps
               <h3 className="text-sm font-semibold text-muted-foreground mb-3">Próximas Sessões</h3>
               <div className="space-y-3">
                 {upcomingSessions.map(session => (
-                  <SessionAttendanceCard key={session.id} session={session} isUpcoming={true} />
+                  <SessionAttendanceCard key={session.id} session={session} isUpcoming={true} isMaster={isMaster} />
                 ))}
               </div>
             </div>

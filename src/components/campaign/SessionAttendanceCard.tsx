@@ -3,7 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   Check, X, HelpCircle, Calendar, MapPin, Clock, 
-  Users, ChevronDown, ChevronUp, Loader2 
+  Users, ChevronDown, ChevronUp, Loader2, Trash2, Ban,
+  MoreVertical
 } from "lucide-react";
 import { format, formatDistanceToNow, isFuture } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -11,24 +12,46 @@ import {
   SessionDB, 
   useSessionAttendance, 
   useUpdateAttendance, 
-  useMyAttendance 
+  useMyAttendance,
+  useDeleteSession,
+  useUpdateSession,
 } from "@/hooks/useSessions";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface SessionAttendanceCardProps {
   session: SessionDB;
   isUpcoming?: boolean;
+  isMaster?: boolean;
 }
 
-export function SessionAttendanceCard({ session, isUpcoming = true }: SessionAttendanceCardProps) {
+export function SessionAttendanceCard({ session, isUpcoming = true, isMaster = false }: SessionAttendanceCardProps) {
   const { user } = useAuth();
   const [showDetails, setShowDetails] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   
   const { data: attendance, isLoading: loadingAttendance, refetch } = useSessionAttendance(session.id);
   const { data: myAttendance, isLoading: loadingMyAttendance } = useMyAttendance(session.id);
   const updateAttendance = useUpdateAttendance();
+  const deleteSession = useDeleteSession();
+  const updateSession = useUpdateSession();
 
   // Realtime subscription for attendance updates
   useEffect(() => {
@@ -99,11 +122,44 @@ export function SessionAttendanceCard({ session, isUpcoming = true }: SessionAtt
             </div>
           </div>
           
-          {isUpcoming && (
-            <Badge variant="outline" className="flex-shrink-0 border-primary/30 text-primary">
-              {formatDistanceToNow(new Date(session.scheduled_at), { locale: ptBR, addSuffix: true })}
-            </Badge>
-          )}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {isUpcoming && (
+              <Badge variant="outline" className="border-primary/30 text-primary">
+                {formatDistanceToNow(new Date(session.scheduled_at), { locale: ptBR, addSuffix: true })}
+              </Badge>
+            )}
+            {session.status === 'cancelled' && (
+              <Badge variant="outline" className="border-destructive/30 text-destructive">
+                <Ban className="w-3 h-3 mr-1" />
+                Cancelada
+              </Badge>
+            )}
+            {isMaster && isUpcoming && session.status !== 'cancelled' && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => updateSession.mutate({ id: session.id, status: 'cancelled' as any })}
+                    className="text-amber-500"
+                  >
+                    <Ban className="w-4 h-4 mr-2" />
+                    Cancelar Sessão
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setConfirmDelete(true)}
+                    className="text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Excluir Sessão
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         </div>
 
         {/* Attendance Actions - Only for upcoming sessions */}
@@ -219,6 +275,27 @@ export function SessionAttendanceCard({ session, isUpcoming = true }: SessionAtt
           )}
         </div>
       )}
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir sessão?</AlertDialogTitle>
+            <AlertDialogDescription>
+              A sessão "{session.title}" será permanentemente removida. Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => deleteSession.mutate({ id: session.id, campaignId: session.campaign_id })}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
