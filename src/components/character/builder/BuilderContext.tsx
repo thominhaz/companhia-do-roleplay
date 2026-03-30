@@ -264,10 +264,14 @@ export function BuilderProvider({ children, mode, characterId, initialCharacter 
         hp_roll: hitDiceInfo.avg,
         used_average: true,
       };
+      const newChoices = [...prev.levelChoices, newChoice];
+      // Navigate to the new level step
+      const newStepIdx = BUILDER_STEPS.length + newChoices.filter(lc => lc.level > 1).length - 1;
       return {
         ...prev,
         currentLevel: newLevel,
-        levelChoices: [...prev.levelChoices, newChoice],
+        levelChoices: newChoices,
+        currentStep: newStepIdx,
       };
     });
   }, []);
