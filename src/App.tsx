@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { CharacterSheet } from "@/components/character/CharacterSheet";
+import { CharacterBuilder } from "@/components/character/builder/CharacterBuilder";
 import { SpellGrimoire } from "@/components/tools/SpellGrimoire";
 import ResetPassword from "@/pages/ResetPassword";
 import Checklist from "@/pages/Checklist";
@@ -46,6 +47,8 @@ const App = () => (
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/character/:id" element={<CharacterSheet />} />
+                <Route path="/characters/new" element={<CharacterBuilder />} />
+                <Route path="/characters/:id/builder" element={<CharacterBuilder />} />
                 <Route path="/grimoire" element={<SpellGrimoire />} />
                 <Route path="/checklist" element={<Checklist />} />
                 <Route path="/apoiadores" element={<Supporters />} />

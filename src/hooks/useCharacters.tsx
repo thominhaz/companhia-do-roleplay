@@ -60,11 +60,56 @@ export interface CharacterDB {
   distinctive_features: string | null;
   goals: string | null;
   allies_organizations: string | null;
+  builder_data: BuilderData | null;
+  level_choices: LevelChoice[] | null;
   created_at: string;
   updated_at: string;
 }
 
-export type CharacterInsert = Omit<CharacterDB, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'is_archived'>;
+// Builder types
+export interface BuilderData {
+  race_id?: string;
+  subrace_id?: string;
+  class_id?: string;
+  attribute_method?: 'point_buy' | 'standard_array' | 'rolled';
+  base_attributes?: Record<string, number>;
+  ability_bonus_choices?: string[];
+  background_id?: string;
+  alignment?: string;
+  equipment_choices?: Record<number, number>;
+  equipment_category_selections?: Record<string, string>;
+  variant_human_feat?: string;
+  variant_human_skill?: string;
+  custom_background?: {
+    name: string;
+    skills: string[];
+    proficiencies: string[];
+    feature: string;
+  };
+}
+
+export interface LevelChoice {
+  level: number;
+  class_id: string;                       // MULTICLASS-READY
+  hp_roll: number;
+  used_average: boolean;
+  subclass_id?: string;
+  selected_skills?: string[];
+  selected_feat?: string;
+  feat_attribute?: string;
+  attribute_improvements?: Record<string, number>;
+  improvement_choice?: 'feat' | 'attributes';
+  feature_options?: Record<string, string>;
+  extra_languages?: string[];
+  extra_cantrips?: string[];
+  extra_spells?: string[];
+  multiclass_proficiencies?: string[];    // MULTICLASS-READY
+}
+
+export type CharacterInsert = Omit<CharacterDB, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'is_archived' | 'builder_data' | 'level_choices'> & {
+  builder_data?: BuilderData | null;
+  level_choices?: LevelChoice[] | null;
+};
 
 export function useCharacters() {
   const { user } = useAuth();
@@ -81,7 +126,7 @@ export function useCharacters() {
         .order('updated_at', { ascending: false });
 
       if (error) throw error;
-      return data as CharacterDB[];
+      return data as unknown as CharacterDB[];
     },
     enabled: !!user,
   });
@@ -103,7 +148,7 @@ export function useCharacter(id: string) {
         .eq('user_id', user.id)
         .maybeSingle();
 
-      if (ownData) return ownData as CharacterDB;
+      if (ownData) return ownData as unknown as CharacterDB;
 
       // If not found as owner, try to fetch as campaign member (read-only view)
       const { data: memberData, error: memberError } = await supabase
@@ -117,7 +162,7 @@ export function useCharacter(id: string) {
         return null;
       }
 
-      return memberData as CharacterDB | null;
+      return memberData as unknown as CharacterDB | null;
     },
     enabled: !!user && !!id,
   });
@@ -134,7 +179,7 @@ export function useCreateCharacter() {
       const { data, error } = await supabase
         .from('characters')
         .insert({
-          ...character,
+          ...character as any,
           user_id: user.id,
         })
         .select()
@@ -146,7 +191,7 @@ export function useCreateCharacter() {
         }
         throw error;
       }
-      return data as CharacterDB;
+      return data as unknown as CharacterDB;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['characters'] });
@@ -175,7 +220,7 @@ export function useUpdateCharacter() {
 
       const { data, error } = await supabase
         .from('characters')
-        .update(updates)
+        .update(updates as any)
         .eq('id', id)
         .select()
         .single();
@@ -214,7 +259,7 @@ export function useUpdateCharacter() {
         }
       }
 
-      return data as CharacterDB;
+      return data as unknown as CharacterDB;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['characters'] });
@@ -265,7 +310,7 @@ export function useArchiveCharacter() {
         .single();
 
       if (error) throw error;
-      return data as CharacterDB;
+      return data as unknown as CharacterDB;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['characters'] });
