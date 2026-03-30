@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { WizardData } from '../CharacterWizard';
+import { WizardData } from '../types';
 import { CLASSES } from '@/data/srd';
 import { cn } from '@/lib/utils';
 import { Check, Sparkles, Search, Info, Wand2, Sword, X } from 'lucide-react';

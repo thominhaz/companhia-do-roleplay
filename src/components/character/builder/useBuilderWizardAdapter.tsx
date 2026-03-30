@@ -9,7 +9,7 @@
 
 import { useCallback, useMemo } from 'react';
 import { useBuilderContext } from './BuilderContext';
-import type { WizardData } from '../CharacterWizard';
+import type { WizardData } from '../types';
 import type { Attribute } from '@/data/srd';
 
 export function useBuilderWizardAdapter() {

@@ -1,5 +1,5 @@
 import { RACES, getAttributeAbbr, getAttributeName, ALL_SKILLS } from '@/data/srd';
-import { WizardData } from '../CharacterWizard';
+import { WizardData } from '../types';
 import { Check, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHomebrew } from '@/hooks/useHomebrew';
