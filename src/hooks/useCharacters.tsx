@@ -162,7 +162,7 @@ export function useCharacter(id: string) {
         return null;
       }
 
-      return memberData as CharacterDB | null;
+      return memberData as unknown as CharacterDB | null;
     },
     enabled: !!user && !!id,
   });
