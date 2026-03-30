@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacter } from '@/hooks/useCharacters';
 import { useAuth } from '@/hooks/useAuth';
 import { BuilderProvider, useBuilderContext, BUILDER_STEPS } from './BuilderContext';
+import { useBuilderWizardAdapter } from './useBuilderWizardAdapter';
 import { BuilderSidebar } from './BuilderSidebar';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
