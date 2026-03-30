@@ -786,14 +786,6 @@ export function CharacterSheet() {
       show: true,
     },
     {
-      id: 'levelup',
-      label: 'Subir de Nível',
-      icon: TrendingUp,
-      color: 'green',
-      onClick: () => navigate(`/characters/${character.id}/builder`),
-      show: true,
-    },
-    {
       id: 'notes',
       label: 'Notas e Anotações',
       icon: FileText,
