@@ -137,7 +137,6 @@ export function useReorderNote() {
 
   return useMutation({
     mutationFn: async ({ noteId, direction, campaignId }: { noteId: string; direction: 'up' | 'down'; campaignId: string }) => {
-      // Get all notes for the campaign to find siblings
       const { data: allNotes, error: fetchError } = await supabase
         .from('campaign_notes')
         .select('id, parent_id, sort_order')
@@ -155,6 +154,18 @@ export function useReorderNote() {
         .filter(n => n.parent_id === currentNote.parent_id)
         .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
 
+      // Normalize sort_orders if they're all the same (e.g. all 0)
+      const allSameOrder = siblings.every(s => s.sort_order === siblings[0]?.sort_order);
+      if (allSameOrder && siblings.length > 1) {
+        await Promise.all(
+          siblings.map((s, idx) =>
+            supabase.from('campaign_notes').update({ sort_order: idx }).eq('id', s.id)
+          )
+        );
+        // Re-assign local values after normalization
+        siblings.forEach((s, idx) => { s.sort_order = idx; });
+      }
+
       const currentIdx = siblings.findIndex(n => n.id === noteId);
       const swapIdx = direction === 'up' ? currentIdx - 1 : currentIdx + 1;
 
@@ -164,7 +175,6 @@ export function useReorderNote() {
       const currentOrder = currentNote.sort_order ?? currentIdx;
       const swapOrder = swapNote.sort_order ?? swapIdx;
 
-      // Swap sort_order values
       await Promise.all([
         supabase.from('campaign_notes').update({ sort_order: swapOrder }).eq('id', noteId),
         supabase.from('campaign_notes').update({ sort_order: currentOrder }).eq('id', swapNote.id),
