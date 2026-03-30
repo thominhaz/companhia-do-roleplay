@@ -20,6 +20,7 @@ import { EquipmentStep } from '../steps/EquipmentStep';
 import { SpellsStep } from '../steps/SpellsStep';
 import { BackgroundStep } from '../steps/BackgroundStep';
 import { BackstoryStep } from '../steps/BackstoryStep';
+import { ReviewStep } from '../steps/ReviewStep';
 import { LevelUpStep } from './LevelUpStep';
 
 function BuilderContent() {
