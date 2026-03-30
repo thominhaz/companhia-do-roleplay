@@ -99,19 +99,16 @@ function BuilderContent() {
 
 function BuilderStepContent({ step }: { step: number }) {
   const { data, updateData } = useBuilderWizardAdapter();
+  const { levelChoices } = useBuilderContext();
   const stepDef = BUILDER_STEPS[step];
 
   if (!stepDef) {
-    // Level step
+    // Level step — map to the correct level
+    const levelSteps = levelChoices.filter(lc => lc.level > 1);
     const levelIdx = step - BUILDER_STEPS.length;
-    return (
-      <div className="text-center py-16">
-        <h3 className="text-lg font-semibold mb-2">Nível {levelIdx + 1}</h3>
-        <p className="text-sm text-muted-foreground">
-          O step de Level Up será implementado na Fase 2.
-        </p>
-      </div>
-    );
+    const levelChoice = levelSteps[levelIdx];
+    if (!levelChoice) return null;
+    return <LevelUpStep level={levelChoice.level} />;
   }
 
   switch (stepDef.id) {
