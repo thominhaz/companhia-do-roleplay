@@ -26,6 +26,7 @@ import { LevelUpStep } from './LevelUpStep';
 function BuilderContent() {
   const navigate = useNavigate();
   const { currentStep, nextStep, prevStep, totalSteps, mode } = useBuilderContext();
+  const { save, isSaving } = useBuilderSave();
 
   return (
     <div className="flex h-[100dvh] bg-background">
