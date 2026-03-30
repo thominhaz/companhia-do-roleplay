@@ -22,7 +22,7 @@ import { useSubscription, SubscriptionTier } from "@/hooks/useSubscription";
 import { UpgradeModal } from "@/components/menu/UpgradeModal";
 import { SubscriptionSheet } from "@/components/menu/SubscriptionSheet";
 import { useAuth } from "@/hooks/useAuth";
-import { CharacterWizard } from "@/components/character/CharacterWizard";
+
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppHeader } from "@/components/layout/AppHeader";
