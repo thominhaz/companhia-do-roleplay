@@ -77,6 +77,15 @@ function BuilderContent() {
               Próximo
               <ArrowRight className="w-3 h-3 ml-1" />
             </Button>
+            <Button
+              size="sm"
+              onClick={save}
+              disabled={isSaving}
+              className="text-xs bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Save className="w-3 h-3 mr-1" />
+              {isSaving ? 'Salvando...' : 'Salvar'}
+            </Button>
           </div>
         </div>
 
