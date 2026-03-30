@@ -10,6 +10,7 @@ import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 import { CharacterSheet } from "@/components/character/CharacterSheet";
+import { CharacterBuilder } from "@/components/character/builder/CharacterBuilder";
 import { SpellGrimoire } from "@/components/tools/SpellGrimoire";
 import ResetPassword from "@/pages/ResetPassword";
 import Checklist from "@/pages/Checklist";
