@@ -1,4 +1,5 @@
-import { createContext, useContext, useState, useCallback, useMemo, type ReactNode } from 'react';
+import { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef, type ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 import { RACES, CLASSES, getModifier, calculateHP, type Attribute } from '@/data/srd';
 import type { BuilderData, LevelChoice, CharacterDB } from '@/hooks/useCharacters';
 
