@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, Swords, Shield, Layers } from 'lucide-react';
+import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, Swords, Shield, Layers, GitBranch, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -12,6 +12,14 @@ import advancementData from '@/data/rules/avanco-personagem.json';
 import { cn } from '@/lib/utils';
 import { useBuilderContext } from './BuilderContext';
 import type { LevelChoice } from '@/hooks/useCharacters';
+import {
+  checkMulticlassPrerequisites,
+  getMulticlassProficiencies,
+  getClassNamePt,
+  getClassLevelCount,
+  getDistinctClasses,
+  getSubclassLevelForClass,
+} from '@/lib/multiclassUtils';
 
 interface LevelUpStepProps {
   level: number;
