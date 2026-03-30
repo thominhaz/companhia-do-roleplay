@@ -106,7 +106,10 @@ export interface LevelChoice {
   multiclass_proficiencies?: string[];    // MULTICLASS-READY
 }
 
-export type CharacterInsert = Omit<CharacterDB, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'is_archived'>;
+export type CharacterInsert = Omit<CharacterDB, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'is_archived' | 'builder_data' | 'level_choices'> & {
+  builder_data?: BuilderData | null;
+  level_choices?: LevelChoice[] | null;
+};
 
 export function useCharacters() {
   const { user } = useAuth();
