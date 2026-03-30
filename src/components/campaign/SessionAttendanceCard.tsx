@@ -122,11 +122,44 @@ export function SessionAttendanceCard({ session, isUpcoming = true, isMaster = f
             </div>
           </div>
           
-          {isUpcoming && (
-            <Badge variant="outline" className="flex-shrink-0 border-primary/30 text-primary">
-              {formatDistanceToNow(new Date(session.scheduled_at), { locale: ptBR, addSuffix: true })}
-            </Badge>
-          )}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {isUpcoming && (
+              <Badge variant="outline" className="border-primary/30 text-primary">
+                {formatDistanceToNow(new Date(session.scheduled_at), { locale: ptBR, addSuffix: true })}
+              </Badge>
+            )}
+            {session.status === 'cancelled' && (
+              <Badge variant="outline" className="border-destructive/30 text-destructive">
+                <Ban className="w-3 h-3 mr-1" />
+                Cancelada
+              </Badge>
+            )}
+            {isMaster && isUpcoming && session.status !== 'cancelled' && (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreVertical className="w-4 h-4" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem
+                    onClick={() => updateSession.mutate({ id: session.id, status: 'cancelled' as any })}
+                    className="text-amber-500"
+                  >
+                    <Ban className="w-4 h-4 mr-2" />
+                    Cancelar Sessão
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => setConfirmDelete(true)}
+                    className="text-destructive"
+                  >
+                    <Trash2 className="w-4 h-4 mr-2" />
+                    Excluir Sessão
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
         </div>
 
         {/* Attendance Actions - Only for upcoming sessions */}
