@@ -49,6 +49,7 @@ const App = () => (
                 <Route path="/character/:id" element={<CharacterSheet />} />
                 <Route path="/characters/new" element={<CharacterBuilder />} />
                 <Route path="/characters/:id/builder" element={<CharacterBuilder />} />
+                <Route path="/grimoire" element={<SpellGrimoire />} />
                 <Route path="/checklist" element={<Checklist />} />
                 <Route path="/apoiadores" element={<Supporters />} />
                 <Route path="/admin" element={<Admin />} />
