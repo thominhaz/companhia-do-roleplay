@@ -2493,12 +2493,6 @@ export function CharacterSheet() {
         />
       )}
 
-      {/* Edit Appearance & Personality Sheet */}
-      <EditAppearanceSheet
-        character={character}
-        open={showEditAppearance}
-        onOpenChange={setShowEditAppearance}
-      />
     </div>
   );
 }
