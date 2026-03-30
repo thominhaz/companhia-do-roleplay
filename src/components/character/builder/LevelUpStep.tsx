@@ -538,7 +538,6 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
           )}
         </div>
       )}
-      </div>
 
       {/* HP Roll */}
       <div className="rounded-xl bg-muted/30 border border-border p-4 space-y-4">
