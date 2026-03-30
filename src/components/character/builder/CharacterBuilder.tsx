@@ -6,6 +6,7 @@ import { useBuilderWizardAdapter } from './useBuilderWizardAdapter';
 import { BuilderSidebar } from './BuilderSidebar';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
+import { useBuilderSave } from './useBuilderSave';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
@@ -21,10 +22,12 @@ import { SpellsStep } from '../steps/SpellsStep';
 import { BackgroundStep } from '../steps/BackgroundStep';
 import { BackstoryStep } from '../steps/BackstoryStep';
 import { ReviewStep } from '../steps/ReviewStep';
+import { LevelUpStep } from './LevelUpStep';
 
 function BuilderContent() {
   const navigate = useNavigate();
   const { currentStep, nextStep, prevStep, totalSteps, mode } = useBuilderContext();
+  const { save, isSaving } = useBuilderSave();
 
   return (
     <div className="flex h-[100dvh] bg-background">
@@ -74,6 +77,15 @@ function BuilderContent() {
               Próximo
               <ArrowRight className="w-3 h-3 ml-1" />
             </Button>
+            <Button
+              size="sm"
+              onClick={save}
+              disabled={isSaving}
+              className="text-xs bg-green-600 hover:bg-green-700 text-white"
+            >
+              <Save className="w-3 h-3 mr-1" />
+              {isSaving ? 'Salvando...' : 'Salvar'}
+            </Button>
           </div>
         </div>
 
@@ -99,19 +111,16 @@ function BuilderContent() {
 
 function BuilderStepContent({ step }: { step: number }) {
   const { data, updateData } = useBuilderWizardAdapter();
+  const { levelChoices } = useBuilderContext();
   const stepDef = BUILDER_STEPS[step];
 
   if (!stepDef) {
-    // Level step
+    // Level step — map to the correct level
+    const levelSteps = levelChoices.filter(lc => lc.level > 1);
     const levelIdx = step - BUILDER_STEPS.length;
-    return (
-      <div className="text-center py-16">
-        <h3 className="text-lg font-semibold mb-2">Nível {levelIdx + 1}</h3>
-        <p className="text-sm text-muted-foreground">
-          O step de Level Up será implementado na Fase 2.
-        </p>
-      </div>
-    );
+    const levelChoice = levelSteps[levelIdx];
+    if (!levelChoice) return null;
+    return <LevelUpStep level={levelChoice.level} />;
   }
 
   switch (stepDef.id) {

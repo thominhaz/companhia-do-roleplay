@@ -153,7 +153,11 @@ export function BuilderProvider({ children, mode, characterId, initialCharacter 
   }, []);
 
   const goToStep = useCallback((step: number) => setState({ currentStep: step }), [setState]);
-  const nextStep = useCallback(() => setStateRaw(prev => ({ ...prev, currentStep: Math.min(prev.currentStep + 1, BUILDER_STEPS.length - 1) })), []);
+  const totalStepsRef = BUILDER_STEPS.length; // base steps only for nav bounds
+  const nextStep = useCallback(() => setStateRaw(prev => {
+    const maxStep = BUILDER_STEPS.length + prev.levelChoices.filter(lc => lc.level > 1).length - 1;
+    return { ...prev, currentStep: Math.min(prev.currentStep + 1, maxStep) };
+  }), []);
   const prevStep = useCallback(() => setStateRaw(prev => ({ ...prev, currentStep: Math.max(prev.currentStep - 1, 0) })), []);
 
   const updateBuilderData = useCallback((partial: Partial<BuilderData>) => {
@@ -260,15 +264,19 @@ export function BuilderProvider({ children, mode, characterId, initialCharacter 
         hp_roll: hitDiceInfo.avg,
         used_average: true,
       };
+      const newChoices = [...prev.levelChoices, newChoice];
+      // Navigate to the new level step
+      const newStepIdx = BUILDER_STEPS.length + newChoices.filter(lc => lc.level > 1).length - 1;
       return {
         ...prev,
         currentLevel: newLevel,
-        levelChoices: [...prev.levelChoices, newChoice],
+        levelChoices: newChoices,
+        currentStep: newStepIdx,
       };
     });
   }, []);
 
-  const totalSteps = BUILDER_STEPS.length;
+  const totalSteps = BUILDER_STEPS.length + state.levelChoices.filter(lc => lc.level > 1).length;
 
   const value = useMemo<BuilderContextValue>(() => ({
     ...state,

@@ -57,61 +57,65 @@ export function BuilderSidebar() {
             );
           })}
 
-          {/* Level timeline (edit mode or after creation) */}
-          {mode === 'edit' && levelChoices.length > 0 && (
-            <>
-              <div className="px-2 mt-4 mb-1">
-                <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-2 mb-1 font-semibold">
-                  Níveis
-                </p>
-              </div>
-              {levelChoices.map((lc, idx) => {
-                const lcClassName = CLASSES.find(c => c.id === lc.class_id)?.name || lc.class_id;
-                const stepIdx = BUILDER_STEPS.length + idx;
-                const isActive = currentStep === stepIdx;
-                const isLast = idx === levelChoices.length - 1;
-                return (
-                  <button
-                    key={lc.level}
-                    onClick={() => goToStep(stepIdx)}
-                    className={cn(
-                      'w-full flex items-center gap-2 px-4 py-1.5 text-xs transition-colors text-left',
-                      isActive
-                        ? 'bg-primary/15 text-primary border-r-2 border-primary font-medium'
-                        : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
-                      isLast && 'font-semibold'
-                    )}
-                  >
-                    <div className={cn(
-                      'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0',
-                      isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
-                    )}>
-                      {lc.level}
-                    </div>
-                    <span className="truncate">{lcClassName}</span>
-                    {lc.subclass_id && (
-                      <Check className="w-3 h-3 text-primary flex-shrink-0" />
-                    )}
-                  </button>
-                );
-              })}
-
-              {/* Add level button */}
-              {currentLevel < 20 && (
-                <div className="px-3 mt-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="w-full text-xs gap-1"
-                    onClick={addLevel}
-                  >
-                    <Plus className="w-3 h-3" />
-                    Subir para Nível {currentLevel + 1}
-                  </Button>
+          {/* Level timeline — shown when there are level choices beyond level 1 */}
+          {(() => {
+            const levelSteps = levelChoices.filter(lc => lc.level > 1);
+            if (levelSteps.length === 0 && currentLevel >= 20) return null;
+            return (
+              <>
+                <div className="px-2 mt-4 mb-1">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground px-2 mb-1 font-semibold">
+                    Níveis
+                  </p>
                 </div>
-              )}
-            </>
-          )}
+                {levelSteps.map((lc, idx) => {
+                  const lcClassName = CLASSES.find(c => c.id === lc.class_id)?.name || lc.class_id;
+                  const stepIdx = BUILDER_STEPS.length + idx;
+                  const isActive = currentStep === stepIdx;
+                  const isLast = idx === levelSteps.length - 1;
+                  return (
+                    <button
+                      key={lc.level}
+                      onClick={() => goToStep(stepIdx)}
+                      className={cn(
+                        'w-full flex items-center gap-2 px-4 py-1.5 text-xs transition-colors text-left',
+                        isActive
+                          ? 'bg-primary/15 text-primary border-r-2 border-primary font-medium'
+                          : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground',
+                        isLast && 'font-semibold'
+                      )}
+                    >
+                      <div className={cn(
+                        'w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold flex-shrink-0',
+                        isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                      )}>
+                        {lc.level}
+                      </div>
+                      <span className="truncate">{lcClassName}</span>
+                      {lc.subclass_id && (
+                        <Check className="w-3 h-3 text-primary flex-shrink-0" />
+                      )}
+                    </button>
+                  );
+                })}
+
+                {/* Add level button */}
+                {currentLevel < 20 && (
+                  <div className="px-3 mt-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="w-full text-xs gap-1"
+                      onClick={addLevel}
+                    >
+                      <Plus className="w-3 h-3" />
+                      Subir para Nível {currentLevel + 1}
+                    </Button>
+                  </div>
+                )}
+              </>
+            );
+          })()}
         </div>
       </ScrollArea>
     </div>
