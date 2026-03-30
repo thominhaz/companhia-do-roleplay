@@ -108,7 +108,7 @@ export function CharactersScreen() {
   // Open wizard if ?create=true in URL
   useEffect(() => {
     if (searchParams.get('create') === 'true' && user && subscription?.canCreateCharacter) {
-      setShowWizard(true);
+      navigate('/characters/new');
       setSearchParams({});
     }
   }, [searchParams, user, subscription?.canCreateCharacter, setSearchParams]);
