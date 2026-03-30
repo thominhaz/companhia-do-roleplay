@@ -306,27 +306,75 @@ function populateFromCharacter(base: BuilderState, char: CharacterDB): BuilderSt
   // If character already has builder_data, use it directly
   const hasBuilderData = char.builder_data && Object.keys(char.builder_data).length > 0;
 
-  const builderData: BuilderData = hasBuilderData
-    ? (char.builder_data as BuilderData)
-    : {
-        // Infer from derived fields (legacy characters)
-        race_id: inferRaceId(char.race),
-        subrace_id: char.subrace ? inferSubraceId(char.race, char.subrace) : undefined,
-        class_id: inferClassId(char.class),
-        attribute_method: 'standard_array' as const,
-        base_attributes: char.attributes as any, // Approximation — includes racial bonuses
-        background_id: char.background || undefined,
-        alignment: char.alignment || undefined,
-      };
+  const inferredRaceId = inferRaceId(char.race);
+  const inferredClassId = inferClassId(char.class);
 
-  const levelChoices: LevelChoice[] = (char.level_choices && (char.level_choices as LevelChoice[]).length > 0)
-    ? (char.level_choices as LevelChoice[])
-    : [{
-        level: 1,
-        class_id: builderData.class_id || inferClassId(char.class),
-        hp_roll: 0,
+  let builderData: BuilderData;
+
+  if (hasBuilderData) {
+    builderData = char.builder_data as BuilderData;
+  } else {
+    // Infer from derived fields (legacy characters)
+    // IMPORTANT: Subtract racial bonuses from stored attributes
+    // because stored attributes already include racial bonuses,
+    // and the Builder will re-add them via getComputedAttributes()
+    const storedAttrs = char.attributes as Record<string, number>;
+    const baseAttributes = { ...storedAttrs };
+    const race = RACES.find(r => r.id === inferredRaceId);
+
+    if (race?.ability_bonuses) {
+      Object.entries(race.ability_bonuses).forEach(([attr, bonus]) => {
+        if (baseAttributes[attr] !== undefined) {
+          baseAttributes[attr] = Math.max(1, baseAttributes[attr] - (bonus as number));
+        }
+      });
+    }
+
+    // Also subtract subrace bonuses if applicable
+    if (char.subrace && race?.subraces) {
+      const sub = race.subraces.find(s =>
+        s.name.toLowerCase() === char.subrace!.toLowerCase() || s.id === char.subrace
+      );
+      if (sub?.ability_bonuses) {
+        Object.entries(sub.ability_bonuses).forEach(([attr, bonus]) => {
+          if (baseAttributes[attr] !== undefined) {
+            baseAttributes[attr] = Math.max(1, baseAttributes[attr] - (bonus as number));
+          }
+        });
+      }
+    }
+
+    builderData = {
+      race_id: inferredRaceId,
+      subrace_id: char.subrace ? inferSubraceId(char.race, char.subrace) : undefined,
+      class_id: inferredClassId,
+      attribute_method: 'standard_array' as const,
+      base_attributes: baseAttributes,
+      background_id: char.background || undefined,
+      alignment: char.alignment || undefined,
+    };
+  }
+
+  // Generate level_choices for all levels (not just level 1)
+  let levelChoices: LevelChoice[];
+
+  if (char.level_choices && (char.level_choices as LevelChoice[]).length > 0) {
+    levelChoices = char.level_choices as LevelChoice[];
+  } else {
+    // Legacy character: generate a LevelChoice entry for each level
+    const classId = builderData.class_id || inferredClassId;
+    const hitDiceInfo = CLASS_HIT_DICE[classId] || { die: 8, avg: 5 };
+    levelChoices = [];
+
+    for (let lvl = 1; lvl <= char.level; lvl++) {
+      levelChoices.push({
+        level: lvl,
+        class_id: classId,
+        hp_roll: lvl === 1 ? hitDiceInfo.die : hitDiceInfo.avg,
         used_average: true,
-      }];
+      });
+    }
+  }
 
   return {
     ...base,
