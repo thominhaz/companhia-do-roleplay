@@ -822,7 +822,7 @@ export function CharacterSheet() {
       label: 'Gerenciar Magias',
       icon: Sparkles,
       color: 'violet',
-      onClick: () => setShowSpells(true),
+      onClick: () => navigate(`/characters/${character.id}/builder`),
       show: !!character.spellcasting,
     },
     {
