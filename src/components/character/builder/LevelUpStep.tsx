@@ -108,26 +108,72 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
   const { homebrewContent: homebrewFeats } = useHomebrew('feat');
   const { homebrewContent: homebrewSubclasses } = useHomebrew('subclass');
 
-  const classId = builderData.class_id || '';
-  const classData = CLASS_HIT_DICE[classId] || CLASS_HIT_DICE_PT[classId] || { dice: 'd8', avg: 5, die: 8 };
-  const classInfo = CLASSES.find(c => c.id === classId || c.name === classId);
-  const className = classInfo?.name || classId;
-
+  // Determine the class for THIS level (multiclass support)
   const levelChoice = levelChoices.find(lc => lc.level === level);
+  const selectedClassForLevel = levelChoice?.class_id || builderData.class_id || '';
+
+  const classData = CLASS_HIT_DICE[selectedClassForLevel] || CLASS_HIT_DICE_PT[selectedClassForLevel] || { dice: 'd8', avg: 5, die: 8 };
+  const classInfo = CLASSES.find(c => c.id === selectedClassForLevel || c.name === selectedClassForLevel);
+  const className = classInfo?.name || getClassNamePt(selectedClassForLevel) || selectedClassForLevel;
+
+  // Multiclass: available classes for this level
+  const primaryClassId = builderData.class_id || '';
+  const attrs = getComputedAttributes();
+
+  const [showClassSelector, setShowClassSelector] = useState(false);
+
+  const availableClassesForMulticlass = useMemo(() => {
+    if (level <= 1) return [];
+    return CLASSES.map(cls => {
+      const prereq = checkMulticlassPrerequisites(
+        cls.id,
+        getDistinctClasses(levelChoices.filter(lc => lc.level < level)),
+        attrs
+      );
+      return {
+        id: cls.id,
+        name: cls.name,
+        hitDie: cls.hit_die,
+        prerequisitesMet: prereq.met,
+        missingPrerequisites: prereq.missing,
+        proficienciesGained: getMulticlassProficiencies(cls.id),
+        isCurrentPrimary: cls.id === primaryClassId,
+        currentLevels: getClassLevelCount(levelChoices.filter(lc => lc.level < level), cls.id),
+      };
+    });
+  }, [level, levelChoices, attrs, primaryClassId]);
+
+  const isMulticlassing = selectedClassForLevel !== primaryClassId && level > 1;
+
+  // Subclass: needs to check class-level for the selected class, not total level
+  const classLevelInSelectedClass = useMemo(() => {
+    const previousLevels = levelChoices.filter(lc => lc.level < level && lc.class_id === selectedClassForLevel).length;
+    return previousLevels + 1; // +1 for this level
+  }, [levelChoices, level, selectedClassForLevel]);
+
+  const subclassLevel = getSubclassLevelForClass(selectedClassForLevel);
+  const showSubclassSelection = classLevelInSelectedClass === subclassLevel && (level > 1 || subclassLevel === 1);
+  const [selectedSubclass, setSelectedSubclass] = useState<string | null>(levelChoice?.subclass_id || null);
+
+  // Check if subclass was already chosen for this class in a previous level
+  const existingSubclassForClass = useMemo(() => {
+    return levelChoices.find(
+      lc => lc.class_id === selectedClassForLevel && lc.subclass_id && lc.level < level
+    )?.subclass_id;
+  }, [levelChoices, selectedClassForLevel, level]);
 
   const levels = advancementData.character_advancement.levels;
   const levelData = levels.find(l => l.level === level);
   const prevLevelData = levels.find(l => l.level === level - 1);
 
   // Computed attributes for CON modifier
-  const attrs = getComputedAttributes();
   const conMod = getModifier(attrs.constitution || 10);
 
   // HP state
   const [hasRolledHp, setHasRolledHp] = useState(!!levelChoice?.hp_roll && level > 1);
 
-  // Feat/ASI state
-  const grantsFeat = FEAT_LEVELS.includes(level);
+  // Feat/ASI: based on CLASS level in that class, not total level
+  const grantsFeat = FEAT_LEVELS.includes(classLevelInSelectedClass);
   const [improvementChoice, setImprovementChoice] = useState<'feat' | 'attributes'>(
     levelChoice?.improvement_choice || 'feat'
   );
@@ -142,17 +188,12 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
   const [selectedFeatAttribute, setSelectedFeatAttribute] = useState<string | null>(levelChoice?.feat_attribute || null);
   const [featSearch, setFeatSearch] = useState('');
 
-  // Subclass state
-  const subclassLevel = SUBCLASS_LEVELS[classId] || 3;
-  const showSubclassSelection = level === subclassLevel && level > 1;
-  const [selectedSubclass, setSelectedSubclass] = useState<string | null>(levelChoice?.subclass_id || null);
-
   // Feature options (e.g. fighting style)
   const [selectedFeatureOptions, setSelectedFeatureOptions] = useState<Record<string, string>>(
     levelChoice?.feature_options || {}
   );
 
-  // Available subclasses
+  // Available subclasses for the selected class
   const availableSubclasses = useMemo(() => {
     if (!showSubclassSelection || !classInfo) return [];
     const srdSubs = ((classInfo as any).subclasses || []).map((sc: any) => ({
@@ -163,16 +204,16 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
       .filter(sub => {
         const subData = sub.data as any;
         const parentClass = subData?.parent_class?.toLowerCase();
-        return parentClass === classId.toLowerCase() ||
+        return parentClass === selectedClassForLevel.toLowerCase() ||
                parentClass === className.toLowerCase() ||
-               subData?.parentClassId === classId;
+               subData?.parentClassId === selectedClassForLevel;
       })
       .map(sub => ({
         id: sub.id, name: sub.name, description: sub.description || '',
         features: (sub.data as any)?.features || [], isSRD: false,
       }));
     return [...srdSubs, ...hwSubs];
-  }, [showSubclassSelection, classInfo, classId, className, homebrewSubclasses]);
+  }, [showSubclassSelection, classInfo, selectedClassForLevel, className, homebrewSubclasses]);
 
   // Class features for this level
   const classLevelFeatures = useMemo(() => {
