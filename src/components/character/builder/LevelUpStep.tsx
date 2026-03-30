@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react';
-import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, Swords, Shield, Layers } from 'lucide-react';
+import { TrendingUp, Sparkles, Heart, Dices, Award, Check, Search, Gem, Plus, Minus, Swords, Shield, Layers, GitBranch, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -12,6 +12,14 @@ import advancementData from '@/data/rules/avanco-personagem.json';
 import { cn } from '@/lib/utils';
 import { useBuilderContext } from './BuilderContext';
 import type { LevelChoice } from '@/hooks/useCharacters';
+import {
+  checkMulticlassPrerequisites,
+  getMulticlassProficiencies,
+  getClassNamePt,
+  getClassLevelCount,
+  getDistinctClasses,
+  getSubclassLevelForClass,
+} from '@/lib/multiclassUtils';
 
 interface LevelUpStepProps {
   level: number;
@@ -100,26 +108,72 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
   const { homebrewContent: homebrewFeats } = useHomebrew('feat');
   const { homebrewContent: homebrewSubclasses } = useHomebrew('subclass');
 
-  const classId = builderData.class_id || '';
-  const classData = CLASS_HIT_DICE[classId] || CLASS_HIT_DICE_PT[classId] || { dice: 'd8', avg: 5, die: 8 };
-  const classInfo = CLASSES.find(c => c.id === classId || c.name === classId);
-  const className = classInfo?.name || classId;
-
+  // Determine the class for THIS level (multiclass support)
   const levelChoice = levelChoices.find(lc => lc.level === level);
+  const selectedClassForLevel = levelChoice?.class_id || builderData.class_id || '';
+
+  const classData = CLASS_HIT_DICE[selectedClassForLevel] || CLASS_HIT_DICE_PT[selectedClassForLevel] || { dice: 'd8', avg: 5, die: 8 };
+  const classInfo = CLASSES.find(c => c.id === selectedClassForLevel || c.name === selectedClassForLevel);
+  const className = classInfo?.name || getClassNamePt(selectedClassForLevel) || selectedClassForLevel;
+
+  // Multiclass: available classes for this level
+  const primaryClassId = builderData.class_id || '';
+  const attrs = getComputedAttributes();
+
+  const [showClassSelector, setShowClassSelector] = useState(false);
+
+  const availableClassesForMulticlass = useMemo(() => {
+    if (level <= 1) return [];
+    return CLASSES.map(cls => {
+      const prereq = checkMulticlassPrerequisites(
+        cls.id,
+        getDistinctClasses(levelChoices.filter(lc => lc.level < level)),
+        attrs
+      );
+      return {
+        id: cls.id,
+        name: cls.name,
+        hitDie: cls.hit_die,
+        prerequisitesMet: prereq.met,
+        missingPrerequisites: prereq.missing,
+        proficienciesGained: getMulticlassProficiencies(cls.id),
+        isCurrentPrimary: cls.id === primaryClassId,
+        currentLevels: getClassLevelCount(levelChoices.filter(lc => lc.level < level), cls.id),
+      };
+    });
+  }, [level, levelChoices, attrs, primaryClassId]);
+
+  const isMulticlassing = selectedClassForLevel !== primaryClassId && level > 1;
+
+  // Subclass: needs to check class-level for the selected class, not total level
+  const classLevelInSelectedClass = useMemo(() => {
+    const previousLevels = levelChoices.filter(lc => lc.level < level && lc.class_id === selectedClassForLevel).length;
+    return previousLevels + 1; // +1 for this level
+  }, [levelChoices, level, selectedClassForLevel]);
+
+  const subclassLevel = getSubclassLevelForClass(selectedClassForLevel);
+  const showSubclassSelection = classLevelInSelectedClass === subclassLevel && (level > 1 || subclassLevel === 1);
+  const [selectedSubclass, setSelectedSubclass] = useState<string | null>(levelChoice?.subclass_id || null);
+
+  // Check if subclass was already chosen for this class in a previous level
+  const existingSubclassForClass = useMemo(() => {
+    return levelChoices.find(
+      lc => lc.class_id === selectedClassForLevel && lc.subclass_id && lc.level < level
+    )?.subclass_id;
+  }, [levelChoices, selectedClassForLevel, level]);
 
   const levels = advancementData.character_advancement.levels;
   const levelData = levels.find(l => l.level === level);
   const prevLevelData = levels.find(l => l.level === level - 1);
 
   // Computed attributes for CON modifier
-  const attrs = getComputedAttributes();
   const conMod = getModifier(attrs.constitution || 10);
 
   // HP state
   const [hasRolledHp, setHasRolledHp] = useState(!!levelChoice?.hp_roll && level > 1);
 
-  // Feat/ASI state
-  const grantsFeat = FEAT_LEVELS.includes(level);
+  // Feat/ASI: based on CLASS level in that class, not total level
+  const grantsFeat = FEAT_LEVELS.includes(classLevelInSelectedClass);
   const [improvementChoice, setImprovementChoice] = useState<'feat' | 'attributes'>(
     levelChoice?.improvement_choice || 'feat'
   );
@@ -134,17 +188,12 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
   const [selectedFeatAttribute, setSelectedFeatAttribute] = useState<string | null>(levelChoice?.feat_attribute || null);
   const [featSearch, setFeatSearch] = useState('');
 
-  // Subclass state
-  const subclassLevel = SUBCLASS_LEVELS[classId] || 3;
-  const showSubclassSelection = level === subclassLevel && level > 1;
-  const [selectedSubclass, setSelectedSubclass] = useState<string | null>(levelChoice?.subclass_id || null);
-
   // Feature options (e.g. fighting style)
   const [selectedFeatureOptions, setSelectedFeatureOptions] = useState<Record<string, string>>(
     levelChoice?.feature_options || {}
   );
 
-  // Available subclasses
+  // Available subclasses for the selected class
   const availableSubclasses = useMemo(() => {
     if (!showSubclassSelection || !classInfo) return [];
     const srdSubs = ((classInfo as any).subclasses || []).map((sc: any) => ({
@@ -155,22 +204,23 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
       .filter(sub => {
         const subData = sub.data as any;
         const parentClass = subData?.parent_class?.toLowerCase();
-        return parentClass === classId.toLowerCase() ||
+        return parentClass === selectedClassForLevel.toLowerCase() ||
                parentClass === className.toLowerCase() ||
-               subData?.parentClassId === classId;
+               subData?.parentClassId === selectedClassForLevel;
       })
       .map(sub => ({
         id: sub.id, name: sub.name, description: sub.description || '',
         features: (sub.data as any)?.features || [], isSRD: false,
       }));
     return [...srdSubs, ...hwSubs];
-  }, [showSubclassSelection, classInfo, classId, className, homebrewSubclasses]);
+  }, [showSubclassSelection, classInfo, selectedClassForLevel, className, homebrewSubclasses]);
 
-  // Class features for this level
+  // Class features for this CLASS level (not total level)
   const classLevelFeatures = useMemo(() => {
     if (!classInfo) return { autoFeatures: [] as any[], optionFeatures: [] as any[] };
     const cInfo = classInfo as any;
-    const ld = (cInfo.levels || []).find((l: any) => l.level === level);
+    // Use classLevelInSelectedClass for multiclass — features are based on class level, not total level
+    const ld = (cInfo.levels || []).find((l: any) => l.level === classLevelInSelectedClass);
     if (!ld) return { autoFeatures: [] as any[], optionFeatures: [] as any[] };
 
     const featureIds: string[] = ld.features || [];
@@ -201,13 +251,15 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
     });
 
     return { autoFeatures, optionFeatures };
-  }, [classInfo, level]);
+  }, [classInfo, classLevelInSelectedClass]);
 
   // Subclass features for higher levels
   const higherLevelSubclassFeatures = useMemo(() => {
     if (showSubclassSelection) return [];
-    // Find existing subclass from earlier level choices
-    const existingSub = levelChoices.find(lc => lc.subclass_id && lc.level < level);
+    // Find existing subclass for THIS class from earlier level choices
+    const existingSub = levelChoices.find(
+      lc => lc.subclass_id && lc.class_id === selectedClassForLevel && lc.level < level
+    );
     if (!existingSub?.subclass_id) return [];
 
     const cInfo = classInfo as any;
@@ -215,15 +267,15 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
     let features: any[] = [];
 
     if (srdSub) {
-      features = (srdSub.features || []).filter((f: any) => f.level === level);
+      features = (srdSub.features || []).filter((f: any) => f.level === classLevelInSelectedClass);
     } else {
       const hwSub = homebrewSubclasses.find(s => s.id === existingSub.subclass_id);
       if (hwSub) {
-        features = ((hwSub.data as any)?.features || []).filter((f: any) => f.level === level);
+        features = ((hwSub.data as any)?.features || []).filter((f: any) => f.level === classLevelInSelectedClass);
       }
     }
     return features;
-  }, [showSubclassSelection, levelChoices, level, classInfo, homebrewSubclasses]);
+  }, [showSubclassSelection, levelChoices, level, selectedClassForLevel, classLevelInSelectedClass, classInfo, homebrewSubclasses]);
 
   // Feats list
   const filteredFeats = useMemo(() => {
@@ -260,7 +312,7 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
   // Sync local state → BuilderContext
   const syncToContext = useCallback(() => {
     const updates: Partial<LevelChoice> = {
-      class_id: classId,
+      class_id: selectedClassForLevel,
     };
 
     if (grantsFeat) {
@@ -284,9 +336,15 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
       updates.feature_options = selectedFeatureOptions;
     }
 
+    // Multiclass proficiencies
+    if (isMulticlassing && classLevelInSelectedClass === 1) {
+      updates.multiclass_proficiencies = [getMulticlassProficiencies(selectedClassForLevel)];
+    }
+
     updateLevelChoice(level, updates);
-  }, [level, classId, grantsFeat, improvementChoice, selectedFeat, selectedFeatAttribute,
-      attributePoints, showSubclassSelection, selectedSubclass, selectedFeatureOptions, updateLevelChoice]);
+  }, [level, selectedClassForLevel, grantsFeat, improvementChoice, selectedFeat, selectedFeatAttribute,
+      attributePoints, showSubclassSelection, selectedSubclass, selectedFeatureOptions,
+      isMulticlassing, classLevelInSelectedClass, updateLevelChoice]);
 
   // Auto-sync on changes
   useEffect(() => {
@@ -367,15 +425,119 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
           <span className="text-lg font-bold text-primary">{level}</span>
         </div>
         <div>
-          <h3 className="text-lg font-semibold">Nível {level} — {className}</h3>
+          <h3 className="text-lg font-semibold">
+            Nível {level} — {className}
+            {isMulticlassing && (
+              <Badge className="ml-2 bg-accent/20 text-accent-foreground text-[10px]">Multiclasse</Badge>
+            )}
+          </h3>
           <p className="text-sm text-muted-foreground">
             Bônus de Proficiência: +{levelData?.proficiency_bonus || 2}
             {levelData?.proficiency_bonus !== prevLevelData?.proficiency_bonus && (
-              <Badge className="ml-2 bg-green-500/20 text-green-400 text-[10px]">Aumentou!</Badge>
+              <Badge className="ml-2 bg-primary/20 text-primary text-[10px]">Aumentou!</Badge>
+            )}
+            {isMulticlassing && (
+              <span className="ml-2">• Nível {classLevelInSelectedClass} de {className}</span>
             )}
           </p>
         </div>
       </div>
+
+      {/* Multiclass Class Selector */}
+      {level > 1 && (
+        <div className="rounded-xl bg-muted/30 border border-border p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-semibold flex items-center gap-2">
+              <GitBranch className="w-4 h-4 text-primary" />
+              Classe para este Nível
+            </h4>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowClassSelector(!showClassSelector)}
+            >
+              {showClassSelector ? 'Fechar' : 'Multiclasse'}
+            </Button>
+          </div>
+
+          {!showClassSelector && (
+            <p className="text-sm text-muted-foreground">
+              Continuando como <span className="font-medium text-foreground">{className}</span>.
+              Clique em "Multiclasse" para escolher outra classe.
+            </p>
+          )}
+
+          {showClassSelector && (
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                Escolha a classe para o nível {level}. Você precisa atender aos pré-requisitos de atributo.
+              </p>
+              <ScrollArea className="h-[250px]">
+                <div className="space-y-2 pr-3">
+                  {availableClassesForMulticlass.map(cls => (
+                    <button
+                      key={cls.id}
+                      onClick={() => {
+                        if (!cls.prerequisitesMet) return;
+                        updateLevelChoice(level, { class_id: cls.id });
+                        setShowClassSelector(false);
+                        // Reset HP roll when changing class
+                        setHasRolledHp(false);
+                      }}
+                      disabled={!cls.prerequisitesMet}
+                      className={cn(
+                        'w-full p-3 rounded-lg border text-left transition-all',
+                        selectedClassForLevel === cls.id
+                          ? 'border-primary bg-primary/10'
+                          : cls.prerequisitesMet
+                            ? 'border-border bg-card hover:border-primary/50'
+                            : 'border-border bg-card opacity-50 cursor-not-allowed'
+                      )}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">{cls.name}</span>
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                            d{cls.hitDie}
+                          </Badge>
+                          {cls.currentLevels > 0 && (
+                            <Badge className="text-[9px] px-1.5 py-0 bg-primary/20 text-primary">
+                              Nv. {cls.currentLevels}
+                            </Badge>
+                          )}
+                          {cls.isCurrentPrimary && cls.currentLevels === 0 && (
+                            <Badge className="text-[9px] px-1.5 py-0 bg-secondary/20 text-secondary-foreground">
+                              Principal
+                            </Badge>
+                          )}
+                        </div>
+                        {selectedClassForLevel === cls.id && (
+                          <Check className="w-4 h-4 text-primary" />
+                        )}
+                      </div>
+
+                      {!cls.prerequisitesMet && (
+                        <div className="mt-1 flex items-center gap-1 text-destructive">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span className="text-[10px]">
+                            Falta: {cls.missingPrerequisites.join(', ')}
+                          </span>
+                        </div>
+                      )}
+
+                      {cls.prerequisitesMet && cls.id !== primaryClassId && cls.currentLevels === 0 && (
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          Proficiências: {cls.proficienciesGained}
+                        </p>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* HP Roll */}
       <div className="rounded-xl bg-muted/30 border border-border p-4 space-y-4">
