@@ -81,7 +81,7 @@ export function CharactersScreen() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
-  const [showWizard, setShowWizard] = useState(false);
+  
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [characterToDelete, setCharacterToDelete] = useState<string | null>(null);
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
