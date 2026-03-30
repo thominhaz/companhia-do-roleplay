@@ -47,9 +47,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { LevelUpSheet } from "./LevelUpSheet";
-import { EditStatsSheet } from "./EditStatsSheet";
-import { SpellsManagementSheet } from "./SpellsManagementSheet";
 import { NotesSheet } from "./NotesSheet";
 import { CharacterHistorySheet } from "./CharacterHistorySheet";
 import { CombatStatusCard } from "./CombatStatusCard";
@@ -77,7 +74,7 @@ import { useCharacterDocuments } from "@/hooks/useDocuments";
 import { CharacterFactionReputations } from "./CharacterFactionReputations";
 import { InventoryTab } from "./InventoryTab";
 import { CharacterPDFExport } from "./CharacterPDFExport";
-import { EditAppearanceSheet } from "./EditAppearanceSheet";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -278,10 +275,6 @@ export function CharacterSheet() {
   const [mainTab, setMainTab] = useState<'ficha' | 'inventario'>('ficha');
   const [activeTab, setActiveTab] = useState('geral');
   const [skillsTab, setSkillsTab] = useState('pericias');
-  const [showLevelUp, setShowLevelUp] = useState(false);
-  const [showEditStats, setShowEditStats] = useState(false);
-  const [showEditAppearance, setShowEditAppearance] = useState(false);
-  const [showSpells, setShowSpells] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showTradeSheet, setShowTradeSheet] = useState(false);
@@ -785,19 +778,11 @@ export function CharacterSheet() {
   // Menu action items - reusable between sidebar and dropdown
   const menuActions = [
     {
-      id: 'edit',
-      label: 'Editar Personagem',
+      id: 'builder',
+      label: 'Abrir Builder',
       icon: Edit3,
       color: 'blue',
-      onClick: () => setShowEditStats(true),
-      show: true,
-    },
-    {
-      id: 'edit-appearance',
-      label: 'Aparência & Personalidade',
-      icon: User,
-      color: 'pink',
-      onClick: () => setShowEditAppearance(true),
+      onClick: () => navigate(`/characters/${character.id}/builder`),
       show: true,
     },
     {
@@ -805,7 +790,7 @@ export function CharacterSheet() {
       label: 'Subir de Nível',
       icon: TrendingUp,
       color: 'green',
-      onClick: () => setShowLevelUp(true),
+      onClick: () => navigate(`/characters/${character.id}/builder`),
       show: true,
     },
     {
@@ -830,7 +815,7 @@ export function CharacterSheet() {
       label: 'Gerenciar Magias',
       icon: Sparkles,
       color: 'violet',
-      onClick: () => setShowSpells(true),
+      onClick: () => navigate(`/characters/${character.id}/builder`),
       show: !!character.spellcasting,
     },
     {
@@ -1130,7 +1115,7 @@ export function CharacterSheet() {
                         : "bg-gold hover:bg-gold/80 text-foreground font-bold animate-pulse"
                       }`}
                       size="sm"
-                      onClick={() => setShowLevelUp(true)}
+                      onClick={() => navigate(`/characters/${character.id}/builder`)}
                     >
                       <TrendingUp className="w-4 h-4 sm:mr-2" />
                       <span className="hidden sm:inline">Nível {nextLevel}</span>
@@ -2006,7 +1991,7 @@ export function CharacterSheet() {
                       variant="ghost" 
                       size="sm" 
                       className="h-7 text-xs text-primary"
-                      onClick={() => setShowSpells(true)}
+                      onClick={() => navigate(`/characters/${character.id}/builder`)}
                     >
                       Gerenciar
                     </Button>
@@ -2197,21 +2182,6 @@ export function CharacterSheet() {
       </div> {/* End Flex Container */}
 
       {/* Sheets */}
-      <LevelUpSheet 
-        character={character} 
-        open={showLevelUp} 
-        onOpenChange={setShowLevelUp} 
-      />
-      <EditStatsSheet 
-        character={character} 
-        open={showEditStats} 
-        onOpenChange={setShowEditStats} 
-      />
-      <SpellsManagementSheet 
-        character={character} 
-        open={showSpells} 
-        onOpenChange={setShowSpells} 
-      />
       <NotesSheet 
         character={character} 
         open={showNotes} 
@@ -2519,12 +2489,6 @@ export function CharacterSheet() {
         />
       )}
 
-      {/* Edit Appearance & Personality Sheet */}
-      <EditAppearanceSheet
-        character={character}
-        open={showEditAppearance}
-        onOpenChange={setShowEditAppearance}
-      />
     </div>
   );
 }
