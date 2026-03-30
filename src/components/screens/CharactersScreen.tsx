@@ -22,7 +22,7 @@ import { useSubscription, SubscriptionTier } from "@/hooks/useSubscription";
 import { UpgradeModal } from "@/components/menu/UpgradeModal";
 import { SubscriptionSheet } from "@/components/menu/SubscriptionSheet";
 import { useAuth } from "@/hooks/useAuth";
-import { CharacterWizard } from "@/components/character/CharacterWizard";
+
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { AppHeader } from "@/components/layout/AppHeader";
@@ -81,7 +81,7 @@ export function CharactersScreen() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<FilterTab>("all");
-  const [showWizard, setShowWizard] = useState(false);
+  
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [characterToDelete, setCharacterToDelete] = useState<string | null>(null);
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
@@ -108,7 +108,7 @@ export function CharactersScreen() {
   // Open wizard if ?create=true in URL
   useEffect(() => {
     if (searchParams.get('create') === 'true' && user && subscription?.canCreateCharacter) {
-      setShowWizard(true);
+      navigate('/characters/new');
       setSearchParams({});
     }
   }, [searchParams, user, subscription?.canCreateCharacter, setSearchParams]);
@@ -125,7 +125,7 @@ export function CharactersScreen() {
       showUpgradeModal('heroi', 'Mais Personagens', 'Aumente seu limite de personagens');
       return;
     }
-    setShowWizard(true);
+    navigate('/characters/new');
   };
 
   const handleArchive = (id: string, currentlyArchived: boolean) => {
@@ -162,9 +162,6 @@ export function CharactersScreen() {
     { id: "archived" as FilterTab, label: `Arquivados (${archivedCharacters.length})` },
   ];
 
-  if (showWizard) {
-    return <CharacterWizard onClose={() => setShowWizard(false)} />;
-  }
 
   return (
     <div className="min-h-screen bg-surface-0 pb-24 md:pb-8">

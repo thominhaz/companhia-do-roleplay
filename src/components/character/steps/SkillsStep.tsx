@@ -1,4 +1,4 @@
-import { WizardData } from '../CharacterWizard';
+import { WizardData } from '../types';
 import { CLASSES, RACES } from '@/data/srd';
 import { cn } from '@/lib/utils';
 import { Check, Info } from 'lucide-react';

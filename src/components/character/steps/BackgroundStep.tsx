@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { BACKGROUNDS, ALIGNMENTS, ALL_SKILLS, ALL_TOOLS, ALL_LANGUAGES } from '@/data/srd';
-import { WizardData } from '../CharacterWizard';
+import { WizardData } from '../types';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Package, Sword, Shield, ChevronDown, ChevronUp, Check, Gem, Gift, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { WizardData } from '../CharacterWizard';
+import { WizardData } from '../types';
 import { CLASSES } from '@/data/srd';
 import { useHomebrew } from '@/hooks/useHomebrew';
 import { Badge } from '@/components/ui/badge';

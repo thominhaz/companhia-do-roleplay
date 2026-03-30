@@ -1,5 +1,5 @@
 import { RACES, CLASSES, BACKGROUNDS, ALIGNMENTS, getModifier, getModifierString, calculateHP, Attribute, getAttributeName } from '@/data/srd';
-import { WizardData } from '../CharacterWizard';
+import { WizardData } from '../types';
 import { Heart, Shield, Zap } from 'lucide-react';
 import armaduras from '@/data/equipment/armaduras.json';
 import armasJson from '@/data/equipment/armas.json';

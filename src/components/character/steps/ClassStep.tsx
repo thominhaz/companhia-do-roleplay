@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import DOMPurify from 'dompurify';
 import { CLASSES, getAttributeName } from '@/data/srd';
-import { WizardData } from '../CharacterWizard';
+import { WizardData } from '../types';
 import { Check, Heart, Sword, Shield, Wand2, Music, Cross, Leaf, Flame, Skull, Moon, BookOpen, Sparkles, ChevronDown, ChevronUp, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useHomebrew } from '@/hooks/useHomebrew';

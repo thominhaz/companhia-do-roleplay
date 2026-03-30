@@ -1,5 +1,5 @@
 import { RACES, getModifier, getModifierString, Attribute } from '@/data/srd';
-import { WizardData } from '../CharacterWizard';
+import { WizardData } from '../types';
 import { Minus, Plus, RotateCcw, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
