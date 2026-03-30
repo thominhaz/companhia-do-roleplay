@@ -268,7 +268,7 @@ export function BuilderProvider({ children, mode, characterId, initialCharacter 
     });
   }, []);
 
-  const totalSteps = BUILDER_STEPS.length;
+  const totalSteps = BUILDER_STEPS.length + state.levelChoices.filter(lc => lc.level > 1).length;
 
   const value = useMemo<BuilderContextValue>(() => ({
     ...state,
