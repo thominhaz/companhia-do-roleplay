@@ -259,7 +259,7 @@ export function useUpdateCharacter() {
         }
       }
 
-      return data as CharacterDB;
+      return data as unknown as CharacterDB;
     },
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ['characters'] });
