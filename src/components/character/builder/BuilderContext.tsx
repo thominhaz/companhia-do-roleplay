@@ -153,7 +153,11 @@ export function BuilderProvider({ children, mode, characterId, initialCharacter 
   }, []);
 
   const goToStep = useCallback((step: number) => setState({ currentStep: step }), [setState]);
-  const nextStep = useCallback(() => setStateRaw(prev => ({ ...prev, currentStep: Math.min(prev.currentStep + 1, BUILDER_STEPS.length - 1) })), []);
+  const totalStepsRef = BUILDER_STEPS.length; // base steps only for nav bounds
+  const nextStep = useCallback(() => setStateRaw(prev => {
+    const maxStep = BUILDER_STEPS.length + prev.levelChoices.filter(lc => lc.level > 1).length - 1;
+    return { ...prev, currentStep: Math.min(prev.currentStep + 1, maxStep) };
+  }), []);
   const prevStep = useCallback(() => setStateRaw(prev => ({ ...prev, currentStep: Math.max(prev.currentStep - 1, 0) })), []);
 
   const updateBuilderData = useCallback((partial: Partial<BuilderData>) => {
