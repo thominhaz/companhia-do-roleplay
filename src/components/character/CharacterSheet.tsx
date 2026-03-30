@@ -1099,18 +1099,16 @@ export function CharacterSheet() {
                     </div>
                   </div>
 
-                  {/* Right: Level Up Button (always visible if available) */}
+                  {/* Right: Edit in Builder hint */}
                   {(canLevelUp || (useMilestone && currentLevel < 20)) && (
                     <Button
-                      className={`shrink-0 ${useMilestone 
-                        ? "bg-primary hover:bg-primary/80 text-primary-foreground font-bold"
-                        : "bg-gold hover:bg-gold/80 text-foreground font-bold animate-pulse"
-                      }`}
+                      variant="outline"
                       size="sm"
+                      className="shrink-0 text-xs"
                       onClick={() => navigate(`/characters/${character.id}/builder`)}
                     >
                       <TrendingUp className="w-4 h-4 sm:mr-2" />
-                      <span className="hidden sm:inline">Nível {nextLevel}</span>
+                      <span className="hidden sm:inline">Editar no Builder</span>
                     </Button>
                   )}
                 </div>
