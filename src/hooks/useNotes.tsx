@@ -71,11 +71,18 @@ export function useCreateNote() {
       if (!user) throw new Error('Usuário não autenticado');
 
       // Calculate next sort_order for siblings
-      const { data: siblings } = await supabase
+      let siblingsQuery = supabase
         .from('campaign_notes')
         .select('sort_order')
-        .eq('campaign_id', note.campaign_id)
-        .is('parent_id', note.parent_id ?? null)
+        .eq('campaign_id', note.campaign_id);
+
+      if (note.parent_id) {
+        siblingsQuery = siblingsQuery.eq('parent_id', note.parent_id);
+      } else {
+        siblingsQuery = siblingsQuery.is('parent_id', null);
+      }
+
+      const { data: siblings } = await siblingsQuery
         .order('sort_order', { ascending: false })
         .limit(1);
 
