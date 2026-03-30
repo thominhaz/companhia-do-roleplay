@@ -275,10 +275,6 @@ export function CharacterSheet() {
   const [mainTab, setMainTab] = useState<'ficha' | 'inventario'>('ficha');
   const [activeTab, setActiveTab] = useState('geral');
   const [skillsTab, setSkillsTab] = useState('pericias');
-  const [showLevelUp, setShowLevelUp] = useState(false);
-  const [showEditStats, setShowEditStats] = useState(false);
-  const [showEditAppearance, setShowEditAppearance] = useState(false);
-  const [showSpells, setShowSpells] = useState(false);
   const [showNotes, setShowNotes] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showTradeSheet, setShowTradeSheet] = useState(false);
