@@ -162,9 +162,6 @@ export function CharactersScreen() {
     { id: "archived" as FilterTab, label: `Arquivados (${archivedCharacters.length})` },
   ];
 
-  if (showWizard) {
-    return <CharacterWizard onClose={() => setShowWizard(false)} />;
-  }
 
   return (
     <div className="min-h-screen bg-surface-0 pb-24 md:pb-8">
