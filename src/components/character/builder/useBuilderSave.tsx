@@ -81,7 +81,7 @@ export function useBuilderSave() {
       initiative: dexMod,
       speed: race?.speed || 30,
       proficiency_bonus: profBonus,
-      attributes: attrs,
+      attributes: typedAttrs,
       saving_throws: savingThrows,
       skills: skillsObj,
       hit_dice: { total: level, current: level, diceType: `d${cls.hit_die}` },
