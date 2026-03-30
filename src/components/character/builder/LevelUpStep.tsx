@@ -425,14 +425,119 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
           <span className="text-lg font-bold text-primary">{level}</span>
         </div>
         <div>
-          <h3 className="text-lg font-semibold">Nível {level} — {className}</h3>
+          <h3 className="text-lg font-semibold">
+            Nível {level} — {className}
+            {isMulticlassing && (
+              <Badge className="ml-2 bg-accent/20 text-accent-foreground text-[10px]">Multiclasse</Badge>
+            )}
+          </h3>
           <p className="text-sm text-muted-foreground">
             Bônus de Proficiência: +{levelData?.proficiency_bonus || 2}
             {levelData?.proficiency_bonus !== prevLevelData?.proficiency_bonus && (
-              <Badge className="ml-2 bg-green-500/20 text-green-400 text-[10px]">Aumentou!</Badge>
+              <Badge className="ml-2 bg-primary/20 text-primary text-[10px]">Aumentou!</Badge>
+            )}
+            {isMulticlassing && (
+              <span className="ml-2">• Nível {classLevelInSelectedClass} de {className}</span>
             )}
           </p>
         </div>
+      </div>
+
+      {/* Multiclass Class Selector */}
+      {level > 1 && (
+        <div className="rounded-xl bg-muted/30 border border-border p-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-semibold flex items-center gap-2">
+              <GitBranch className="w-4 h-4 text-primary" />
+              Classe para este Nível
+            </h4>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowClassSelector(!showClassSelector)}
+            >
+              {showClassSelector ? 'Fechar' : 'Multiclasse'}
+            </Button>
+          </div>
+
+          {!showClassSelector && (
+            <p className="text-sm text-muted-foreground">
+              Continuando como <span className="font-medium text-foreground">{className}</span>.
+              Clique em "Multiclasse" para escolher outra classe.
+            </p>
+          )}
+
+          {showClassSelector && (
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground">
+                Escolha a classe para o nível {level}. Você precisa atender aos pré-requisitos de atributo.
+              </p>
+              <ScrollArea className="h-[250px]">
+                <div className="space-y-2 pr-3">
+                  {availableClassesForMulticlass.map(cls => (
+                    <button
+                      key={cls.id}
+                      onClick={() => {
+                        if (!cls.prerequisitesMet) return;
+                        updateLevelChoice(level, { class_id: cls.id });
+                        setShowClassSelector(false);
+                        // Reset HP roll when changing class
+                        setHasRolledHp(false);
+                      }}
+                      disabled={!cls.prerequisitesMet}
+                      className={cn(
+                        'w-full p-3 rounded-lg border text-left transition-all',
+                        selectedClassForLevel === cls.id
+                          ? 'border-primary bg-primary/10'
+                          : cls.prerequisitesMet
+                            ? 'border-border bg-card hover:border-primary/50'
+                            : 'border-border bg-card opacity-50 cursor-not-allowed'
+                      )}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-medium">{cls.name}</span>
+                          <Badge variant="outline" className="text-[9px] px-1.5 py-0">
+                            d{cls.hitDie}
+                          </Badge>
+                          {cls.currentLevels > 0 && (
+                            <Badge className="text-[9px] px-1.5 py-0 bg-primary/20 text-primary">
+                              Nv. {cls.currentLevels}
+                            </Badge>
+                          )}
+                          {cls.isCurrentPrimary && cls.currentLevels === 0 && (
+                            <Badge className="text-[9px] px-1.5 py-0 bg-secondary/20 text-secondary-foreground">
+                              Principal
+                            </Badge>
+                          )}
+                        </div>
+                        {selectedClassForLevel === cls.id && (
+                          <Check className="w-4 h-4 text-primary" />
+                        )}
+                      </div>
+
+                      {!cls.prerequisitesMet && (
+                        <div className="mt-1 flex items-center gap-1 text-destructive">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span className="text-[10px]">
+                            Falta: {cls.missingPrerequisites.join(', ')}
+                          </span>
+                        </div>
+                      )}
+
+                      {cls.prerequisitesMet && cls.id !== primaryClassId && cls.currentLevels === 0 && (
+                        <p className="text-[10px] text-muted-foreground mt-1">
+                          Proficiências: {cls.proficienciesGained}
+                        </p>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+          )}
+        </div>
+      )}
       </div>
 
       {/* HP Roll */}
