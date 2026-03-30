@@ -289,11 +289,13 @@ export function BuilderProvider({ children, mode, characterId, initialCharacter 
     setStateRaw(prev => {
       if (prev.currentLevel >= 20) return prev;
       const newLevel = prev.currentLevel + 1;
-      const classId = prev.builderData.class_id || '';
-      const hitDiceInfo = CLASS_HIT_DICE[classId] || { die: 8, avg: 5 };
+      // Default to the LAST class used (so continuing in same class is the default)
+      const lastChoice = prev.levelChoices[prev.levelChoices.length - 1];
+      const defaultClassId = lastChoice?.class_id || prev.builderData.class_id || '';
+      const hitDiceInfo = CLASS_HIT_DICE[defaultClassId] || { die: 8, avg: 5 };
       const newChoice: LevelChoice = {
         level: newLevel,
-        class_id: classId,
+        class_id: defaultClassId,
         hp_roll: hitDiceInfo.avg,
         used_average: true,
       };
