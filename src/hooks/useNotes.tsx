@@ -177,6 +177,26 @@ export function useDeleteNote() {
 
   return useMutation({
     mutationFn: async ({ id, campaignId }: { id: string; campaignId: string }) => {
+      // First, recursively delete all child notes
+      const deleteChildren = async (parentId: string) => {
+        const { data: children } = await supabase
+          .from('campaign_notes')
+          .select('id')
+          .eq('parent_id', parentId);
+
+        if (children && children.length > 0) {
+          for (const child of children) {
+            await deleteChildren(child.id);
+          }
+          await supabase
+            .from('campaign_notes')
+            .delete()
+            .in('id', children.map(c => c.id));
+        }
+      };
+
+      await deleteChildren(id);
+
       const { error } = await supabase
         .from('campaign_notes')
         .delete()

@@ -52,7 +52,7 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
       const updated = notes.find(n => n.id === selectedNote.id);
       if (updated) setSelectedNote(updated);
     }
-  }, [notes]);
+  }, [notes, selectedNote]);
 
   const handleCreateNote = async (parentId?: string) => {
     const newNote = await createNote.mutateAsync({
@@ -224,6 +224,7 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
                   {selectedNote ? (
                     isEditing ? (
                       <TipTapEditor
+                        key={`edit-${selectedNote.id}`}
                         content={editForm.content}
                         onChange={(html) => setEditForm(prev => ({ ...prev, content: html }))}
                         campaignId={campaignId}
@@ -231,6 +232,7 @@ export function CampaignNotesSheet({ campaignId, open, onOpenChange }: CampaignN
                       />
                     ) : (
                       <TipTapEditor
+                        key={`view-${selectedNote.id}-${selectedNote.updated_at}`}
                         content={selectedNote.content || "<p></p>"}
                         onChange={() => {}}
                         campaignId={campaignId}
