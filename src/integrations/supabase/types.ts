@@ -1278,6 +1278,7 @@ export type Database = {
           background: string | null
           backstory: string | null
           bonds: string | null
+          builder_data: Json | null
           class: string
           conditions: string[] | null
           created_at: string
@@ -1302,6 +1303,7 @@ export type Database = {
           is_archived: boolean
           languages: Json
           level: number
+          level_choices: Json | null
           max_hp: number
           name: string
           personality_traits: string | null
@@ -1329,6 +1331,7 @@ export type Database = {
           background?: string | null
           backstory?: string | null
           bonds?: string | null
+          builder_data?: Json | null
           class: string
           conditions?: string[] | null
           created_at?: string
@@ -1353,6 +1356,7 @@ export type Database = {
           is_archived?: boolean
           languages?: Json
           level?: number
+          level_choices?: Json | null
           max_hp?: number
           name: string
           personality_traits?: string | null
@@ -1380,6 +1384,7 @@ export type Database = {
           background?: string | null
           backstory?: string | null
           bonds?: string | null
+          builder_data?: Json | null
           class?: string
           conditions?: string[] | null
           created_at?: string
@@ -1404,6 +1409,7 @@ export type Database = {
           is_archived?: boolean
           languages?: Json
           level?: number
+          level_choices?: Json | null
           max_hp?: number
           name?: string
           personality_traits?: string | null
