@@ -309,7 +309,7 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
   // Sync local state → BuilderContext
   const syncToContext = useCallback(() => {
     const updates: Partial<LevelChoice> = {
-      class_id: classId,
+      class_id: selectedClassForLevel,
     };
 
     if (grantsFeat) {
@@ -333,9 +333,15 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
       updates.feature_options = selectedFeatureOptions;
     }
 
+    // Multiclass proficiencies
+    if (isMulticlassing && classLevelInSelectedClass === 1) {
+      updates.multiclass_proficiencies = [getMulticlassProficiencies(selectedClassForLevel)];
+    }
+
     updateLevelChoice(level, updates);
-  }, [level, classId, grantsFeat, improvementChoice, selectedFeat, selectedFeatAttribute,
-      attributePoints, showSubclassSelection, selectedSubclass, selectedFeatureOptions, updateLevelChoice]);
+  }, [level, selectedClassForLevel, grantsFeat, improvementChoice, selectedFeat, selectedFeatAttribute,
+      attributePoints, showSubclassSelection, selectedSubclass, selectedFeatureOptions,
+      isMulticlassing, classLevelInSelectedClass, updateLevelChoice]);
 
   // Auto-sync on changes
   useEffect(() => {
