@@ -256,8 +256,10 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
   // Subclass features for higher levels
   const higherLevelSubclassFeatures = useMemo(() => {
     if (showSubclassSelection) return [];
-    // Find existing subclass from earlier level choices
-    const existingSub = levelChoices.find(lc => lc.subclass_id && lc.level < level);
+    // Find existing subclass for THIS class from earlier level choices
+    const existingSub = levelChoices.find(
+      lc => lc.subclass_id && lc.class_id === selectedClassForLevel && lc.level < level
+    );
     if (!existingSub?.subclass_id) return [];
 
     const cInfo = classInfo as any;
@@ -265,15 +267,15 @@ export function LevelUpStep({ level }: LevelUpStepProps) {
     let features: any[] = [];
 
     if (srdSub) {
-      features = (srdSub.features || []).filter((f: any) => f.level === level);
+      features = (srdSub.features || []).filter((f: any) => f.level === classLevelInSelectedClass);
     } else {
       const hwSub = homebrewSubclasses.find(s => s.id === existingSub.subclass_id);
       if (hwSub) {
-        features = ((hwSub.data as any)?.features || []).filter((f: any) => f.level === level);
+        features = ((hwSub.data as any)?.features || []).filter((f: any) => f.level === classLevelInSelectedClass);
       }
     }
     return features;
-  }, [showSubclassSelection, levelChoices, level, classInfo, homebrewSubclasses]);
+  }, [showSubclassSelection, levelChoices, level, selectedClassForLevel, classLevelInSelectedClass, classInfo, homebrewSubclasses]);
 
   // Feats list
   const filteredFeats = useMemo(() => {
