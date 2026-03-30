@@ -75,7 +75,7 @@ import { useCharacterDocuments } from "@/hooks/useDocuments";
 import { CharacterFactionReputations } from "./CharacterFactionReputations";
 import { InventoryTab } from "./InventoryTab";
 import { CharacterPDFExport } from "./CharacterPDFExport";
-import { EditAppearanceSheet } from "./EditAppearanceSheet";
+
 import {
   AlertDialog,
   AlertDialogAction,
