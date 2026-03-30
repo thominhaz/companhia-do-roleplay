@@ -27,8 +27,16 @@ export function useBuilderSave() {
     if (!cls) { toast.error('Classe inválida'); return; }
 
     const attrs = ctx.getComputedAttributes();
-    const conMod = getModifier(attrs.constitution || 10);
-    const dexMod = getModifier(attrs.dexterity || 10);
+    const typedAttrs = {
+      strength: attrs.strength || 10,
+      dexterity: attrs.dexterity || 10,
+      constitution: attrs.constitution || 10,
+      intelligence: attrs.intelligence || 10,
+      wisdom: attrs.wisdom || 10,
+      charisma: attrs.charisma || 10,
+    };
+    const conMod = getModifier(typedAttrs.constitution);
+    const dexMod = getModifier(typedAttrs.dexterity);
     const totalHP = ctx.getComputedHP();
     const level = ctx.currentLevel;
 
