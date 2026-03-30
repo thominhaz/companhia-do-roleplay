@@ -90,7 +90,7 @@ export function BuilderSidebar() {
                     </div>
                     <span className="truncate">{lcClassName}</span>
                     {lc.subclass_id && (
-                      <Check className="w-3 h-3 text-green-500 flex-shrink-0" />
+                      <Check className="w-3 h-3 text-primary flex-shrink-0" />
                     )}
                   </button>
                 );
