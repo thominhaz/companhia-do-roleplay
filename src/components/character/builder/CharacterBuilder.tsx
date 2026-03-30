@@ -6,6 +6,7 @@ import { useBuilderWizardAdapter } from './useBuilderWizardAdapter';
 import { BuilderSidebar } from './BuilderSidebar';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, ArrowRight, Save } from 'lucide-react';
+import { useBuilderSave } from './useBuilderSave';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
