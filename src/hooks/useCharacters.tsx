@@ -191,7 +191,7 @@ export function useCreateCharacter() {
         }
         throw error;
       }
-      return data as CharacterDB;
+      return data as unknown as CharacterDB;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['characters'] });
