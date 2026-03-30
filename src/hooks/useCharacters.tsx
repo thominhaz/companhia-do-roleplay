@@ -60,8 +60,50 @@ export interface CharacterDB {
   distinctive_features: string | null;
   goals: string | null;
   allies_organizations: string | null;
+  builder_data: BuilderData | null;
+  level_choices: LevelChoice[] | null;
   created_at: string;
   updated_at: string;
+}
+
+// Builder types
+export interface BuilderData {
+  race_id?: string;
+  subrace_id?: string;
+  class_id?: string;
+  attribute_method?: 'point_buy' | 'standard_array' | 'rolled';
+  base_attributes?: Record<string, number>;
+  ability_bonus_choices?: string[];
+  background_id?: string;
+  alignment?: string;
+  equipment_choices?: Record<number, number>;
+  equipment_category_selections?: Record<string, string>;
+  variant_human_feat?: string;
+  variant_human_skill?: string;
+  custom_background?: {
+    name: string;
+    skills: string[];
+    proficiencies: string[];
+    feature: string;
+  };
+}
+
+export interface LevelChoice {
+  level: number;
+  class_id: string;                       // MULTICLASS-READY
+  hp_roll: number;
+  used_average: boolean;
+  subclass_id?: string;
+  selected_skills?: string[];
+  selected_feat?: string;
+  feat_attribute?: string;
+  attribute_improvements?: Record<string, number>;
+  improvement_choice?: 'feat' | 'attributes';
+  feature_options?: Record<string, string>;
+  extra_languages?: string[];
+  extra_cantrips?: string[];
+  extra_spells?: string[];
+  multiclass_proficiencies?: string[];    // MULTICLASS-READY
 }
 
 export type CharacterInsert = Omit<CharacterDB, 'id' | 'user_id' | 'created_at' | 'updated_at' | 'is_archived'>;
