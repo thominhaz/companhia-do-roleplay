@@ -275,6 +275,27 @@ export function SessionAttendanceCard({ session, isUpcoming = true, isMaster = f
           )}
         </div>
       )}
+
+      {/* Delete Confirmation */}
+      <AlertDialog open={confirmDelete} onOpenChange={setConfirmDelete}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir sessão?</AlertDialogTitle>
+            <AlertDialogDescription>
+              A sessão "{session.title}" será permanentemente removida. Esta ação não pode ser desfeita.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Voltar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => deleteSession.mutate({ id: session.id, campaignId: session.campaign_id })}
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
