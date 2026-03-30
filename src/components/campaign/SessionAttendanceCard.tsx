@@ -42,13 +42,16 @@ interface SessionAttendanceCardProps {
   isMaster?: boolean;
 }
 
-export function SessionAttendanceCard({ session, isUpcoming = true }: SessionAttendanceCardProps) {
+export function SessionAttendanceCard({ session, isUpcoming = true, isMaster = false }: SessionAttendanceCardProps) {
   const { user } = useAuth();
   const [showDetails, setShowDetails] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   
   const { data: attendance, isLoading: loadingAttendance, refetch } = useSessionAttendance(session.id);
   const { data: myAttendance, isLoading: loadingMyAttendance } = useMyAttendance(session.id);
   const updateAttendance = useUpdateAttendance();
+  const deleteSession = useDeleteSession();
+  const updateSession = useUpdateSession();
 
   // Realtime subscription for attendance updates
   useEffect(() => {
