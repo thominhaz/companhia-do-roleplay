@@ -149,6 +149,38 @@ export function BuilderProvider({ children, mode, characterId, initialCharacter 
     return base;
   });
 
+  // Lazy persistence: if this is a legacy character (no builder_data in DB),
+  // save the inferred builder_data and level_choices so migration is permanent.
+  const migrationDone = useRef(false);
+  useEffect(() => {
+    if (
+      mode === 'edit' &&
+      characterId &&
+      initialCharacter &&
+      !migrationDone.current
+    ) {
+      const hasExistingBuilderData = initialCharacter.builder_data && Object.keys(initialCharacter.builder_data).length > 0;
+      const hasExistingLevelChoices = initialCharacter.level_choices && (initialCharacter.level_choices as LevelChoice[]).length > 0;
+
+      if (!hasExistingBuilderData || !hasExistingLevelChoices) {
+        migrationDone.current = true;
+        // Persist in background — don't block the UI
+        supabase
+          .from('characters')
+          .update({
+            builder_data: state.builderData as any,
+            level_choices: state.levelChoices as any,
+          })
+          .eq('id', characterId)
+          .then(({ error }) => {
+            if (error) {
+              console.error('Lazy migration failed:', error);
+            }
+          });
+      }
+    }
+  }, [mode, characterId, initialCharacter]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const setState = useCallback((partial: Partial<BuilderState>) => {
     setStateRaw(prev => ({ ...prev, ...partial }));
   }, []);
