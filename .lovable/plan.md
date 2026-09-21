@@ -1,89 +1,119 @@
+# Pacote de migração completa do GO20
 
+## Objetivo
 
-# Revisão do Sistema de Compartilhamento de Homebrew
+Preparar o repositório privado para que outra IA consiga reconstruir o GO20 fora da Lovable, usando Postgres próprio e preservando os dados operacionais sem exportar contas, e-mails, senhas, tokens ou outras credenciais.
 
-## Análise Atual
+O repositório será a fonte de verdade do código e da documentação. O arquivo bruto de dados será exportado separadamente pelo proprietário em **Cloud → Advanced settings → Export data**, pois não deve ser versionado no Git.
 
-Estudei todos os arquivos envolvidos: hooks, sheets, RLS policies e tabelas. Identifiquei os seguintes problemas:
+## O que será entregue no repositório
 
-### Problemas Encontrados
+### 1. Inventário técnico completo
+- Mapa da aplicação React, páginas, fluxos, componentes, arquivos estáticos e fontes.
+- Catálogo das 51 tabelas atuais, enums, funções, triggers, índices, constraints, grants e regras de acesso.
+- Catálogo das 7 funções remotas, seus endpoints, autenticação e integrações externas.
+- Catálogo de login, arquivos, atualizações em tempo real e chamadas ao banco usadas pelo frontend.
+- Matriz “recurso atual → substituto fora da Lovable”, destacando o que funciona em Postgres puro e o que exige serviço adicional.
 
-**1. RLS de `homebrew_shares` bloqueia compartilhamento via aprovação do mestre**
-A política INSERT de `homebrew_shares` exige: `is_homebrew_owner(content_id, auth.uid()) AND is_campaign_master(campaign_id, auth.uid())`. Quando o mestre aprova uma solicitação de jogador, o mestre NÃO é o dono do conteúdo. Isso causa falha silenciosa no `useRespondToShareRequest` ao tentar inserir em `homebrew_shares` após aprovar.
+### 2. Banco reproduzível em Postgres próprio
+- Consolidar as migrations atuais em um baseline SQL auditável.
+- Separar recursos portáveis de dependências específicas da plataforma (`auth`, `storage`, `realtime`, `auth.uid()` e APIs de funções).
+- Produzir uma versão compatível com Postgres próprio, com extensões necessárias, enums, tabelas, funções, triggers, índices e permissões.
+- Criar uma camada de identidade substituível para preservar relações internas sem depender de `auth.users`.
+- Documentar a ordem de instalação, rollback e verificações pós-importação.
 
-**2. RLS de `homebrew_shares` bloqueia compartilhamento direto de jogador (política "enabled")**
-Quando a campanha tem `homebrew_sharing_policy = 'enabled'`, o `PlayerShareHomebrewSheet` chama `shareWithCampaign` direto. Mas a RLS INSERT exige `is_campaign_master`, então jogadores nunca conseguem inserir diretamente, mesmo com a política liberada.
+### 3. Exportação de dados sem usuários
+- Não incluir contas de autenticação, e-mails, hashes de senha, sessões, tokens OAuth ou códigos temporários.
+- Pseudonimizar UUIDs de usuário de forma determinística para manter campanhas, personagens, notas, combates, homebrews e demais relações funcionais.
+- Excluir ou sanitizar conteúdo pessoal direto, incluindo perfil, e-mail de submissões, URLs de webhook, chaves Foundry e estados OAuth.
+- Gerar scripts de transformação para aplicar sobre o dump oficial exportado pelo proprietário.
+- Gerar manifesto de tabelas incluídas, excluídas e sanitizadas, com justificativa.
+- Gerar validação por contagens, chaves órfãs e checksums antes/depois, sem registrar conteúdo pessoal.
 
-**3. Falta SELECT policy para o mestre ver solicitações no `homebrew_share_requests`**
-A política SELECT atual é apenas `is_campaign_member`, que verifica a tabela `campaign_players`. O mestre não está em `campaign_players` (ele é `master_id` na tabela `campaigns`), então o mestre pode não ver as solicitações pendentes.
+### 4. Arquivos e mídia
+- Inventariar os buckets atuais: `avatars`, `campaign-images`, `document-seals` e `supporter-submissions`.
+- Criar procedimento de download e reenvio para armazenamento próprio/S3 compatível.
+- Gerar manifesto de objetos, caminhos, tamanhos e checksums.
+- Remover avatares e anexos pessoais quando não forem necessários; sanitizar referências no banco.
+- Documentar a troca de URLs públicas e políticas de acesso.
 
-### Problemas Menores
-- `handleShare` no `PlayerShareHomebrewSheet` não aguarda resultado (fire-and-forget) e faz `setProcessingCampaignId(null)` imediatamente no `finally`.
-- Query cache keys inconsistentes entre `ShareHomebrewSheet` e `PlayerShareHomebrewSheet`.
+### 5. Backend e serviços que Postgres sozinho não substitui
+- Especificar uma API própria para consultas e mutações hoje feitas diretamente pelo cliente.
+- Especificar autenticação, autorização por usuário/campanha e papéis no servidor.
+- Especificar WebSocket/pub-sub para chat, combate, presença e notificações em tempo real.
+- Portar ou documentar as funções de Discord, Foundry, notificações e geração por IA.
+- Preservar o comportamento das regras atuais sem transportar a dependência da Lovable.
 
----
+### 6. Configuração e credenciais
+- Criar `.env.example` somente com nomes, finalidade e obrigatoriedade das variáveis.
+- Documentar os segredos atualmente necessários: DigitalOcean AI, Discord, Resend e Stripe, sem seus valores.
+- Marcar `LOVABLE_API_KEY` como dependência a remover/substituir, não como credencial a migrar.
+- Criar checklist de rotação: as credenciais reais devem ser recriadas ou rotacionadas e cadastradas apenas no gerenciador de segredos do novo ambiente.
+- Nenhuma credencial privada, dump bruto ou dado pessoal será commitido.
 
-## Plano de Correção
+### 7. Manual para a IA que fará a reconstrução
+- Arquitetura atual e fluxos completos por domínio.
+- Contratos de dados e endpoints esperados pelo frontend.
+- Ordem recomendada de implantação: Postgres → identidade → API → storage → tempo real → funções → frontend.
+- Critérios de aceite para login, personagens/Builder, campanhas, notas, sessões, combate, chat, homebrew, comércio, documentos e integrações.
+- Lista explícita de incompatibilidades, decisões pendentes e pontos que não podem ser inferidos.
 
-### Etapa 1 — Corrigir RLS de `homebrew_shares` (migração SQL)
+## Estrutura prevista
 
-Adicionar nova política INSERT que permite:
-- O mestre da campanha inserir compartilhamentos (para aprovar solicitações de jogadores)
-- Jogadores premium inserirem quando a política da campanha é "enabled"
-
-```sql
--- Dropar política INSERT restritiva atual
-DROP POLICY "Owners can share to their campaigns" ON public.homebrew_shares;
-
--- Nova: Mestre pode compartilhar próprio conteúdo OU aprovar de outros
-CREATE POLICY "Masters can share to their campaigns"
-ON public.homebrew_shares FOR INSERT
-WITH CHECK (
-  is_campaign_master(campaign_id, auth.uid())
-);
-
--- Nova: Jogadores premium podem compartilhar direto quando política = 'enabled'
-CREATE POLICY "Players can share when policy enabled"
-ON public.homebrew_shares FOR INSERT
-WITH CHECK (
-  is_homebrew_owner(content_id, auth.uid())
-  AND is_premium(auth.uid())
-  AND can_share_homebrew_in_campaign(campaign_id, auth.uid())
-);
+```text
+migration/
+├── README.md
+├── architecture/
+│   ├── system-overview.md
+│   ├── frontend-data-contracts.md
+│   ├── backend-dependencies.md
+│   └── feature-acceptance-checklist.md
+├── database/
+│   ├── current-schema.sql
+│   ├── postgres-baseline.sql
+│   ├── portability-notes.md
+│   └── verify.sql
+├── data/
+│   ├── README.md
+│   ├── anonymize.sql
+│   ├── export-manifest.md
+│   └── validate-import.sql
+├── storage/
+│   ├── README.md
+│   └── object-manifest.example.csv
+├── services/
+│   ├── auth.md
+│   ├── api.md
+│   ├── realtime.md
+│   └── edge-functions.md
+├── security/
+│   ├── credential-inventory.md
+│   ├── rotation-checklist.md
+│   └── privacy-checklist.md
+└── runbooks/
+    ├── 01-export.md
+    ├── 02-provision.md
+    ├── 03-import.md
+    ├── 04-cutover.md
+    └── 05-rollback.md
 ```
 
-### Etapa 2 — Corrigir RLS de `homebrew_share_requests` (SELECT para mestre)
+## Sequência de execução
 
-Adicionar política que permite o mestre ver solicitações:
+1. Auditar o código, migrations e backend atual; fechar o inventário.
+2. Gerar o baseline de banco e o relatório de portabilidade.
+3. Criar e testar scripts de anonimização e validação em dados sintéticos.
+4. Documentar storage, tempo real, autenticação, funções e integrações.
+5. Criar `.env.example`, checklist de rotação e proteção do Git.
+6. Montar o manual de reconstrução e critérios de aceite.
+7. Revisar o pacote para confirmar que não contém segredos nem dados reais.
+8. Orientar a conexão do projeto a um repositório Git privado; o proprietário autoriza e cria o repositório pela integração do editor.
+9. O proprietário solicita o export oficial de dados, executa a transformação local e entrega o dump anonimizado fora do histórico do Git.
 
-```sql
--- Adicionar acesso do mestre
-CREATE POLICY "Masters can view campaign share requests"
-ON public.homebrew_share_requests FOR SELECT
-USING (is_campaign_master(campaign_id, auth.uid()));
-```
+## Limites e decisões de segurança
 
-### Etapa 3 — Corrigir lógica no `PlayerShareHomebrewSheet.tsx`
-
-- Usar `mutateAsync` em vez de `mutate` para aguardar resultado antes de limpar estado.
-- Invalidar queries após sucesso para atualizar status visual.
-
-### Etapa 4 — Corrigir `useRespondToShareRequest` (aprovação)
-
-- Após aprovar, invalidar também `['homebrew-share-status']` para atualizar o status no sheet do jogador.
-
-### Etapa 5 — Invalidação de cache consistente
-
-- Alinhar todas as invalidações de query para usar as mesmas keys (`homebrew-shares`, `campaign-homebrew`, `homebrew-share-status`, `homebrew-share-requests`).
-
----
-
-## Resumo de Arquivos Modificados
-
-| Arquivo | Mudança |
-|---|---|
-| Migração SQL | Fix RLS `homebrew_shares` (INSERT) e `homebrew_share_requests` (SELECT) |
-| `src/components/homebrew/PlayerShareHomebrewSheet.tsx` | Usar `mutateAsync`, invalidar queries |
-| `src/hooks/useHomebrewShareRequests.tsx` | Invalidar mais query keys na aprovação/rejeição |
-| `src/hooks/useHomebrew.tsx` | Invalidar `campaign-homebrew` e `homebrew-share-status` no share/unshare |
-
+- Senhas de usuários não serão exportadas ou recuperadas.
+- “Sem usuários” será implementado como ausência de identidades reais, mantendo referências por UUIDs pseudônimos para não destruir os dados relacionados.
+- O Postgres, isoladamente, não fornece login, API HTTP, armazenamento de arquivos, envio de e-mail nem tempo real; esses serviços serão especificados para implementação no novo ambiente.
+- O pacote não concede à outra IA acesso administrativo ao ambiente atual. Ela receberá apenas artefatos revisados e sanitizados.
+- O corte definitivo só deve ocorrer após teste de restauração, validação funcional e rotação de todas as credenciais no destino.
