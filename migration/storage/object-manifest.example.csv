@@ -1,0 +1,2 @@
+bucket,source_key,destination_key,size_bytes,content_type,sha256,decision,reason
+campaign-images,example/source.webp,campaigns/example.webp,0,image/webp,,review,
