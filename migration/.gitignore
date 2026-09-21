@@ -1,0 +1,8 @@
+private/
+*.dump
+*.backup
+*.sql.gz
+*export_report*.json
+*user_map*
+*pseudonym-map*
+storage/manifests/*.csv
